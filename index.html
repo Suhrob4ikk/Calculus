@@ -546,9 +546,20 @@
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div class="profile-avatar" id="profileAvatar">S</div>
+        <!-- Аватар с загрузкой фото -->
+        <div class="relative w-24 h-24 mx-auto mb-3">
+          <div class="profile-avatar" id="profileAvatar" style="width:80px;height:80px;font-size:2rem">S</div>
+          <img id="profileAvatarImg" src="" alt="avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
+          <button onclick="triggerAvatarUpload()" id="avatarUploadBtn"
+            class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
+            title="Сменить фото">📷</button>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
-        <p class="text-center text-gray-500 text-sm mb-6" id="profileEmail"></p>
+        <p class="text-center text-gray-500 text-sm mb-4" id="profileEmail"></p>
+        <button onclick="showSearchProfiles()" class="w-full mb-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold py-2 rounded-xl transition-colors">
+          🔍 Найти других пользователей
+        </button>
         <div id="profileContent"></div>
       </div>
     </div>
@@ -579,7 +590,41 @@
     </div>
   </div>
 
-  <script src="js/questions.js"></script>
+  <!-- ── ПОИСК ПРОФИЛЕЙ ───────────────────────────────────── -->
+  <div id="searchProfilesPage" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
+    <div class="max-w-2xl mx-auto fade-in">
+      <button onclick="showProfile()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">🔍 Поиск пользователей</h2>
+        <div class="flex gap-2 mb-4">
+          <input id="searchInput" type="text" placeholder="Введите имя пользователя..."
+            class="auth-input mb-0 flex-1" onkeydown="if(event.key==='Enter')handleSearch()">
+          <button onclick="handleSearch()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-semibold transition-colors">
+            Найти
+          </button>
+        </div>
+        <div id="searchResults" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ПРОСМОТР ПРОФИЛЯ ──────────────────────────────────── -->
+  <div id="viewProfilePage" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
+    <div class="max-w-2xl mx-auto fade-in">
+      <button onclick="showSearchProfiles()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к поиску</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <div class="relative w-24 h-24 mx-auto mb-3">
+          <div class="profile-avatar" id="viewProfileAvatar" style="width:80px;height:80px;font-size:2rem">?</div>
+          <img id="viewProfileAvatarImg" src="" alt="avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
+        </div>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6" id="viewProfileName"></h2>
+        <div id="viewProfileContent"></div>
+      </div>
+    </div>
+  </div>
+
+    <script src="js/questions.js"></script>
   <script type="module" src="js/script.js"></script>
 
   <script>

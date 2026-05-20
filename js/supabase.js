@@ -11,10 +11,7 @@ export async function signUp(email, password, username) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: { username },
-      emailRedirectTo: 'https://suhrob4ikk.github.io/Calculus'
-    }
+    options: { data: { username } }
   })
   return { data, error }
 }
@@ -70,4 +67,48 @@ export async function getLeaderboard(section = null, difficulty = null) {
 
   const { data, error } = await query
   return { data, error }
+}
+
+// ── Аватар ────────────────────────────────────────────────
+export async function uploadAvatar(userId, file) {
+  const ext = file.name.split('.').pop()
+  const path = `${userId}/avatar.${ext}`
+  const { error } = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true })
+  if (error) return { error }
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+  // Save url to profile
+  await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', userId)
+  return { url: data.publicUrl, error: null }
+}
+
+export async function getAvatarUrl(userId) {
+  const { data } = await supabase.from('profiles').select('avatar_url').eq('id', userId).single()
+  return data?.avatar_url || null
+}
+
+// ── Поиск профилей ────────────────────────────────────────
+export async function searchProfiles(query) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_url, created_at')
+    .ilike('username', `%${query}%`)
+    .limit(10)
+  return { data, error }
+}
+
+export async function getProfileByUsername(username) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_url, created_at')
+    .eq('username', username)
+    .single()
+  if (!profile) return { profile: null, results: [] }
+  const { data: results } = await supabase
+    .from('test_results')
+    .select('*')
+    .eq('user_id', profile.id)
+    .order('created_at', { ascending: false })
+  return { profile, results: results || [] }
 }

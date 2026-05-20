@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage']
+                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) {
@@ -113,6 +113,130 @@ window.handleLogout = async function() {
   await signOut()
   currentUser = null
   showPage('authPage')
+}
+
+
+// ── Загрузка аватара ──────────────────────────────────────
+window.triggerAvatarUpload = function() {
+  document.getElementById('avatarInput').click()
+}
+
+window.handleAvatarUpload = async function(event) {
+  const file = event.target.files[0]
+  if (!file || !currentUser) return
+  if (file.size > 2 * 1024 * 1024) { alert('Файл слишком большой. Максимум 2MB'); return }
+
+  const btn = document.getElementById('avatarUploadBtn')
+  if (btn) { btn.textContent = '⏳ Загрузка...'; btn.disabled = true }
+
+  const { url, error } = await uploadAvatar(currentUser.id, file)
+  if (error) {
+    alert('Ошибка загрузки: ' + error.message)
+  } else {
+    // Update avatar display
+    const img = document.getElementById('profileAvatarImg')
+    const letter = document.getElementById('profileAvatar')
+    if (img) { img.src = url; img.style.display = 'block' }
+    if (letter) letter.style.display = 'none'
+    if (btn) { btn.textContent = '✅ Загружено!'; setTimeout(() => { btn.textContent = '📷 Сменить фото'; btn.disabled = false }, 2000) }
+  }
+  if (btn && btn.disabled) { btn.textContent = '📷 Сменить фото'; btn.disabled = false }
+}
+
+// ── Поиск профилей ────────────────────────────────────────
+window.showSearchProfiles = async function() {
+  showPage('searchProfilesPage')
+  document.getElementById('searchInput').focus()
+}
+
+window.handleSearch = async function() {
+  const q = document.getElementById('searchInput').value.trim()
+  if (!q) return
+  const { data } = await searchProfiles(q)
+  const container = document.getElementById('searchResults')
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p class="text-gray-400 text-center py-4">Пользователи не найдены</p>'
+    return
+  }
+  container.innerHTML = data.map(p => `
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors"
+         onclick="viewProfile('${p.username}')">
+      <div class="flex items-center gap-3">
+        ${p.avatar_url
+          ? `<img src="${p.avatar_url}" class="w-10 h-10 rounded-full object-cover">`
+          : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">${p.username.charAt(0).toUpperCase()}</div>`
+        }
+        <span class="font-semibold" style="color:var(--text-main)">${p.username}</span>
+      </div>
+      <span class="text-blue-500 text-sm">Посмотреть →</span>
+    </div>`).join('')
+}
+
+window.viewProfile = async function(username) {
+  showPage('viewProfilePage')
+  document.getElementById('viewProfileContent').innerHTML = '<p class="text-gray-400 text-center py-8">Загрузка...</p>'
+
+  const { profile, results } = await getProfileByUsername(username)
+  if (!profile) {
+    document.getElementById('viewProfileContent').innerHTML = '<p class="text-gray-400 text-center py-4">Профиль не найден</p>'
+    return
+  }
+
+  const total = results.length
+  const best = total ? Math.max(...results.map(r => r.score)) : 0
+  const avg = total ? Math.round(results.reduce((s,r) => s+r.score, 0) / total) : 0
+  const level = getUserLevel(total, avg)
+
+  const badges = []
+  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест', cls: 'badge-silver' })
+  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов', cls: 'badge-silver' })
+  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов', cls: 'badge-gold' })
+  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов', cls: 'badge-gold' })
+  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold' })
+  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
+  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
+
+  document.getElementById('viewProfileName').textContent = profile.username
+  const avatarEl = document.getElementById('viewProfileAvatar')
+  const avatarImgEl = document.getElementById('viewProfileAvatarImg')
+  if (profile.avatar_url) {
+    avatarImgEl.src = profile.avatar_url
+    avatarImgEl.style.display = 'block'
+    avatarEl.style.display = 'none'
+  } else {
+    avatarEl.textContent = profile.username.charAt(0).toUpperCase()
+    avatarEl.style.display = 'flex'
+    avatarImgEl.style.display = 'none'
+  }
+
+  document.getElementById('viewProfileContent').innerHTML = `
+    <div class="rounded-xl p-4 mb-4" style="background:linear-gradient(135deg,${level.color}18,${level.color}08);border:1.5px solid ${level.color}30">
+      <div class="flex items-center gap-3">
+        <span style="font-size:1.8rem">${level.icon}</span>
+        <div class="font-bold text-lg" style="color:${level.color}">${level.name}</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="profile-stat"><div class="profile-stat-value">${total}</div><div class="profile-stat-label">Тестов</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${best}%</div><div class="profile-stat-label">Лучший</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${avg}%</div><div class="profile-stat-label">Средний</div></div>
+    </div>
+    <h3 class="text-lg font-bold text-gray-800 mb-3">🏅 Достижения</h3>
+    <div class="flex flex-wrap gap-2 mb-4">
+      ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-gray-400 text-sm">Нет достижений</p>'}
+    </div>
+    <h3 class="text-lg font-bold text-gray-800 mb-3">📋 Последние результаты</h3>
+    <div class="space-y-2">
+      ${results.slice(0,5).map(r => `
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+          <div>
+            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':'Ряды'}</span>
+            <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
+          </div>
+          <span class="font-bold ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
+        </div>`).join('') || '<p class="text-gray-400 text-sm">Нет результатов</p>'}
+    </div>
+  `
 }
 
 // ── Главная и разделы ─────────────────────────────────────
@@ -367,7 +491,13 @@ window.showProfile = async function() {
   const email = currentUser.email
 
   const avatar = document.getElementById('profileAvatar')
-  if (avatar) avatar.textContent = username.charAt(0).toUpperCase()
+  if (avatar) { avatar.textContent = username.charAt(0).toUpperCase(); avatar.style.display = 'flex' }
+  const avatarImg = document.getElementById('profileAvatarImg')
+  if (avatarImg) {
+    const url = await getAvatarUrl(currentUser.id)
+    if (url) { avatarImg.src = url; avatarImg.style.display = 'block'; if(avatar) avatar.style.display = 'none' }
+    else { avatarImg.style.display = 'none'; if(avatar) avatar.style.display = 'flex' }
+  }
   const nameEl = document.getElementById('profileName')
   if (nameEl) nameEl.textContent = username
   const emailEl = document.getElementById('profileEmail')
