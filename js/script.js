@@ -39,38 +39,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  // Проверяем тип токена в URL (новый формат Supabase использует ?params)
+  // Supabase верифицирует токен сам и редиректит с ?type=recovery или ?type=signup
   const urlParams = new URLSearchParams(window.location.search)
   const tokenType = urlParams.get('type')
   const tokenHash = urlParams.get('token_hash')
 
-  if (tokenHash && tokenType === 'recovery') {
-    // Ссылка сброса пароля — верифицируем токен
-    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
-    console.log('recovery verifyOtp:', { data, error })
-    if (!error) {
-      currentUser = data?.user || null
-      history.replaceState(null, '', window.location.pathname)
-      showPage('updatePasswordPage')
-      return
-    } else {
-      console.error('recovery error:', error)
-      // Попробуем через onAuthStateChange - просто покажем форму
-      showPage('updatePasswordPage')
-      return
+  if (tokenType === 'recovery') {
+    // Supabase уже верифицировал токен — просто получаем сессию и показываем форму
+    if (tokenHash) {
+      await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
     }
-  } else if (tokenHash && (tokenType === 'signup' || tokenType === 'email')) {
-    // Подтверждение email — верифицируем токен
-    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
-    console.log('signup verifyOtp:', { data, error })
+    const { data: { session } } = await supabase.auth.getSession()
+    currentUser = session?.user || null
     history.replaceState(null, '', window.location.pathname)
-    if (!error && data?.user) {
-      currentUser = data.user
-      showPage('homePage')
-      updateUserUI()
-    } else {
-      showPage('authPage')
+    showPage('updatePasswordPage')
+    return
+  }
+
+  if (tokenType === 'signup' || tokenType === 'email') {
+    // Подтверждение email
+    if (tokenHash) {
+      await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
     }
+    const { data: { session } } = await supabase.auth.getSession()
+    currentUser = session?.user || null
+    history.replaceState(null, '', window.location.pathname)
+    if (currentUser) { showPage('homePage'); updateUserUI() }
+    else showPage('authPage')
     return
   }
 
