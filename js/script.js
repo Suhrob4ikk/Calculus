@@ -34,10 +34,16 @@ function showPage(pageId) {
                  'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage']
   pages.forEach(p => {
     const el = document.getElementById(p)
-    if (el) el.classList.add('hidden')
+    if (el) {
+      el.classList.add('hidden')
+      el.style.display = 'none'
+    }
   })
   const target = document.getElementById(pageId)
-  if (target) target.classList.remove('hidden')
+  if (target) {
+    target.classList.remove('hidden')
+    target.style.display = pageId === 'authPage' ? 'flex' : 'block'
+  }
 }
 
 function updateUserUI() {
