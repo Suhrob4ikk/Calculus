@@ -26,6 +26,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     showPage('authPage')
   }
+
+  // Привязываем обработчики кнопок
+  const avatarBtn = document.getElementById('avatarUploadBtn')
+  if (avatarBtn) avatarBtn.addEventListener('click', () => document.getElementById('avatarInput').click())
+
+  const avatarInput = document.getElementById('avatarInput')
+  if (avatarInput) avatarInput.addEventListener('change', handleAvatarUpload)
+
+  const searchProfilesBtn = document.getElementById('searchProfilesBtn')
+  if (searchProfilesBtn) searchProfilesBtn.addEventListener('click', showSearchProfiles)
+
+  const searchFindBtn = document.getElementById('searchFindBtn')
+  if (searchFindBtn) searchFindBtn.addEventListener('click', handleSearch)
+
+  const searchInputField = document.getElementById('searchInputField')
+  if (searchInputField) searchInputField.addEventListener('keydown', e => { if(e.key==='Enter') handleSearch() })
 })
 
 // ── Навигация между страницами ────────────────────────────
@@ -121,7 +137,7 @@ window.triggerAvatarUpload = function() {
   document.getElementById('avatarInput').click()
 }
 
-window.handleAvatarUpload = async function(event) {
+async function handleAvatarUpload(event) {
   const file = event.target.files[0]
   if (!file || !currentUser) return
   if (file.size > 2 * 1024 * 1024) { alert('Файл слишком большой. Максимум 2MB'); return }
@@ -150,7 +166,7 @@ window.showSearchProfiles = async function() {
 }
 
 window.handleSearch = async function() {
-  const q = document.getElementById('searchInput').value.trim()
+  const q = (document.getElementById('searchInputField') || document.getElementById('searchInput'))?.value.trim()
   if (!q) return
   const { data } = await searchProfiles(q)
   const container = document.getElementById('searchResults')
