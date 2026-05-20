@@ -342,6 +342,73 @@ window.shareResult = function(correct, total, percentage) {
   })
 }
 
+
+// ── Профиль ───────────────────────────────────────────────
+window.showProfile = async function() {
+  showPage('profilePage')
+  if (!currentUser) return
+
+  const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
+  const email = currentUser.email
+
+  // Аватар — первая буква имени
+  const avatar = document.getElementById('profileAvatar')
+  if (avatar) avatar.textContent = username.charAt(0).toUpperCase()
+  const nameEl = document.getElementById('profileName')
+  if (nameEl) nameEl.textContent = username
+  const emailEl = document.getElementById('profileEmail')
+  if (emailEl) emailEl.textContent = email
+
+  const { data } = await getUserResults(currentUser.id)
+  if (!data || data.length === 0) {
+    document.getElementById('profileBadges').innerHTML = '<p class="text-gray-400 text-sm">Пройдите тесты чтобы получить достижения!</p>'
+    return
+  }
+
+  const total = data.length
+  const best = Math.max(...data.map(r => r.score))
+  const avg = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
+
+  document.getElementById('profileTotal').textContent = total
+  document.getElementById('profileBest').textContent = best + '%'
+  document.getElementById('profileAvg').textContent = avg + '%'
+
+  // Достижения
+  const badges = []
+  if (total >= 1)  badges.push({ icon: '🎯', text: 'Первый тест', cls: 'badge-silver' })
+  if (total >= 5)  badges.push({ icon: '📚', text: '5 тестов', cls: 'badge-silver' })
+  if (total >= 10) badges.push({ icon: '🔥', text: '10 тестов', cls: 'badge-gold' })
+  if (total >= 20) badges.push({ icon: '💎', text: '20 тестов', cls: 'badge-gold' })
+  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold' })
+  if (best >= 90)  badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
+  if (avg >= 70)   badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
+  const sections = ['integrals','derivatives','series']
+  const covered = sections.filter(s => data.some(r => r.section === s))
+  if (covered.length === 3) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
+
+  const badgesEl = document.getElementById('profileBadges')
+  badgesEl.innerHTML = badges.length
+    ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('')
+    : '<p class="text-gray-400 text-sm">Пройдите больше тестов!</p>'
+
+  // Лучшие результаты по разделам
+  const bestResults = sections.map(sec => {
+    const secData = data.filter(r => r.section === sec)
+    if (!secData.length) return null
+    const best = secData.reduce((a,b) => a.score > b.score ? a : b)
+    return { ...best, sectionName: sec==='integrals'?'Интегралы':sec==='derivatives'?'Производные':'Ряды' }
+  }).filter(Boolean)
+
+  document.getElementById('profileBestResults').innerHTML = bestResults.map(r => `
+    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+      <div>
+        <span class="font-semibold">${r.sectionName}</span>
+        <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
+      </div>
+      <span class="font-bold text-lg ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
+    </div>`).join('') || '<p class="text-gray-400 text-sm">Нет данных</p>'
+}
+
 // ── Статистика ────────────────────────────────────────────
 window.showStatistics = async function() {
   showPage('statisticsPage')

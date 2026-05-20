@@ -5,147 +5,321 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
   <title>Тестирование по математическому анализу</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Анимированный фон ──────────────────────────────── */
+    .math-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .math-symbol {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      color: rgba(59, 130, 246, 0.08);
+      user-select: none;
+      animation: floatSymbol linear infinite;
+    }
+    .dark .math-symbol {
+      color: rgba(147, 197, 253, 0.06);
+    }
+    @keyframes floatSymbol {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── Страница авторизации ───────────────────────────── */
+    #authPage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .auth-card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.5);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark .auth-card {
+      background: rgba(30,41,59,0.92);
+      border-color: rgba(51,65,85,0.6);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+      border-radius: 24px 24px 0 0;
+    }
+    .auth-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      text-align: center;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .auth-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+    .dark .auth-title { color: #f1f5f9; }
+    .auth-subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background: #f8fafc;
+      color: #1e293b;
+      transition: all 0.2s;
+      margin-bottom: 0.75rem;
+      outline: none;
+    }
+    .auth-input:focus {
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .dark .auth-input {
+      background: #0f172a;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    .dark .auth-input:focus {
+      border-color: #60a5fa;
+      background: #1e293b;
+    }
+    .auth-btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    }
+    .auth-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+    }
+    .auth-btn-register {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+    }
+    .auth-btn-register:hover {
+      box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.6rem;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .auth-tab.active {
+      background: white;
+      color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .dark .auth-tab.active {
+      background: #1e293b;
+      color: #60a5fa;
+    }
+    .auth-tabs-wrap {
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+    }
+    .dark .auth-tabs-wrap { background: #0f172a; }
+
+    /* ── Страница профиля ───────────────────────────────── */
+    .profile-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 1rem;
+      box-shadow: 0 8px 25px rgba(59,130,246,0.3);
+    }
+    .profile-stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-main);
+      border-radius: 12px;
+    }
+    .profile-stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+    .dark .profile-stat-value { color: #60a5fa; }
+    .profile-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-gold { background: #fef3c7; color: #92400e; }
+    .badge-silver { background: #f1f5f9; color: #475569; }
+    .badge-green { background: #ecfdf5; color: #065f46; }
+    .dark .badge-gold { background: #451a03; color: #fcd34d; }
+    .dark .badge-silver { background: #1e293b; color: #94a3b8; }
+    .dark .badge-green { background: #064e3b; color: #6ee7b7; }
+
+    /* ── Общие стили ────────────────────────────────────── */
+    body { font-family: 'IBM Plex Sans', sans-serif; }
+    .page-content { position: relative; z-index: 1; }
+  </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
+
+  <!-- Анимированный фон -->
+  <div class="math-bg" id="mathBg"></div>
+
   <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
 
-  <!-- ── СТРАНИЦА АВТОРИЗАЦИИ ──────────────────────────────── -->
-  <div id="authPage" class="container mx-auto px-4 py-8">
-    <div class="max-w-md mx-auto fade-in">
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div class="text-center mb-6">
-          <div class="text-5xl mb-3">📐</div>
-          <h1 class="text-2xl font-bold text-gray-800">Математический анализ</h1>
-          <p class="text-gray-500 mt-1">Тренажёр для студентов МГУ Душанбе</p>
-        </div>
+  <!-- ── СТРАНИЦА АВТОРИЗАЦИИ ──────────────────────────── -->
+  <div id="authPage" class="hidden">
+    <div class="auth-card">
+      <div class="auth-logo">∫</div>
+      <div class="auth-title">Математический анализ</div>
+      <div class="auth-subtitle">Тренажёр для студентов МГУ Душанбе</div>
 
-        <!-- Табы -->
-        <div class="flex border-b mb-6">
-          <button id="tabLogin" onclick="showAuthTab('login')"
-            class="flex-1 py-2 text-center font-bold text-blue-600 border-b-2 border-blue-600 transition-colors">
-            Войти
-          </button>
-          <button id="tabRegister" onclick="showAuthTab('register')"
-            class="flex-1 py-2 text-center text-gray-500 hover:text-gray-700 transition-colors">
-            Регистрация
-          </button>
-        </div>
+      <div class="auth-tabs-wrap">
+        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Войти</button>
+        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
+      </div>
 
-        <!-- Форма входа -->
-        <div id="loginForm">
-          <input id="loginEmail" type="email" placeholder="Email"
-            class="border rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:border-blue-400">
-          <input id="loginPassword" type="password" placeholder="Пароль"
-            class="border rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:border-blue-400">
-          <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-          <button id="loginBtn" onclick="handleLogin()"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors">
-            Войти
-          </button>
-        </div>
+      <div id="loginForm">
+        <input id="loginEmail" type="email" placeholder="Email" class="auth-input">
+        <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input">
+        <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="loginBtn" onclick="handleLogin()" class="auth-btn-primary">Войти</button>
+      </div>
 
-        <!-- Форма регистрации -->
-        <div id="registerForm" class="hidden">
-          <input id="regUsername" type="text" placeholder="Имя пользователя (будет видно в рейтинге)"
-            class="border rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:border-green-400">
-          <input id="regEmail" type="email" placeholder="Email"
-            class="border rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:border-green-400">
-          <input id="regPassword" type="password" placeholder="Пароль (минимум 6 символов)"
-            class="border rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:border-green-400">
-          <p id="registerError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-          <button id="registerBtn" onclick="handleRegister()"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors">
-            Зарегистрироваться
-          </button>
-        </div>
+      <div id="registerForm" class="hidden">
+        <input id="regUsername" type="text" placeholder="Имя пользователя (видно в рейтинге)" class="auth-input">
+        <input id="regEmail" type="email" placeholder="Email" class="auth-input">
+        <input id="regPassword" type="password" placeholder="Пароль (минимум 6 символов)" class="auth-input">
+        <p id="registerError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="registerBtn" onclick="handleRegister()" class="auth-btn-primary auth-btn-register">Зарегистрироваться</button>
       </div>
     </div>
   </div>
 
-  <!-- ── ГЛАВНАЯ СТРАНИЦА ──────────────────────────────────── -->
-  <div id="homePage" class="container mx-auto px-4 py-8 hidden">
+  <!-- ── ГЛАВНАЯ СТРАНИЦА ──────────────────────────────── -->
+  <div id="homePage" class="page-content container mx-auto px-4 py-8 hidden">
     <div class="text-center mb-12 fade-in">
-      <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Математический анализ</h1>
-      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-        Проверьте свои знания в области интегралов, производных, рядов и последовательностей
-      </p>
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family:'Playfair Display',serif">Математический анализ</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Проверьте свои знания в области интегралов, производных, рядов и последовательностей</p>
       <div class="mt-6 flex flex-wrap gap-3 justify-center items-center">
         <span id="userGreeting" class="text-gray-600 font-medium bg-gray-100 px-4 py-2 rounded-lg"></span>
-        <button onclick="showStatistics()"
-          class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-          📊 Статистика
-        </button>
-        <button onclick="showLeaderboard()"
-          class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-          🏆 Рейтинг
-        </button>
-        <button onclick="handleLogout()"
-          class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">
-          Выйти
-        </button>
+        <button onclick="showProfile()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">👤 Профиль</button>
+        <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">📊 Статистика</button>
+        <button onclick="showLeaderboard()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">🏆 Рейтинг</button>
+        <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">Выйти</button>
       </div>
     </div>
 
     <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('integrals')">
         <div class="text-center">
-          <div class="text-6xl mb-4">∫</div>
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">∫</div>
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Интегралы</h2>
           <p class="text-gray-600 mb-6">Тестирование знаний по интегральному исчислению</p>
-          <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
-            тест</button>
+          <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
         </div>
       </div>
       <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('derivatives')">
         <div class="text-center">
-          <div class="text-6xl mb-4">f'(x)</div>
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">f'(x)</div>
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Производные</h2>
           <p class="text-gray-600 mb-6">Тестирование знаний по дифференциальному исчислению</p>
-          <button
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
-            тест</button>
+          <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
         </div>
       </div>
       <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('series')">
         <div class="text-center">
-          <div class="text-6xl mb-4">∑</div>
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">∑</div>
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Ряды и последовательности</h2>
           <p class="text-gray-600 mb-6">Тестирование знаний по рядам и последовательностям</p>
-          <button
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
-            тест</button>
+          <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── РАЗДЕЛ ИНТЕГРАЛЫ ──────────────────────────────────── -->
-  <div id="integralsSection" class="hidden container mx-auto px-4 py-8">
+  <!-- ── РАЗДЕЛ ИНТЕГРАЛЫ ──────────────────────────────── -->
+  <div id="integralsSection" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
-        раздела</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору раздела</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Интегралы</h2>
-        <button onclick="toggleTheory('integralsTheory')"
-          class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
+        <button onclick="toggleTheory('integralsTheory')" class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
         <div id="integralsTheory" class="bg-blue-50 rounded-xl p-6 mb-6 hidden">
           <h3 class="text-2xl font-bold text-gray-800 mb-4">Теория по интегралам</h3>
-          <p class="text-gray-700 mb-2">Интеграл функции f(x) обозначается как ∫ f(x) dx и показывает площадь под
-            графиком функции.</p>
+          <p class="text-gray-700 mb-2">Интеграл функции f(x) обозначается как ∫ f(x) dx и показывает площадь под графиком функции.</p>
           <ul class="list-disc list-inside text-gray-700 mb-4">
             <li>\(\int x^n \, dx = \frac{x^{n+1}}{n+1} + C, \; n \neq -1\)</li>
             <li>\(\int e^x \, dx = e^x + C\)</li>
             <li>\(\int \sin(x) \, dx = -\cos(x) + C\)</li>
             <li>\(\int \cos(x) \, dx = \sin(x) + C\)</li>
           </ul>
-          <p class="text-gray-700">Пример: \(\int 3x^2 \, dx = x^3 + C\)</p>
         </div>
         <div class="mb-6">
           <label for="integralsTime" class="text-gray-700 font-semibold">Выберите время теста:</label>
@@ -157,58 +331,45 @@
           </select>
         </div>
         <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startIntegralsTest('easy')">
+          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('easy')">
             <div class="text-6xl mb-4">∫</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
             <p class="text-gray-600 mb-4">Базовые интегралы для начинающих</p>
-            <button
-              class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startIntegralsTest('medium')">
+          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('medium')">
             <div class="text-6xl mb-4">∫</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
             <p class="text-gray-600 mb-4">Интегралы средней сложности</p>
-            <button
-              class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startIntegralsTest('hard')">
+          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('hard')">
             <div class="text-6xl mb-4">∫</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
             <p class="text-gray-600 mb-4">Сложные интегралы для продвинутых</p>
-            <button
-              class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── РАЗДЕЛ ПРОИЗВОДНЫЕ ────────────────────────────────── -->
-  <div id="derivativesSection" class="hidden container mx-auto px-4 py-8">
+  <!-- ── РАЗДЕЛ ПРОИЗВОДНЫЕ ────────────────────────────── -->
+  <div id="derivativesSection" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
-        раздела</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору раздела</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Производные</h2>
-        <button onclick="toggleTheory('derivativesTheory')"
-          class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
+        <button onclick="toggleTheory('derivativesTheory')" class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
         <div id="derivativesTheory" class="bg-yellow-50 rounded-xl p-6 mb-6 hidden">
           <h3 class="text-2xl font-bold text-gray-800 mb-4">Теория по производным</h3>
-          <p class="text-gray-700 mb-2">Производная функции f(x) обозначается как f'(x) и показывает скорость изменения
-            функции.</p>
+          <p class="text-gray-700 mb-2">Производная функции f(x) обозначается как f'(x) и показывает скорость изменения функции.</p>
           <ul class="list-disc list-inside text-gray-700 mb-4">
             <li>\((x^n)' = n x^{n-1}\)</li>
             <li>\((e^x)' = e^x\)</li>
             <li>\((\sin x)' = \cos x\)</li>
             <li>\((\cos x)' = -\sin x\)</li>
           </ul>
-          <p class="text-gray-700">Пример: \((3x^2)' = 6x\)</p>
         </div>
         <div class="mb-6">
           <label for="derivativesTime" class="text-gray-700 font-semibold">Выберите время теста:</label>
@@ -220,54 +381,41 @@
           </select>
         </div>
         <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startDerivativesTest('easy')">
+          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('easy')">
             <div class="text-6xl mb-4">f'(x)</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
             <p class="text-gray-600 mb-4">Базовые производные для начинающих</p>
-            <button
-              class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startDerivativesTest('medium')">
+          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('medium')">
             <div class="text-6xl mb-4">f'(x)</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
             <p class="text-gray-600 mb-4">Производные средней сложности</p>
-            <button
-              class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startDerivativesTest('hard')">
+          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('hard')">
             <div class="text-6xl mb-4">f'(x)</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
             <p class="text-gray-600 mb-4">Сложные производные для продвинутых</p>
-            <button
-              class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── РАЗДЕЛ РЯДЫ ────────────────────────────────────────── -->
-  <div id="seriesSection" class="hidden container mx-auto px-4 py-8">
+  <!-- ── РАЗДЕЛ РЯДЫ ────────────────────────────────────── -->
+  <div id="seriesSection" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
-        раздела</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору раздела</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ряды и последовательности</h2>
-        <button onclick="toggleTheory('seriesTheory')"
-          class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
+        <button onclick="toggleTheory('seriesTheory')" class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
         <div id="seriesTheory" class="bg-red-50 rounded-xl p-6 mb-6 hidden">
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">Теория по рядам и последовательностям</h3>
-          <p class="text-gray-700 mb-2">Числовая последовательность — упорядоченный набор чисел. Числовой ряд — сумма
-            членов последовательности.</p>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Теория по рядам</h3>
           <ul class="list-disc list-inside text-gray-700 mb-4">
-            <li>Предел последовательности: $\lim_{n \to \infty} a_n = A$</li>
-            <li>Сумма ряда: $S = \sum_{n=1}^{\infty} a_n$</li>
+            <li>Предел: $\lim_{n \to \infty} a_n = A$</li>
+            <li>Сумма: $S = \sum_{n=1}^{\infty} a_n$</li>
             <li>Признак Даламбера: $\lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right| = D$</li>
             <li>Признак Коши: $\lim_{n \to \infty} \sqrt[n]{|a_n|} = C$</li>
           </ul>
@@ -282,39 +430,31 @@
           </select>
         </div>
         <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startSeriesTest('easy')">
+          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('easy')">
             <div class="text-6xl mb-4">∑</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
             <p class="text-gray-600 mb-4">Базовые ряды для начинающих</p>
-            <button
-              class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer"
-            onclick="startSeriesTest('medium')">
+          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('medium')">
             <div class="text-6xl mb-4">∑</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
             <p class="text-gray-600 mb-4">Ряды средней сложности</p>
-            <button
-              class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
           <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('hard')">
             <div class="text-6xl mb-4">∑</div>
             <h3 class="text-2xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
             <p class="text-gray-600 mb-4">Сложные ряды для продвинутых</p>
-            <button
-              class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
-              тест</button>
+            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать тест</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── СТРАНИЦА ТЕСТА ─────────────────────────────────────── -->
-  <div id="testPage" class="hidden container mx-auto px-4 py-8">
+  <!-- ── СТРАНИЦА ТЕСТА ─────────────────────────────────── -->
+  <div id="testPage" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
         <div class="flex justify-between items-center flex-wrap gap-4">
@@ -323,36 +463,28 @@
             <p id="difficultyLabel" class="text-sm text-gray-600 mt-1"></p>
           </div>
           <div class="flex items-center gap-6">
-            <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">⏱️
-              25:00</div>
-            <div class="text-sm text-gray-600">Вопрос <span id="currentQuestion">1</span> из <span
-                id="totalQuestions">20</span></div>
+            <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">⏱️ 25:00</div>
+            <div class="text-sm text-gray-600">Вопрос <span id="currentQuestion">1</span> из <span id="totalQuestions">20</span></div>
           </div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-          <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 5%">
-          </div>
+          <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 5%"></div>
         </div>
       </div>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <div id="questionContainer"></div>
         <div class="mt-6 flex justify-between">
-          <button id="prevBtn" onclick="previousQuestion()"
-            class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Назад</button>
-          <button id="nextBtn" onclick="nextQuestion()"
-            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Следующий</button>
-          <button id="finishBtn" onclick="finishTest()"
-            class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none;">Завершить
-            тест</button>
-          <button onclick="exitTest()"
-            class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Выйти</button>
+          <button id="prevBtn" onclick="previousQuestion()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Назад</button>
+          <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Следующий</button>
+          <button id="finishBtn" onclick="finishTest()" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none;">Завершить тест</button>
+          <button onclick="exitTest()" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Выйти</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── СТРАНИЦА РЕЗУЛЬТАТОВ ──────────────────────────────── -->
-  <div id="resultsPage" class="hidden container mx-auto px-4 py-8">
+  <!-- ── СТРАНИЦА РЕЗУЛЬТАТОВ ──────────────────────────── -->
+  <div id="resultsPage" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto text-center fade-in">
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6">Результаты теста</h2>
@@ -360,83 +492,82 @@
         <div id="scoreText" class="text-xl text-gray-600 mb-8"></div>
         <div id="detailedResults" class="text-left mb-8"></div>
         <div class="flex gap-4 justify-center flex-wrap">
-          <button onclick="restartTest()"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Пройти
-            снова</button>
-          <button onclick="showHome()"
-            class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">На
-            главную</button>
-          <button onclick="showStatistics()"
-            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Статистика</button>
-          <button id="shareBtn"
-            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">📤
-            Поделиться</button>
+          <button onclick="restartTest()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Пройти снова</button>
+          <button onclick="showHome()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">На главную</button>
+          <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Статистика</button>
+          <button id="shareBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">📤 Поделиться</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── СТРАНИЦА СТАТИСТИКИ ───────────────────────────────── -->
-  <div id="statisticsPage" class="hidden container mx-auto px-4 py-8">
+  <!-- ── СТРАНИЦА СТАТИСТИКИ ───────────────────────────── -->
+  <div id="statisticsPage" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на
-        главную</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Моя статистика</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="stat-card text-center">
-            <div class="stat-value" id="totalTests">0</div>
-            <div class="stat-label">Тестов пройдено</div>
-          </div>
-          <div class="stat-card text-center">
-            <div class="stat-value" id="bestScore">0%</div>
-            <div class="stat-label">Лучший результат</div>
-          </div>
-          <div class="stat-card text-center">
-            <div class="stat-value" id="averageScore">0%</div>
-            <div class="stat-label">Средний балл</div>
-          </div>
+          <div class="stat-card text-center"><div class="stat-value" id="totalTests">0</div><div class="stat-label">Тестов пройдено</div></div>
+          <div class="stat-card text-center"><div class="stat-value" id="bestScore">0%</div><div class="stat-label">Лучший результат</div></div>
+          <div class="stat-card text-center"><div class="stat-value" id="averageScore">0%</div><div class="stat-label">Средний балл</div></div>
         </div>
         <h3 class="text-xl font-bold text-gray-800 mb-4">Прогресс по разделам</h3>
         <div class="space-y-4 mb-6">
           <div>
-            <div class="flex justify-between mb-1"><span class="font-medium">Интегралы</span><span
-                id="integralsProgress">0%</span></div>
-            <div class="progress-bar">
-              <div id="integralsProgressBar" class="progress-fill" style="width:0%"></div>
-            </div>
+            <div class="flex justify-between mb-1"><span class="font-medium">Интегралы</span><span id="integralsProgress">0%</span></div>
+            <div class="progress-bar"><div id="integralsProgressBar" class="progress-fill" style="width:0%"></div></div>
           </div>
           <div>
-            <div class="flex justify-between mb-1"><span class="font-medium">Производные</span><span
-                id="derivativesProgress">0%</span></div>
-            <div class="progress-bar">
-              <div id="derivativesProgressBar" class="progress-fill" style="width:0%"></div>
-            </div>
+            <div class="flex justify-between mb-1"><span class="font-medium">Производные</span><span id="derivativesProgress">0%</span></div>
+            <div class="progress-bar"><div id="derivativesProgressBar" class="progress-fill" style="width:0%"></div></div>
           </div>
           <div>
-            <div class="flex justify-between mb-1"><span class="font-medium">Ряды и последовательности</span><span
-                id="seriesProgress">0%</span></div>
-            <div class="progress-bar">
-              <div id="seriesProgressBar" class="progress-fill" style="width:0%"></div>
-            </div>
+            <div class="flex justify-between mb-1"><span class="font-medium">Ряды и последовательности</span><span id="seriesProgress">0%</span></div>
+            <div class="progress-bar"><div id="seriesProgressBar" class="progress-fill" style="width:0%"></div></div>
           </div>
         </div>
         <h3 class="text-xl font-bold text-gray-800 mb-4">История тестов</h3>
         <div id="testsHistory" class="space-y-3 max-h-96 overflow-y-auto"></div>
         <div class="mt-6 flex justify-center">
-          <button onclick="resetStatistics()"
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Сбросить
-            статистику</button>
+          <button onclick="resetStatistics()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Сбросить статистику</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── СТРАНИЦА РЕЙТИНГА ─────────────────────────────────── -->
-  <div id="leaderboardPage" class="hidden container mx-auto px-4 py-8">
+  <!-- ── СТРАНИЦА ПРОФИЛЯ ──────────────────────────────── -->
+  <div id="profilePage" class="page-content hidden container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на
-        главную</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на главную</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <div class="profile-avatar" id="profileAvatar">S</div>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
+        <p class="text-center text-gray-500 text-sm mb-6" id="profileEmail"></p>
+
+        <!-- Достижения -->
+        <h3 class="text-lg font-bold text-gray-800 mb-3">🏅 Достижения</h3>
+        <div id="profileBadges" class="flex flex-wrap gap-2 mb-6"></div>
+
+        <!-- Статистика профиля -->
+        <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Статистика</h3>
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="profile-stat"><div class="profile-stat-value" id="profileTotal">0</div><div class="profile-stat-label">Тестов</div></div>
+          <div class="profile-stat"><div class="profile-stat-value" id="profileBest">0%</div><div class="profile-stat-label">Лучший</div></div>
+          <div class="profile-stat"><div class="profile-stat-value" id="profileAvg">0%</div><div class="profile-stat-label">Средний</div></div>
+        </div>
+
+        <!-- Лучшие результаты -->
+        <h3 class="text-lg font-bold text-gray-800 mb-3">⭐ Лучшие результаты</h3>
+        <div id="profileBestResults" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── СТРАНИЦА РЕЙТИНГА ─────────────────────────────── -->
+  <div id="leaderboardPage" class="page-content hidden container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto fade-in">
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏆 Таблица лидеров</h2>
         <div class="flex gap-3 mb-6">
@@ -453,15 +584,46 @@
             <option value="hard">Сложный</option>
           </select>
         </div>
-        <div id="leaderboardList">
-          <p class="text-gray-500 text-center py-8">Загрузка...</p>
-        </div>
+        <div id="leaderboardList"><p class="text-gray-500 text-center py-8">Загрузка...</p></div>
       </div>
     </div>
   </div>
 
   <script src="js/questions.js"></script>
   <script type="module" src="js/script.js"></script>
-</body>
 
+  <script>
+    // Анимированный фон
+    (function() {
+      const symbols = ['∫', "f'(x)", '∑', 'dx', 'lim', '∂', '∇', 'Δ', '∞', 'π', 'e', 'ln'];
+      const bg = document.getElementById('mathBg');
+      const count = window.innerWidth < 768 ? 12 : 20;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'math-symbol';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        el.style.cssText = `
+          left: ${Math.random() * 100}%;
+          font-size: ${Math.random() * 2 + 1.5}rem;
+          animation-duration: ${Math.random() * 20 + 15}s;
+          animation-delay: ${Math.random() * -30}s;
+        `;
+        bg.appendChild(el);
+      }
+    })();
+
+    // Тема
+    (function() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.addEventListener('DOMContentLoaded', function() {
+          const btn = document.getElementById('themeToggle');
+          if (btn) btn.textContent = '☀️';
+        });
+      }
+    })();
+  </script>
+</body>
 </html>
