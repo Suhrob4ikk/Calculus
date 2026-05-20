@@ -633,18 +633,48 @@
   </div>
 
     <!-- ── СТРАНИЦА СМЕНЫ ПАРОЛЯ ────────────────────────────── -->
-  <div id="updatePasswordPage" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
-    <div class="max-w-md mx-auto fade-in" style="min-height:100vh;display:flex;align-items:center">
-      <div class="auth-card w-full">
-        <div class="auth-logo">🔐</div>
-        <div class="auth-title">Новый пароль</div>
-        <div class="auth-subtitle">Придумайте новый пароль для входа</div>
-        <input id="newPassword" type="password" placeholder="Новый пароль (минимум 6 символов)" class="auth-input">
-        <input id="confirmPassword" type="password" placeholder="Повторите пароль" class="auth-input">
+  <div id="updatePasswordPage" class="hidden" style="display:none;min-height:100vh;align-items:center;justify-content:center;position:relative;z-index:1">
+    <div class="max-w-md w-full mx-auto px-4 fade-in">
+      <div class="auth-card">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div style="width:56px;height:56px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem">🔐</div>
+          <div class="auth-title">Создайте новый пароль</div>
+          <div class="auth-subtitle">Придумайте надёжный пароль для вашего аккаунта</div>
+        </div>
+
+        <!-- Поле пароля с показом/скрытием -->
+        <div style="position:relative;margin-bottom:0.75rem">
+          <input id="newPassword" type="password" placeholder="Новый пароль"
+            class="auth-input" style="margin-bottom:0;padding-right:3rem">
+          <button onclick="togglePasswordVisibility('newPassword','eyeNew')" 
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.1rem" id="eyeNew">👁</button>
+        </div>
+
+        <!-- Индикатор надёжности пароля -->
+        <div id="strengthBar" style="height:4px;border-radius:2px;margin-bottom:0.5rem;background:#e5e7eb;overflow:hidden">
+          <div id="strengthFill" style="height:100%;width:0;transition:all 0.3s;border-radius:2px"></div>
+        </div>
+        <p id="strengthText" class="text-xs mb-3" style="color:#94a3b8"></p>
+
+        <div style="position:relative;margin-bottom:0.75rem">
+          <input id="confirmPassword" type="password" placeholder="Повторите пароль"
+            class="auth-input" style="margin-bottom:0;padding-right:3rem">
+          <button onclick="togglePasswordVisibility('confirmPassword','eyeConfirm')"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.1rem" id="eyeConfirm">👁</button>
+        </div>
+
         <p id="updatePasswordError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
         <button id="updatePasswordBtn" onclick="handleUpdatePassword()" class="auth-btn-primary">
           Сохранить пароль
         </button>
+
+        <!-- Требования к паролю -->
+        <div style="margin-top:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px">
+          <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.4rem;font-weight:600">Требования к паролю:</p>
+          <div id="req1" style="font-size:0.75rem;color:#94a3b8">⚪ Минимум 6 символов</div>
+          <div id="req2" style="font-size:0.75rem;color:#94a3b8">⚪ Содержит цифры</div>
+          <div id="req3" style="font-size:0.75rem;color:#94a3b8">⚪ Содержит буквы</div>
+        </div>
       </div>
     </div>
   </div>

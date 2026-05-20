@@ -18,18 +18,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btn) btn.textContent = '☀️'
   }
 
-  // Проверяем recovery токен в URL
-  const urlParams = new URLSearchParams(window.location.search)
-  const type = urlParams.get('type')
-  if (type === 'recovery') {
-    // Supabase автоматически обрабатывает токен
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session) {
-      currentUser = session.user
+  // Слушаем изменения сессии (включая recovery)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      currentUser = session?.user || null
       showPage('updatePasswordPage')
-      return
+    } else if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user
+      // Только если не на странице смены пароля
+      const updatePage = document.getElementById('updatePasswordPage')
+      if (updatePage && updatePage.style.display !== 'none') return
+      showPage('homePage')
+      updateUserUI()
     }
-  }
+  })
 
   // Проверяем авторизацию
   currentUser = await getUser()
@@ -57,7 +59,7 @@ function showPage(pageId) {
   const target = document.getElementById(pageId)
   if (target) {
     target.classList.remove('hidden')
-    target.style.display = pageId === 'authPage' ? 'flex' : 'block'
+    target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
   }
 }
 
@@ -357,6 +359,50 @@ async function handleUpdatePassword() {
     setTimeout(() => { showPage('homePage'); updateUserUI() }, 1500)
   }
 }
+
+
+// ── Показать/скрыть пароль ────────────────────────────────
+window.togglePasswordVisibility = function(inputId, eyeId) {
+  const input = document.getElementById(inputId)
+  const eye = document.getElementById(eyeId)
+  if (!input) return
+  if (input.type === 'password') {
+    input.type = 'text'
+    if (eye) eye.textContent = '🙈'
+  } else {
+    input.type = 'password'
+    if (eye) eye.textContent = '👁'
+  }
+}
+
+// Слушаем ввод пароля для индикатора надёжности
+document.addEventListener('DOMContentLoaded', () => {
+  const newPasswordInput = document.getElementById('newPassword')
+  if (newPasswordInput) {
+    newPasswordInput.addEventListener('input', () => {
+      const val = newPasswordInput.value
+      const fill = document.getElementById('strengthFill')
+      const text = document.getElementById('strengthText')
+      const req1 = document.getElementById('req1')
+      const req2 = document.getElementById('req2')
+      const req3 = document.getElementById('req3')
+
+      const hasLength = val.length >= 6
+      const hasDigit = /\d/.test(val)
+      const hasLetter = /[a-zA-Zа-яА-Я]/.test(val)
+
+      if (req1) req1.textContent = (hasLength ? '✅' : '⚪') + ' Минимум 6 символов'
+      if (req2) req2.textContent = (hasDigit ? '✅' : '⚪') + ' Содержит цифры'
+      if (req3) req3.textContent = (hasLetter ? '✅' : '⚪') + ' Содержит буквы'
+
+      const score = [hasLength, hasDigit, hasLetter].filter(Boolean).length
+      const colors = ['', '#ef4444', '#f59e0b', '#10b981']
+      const labels = ['', 'Слабый', 'Средний', 'Надёжный']
+      if (fill) { fill.style.width = (score * 33) + '%'; fill.style.background = colors[score] }
+      if (text) { text.textContent = val ? labels[score] : ''; text.style.color = colors[score] }
+    })
+  }
+})
 
 // ── Главная и разделы ─────────────────────────────────────
 window.showHome = function() {
