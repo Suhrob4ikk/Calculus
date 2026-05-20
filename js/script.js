@@ -27,21 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     showPage('authPage')
   }
 
-  // Привязываем обработчики кнопок
-  const avatarBtn = document.getElementById('avatarUploadBtn')
-  if (avatarBtn) avatarBtn.addEventListener('click', () => document.getElementById('avatarInput').click())
 
-  const avatarInput = document.getElementById('avatarInput')
-  if (avatarInput) avatarInput.addEventListener('change', handleAvatarUpload)
-
-  const searchProfilesBtn = document.getElementById('searchProfilesBtn')
-  if (searchProfilesBtn) searchProfilesBtn.addEventListener('click', showSearchProfiles)
-
-  const searchFindBtn = document.getElementById('searchFindBtn')
-  if (searchFindBtn) searchFindBtn.addEventListener('click', handleSearch)
-
-  const searchInputField = document.getElementById('searchInputField')
-  if (searchInputField) searchInputField.addEventListener('keydown', e => { if(e.key==='Enter') handleSearch() })
 })
 
 // ── Навигация между страницами ────────────────────────────
@@ -162,7 +148,15 @@ async function handleAvatarUpload(event) {
 // ── Поиск профилей ────────────────────────────────────────
 window.showSearchProfiles = async function() {
   showPage('searchProfilesPage')
-  document.getElementById('searchInput').focus()
+  setTimeout(() => {
+    const input = document.getElementById('searchInputField')
+    if (input) {
+      input.focus()
+      input.onkeydown = e => { if(e.key==='Enter') handleSearch() }
+    }
+    const findBtn = document.getElementById('searchFindBtn')
+    if (findBtn) findBtn.onclick = handleSearch
+  }, 50)
 }
 
 window.handleSearch = async function() {
@@ -502,6 +496,18 @@ function getUserLevel(total, avg) {
 window.showProfile = async function() {
   showPage('profilePage')
   if (!currentUser) return
+
+  // Привязываем кнопки после показа страницы
+  setTimeout(() => {
+    const avatarBtn = document.getElementById('avatarUploadBtn')
+    if (avatarBtn) avatarBtn.onclick = () => document.getElementById('avatarInput').click()
+
+    const avatarInput = document.getElementById('avatarInput')
+    if (avatarInput) avatarInput.onchange = handleAvatarUpload
+
+    const searchBtn = document.getElementById('searchProfilesBtn')
+    if (searchBtn) searchBtn.onclick = showSearchProfiles
+  }, 50)
 
   const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
   const email = currentUser.email
