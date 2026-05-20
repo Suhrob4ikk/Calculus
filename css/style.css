@@ -99,8 +99,11 @@ body {
 .dark body          { background-color: var(--bg-main) !important; }
 
 /* ── Инпуты и селекты ────────────────────────────────────── */
-.dark input[type="text"],
-.dark select {
+input, input[type="text"], input[type="email"], input[type="password"], select {
+  color: #1f2937;
+  background-color: #ffffff;
+}
+.dark input, .dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark select {
   background-color: var(--input-bg) !important;
   color: var(--text-main) !important;
   border-color: var(--border) !important;
