@@ -104,7 +104,10 @@ function updateUserUI() {
   const el = document.getElementById('userGreeting')
   if (el && currentUser) {
     const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
-    el.textContent = `👤 ${username}`
+    const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
+    el.innerHTML = `👤 ${username}` + (isCreator
+      ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
+      : '')
   }
 }
 
@@ -240,6 +243,7 @@ function renderSearchResults(data) {
           : `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">${p.username.charAt(0).toUpperCase()}</div>`
         }
         <span class="font-semibold" style="color:var(--text-main)">${p.username}</span>
+        ${p.username === 'Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px">👑</span>' : ''}
       </div>
       <span class="text-blue-500 text-sm">Посмотреть →</span>
     </div>`).join('')
@@ -275,7 +279,13 @@ window.viewProfile = async function(username) {
   if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
   if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
 
-  document.getElementById('viewProfileName').textContent = profile.username
+  const CREATOR_USERNAME = 'Suhrob'
+  const isProfileCreator = profile.username === CREATOR_USERNAME
+  const creatorBadge = isProfileCreator
+    ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Создатель</span>'
+    : ''
+  const viewNameEl = document.getElementById('viewProfileName')
+  if (viewNameEl) viewNameEl.innerHTML = profile.username + creatorBadge
   const avatarEl = document.getElementById('viewProfileAvatar')
   const avatarImgEl = document.getElementById('viewProfileAvatarImg')
   if (profile.avatar_url) {
@@ -721,7 +731,12 @@ window.showProfile = async function() {
     }
   }
   const nameEl = document.getElementById('profileName')
-  if (nameEl) nameEl.textContent = username
+  const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
+  if (nameEl) {
+    nameEl.innerHTML = username + (isCreator
+      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Создатель</span>'
+      : '')
+  }
   const emailEl = document.getElementById('profileEmail')
   if (emailEl) emailEl.textContent = email
 
