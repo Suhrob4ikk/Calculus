@@ -40,11 +40,13 @@
     /* ── Страница авторизации ───────────────────────────── */
     #authPage {
       min-height: 100vh;
-      display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       z-index: 1;
+    }
+    #authPage:not(.hidden) {
+      display: flex;
     }
     .auth-card {
       background: rgba(255,255,255,0.92);
