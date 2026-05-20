@@ -18,28 +18,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btn) btn.textContent = '☀️'
   }
 
-  // Слушаем изменения сессии (включая recovery)
+  // Слушаем изменения сессии — срабатывает когда Supabase обрабатывает токен из URL
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
+      // Пользователь перешёл по ссылке сброса пароля
       currentUser = session?.user || null
       showPage('updatePasswordPage')
-    } else if (event === 'SIGNED_IN' && session) {
-      currentUser = session.user
-      // Только если не на странице смены пароля
+    } else if (event === 'SIGNED_IN') {
+      // Пользователь подтвердил email или вошёл
+      currentUser = session?.user || null
       const updatePage = document.getElementById('updatePasswordPage')
       if (updatePage && updatePage.style.display !== 'none') return
-      showPage('homePage')
-      updateUserUI()
+      if (currentUser) {
+        showPage('homePage')
+        updateUserUI()
+      }
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null
+      showPage('authPage')
     }
   })
 
-  // Проверяем авторизацию
-  currentUser = await getUser()
-  if (currentUser) {
-    showPage('homePage')
-    updateUserUI()
+  // Проверяем авторизацию при загрузке
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    currentUser = session.user
+    // Проверяем тип токена в URL hash
+    const hash = window.location.hash
+    if (hash.includes('type=recovery')) {
+      showPage('updatePasswordPage')
+    } else if (hash.includes('type=signup') || hash.includes('type=email')) {
+      // Подтверждение email — входим автоматически
+      showPage('homePage')
+      updateUserUI()
+      // Очищаем хэш из URL
+      history.replaceState(null, '', window.location.pathname)
+    } else {
+      showPage('homePage')
+      updateUserUI()
+    }
   } else {
-    showPage('authPage')
+    // Проверяем есть ли токен в URL (новый формат Supabase)
+    const hash = window.location.hash
+    if (hash.includes('access_token') || hash.includes('token_hash')) {
+      // Supabase сам обработает через onAuthStateChange
+      showPage('authPage') // временно показываем пока не сработает событие
+    } else {
+      showPage('authPage')
+    }
   }
 
 
