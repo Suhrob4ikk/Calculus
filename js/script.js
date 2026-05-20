@@ -923,8 +923,9 @@ window.toggleTheme = function() {
   document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙'
 }
 
-// ── Глобальный доступ к функциям сброса пароля ───────────
+// ── Глобальный доступ к функциям ────────────────────────
 window.showForgotPassword = showForgotPassword
 window.showLoginFromForgot = showLoginFromForgot
 window.handleForgotPassword = handleForgotPassword
 window.handleUpdatePassword = handleUpdatePassword
+window.togglePasswordVisibility = togglePasswordVisibility
