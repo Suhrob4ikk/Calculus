@@ -375,6 +375,7 @@ window.showProfile = async function() {
 
   const { data } = await getUserResults(currentUser.id)
   const profileContent = document.getElementById('profileContent')
+  if (!profileContent) return
 
   if (!data || data.length === 0) {
     profileContent.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p>'
