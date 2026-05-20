@@ -11,7 +11,10 @@ export async function signUp(email, password, username) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { username } }
+    options: {
+      data: { username },
+      emailRedirectTo: 'https://suhrob4ikk.github.io/Calculus'
+    }
   })
   return { data, error }
 }
