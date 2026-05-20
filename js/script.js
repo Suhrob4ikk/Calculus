@@ -349,6 +349,15 @@ window.shareResult = function(correct, total, percentage) {
 }
 
 
+// ── Уровни пользователя ──────────────────────────────────────
+function getUserLevel(total, avg) {
+  if (total >= 20 && avg >= 85) return { name: 'Эксперт', icon: '🏆', color: '#f59e0b', next: null, progress: 100 }
+  if (total >= 10 && avg >= 75) return { name: 'Продвинутый', icon: '🔥', color: '#3b82f6', next: 'Эксперт (20 тестов, ср. 85%)', progress: Math.min(100, Math.round((total/20)*100)) }
+  if (total >= 5  && avg >= 60) return { name: 'Практик', icon: '📚', color: '#10b981', next: 'Продвинутый (10 тестов, ср. 75%)', progress: Math.min(100, Math.round((total/10)*100)) }
+  if (total >= 1)               return { name: 'Студент', icon: '🎓', color: '#8b5cf6', next: 'Практик (5 тестов, ср. 60%)', progress: Math.min(100, Math.round((total/5)*100)) }
+  return { name: 'Новичок', icon: '⭐', color: '#6b7280', next: 'Студент (1 тест)', progress: 0 }
+}
+
 // ── Профиль ───────────────────────────────────────────────
 window.showProfile = async function() {
   showPage('profilePage')
@@ -357,7 +366,6 @@ window.showProfile = async function() {
   const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
   const email = currentUser.email
 
-  // Аватар — первая буква имени
   const avatar = document.getElementById('profileAvatar')
   if (avatar) avatar.textContent = username.charAt(0).toUpperCase()
   const nameEl = document.getElementById('profileName')
@@ -366,53 +374,147 @@ window.showProfile = async function() {
   if (emailEl) emailEl.textContent = email
 
   const { data } = await getUserResults(currentUser.id)
+  const profileContent = document.getElementById('profileContent')
+
   if (!data || data.length === 0) {
-    document.getElementById('profileBadges').innerHTML = '<p class="text-gray-400 text-sm">Пройдите тесты чтобы получить достижения!</p>'
+    profileContent.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p>'
     return
   }
 
   const total = data.length
   const best = Math.max(...data.map(r => r.score))
   const avg = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
+  const sections = ['integrals','derivatives','series']
 
-  document.getElementById('profileTotal').textContent = total
-  document.getElementById('profileBest').textContent = best + '%'
-  document.getElementById('profileAvg').textContent = avg + '%'
+  // Уровень
+  const level = getUserLevel(total, avg)
 
   // Достижения
   const badges = []
-  if (total >= 1)  badges.push({ icon: '🎯', text: 'Первый тест', cls: 'badge-silver' })
-  if (total >= 5)  badges.push({ icon: '📚', text: '5 тестов', cls: 'badge-silver' })
-  if (total >= 10) badges.push({ icon: '🔥', text: '10 тестов', cls: 'badge-gold' })
-  if (total >= 20) badges.push({ icon: '💎', text: '20 тестов', cls: 'badge-gold' })
+  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест', cls: 'badge-silver' })
+  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов', cls: 'badge-silver' })
+  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов', cls: 'badge-gold' })
+  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов', cls: 'badge-gold' })
   if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold' })
-  if (best >= 90)  badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
-  if (avg >= 70)   badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
-  const sections = ['integrals','derivatives','series']
+  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
+  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
   const covered = sections.filter(s => data.some(r => r.section === s))
   if (covered.length === 3) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
-
-  const badgesEl = document.getElementById('profileBadges')
-  badgesEl.innerHTML = badges.length
-    ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('')
-    : '<p class="text-gray-400 text-sm">Пройдите больше тестов!</p>'
+  // Серия побед
+  let streak = 0, maxStreak = 0, cur = 0
+  ;[...data].reverse().forEach(r => { if(r.score>=70){cur++;maxStreak=Math.max(maxStreak,cur)}else cur=0 })
+  if (maxStreak >= 3) badges.push({ icon: '🔆', text: `Серия ${maxStreak} побед`, cls: 'badge-gold' })
+  if (maxStreak >= 5) badges.push({ icon: '⚡', text: 'Горячая серия', cls: 'badge-gold' })
 
   // Лучшие результаты по разделам
   const bestResults = sections.map(sec => {
     const secData = data.filter(r => r.section === sec)
     if (!secData.length) return null
-    const best = secData.reduce((a,b) => a.score > b.score ? a : b)
-    return { ...best, sectionName: sec==='integrals'?'Интегралы':sec==='derivatives'?'Производные':'Ряды' }
+    const b = secData.reduce((a,b) => a.score > b.score ? a : b)
+    return { ...b, sectionName: sec==='integrals'?'Интегралы':sec==='derivatives'?'Производные':'Ряды' }
   }).filter(Boolean)
 
-  document.getElementById('profileBestResults').innerHTML = bestResults.map(r => `
-    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-      <div>
-        <span class="font-semibold">${r.sectionName}</span>
-        <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
+  // Сравнение с другими (топ из leaderboard)
+  const { data: lbData } = await getLeaderboard(null, null)
+  let compareHTML = ''
+  if (lbData && lbData.length > 0) {
+    const allAvgs = {}
+    lbData.forEach(r => {
+      if (!allAvgs[r.username]) allAvgs[r.username] = []
+      allAvgs[r.username].push(r.score)
+    })
+    const rankings = Object.entries(allAvgs)
+      .map(([name, scores]) => ({ name, avg: Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) }))
+      .sort((a,b) => b.avg - a.avg)
+    const myRank = rankings.findIndex(r => r.name === username) + 1
+    const total_users = rankings.length
+    compareHTML = `
+      <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Место в рейтинге</h3>
+      <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-4">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-blue-600">#${myRank}</div>
+          <div class="text-gray-500 text-sm">из ${total_users} пользователей</div>
+        </div>
+        <div class="mt-3 space-y-2">
+          ${rankings.slice(0,3).map((r,i) => `
+            <div class="flex justify-between items-center p-2 rounded-lg ${r.name===username?'bg-blue-100 font-bold':'bg-white'}">
+              <span>${['🥇','🥈','🥉'][i]} ${r.name}</span>
+              <span class="text-blue-600 font-semibold">${r.avg}%</span>
+            </div>`).join('')}
+          ${myRank > 3 ? `
+            <div class="text-center text-gray-400 text-xs">...</div>
+            <div class="flex justify-between items-center p-2 rounded-lg bg-blue-100 font-bold">
+              <span>#${myRank} ${username}</span>
+              <span class="text-blue-600 font-semibold">${avg}%</span>
+            </div>` : ''}
+        </div>
+      </div>`
+  }
+
+  // График прогресса (последние 7 тестов)
+  const recent = [...data].slice(0, 7).reverse()
+  const maxScore = 100
+  const chartBars = recent.map((r, i) => {
+    const h = Math.round((r.score / maxScore) * 80)
+    const color = r.score >= 70 ? '#10b981' : r.score >= 50 ? '#f59e0b' : '#ef4444'
+    const date = new Date(r.created_at).toLocaleDateString('ru', {day:'numeric',month:'short'})
+    return `<div class="flex flex-col items-center gap-1" style="flex:1">
+      <div class="text-xs font-bold" style="color:${color}">${r.score}%</div>
+      <div style="height:${h}px;width:100%;background:${color};border-radius:4px 4px 0 0;min-height:4px"></div>
+      <div class="text-xs text-gray-400" style="font-size:0.6rem">${date}</div>
+    </div>`
+  }).join('')
+
+  profileContent.innerHTML = `
+    <!-- Уровень -->
+    <h3 class="text-lg font-bold text-gray-800 mb-3">🎮 Уровень</h3>
+    <div class="rounded-xl p-4 mb-4" style="background:linear-gradient(135deg,${level.color}18,${level.color}08);border:1.5px solid ${level.color}30">
+      <div class="flex items-center gap-3 mb-2">
+        <span style="font-size:2rem">${level.icon}</span>
+        <div>
+          <div class="font-bold text-lg" style="color:${level.color}">${level.name}</div>
+          ${level.next ? `<div class="text-xs text-gray-500">Следующий: ${level.next}</div>` : '<div class="text-xs text-gray-500">Максимальный уровень!</div>'}
+        </div>
       </div>
-      <span class="font-bold text-lg ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
-    </div>`).join('') || '<p class="text-gray-400 text-sm">Нет данных</p>'
+      <div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${level.progress}%;background:${level.color};border-radius:4px;transition:width 0.5s"></div>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Статистика</h3>
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="profile-stat"><div class="profile-stat-value">${total}</div><div class="profile-stat-label">Тестов</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${best}%</div><div class="profile-stat-label">Лучший</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${avg}%</div><div class="profile-stat-label">Средний</div></div>
+    </div>
+
+    <!-- График -->
+    ${recent.length > 1 ? `
+    <h3 class="text-lg font-bold text-gray-800 mb-3">📈 График прогресса</h3>
+    <div class="bg-gray-50 rounded-xl p-4 mb-4">
+      <div class="flex items-end gap-1" style="height:100px">${chartBars}</div>
+    </div>` : ''}
+
+    <!-- Достижения -->
+    <h3 class="text-lg font-bold text-gray-800 mb-3">🏅 Достижения</h3>
+    <div class="flex flex-wrap gap-2 mb-4">
+      ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-gray-400 text-sm">Пройдите больше тестов!</p>'}
+    </div>
+
+    <!-- Сравнение -->
+    ${compareHTML}
+
+    <!-- Лучшие результаты -->
+    <h3 class="text-lg font-bold text-gray-800 mb-3">⭐ Лучшие результаты</h3>
+    <div class="space-y-2">
+      ${bestResults.map(r => `
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+          <div><span class="font-semibold">${r.sectionName}</span><span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span></div>
+          <span class="font-bold text-lg ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
+        </div>`).join('') || '<p class="text-gray-400 text-sm">Нет данных</p>'}
+    </div>
+  `
 }
 
 // ── Статистика ────────────────────────────────────────────
