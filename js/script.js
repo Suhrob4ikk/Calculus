@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage']
+                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) el.classList.add('hidden')
