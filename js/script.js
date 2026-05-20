@@ -46,25 +46,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (tokenHash && tokenType === 'recovery') {
     // Ссылка сброса пароля — верифицируем токен
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
+    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
+    console.log('recovery verifyOtp:', { data, error })
     if (!error) {
-      const { data: { session } } = await supabase.auth.getSession()
-      currentUser = session?.user || null
+      currentUser = data?.user || null
       history.replaceState(null, '', window.location.pathname)
+      showPage('updatePasswordPage')
+      return
+    } else {
+      console.error('recovery error:', error)
+      // Попробуем через onAuthStateChange - просто покажем форму
       showPage('updatePasswordPage')
       return
     }
   } else if (tokenHash && (tokenType === 'signup' || tokenType === 'email')) {
     // Подтверждение email — верифицируем токен
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
-    if (!error) {
-      const { data: { session } } = await supabase.auth.getSession()
-      currentUser = session?.user || null
-      history.replaceState(null, '', window.location.pathname)
-      if (currentUser) { showPage('homePage'); updateUserUI() }
-      else showPage('authPage')
-      return
+    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
+    console.log('signup verifyOtp:', { data, error })
+    history.replaceState(null, '', window.location.pathname)
+    if (!error && data?.user) {
+      currentUser = data.user
+      showPage('homePage')
+      updateUserUI()
+    } else {
+      showPage('authPage')
     }
+    return
   }
 
   // Обычная загрузка — проверяем сессию
