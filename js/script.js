@@ -148,7 +148,6 @@ async function handleAvatarUpload(event) {
 // ── Поиск профилей ────────────────────────────────────────
 window.showSearchProfiles = async function() {
   showPage('searchProfilesPage')
-  // Сразу показываем всех пользователей
   const { data } = await searchProfiles('')
   renderSearchResults(data)
   setTimeout(() => {
@@ -158,38 +157,18 @@ window.showSearchProfiles = async function() {
     input.value = ''
     input.oninput = async () => {
       const q = input.value.trim()
-      const suggestions = document.getElementById('searchSuggestions')
-      if (q.length === 0) {
-        if (suggestions) suggestions.style.display = 'none'
-        const { data } = await searchProfiles('')
+      const { data } = await searchProfiles(q)
+      if (!q) {
         renderSearchResults(data)
         return
       }
-      // Показываем подсказки
-      const { data } = await searchProfiles(q)
-      renderSearchResults(data)
-      if (suggestions && data && data.length > 0) {
-        suggestions.style.display = 'block'
-        suggestions.innerHTML = data.map(p => `
-          <div class="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
-               onclick="viewProfile('${p.username}'); document.getElementById('searchSuggestions').style.display='none'">
-            ${p.avatar_url
-              ? `<img src="${p.avatar_url}" class="w-8 h-8 rounded-full object-cover flex-shrink-0">`
-              : `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.8rem;flex-shrink:0">${p.username.charAt(0).toUpperCase()}</div>`
-            }
-            <span style="color:var(--text-main)">${p.username}</span>
-          </div>`).join('')
-      } else if (suggestions) {
-        suggestions.style.display = 'none'
+      if (!data || data.length === 0) {
+        document.getElementById('searchResults').innerHTML =
+          `<p class="text-gray-400 text-center py-4">Пользователь "${q}" не найден</p>`
+      } else {
+        renderSearchResults(data)
       }
     }
-    // Закрываем подсказки при клике вне
-    document.addEventListener('click', e => {
-      if (!e.target.closest('#searchInputField') && !e.target.closest('#searchSuggestions')) {
-        const s = document.getElementById('searchSuggestions')
-        if (s) s.style.display = 'none'
-      }
-    }, { once: true })
   }, 50)
 }
 
@@ -250,6 +229,8 @@ window.viewProfile = async function(username) {
   if (profile.avatar_url) {
     avatarImgEl.src = profile.avatar_url
     avatarImgEl.style.display = 'block'
+    avatarImgEl.style.cursor = 'pointer'
+    avatarImgEl.onclick = () => openPhotoPreview(profile.avatar_url, profile.username)
     avatarEl.style.display = 'none'
   } else {
     avatarEl.textContent = profile.username.charAt(0).toUpperCase()
@@ -285,6 +266,22 @@ window.viewProfile = async function(username) {
         </div>`).join('') || '<p class="text-gray-400 text-sm">Нет результатов</p>'}
     </div>
   `
+}
+
+
+// ── Просмотр фото на весь экран ──────────────────────────
+window.openPhotoPreview = function(url, name) {
+  const overlay = document.createElement('div')
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer'
+  overlay.onclick = () => document.body.removeChild(overlay)
+  overlay.innerHTML = `
+    <div style="position:relative;max-width:90vw;max-height:90vh">
+      <img src="${url}" style="max-width:90vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 25px 50px rgba(0,0,0,0.5)">
+      <div style="text-align:center;color:white;margin-top:12px;font-size:1.1rem;font-weight:600">${name}</div>
+    </div>
+    <div style="position:absolute;top:20px;right:20px;color:white;font-size:1.5rem;cursor:pointer">✕</div>
+  `
+  document.body.appendChild(overlay)
 }
 
 // ── Главная и разделы ─────────────────────────────────────
@@ -555,8 +552,16 @@ window.showProfile = async function() {
   const avatarImg = document.getElementById('profileAvatarImg')
   if (avatarImg) {
     const url = await getAvatarUrl(currentUser.id)
-    if (url) { avatarImg.src = url; avatarImg.style.display = 'block'; if(avatar) avatar.style.display = 'none' }
-    else { avatarImg.style.display = 'none'; if(avatar) avatar.style.display = 'flex' }
+    if (url) {
+      avatarImg.src = url
+      avatarImg.style.display = 'block'
+      avatarImg.style.cursor = 'pointer'
+      avatarImg.onclick = () => openPhotoPreview(url, username)
+      if(avatar) avatar.style.display = 'none'
+    } else {
+      avatarImg.style.display = 'none'
+      if(avatar) avatar.style.display = 'flex'
+    }
   }
   const nameEl = document.getElementById('profileName')
   if (nameEl) nameEl.textContent = username
