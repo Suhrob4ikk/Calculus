@@ -148,10 +148,18 @@ async function handleAvatarUpload(event) {
 // ── Поиск профилей ────────────────────────────────────────
 window.showSearchProfiles = async function() {
   showPage('searchProfilesPage')
+  // Load all users on open
+  const { data } = await searchProfiles('')
+  renderSearchResults(data)
   setTimeout(() => {
     const input = document.getElementById('searchInputField')
     if (input) {
       input.focus()
+      input.oninput = async () => {
+        const q = input.value.trim()
+        const { data } = await searchProfiles(q)
+        renderSearchResults(data)
+      }
       input.onkeydown = e => { if(e.key==='Enter') handleSearch() }
     }
     const findBtn = document.getElementById('searchFindBtn')
@@ -159,11 +167,9 @@ window.showSearchProfiles = async function() {
   }, 50)
 }
 
-window.handleSearch = async function() {
-  const q = (document.getElementById('searchInputField') || document.getElementById('searchInput'))?.value.trim()
-  if (!q) return
-  const { data } = await searchProfiles(q)
+function renderSearchResults(data) {
   const container = document.getElementById('searchResults')
+  if (!container) return
   if (!data || data.length === 0) {
     container.innerHTML = '<p class="text-gray-400 text-center py-4">Пользователи не найдены</p>'
     return
@@ -174,12 +180,18 @@ window.handleSearch = async function() {
       <div class="flex items-center gap-3">
         ${p.avatar_url
           ? `<img src="${p.avatar_url}" class="w-10 h-10 rounded-full object-cover">`
-          : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">${p.username.charAt(0).toUpperCase()}</div>`
+          : `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">${p.username.charAt(0).toUpperCase()}</div>`
         }
         <span class="font-semibold" style="color:var(--text-main)">${p.username}</span>
       </div>
       <span class="text-blue-500 text-sm">Посмотреть →</span>
     </div>`).join('')
+}
+
+window.handleSearch = async function() {
+  const q = (document.getElementById('searchInputField') || document.getElementById('searchInput'))?.value.trim() || ''
+  const { data } = await searchProfiles(q)
+  renderSearchResults(data)
 }
 
 window.viewProfile = async function(username) {
