@@ -1,98 +1,133 @@
+/* ── Анимации ────────────────────────────────────────────── */
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }
-
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.card-hover {
-  transition: all 0.3s ease;
-}
-
+.card-hover { transition: all 0.3s ease; }
 .card-hover:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
 }
 
-/* Мобильная адаптация */
-@media (max-width: 640px) {
-  .flex.justify-between {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .flex.justify-between > button {
-    width: 100%;
-    margin: 0.25rem 0;
-  }
-  
-  .flex.gap-4.justify-center {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .flex.gap-4.justify-center > button {
-    width: 100%;
-    max-width: 250px;
-    margin: 0.25rem 0;
-  }
+/* ── CSS переменные ──────────────────────────────────────── */
+:root {
+  --bg-main:       #f0f9ff;
+  --bg-card:       #ffffff;
+  --bg-section:    #ffffff;
+  --text-main:     #1f2937;
+  --text-muted:    #6b7280;
+  --text-sub:      #4b5563;
+  --border:        #e5e7eb;
+  --input-bg:      #ffffff;
+  --result-green:  #ecfdf5;
+  --result-red:    #fef2f2;
+  --result-green-border: #10b981;
+  --result-red-border:   #ef4444;
+  --result-green-text:   #064e3b;
+  --result-red-text:     #7f1d1d;
+  --history-bg:    #f9fafb;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .text-4xl {
-    font-size: 1.875rem !important;
-  }
-  
-  .text-6xl {
-    font-size: 2.25rem !important;
-  }
+.dark {
+  --bg-main:       #0f172a;
+  --bg-card:       #1e293b;
+  --bg-section:    #1e293b;
+  --text-main:     #f1f5f9;
+  --text-muted:    #94a3b8;
+  --text-sub:      #cbd5e1;
+  --border:        #334155;
+  --input-bg:      #1e293b;
+  --result-green:  #064e3b;
+  --result-red:    #450a0a;
+  --result-green-border: #10b981;
+  --result-red-border:   #ef4444;
+  --result-green-text:   #a7f3d0;
+  --result-red-text:     #fca5a5;
+  --history-bg:    #273447;
 }
 
-/* Стили для математических формул */
-.math-container {
-  overflow-x: auto;
-  max-width: 100%;
+/* ── Базовые стили ───────────────────────────────────────── */
+body {
+  overflow-x: hidden;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: background 0.3s, color 0.3s;
 }
 
-.math-content {
-  display: inline-block;
-  min-width: min-content;
+/* ── Кнопка темы ─────────────────────────────────────────── */
+#themeToggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: background 0.3s, border-color 0.3s;
 }
 
-/* Стили для вариантов ответов */
+/* ── Карточки (bg-white) ─────────────────────────────────── */
+.dark .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+/* ── Текст ───────────────────────────────────────────────── */
+.dark .text-gray-800 { color: #f1f5f9 !important; }
+.dark .text-gray-700 { color: #cbd5e1 !important; }
+.dark .text-gray-600 { color: #94a3b8 !important; }
+.dark .text-gray-500 { color: #64748b !important; }
+
+/* ── Фоны секций ─────────────────────────────────────────── */
+.dark .bg-blue-50   { background-color: #1e3a5f !important; }
+.dark .bg-yellow-50 { background-color: #3a2e00 !important; }
+.dark .bg-red-50    { background-color: #3a1a1a !important; }
+.dark .bg-indigo-50 { background-color: #1e1f4a !important; }
+.dark .bg-gray-50   { background-color: var(--history-bg) !important; }
+.dark .bg-gray-200  { background-color: #334155 !important; }
+.dark body          { background-color: var(--bg-main) !important; }
+
+/* ── Инпуты и селекты ────────────────────────────────────── */
+.dark input[type="text"],
+.dark select {
+  background-color: var(--input-bg) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── Варианты ответов ────────────────────────────────────── */
 .option-label {
   display: flex;
   align-items: flex-start;
   width: 100%;
   min-width: 0;
   padding: 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--border);
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  break-inside: avoid;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
-
-.option-label:hover {
-  background-color: #f9fafb;
-}
-
+.option-label:hover { background-color: var(--history-bg); }
 .option-label.selected {
   border-color: #10b981;
   background-color: #ecfdf5;
+}
+.dark .option-label.selected {
+  background-color: #064e3b !important;
+  color: #a7f3d0 !important;
 }
 
 .option-text {
@@ -101,37 +136,51 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 0.875rem;
+  color: var(--text-main);
 }
+@media (min-width: 640px) { .option-text { font-size: 1rem; } }
 
-@media (min-width: 640px) {
-  .option-text {
-    font-size: 1rem;
-  }
+/* ── Карточки результатов (детальный разбор) ─────────────── */
+/* зелёные */
+.result-card-correct {
+  background-color: var(--result-green) !important;
+  border-left: 4px solid var(--result-green-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  color: var(--result-green-text) !important;
 }
+.result-card-correct * { color: var(--result-green-text) !important; }
 
-/* Предотвращаем горизонтальный скролл */
-body {
-  overflow-x: hidden;
+/* красные */
+.result-card-wrong {
+  background-color: var(--result-red) !important;
+  border-left: 4px solid var(--result-red-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  color: var(--result-red-text) !important;
 }
+.result-card-wrong * { color: var(--result-red-text) !important; }
 
-/* Стили для статистики */
+/* ── История тестов (статистика) ─────────────────────────── */
+.dark .bg-gray-50.rounded-lg { background-color: var(--history-bg) !important; }
+
+/* ── Математические формулы ──────────────────────────────── */
+.math-container { overflow-x: auto; max-width: 100%; }
+.math-content   { display: inline-block; min-width: min-content; }
+
+/* ── Статистика ──────────────────────────────────────────── */
 .stat-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
-
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1e40af;
+.dark .stat-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
-
-.stat-label {
-  font-size: 1rem;
-  color: #64748b;
-}
+.stat-value { font-size: 2.5rem; font-weight: bold; color: #1e40af; }
+.dark .stat-value { color: #93c5fd; }
+.stat-label { font-size: 1rem; color: var(--text-muted); }
 
 .progress-bar {
   height: 8px;
@@ -139,10 +188,23 @@ body {
   background-color: #e5e7eb;
   overflow: hidden;
 }
-
+.dark .progress-bar { background-color: #334155; }
 .progress-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
   transition: width 0.5s ease;
+}
+
+/* ── Мобильная адаптация ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .flex.justify-between { flex-direction: column; gap: 1rem; }
+  .flex.justify-between > button { width: 100%; margin: 0.25rem 0; }
+  .flex.gap-4.justify-center { flex-direction: column; align-items: center; }
+  .flex.gap-4.justify-center > button { width: 100%; max-width: 250px; margin: 0.25rem 0; }
+}
+@media (max-width: 768px) {
+  .container { padding-left: 1rem; padding-right: 1rem; }
+  .text-4xl { font-size: 1.875rem !important; }
+  .text-6xl { font-size: 2.25rem !important; }
 }
