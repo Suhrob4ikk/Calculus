@@ -299,17 +299,17 @@ window.openPhotoPreview = function(url, name) {
 
 
 // ── Сброс пароля ──────────────────────────────────────────
-window.showForgotPassword = function() {
+function showForgotPassword() {
   document.getElementById('loginForm').style.display = 'none'
   document.getElementById('forgotForm').style.display = 'block'
 }
 
-window.showLoginFromForgot = function() {
+function showLoginFromForgot() {
   document.getElementById('forgotForm').style.display = 'none'
   document.getElementById('loginForm').style.display = 'block'
 }
 
-window.handleForgotPassword = async function() {
+async function handleForgotPassword() {
   const email = document.getElementById('forgotEmail').value.trim()
   const errEl = document.getElementById('forgotError')
   errEl.textContent = ''
@@ -331,7 +331,7 @@ window.handleForgotPassword = async function() {
   }
 }
 
-window.handleUpdatePassword = async function() {
+async function handleUpdatePassword() {
   const password = document.getElementById('newPassword').value
   const confirm = document.getElementById('confirmPassword').value
   const errEl = document.getElementById('updatePasswordError')
@@ -605,6 +605,19 @@ function getUserLevel(total, avg) {
 window.showProfile = async function() {
   showPage('profilePage')
   if (!currentUser) return
+
+  // Привязываем кнопки сброса пароля
+  const forgotPasswordBtn = document.getElementById('forgotPasswordBtn')
+  if (forgotPasswordBtn) forgotPasswordBtn.addEventListener('click', showForgotPassword)
+
+  const backToLoginBtn = document.getElementById('backToLoginBtn')
+  if (backToLoginBtn) backToLoginBtn.addEventListener('click', showLoginFromForgot)
+
+  const forgotBtn = document.getElementById('forgotBtn')
+  if (forgotBtn) forgotBtn.addEventListener('click', handleForgotPassword)
+
+  const updatePasswordBtn = document.getElementById('updatePasswordBtn')
+  if (updatePasswordBtn) updatePasswordBtn.addEventListener('click', handleUpdatePassword)
 
   // Привязываем кнопки после показа страницы
   setTimeout(() => {
