@@ -1,12 +1,6 @@
 import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
-// Делаем функции доступными глобально для onclick в HTML
-window.showForgotPassword = showForgotPassword
-window.showLoginFromForgot = showLoginFromForgot
-window.handleForgotPassword = handleForgotPassword
-window.handleUpdatePassword = handleUpdatePassword
-
 let testTimer, timeRemaining = 25 * 60
 let currentTest = [], currentQuestionIndex = 0
 let userAnswers = [], testStartTime
@@ -882,3 +876,9 @@ window.toggleTheme = function() {
   localStorage.setItem('theme', isDark ? 'dark' : 'light')
   document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙'
 }
+
+// ── Глобальный доступ к функциям сброса пароля ───────────
+window.showForgotPassword = showForgotPassword
+window.showLoginFromForgot = showLoginFromForgot
+window.handleForgotPassword = handleForgotPassword
+window.handleUpdatePassword = handleUpdatePassword
