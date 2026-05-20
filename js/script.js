@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
@@ -18,6 +18,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btn) btn.textContent = '☀️'
   }
 
+  // Проверяем recovery токен в URL
+  const urlParams = new URLSearchParams(window.location.search)
+  const type = urlParams.get('type')
+  if (type === 'recovery') {
+    // Supabase автоматически обрабатывает токен
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      currentUser = session.user
+      showPage('updatePasswordPage')
+      return
+    }
+  }
+
   // Проверяем авторизацию
   currentUser = await getUser()
   if (currentUser) {
@@ -33,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage']
+                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) {
@@ -282,6 +295,67 @@ window.openPhotoPreview = function(url, name) {
     <div style="position:absolute;top:20px;right:20px;color:white;font-size:1.5rem;cursor:pointer">✕</div>
   `
   document.body.appendChild(overlay)
+}
+
+
+// ── Сброс пароля ──────────────────────────────────────────
+window.showForgotPassword = function() {
+  document.getElementById('loginForm').style.display = 'none'
+  document.getElementById('forgotForm').style.display = 'block'
+}
+
+window.showLoginFromForgot = function() {
+  document.getElementById('forgotForm').style.display = 'none'
+  document.getElementById('loginForm').style.display = 'block'
+}
+
+window.handleForgotPassword = async function() {
+  const email = document.getElementById('forgotEmail').value.trim()
+  const errEl = document.getElementById('forgotError')
+  errEl.textContent = ''
+  if (!email) { errEl.textContent = 'Введите email'; return }
+
+  const btn = document.getElementById('forgotBtn')
+  btn.textContent = 'Отправляем...'
+  btn.disabled = true
+
+  const { error } = await resetPassword(email)
+  btn.textContent = 'Отправить'
+  btn.disabled = false
+
+  if (error) {
+    errEl.textContent = 'Ошибка: ' + error.message
+  } else {
+    errEl.style.color = '#10b981'
+    errEl.textContent = '✅ Письмо отправлено! Проверьте почту.'
+  }
+}
+
+window.handleUpdatePassword = async function() {
+  const password = document.getElementById('newPassword').value
+  const confirm = document.getElementById('confirmPassword').value
+  const errEl = document.getElementById('updatePasswordError')
+  errEl.textContent = ''
+
+  if (!password) { errEl.textContent = 'Введите новый пароль'; return }
+  if (password.length < 6) { errEl.textContent = 'Пароль минимум 6 символов'; return }
+  if (password !== confirm) { errEl.textContent = 'Пароли не совпадают'; return }
+
+  const btn = document.getElementById('updatePasswordBtn')
+  btn.textContent = 'Сохраняем...'
+  btn.disabled = true
+
+  const { error } = await updatePassword(password)
+  btn.textContent = 'Сохранить пароль'
+  btn.disabled = false
+
+  if (error) {
+    errEl.textContent = 'Ошибка: ' + error.message
+  } else {
+    errEl.style.color = '#10b981'
+    errEl.textContent = '✅ Пароль успешно изменён!'
+    setTimeout(() => { showPage('homePage'); updateUserUI() }, 1500)
+  }
 }
 
 // ── Главная и разделы ─────────────────────────────────────

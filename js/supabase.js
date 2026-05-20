@@ -98,6 +98,18 @@ export async function searchProfiles(query) {
   return { data, error }
 }
 
+export async function resetPassword(email) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://suhrob4ikk.github.io/Calculus?type=recovery'
+  })
+  return { error }
+}
+
+export async function updatePassword(newPassword) {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  return { error }
+}
+
 export async function getProfileByUsername(username) {
   const { data: profile } = await supabase
     .from('profiles')
