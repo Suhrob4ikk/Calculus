@@ -255,12 +255,12 @@
         <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input">
         <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
         <button id="loginBtn" onclick="handleLogin()" class="auth-btn-primary">Войти</button>
-          <button id="forgotPasswordBtn" class="w-full mt-3 text-sm text-blue-500 hover:text-blue-700 transition-colors">Забыли пароль?</button>
+          <button id="forgotPasswordBtn" onclick="showForgotPassword()" class="w-full mt-3 text-sm text-blue-500 hover:text-blue-700 transition-colors">Забыли пароль?</button>
         </div>
 
         <!-- Форма сброса пароля -->
         <div id="forgotForm" style="display:none">
-          <button id="backToLoginBtn" class="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">← Назад</button>
+          <button id="backToLoginBtn" onclick="showLoginFromForgot()" class="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">← Назад</button>
           <p class="text-gray-600 text-sm mb-4">Введите email — пришлём ссылку для сброса пароля.</p>
           <input id="forgotEmail" type="email" placeholder="Email" class="auth-input">
           <p id="forgotError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>

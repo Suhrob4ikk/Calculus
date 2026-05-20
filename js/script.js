@@ -1,6 +1,12 @@
 import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
+// Делаем функции доступными глобально для onclick в HTML
+window.showForgotPassword = showForgotPassword
+window.showLoginFromForgot = showLoginFromForgot
+window.handleForgotPassword = handleForgotPassword
+window.handleUpdatePassword = handleUpdatePassword
+
 let testTimer, timeRemaining = 25 * 60
 let currentTest = [], currentQuestionIndex = 0
 let userAnswers = [], testStartTime
@@ -605,19 +611,6 @@ function getUserLevel(total, avg) {
 window.showProfile = async function() {
   showPage('profilePage')
   if (!currentUser) return
-
-  // Привязываем кнопки сброса пароля
-  const forgotPasswordBtn = document.getElementById('forgotPasswordBtn')
-  if (forgotPasswordBtn) forgotPasswordBtn.addEventListener('click', showForgotPassword)
-
-  const backToLoginBtn = document.getElementById('backToLoginBtn')
-  if (backToLoginBtn) backToLoginBtn.addEventListener('click', showLoginFromForgot)
-
-  const forgotBtn = document.getElementById('forgotBtn')
-  if (forgotBtn) forgotBtn.addEventListener('click', handleForgotPassword)
-
-  const updatePasswordBtn = document.getElementById('updatePasswordBtn')
-  if (updatePasswordBtn) updatePasswordBtn.addEventListener('click', handleUpdatePassword)
 
   // Привязываем кнопки после показа страницы
   setTimeout(() => {
