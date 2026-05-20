@@ -148,22 +148,48 @@ async function handleAvatarUpload(event) {
 // ── Поиск профилей ────────────────────────────────────────
 window.showSearchProfiles = async function() {
   showPage('searchProfilesPage')
-  // Load all users on open
+  // Сразу показываем всех пользователей
   const { data } = await searchProfiles('')
   renderSearchResults(data)
   setTimeout(() => {
     const input = document.getElementById('searchInputField')
-    if (input) {
-      input.focus()
-      input.oninput = async () => {
-        const q = input.value.trim()
-        const { data } = await searchProfiles(q)
+    if (!input) return
+    input.focus()
+    input.value = ''
+    input.oninput = async () => {
+      const q = input.value.trim()
+      const suggestions = document.getElementById('searchSuggestions')
+      if (q.length === 0) {
+        if (suggestions) suggestions.style.display = 'none'
+        const { data } = await searchProfiles('')
         renderSearchResults(data)
+        return
       }
-      input.onkeydown = e => { if(e.key==='Enter') handleSearch() }
+      // Показываем подсказки
+      const { data } = await searchProfiles(q)
+      renderSearchResults(data)
+      if (suggestions && data && data.length > 0) {
+        suggestions.style.display = 'block'
+        suggestions.innerHTML = data.map(p => `
+          <div class="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
+               onclick="viewProfile('${p.username}'); document.getElementById('searchSuggestions').style.display='none'">
+            ${p.avatar_url
+              ? `<img src="${p.avatar_url}" class="w-8 h-8 rounded-full object-cover flex-shrink-0">`
+              : `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.8rem;flex-shrink:0">${p.username.charAt(0).toUpperCase()}</div>`
+            }
+            <span style="color:var(--text-main)">${p.username}</span>
+          </div>`).join('')
+      } else if (suggestions) {
+        suggestions.style.display = 'none'
+      }
     }
-    const findBtn = document.getElementById('searchFindBtn')
-    if (findBtn) findBtn.onclick = handleSearch
+    // Закрываем подсказки при клике вне
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#searchInputField') && !e.target.closest('#searchSuggestions')) {
+        const s = document.getElementById('searchSuggestions')
+        if (s) s.style.display = 'none'
+      }
+    }, { once: true })
   }, 50)
 }
 

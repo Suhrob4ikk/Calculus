@@ -277,7 +277,7 @@
         <button onclick="showProfile()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">👤 Профиль</button>
         <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">📊 Статистика</button>
         <button onclick="showLeaderboard()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">🏆 Рейтинг</button>
-        <button onclick="showSearchProfiles()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">🔍 Игроки</button>
+        <button onclick="showSearchProfiles()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">👥 Пользователи</button>
         <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">Выйти</button>
       </div>
     </div>
@@ -592,16 +592,15 @@
   <!-- ── ПОИСК ПРОФИЛЕЙ ───────────────────────────────────── -->
   <div id="searchProfilesPage" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showProfile()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад</button>
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад на главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">🔍 Поиск пользователей</h2>
-        <div class="flex gap-2 mb-4">
-          <input id="searchInput" type="text" placeholder="Введите имя пользователя..."
-            class="auth-input mb-0 flex-1" id="searchInputField">
-          <button id="searchFindBtn"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-semibold transition-colors">
-            Найти
-          </button>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">👥 Пользователи</h2>
+        <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
+        <div class="relative mb-4">
+          <input id="searchInputField" type="text" placeholder="🔍  Поиск по имени..."
+            class="auth-input mb-0 w-full" autocomplete="off">
+          <div id="searchSuggestions" class="absolute left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 mt-1 overflow-hidden" style="display:none"></div>
+        </div>
         </div>
         <div id="searchResults" class="space-y-2"></div>
       </div>
