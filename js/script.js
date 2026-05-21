@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, deleteAvatar, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
@@ -73,8 +73,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     currentUser = session.user
-    showPage('homePage')
-    updateUserUI()
+    // Restore last page if available
+    const lastPage = sessionStorage.getItem('lastPage')
+    if (lastPage && document.getElementById(lastPage)) {
+      if (lastPage === 'testPage') {
+        const saved = sessionStorage.getItem('testState')
+        if (saved) {
+          try {
+            const state = JSON.parse(saved)
+            currentTest = state.currentTest || []
+            currentQuestionIndex = state.currentQuestionIndex || 0
+            userAnswers = state.userAnswers || new Array(currentTest.length).fill(null)
+            currentSection = state.currentSection || currentSection
+            currentDifficulty = state.currentDifficulty || currentDifficulty
+            timeRemaining = state.timeRemaining || timeRemaining
+            showPage('testPage')
+            updateUserUI()
+            displayQuestion()
+            startTimer()
+          } catch (e) {
+            showPage('homePage')
+            updateUserUI()
+          }
+        } else {
+          showPage('homePage')
+          updateUserUI()
+        }
+      } else {
+        showPage(lastPage)
+        updateUserUI()
+      }
+    } else {
+      showPage('homePage')
+      updateUserUI()
+    }
   } else {
     showPage('authPage')
   }
@@ -97,10 +129,11 @@ function showPage(pageId) {
   if (target) {
     target.classList.remove('hidden')
     target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
+    try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
 }
 
-function updateUserUI() {
+async function updateUserUI() {
   const el = document.getElementById('userGreeting')
   if (el && currentUser) {
     const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
@@ -109,6 +142,29 @@ function updateUserUI() {
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
       : '')
   }
+
+  // Update header avatar
+  try {
+    const headerImg = document.getElementById('headerAvatarImg')
+    const headerLetter = document.getElementById('headerAvatarLetter')
+    const headerName = document.getElementById('headerUsername')
+    if (!currentUser) {
+      if (headerImg) headerImg.style.display = 'none'
+      if (headerLetter) headerLetter.style.display = 'block'
+      if (headerName) headerName.style.display = 'none'
+      return
+    }
+    const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
+    if (headerName) { headerName.textContent = username; headerName.style.display = 'inline-block' }
+    const url = await getAvatarUrl(currentUser.id)
+    if (url) {
+      if (headerImg) { headerImg.src = url; headerImg.style.display = 'block' }
+      if (headerLetter) headerLetter.style.display = 'none'
+    } else {
+      if (headerImg) headerImg.style.display = 'none'
+      if (headerLetter) { headerLetter.textContent = username.charAt(0).toUpperCase(); headerLetter.style.display = 'flex' }
+    }
+  } catch (e) { console.error(e) }
 }
 
 // ── Авторизация ───────────────────────────────────────────
@@ -196,6 +252,13 @@ async function handleAvatarUpload(event) {
     if (img) { img.src = url; img.style.display = 'block' }
     if (letter) letter.style.display = 'none'
     if (btn) { btn.textContent = '✅ Загружено!'; setTimeout(() => { btn.textContent = '📷 Сменить фото'; btn.disabled = false }, 2000) }
+    // Update header avatar
+    try {
+      const headerImg = document.getElementById('headerAvatarImg')
+      const headerLetter = document.getElementById('headerAvatarLetter')
+      if (headerImg) { headerImg.src = url; headerImg.style.display = 'block' }
+      if (headerLetter) headerLetter.style.display = 'none'
+    } catch (e) {}
   }
   if (btn && btn.disabled) { btn.textContent = '📷 Сменить фото'; btn.disabled = false }
 }
@@ -504,11 +567,27 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   const timePerQuestion = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 90 : 120
   timeRemaining = questionCount * timePerQuestion
 
-  let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
-  currentTest = [...questions].sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, questions.length))
+  let baseQuestions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
+  // Prepare per-question shuffled options and remap correct index
+  const prepared = baseQuestions.map(q => {
+    const opts = q.options.map((o, idx) => ({ o, idx }))
+    for (let i = opts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp
+    }
+    const newOptions = opts.map(x => x.o)
+    const newCorrect = opts.findIndex(x => x.idx === q.correct)
+    return { ...q, options: newOptions, correct: newCorrect }
+  })
+  currentTest = prepared.sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, prepared.length))
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
+
+  // Persist test state so it can be restored if page is collapsed
+  try {
+    sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime }))
+  } catch (e) {}
 
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
@@ -561,6 +640,7 @@ window.selectAnswer = function(answerIndex) {
       label.style.color = isDark ? '#fca5a5' : '#7f1d1d'
     }
   })
+  try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {}
 }
 
 function displayQuestion() {
@@ -612,11 +692,11 @@ function displayQuestion() {
 }
 
 window.nextQuestion = function() {
-  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion() }
+  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion(); try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {} }
   else finishTest()
 }
 window.previousQuestion = function() {
-  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion() }
+  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {} }
 }
 window.exitTest = function() {
   if (confirm('Выйти? Прогресс будет потерян.')) showHome()
@@ -654,6 +734,7 @@ window.finishTest = async function() {
   }
 
   window._finishInProgress = false
+  try { sessionStorage.removeItem('testState') } catch(e) {}
   showPage('resultsPage')
 
   const scoreDisplay = document.getElementById('scoreDisplay')
@@ -718,6 +799,21 @@ window.showProfile = async function() {
 
     const avatarInput = document.getElementById('avatarInput')
     if (avatarInput) avatarInput.onchange = handleAvatarUpload
+
+    const avatarDelete = document.getElementById('avatarDeleteBtn')
+    if (avatarDelete) avatarDelete.onclick = async () => {
+      if (!currentUser) return
+      if (!confirm('Удалить фото профиля?')) return
+      const { error } = await deleteAvatar(currentUser.id)
+      if (error) { alert('Ошибка: ' + error.message); return }
+      // Update UI
+      const avatarImg = document.getElementById('profileAvatarImg')
+      const avatarLetter = document.getElementById('profileAvatar')
+      if (avatarImg) { avatarImg.src = ''; avatarImg.style.display = 'none' }
+      if (avatarLetter) { avatarLetter.style.display = 'flex' }
+      await updateUserUI()
+      alert('Фото удалено')
+    }
 
     const searchBtn = document.getElementById('searchProfilesBtn')
     if (searchBtn) searchBtn.onclick = showSearchProfiles

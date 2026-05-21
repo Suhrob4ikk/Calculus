@@ -413,3 +413,41 @@ select {
     font-size: 2.25rem !important;
   }
 }
+
+/* Header avatar */
+.header-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: fixed;
+  top: 10px;
+  right: 64px;
+  z-index: 1001
+}
+
+.header-avatar img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover
+}
+
+.header-avatar div {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+/* Improve contrast for light theme pills and buttons */
+.nav-pill {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main)
+}
+
+.nav-pill:hover {
+  background: rgba(0, 0, 0, 0.04)
+}

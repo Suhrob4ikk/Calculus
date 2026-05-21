@@ -333,6 +333,23 @@
   </div>
 
   <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
+  <div id="headerAvatar" class="header-avatar" title="Профиль" onclick="showProfile()"
+    style="display:flex;align-items:center;gap:8px;position:fixed;top:10px;right:64px;z-index:1001;cursor:pointer">
+    <img id="headerAvatarImg" src="" alt="avatar"
+      style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
+    <div id="headerAvatarLetter"
+      style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-weight:700;">
+      S</div>
+    <span id="headerUsername"
+      style="color:#f8fafc;font-weight:600;display:none;margin-left:6px;font-size:0.95rem"></span>
+  </div>
+  <div id="sideNav"
+    style="position:fixed;left:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:1001">
+    <button onclick="showProfile()" title="Профиль" class="nav-pill" style="padding:8px 10px;">👤</button>
+    <button onclick="showStatistics()" title="Статистика" class="nav-pill" style="padding:8px 10px;">📊</button>
+    <button onclick="showLeaderboard()" title="Рейтинг" class="nav-pill" style="padding:8px 10px;">🏆</button>
+    <button onclick="showSearchProfiles()" title="Пользователи" class="nav-pill" style="padding:8px 10px;">👥</button>
+  </div>
 
   <!-- ── СТРАНИЦА АВТОРИЗАЦИИ ──────────────────────────── -->
   <div id="authPage" class="hidden" style="display:none">
@@ -746,8 +763,11 @@
           <img id="profileAvatarImg" src="" alt="avatar"
             style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
           <button id="avatarUploadBtn"
-            class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
+            class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
             title="Сменить фото">📷</button>
+          <button id="avatarDeleteBtn"
+            class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
+            title="Удалить фото">🗑️</button>
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
