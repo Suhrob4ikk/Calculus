@@ -2,60 +2,154 @@
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.card-hover { transition: all 0.3s ease; }
+.card-hover {
+  transition: all 0.3s ease;
+}
+
 .card-hover:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
 }
 
 /* ── CSS переменные ──────────────────────────────────────── */
 :root {
-  --bg-main:       #f0f9ff;
-  --bg-card:       #ffffff;
-  --bg-section:    #ffffff;
-  --text-main:     #1f2937;
-  --text-muted:    #6b7280;
-  --text-sub:      #4b5563;
-  --border:        #e5e7eb;
-  --input-bg:      #ffffff;
-  --result-green:  #ecfdf5;
-  --result-red:    #fef2f2;
+  --bg-main: #f0f9ff;
+  --bg-card: #ffffff;
+  --bg-section: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --text-sub: #4b5563;
+  --border: #e5e7eb;
+  --input-bg: #ffffff;
+  --result-green: #ecfdf5;
+  --result-red: #fef2f2;
   --result-green-border: #10b981;
-  --result-red-border:   #ef4444;
-  --result-green-text:   #064e3b;
-  --result-red-text:     #7f1d1d;
-  --history-bg:    #f9fafb;
+  --result-red-border: #ef4444;
+  --result-green-text: #064e3b;
+  --result-red-text: #7f1d1d;
+  --history-bg: #f9fafb;
 }
 
 .dark {
-  --bg-main:       #0f172a;
-  --bg-card:       #1e293b;
-  --bg-section:    #1e293b;
-  --text-main:     #f1f5f9;
-  --text-muted:    #94a3b8;
-  --text-sub:      #cbd5e1;
-  --border:        #334155;
-  --input-bg:      #1e293b;
-  --result-green:  #064e3b;
-  --result-red:    #450a0a;
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-section: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-sub: #cbd5e1;
+  --border: #334155;
+  --input-bg: #1e293b;
+  --result-green: #064e3b;
+  --result-red: #450a0a;
   --result-green-border: #10b981;
-  --result-red-border:   #ef4444;
-  --result-green-text:   #a7f3d0;
-  --result-red-text:     #fca5a5;
-  --history-bg:    #273447;
+  --result-red-border: #ef4444;
+  --result-green-text: #a7f3d0;
+  --result-red-text: #fca5a5;
+  --history-bg: #273447;
 }
 
 /* ── Базовые стили ───────────────────────────────────────── */
 body {
   overflow-x: hidden;
-  background: var(--bg-main);
-  color: var(--text-main);
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.16), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.14), transparent 16%),
+    #020617;
+  color: #f8fafc;
   transition: background 0.3s, color 0.3s;
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-pill {
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  padding: 0.85rem 1.25rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.home-card {
+  min-height: 320px;
+  padding: 2.25rem;
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22);
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.home-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.card-icon {
+  font-size: 3.75rem;
+  margin-bottom: 1.25rem;
+  color: #60a5fa;
+}
+
+.card-blue .card-icon {
+  color: #38bdf8;
+}
+
+.card-green .card-icon {
+  color: #4ade80;
+}
+
+.card-red .card-icon {
+  color: #fb7185;
+}
+
+.card-blue button {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.card-green button {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.card-red button {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.card-blue h2,
+.card-green h2,
+.card-red h2 {
+  color: #f8fafc;
+}
+
+.card-blue p,
+.card-green p,
+.card-red p {
+  color: rgba(241, 245, 249, 0.78);
 }
 
 /* ── Кнопка темы ─────────────────────────────────────────── */
@@ -74,7 +168,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: background 0.3s, border-color 0.3s;
 }
 
@@ -84,26 +178,66 @@ body {
 }
 
 /* ── Текст ───────────────────────────────────────────────── */
-.dark .text-gray-800 { color: #f1f5f9 !important; }
-.dark .text-gray-700 { color: #cbd5e1 !important; }
-.dark .text-gray-600 { color: #94a3b8 !important; }
-.dark .text-gray-500 { color: #64748b !important; }
+.dark .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-gray-700 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-gray-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-gray-500 {
+  color: #64748b !important;
+}
 
 /* ── Фоны секций ─────────────────────────────────────────── */
-.dark .bg-blue-50   { background-color: #1e3a5f !important; }
-.dark .bg-yellow-50 { background-color: #3a2e00 !important; }
-.dark .bg-red-50    { background-color: #3a1a1a !important; }
-.dark .bg-indigo-50 { background-color: #1e1f4a !important; }
-.dark .bg-gray-50   { background-color: var(--history-bg) !important; }
-.dark .bg-gray-200  { background-color: #334155 !important; }
-.dark body          { background-color: var(--bg-main) !important; }
+.dark .bg-blue-50 {
+  background-color: #1e3a5f !important;
+}
+
+.dark .bg-yellow-50 {
+  background-color: #3a2e00 !important;
+}
+
+.dark .bg-red-50 {
+  background-color: #3a1a1a !important;
+}
+
+.dark .bg-indigo-50 {
+  background-color: #1e1f4a !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--history-bg) !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #334155 !important;
+}
+
+.dark body {
+  background-color: var(--bg-main) !important;
+}
 
 /* ── Инпуты и селекты ────────────────────────────────────── */
-input, input[type="text"], input[type="email"], input[type="password"], select {
+input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
   color: #1f2937;
   background-color: #ffffff;
 }
-.dark input, .dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark select {
+
+.dark input,
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark select {
   background-color: var(--input-bg) !important;
   color: var(--text-main) !important;
   border-color: var(--border) !important;
@@ -123,11 +257,16 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
   background: var(--bg-card);
   color: var(--text-main);
 }
-.option-label:hover { background-color: var(--history-bg); }
+
+.option-label:hover {
+  background-color: var(--history-bg);
+}
+
 .option-label.selected {
   border-color: #10b981;
   background-color: #ecfdf5;
 }
+
 .dark .option-label.selected {
   background-color: #064e3b !important;
   color: #a7f3d0 !important;
@@ -141,7 +280,12 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
   font-size: 0.875rem;
   color: var(--text-main);
 }
-@media (min-width: 640px) { .option-text { font-size: 1rem; } }
+
+@media (min-width: 640px) {
+  .option-text {
+    font-size: 1rem;
+  }
+}
 
 /* ── Карточки результатов (детальный разбор) ─────────────── */
 /* зелёные */
@@ -152,7 +296,10 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
   padding: 0.75rem;
   color: var(--result-green-text) !important;
 }
-.result-card-correct * { color: var(--result-green-text) !important; }
+
+.result-card-correct * {
+  color: var(--result-green-text) !important;
+}
 
 /* красные */
 .result-card-wrong {
@@ -162,28 +309,53 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
   padding: 0.75rem;
   color: var(--result-red-text) !important;
 }
-.result-card-wrong * { color: var(--result-red-text) !important; }
+
+.result-card-wrong * {
+  color: var(--result-red-text) !important;
+}
 
 /* ── История тестов (статистика) ─────────────────────────── */
-.dark .bg-gray-50.rounded-lg { background-color: var(--history-bg) !important; }
+.dark .bg-gray-50.rounded-lg {
+  background-color: var(--history-bg) !important;
+}
 
 /* ── Математические формулы ──────────────────────────────── */
-.math-container { overflow-x: auto; max-width: 100%; }
-.math-content   { display: inline-block; min-width: min-content; }
+.math-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.math-content {
+  display: inline-block;
+  min-width: min-content;
+}
 
 /* ── Статистика ──────────────────────────────────────────── */
 .stat-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
+
 .dark .stat-card {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
-.stat-value { font-size: 2.5rem; font-weight: bold; color: #1e40af; }
-.dark .stat-value { color: #93c5fd; }
-.stat-label { font-size: 1rem; color: var(--text-muted); }
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1e40af;
+}
+
+.dark .stat-value {
+  color: #93c5fd;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
 
 .progress-bar {
   height: 8px;
@@ -191,7 +363,11 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
   background-color: #e5e7eb;
   overflow: hidden;
 }
-.dark .progress-bar { background-color: #334155; }
+
+.dark .progress-bar {
+  background-color: #334155;
+}
+
 .progress-fill {
   height: 100%;
   border-radius: 4px;
@@ -201,13 +377,39 @@ input, input[type="text"], input[type="email"], input[type="password"], select {
 
 /* ── Мобильная адаптация ─────────────────────────────────── */
 @media (max-width: 640px) {
-  .flex.justify-between { flex-direction: column; gap: 1rem; }
-  .flex.justify-between > button { width: 100%; margin: 0.25rem 0; }
-  .flex.gap-4.justify-center { flex-direction: column; align-items: center; }
-  .flex.gap-4.justify-center > button { width: 100%; max-width: 250px; margin: 0.25rem 0; }
+  .flex.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .flex.justify-between>button {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+
+  .flex.gap-4.justify-center {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flex.gap-4.justify-center>button {
+    width: 100%;
+    max-width: 250px;
+    margin: 0.25rem 0;
+  }
 }
+
 @media (max-width: 768px) {
-  .container { padding-left: 1rem; padding-right: 1rem; }
-  .text-4xl { font-size: 1.875rem !important; }
-  .text-6xl { font-size: 2.25rem !important; }
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .text-4xl {
+    font-size: 1.875rem !important;
+  }
+
+  .text-6xl {
+    font-size: 2.25rem !important;
+  }
 }
