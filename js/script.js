@@ -11,6 +11,23 @@ let currentUser = null
 
 // ── Инициализация ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // Генерируем плавающие математические символы для тёмной темы
+  const mathBg = document.getElementById('mathBg');
+  if (mathBg) {
+    const mathSymbols = ['∫','∑','∏','√','∞','∂','∇','∈','∀','∃','≈','≠','≤','≥','lim','dx','f\'(x)','π','e'];
+    for (let i = 0; i < 25; i++) {
+      const span = document.createElement('span');
+      span.className = 'math-symbol';
+      span.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+      span.style.left = Math.random() * 100 + '%';
+      span.style.top = '100vh';
+      span.style.animationDuration = (Math.random() * 20 + 15) + 's';
+      span.style.animationDelay = -(Math.random() * 25) + 's';
+      span.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
+      span.style.opacity = '0';
+      mathBg.appendChild(span);
+    }
+  }
   // Применяем тему
   const saved = localStorage.getItem('theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
