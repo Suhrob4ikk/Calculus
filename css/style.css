@@ -17,7 +17,7 @@
   --result-red-text: #7f1d1d;
   --history-bg: #f9fafb;
 
-  /* Glass-переменные (из новой версии, для тёмной темы) */
+  /* Glass-переменные (из новой версии) */
   --glass-bg-dark: rgba(30, 41, 59, 0.7);
   --glass-bg-light: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(148, 163, 184, 0.1);
@@ -25,7 +25,7 @@
   --math-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Тёмная тема включается классом dark на <html> (как в старой версии) */
+/* Тёмная тема */
 .dark {
   color-scheme: dark;
   --bg-main: #0f172a;
@@ -45,7 +45,7 @@
   --history-bg: #273447;
 }
 
-/* ── Базовые стили (оставлены из старой) ───────────────── */
+/* ── Базовые стили ───────────────────────────────────────── */
 body {
   overflow-x: hidden;
   background: var(--bg-main);
@@ -53,7 +53,40 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* ── Кнопка темы (новая стеклянная) ───────────────────── */
+/* ── Математический фон (только в тёмной теме) ──────────── */
+.math-bg {
+  display: none; /* скрыт по умолчанию */
+}
+
+.dark .math-bg {
+  display: block;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.dark .math-symbol {
+  position: fixed;
+  font-family: 'Playfair Display', serif;
+  color: rgba(148, 163, 184, 0.07);
+  user-select: none;
+  animation: floatSymbol linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatSymbol {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── Кнопка темы (стеклянная в тёмной) ──────────────────── */
 #themeToggle {
   position: fixed;
   top: 1rem;
@@ -62,31 +95,30 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--border);
+  background: var(--bg-card);
   font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
 }
 
-/* В светлой теме кнопка светлая */
-body:not(.dark) #themeToggle {
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.dark #themeToggle {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .dark #themeToggle:hover {
   background: rgba(51, 65, 85, 0.8);
 }
 
-/* ── Glass-эффекты (активны только в тёмной теме) ─────── */
+/* ── Glass-эффекты (только в тёмной теме) ───────────────── */
 .dark .glass-panel {
   background: var(--glass-bg-dark);
   backdrop-filter: blur(8px);
@@ -115,7 +147,7 @@ body:not(.dark) #themeToggle {
   box-shadow: var(--glass-shadow);
 }
 
-/* ── Анимации (оставлены старые) ──────────────────────── */
+/* ── Анимации ────────────────────────────────────────────── */
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }
@@ -134,7 +166,7 @@ body:not(.dark) #themeToggle {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
 }
 
-/* ── Старые оверрайды для тёмной темы (из старого style.css) */
+/* ── Старые оверрайды тёмной темы ────────────────────────── */
 .dark .bg-white { background-color: var(--bg-card) !important; }
 .dark .text-gray-800 { color: #f1f5f9 !important; }
 .dark .text-gray-700 { color: #cbd5e1 !important; }
@@ -148,27 +180,21 @@ body:not(.dark) #themeToggle {
 .dark .bg-gray-200 { background-color: #334155 !important; }
 .dark body { background-color: var(--bg-main) !important; }
 
-/* ── Инпуты и селекты ────────────────────────────────── */
-input,
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select {
+/* ── Инпуты и селекты ────────────────────────────────────── */
+input, input[type="text"], input[type="email"],
+input[type="password"], select {
   color: #1f2937;
   background-color: #ffffff;
 }
 
-.dark input,
-.dark input[type="text"],
-.dark input[type="email"],
-.dark input[type="password"],
-.dark select {
+.dark input, .dark input[type="text"], .dark input[type="email"],
+.dark input[type="password"], .dark select {
   background-color: var(--input-bg) !important;
   color: var(--text-main) !important;
   border-color: var(--border) !important;
 }
 
-/* ── Варианты ответов (старая подсветка сохранена) ────── */
+/* ── Варианты ответов ────────────────────────────────────── */
 .option-label {
   display: flex;
   align-items: flex-start;
@@ -210,7 +236,7 @@ select {
   .option-text { font-size: 1rem; }
 }
 
-/* ── Карточки результатов ───────────────────────────── */
+/* ── Карточки результатов ───────────────────────────────── */
 .result-card-correct {
   background-color: var(--result-green) !important;
   border-left: 4px solid var(--result-green-border);
@@ -233,11 +259,11 @@ select {
   background-color: var(--history-bg) !important;
 }
 
-/* ── Математические формулы ─────────────────────────── */
+/* ── Математические формулы ──────────────────────────────── */
 .math-container { overflow-x: auto; max-width: 100%; }
 .math-content { display: inline-block; min-width: min-content; }
 
-/* ── Статистика (оставлена старая) ──────────────────── */
+/* ── Статистика ──────────────────────────────────────────── */
 .stat-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 12px;
@@ -259,7 +285,7 @@ select {
   transition: width 0.5s ease;
 }
 
-/* ── Мобильная адаптация (старая) ───────────────────── */
+/* ── Мобильная адаптация ─────────────────────────────────── */
 @media (max-width: 640px) {
   .flex.justify-between { flex-direction: column; gap: 1rem; }
   .flex.justify-between>button { width: 100%; margin: 0.25rem 0; }
