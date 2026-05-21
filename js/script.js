@@ -282,7 +282,7 @@ window.viewProfile = async function(username) {
   const CREATOR_USERNAME = 'Suhrob'
   const isProfileCreator = profile.username === CREATOR_USERNAME
   const creatorBadge = isProfileCreator
-    ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Создатель</span>'
+    ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Разработчик</span>'
     : ''
   const viewNameEl = document.getElementById('viewProfileName')
   if (viewNameEl) viewNameEl.innerHTML = profile.username + creatorBadge
@@ -492,14 +492,20 @@ function stopTimer() {
 }
 
 // ── Запуск теста ──────────────────────────────────────────
-function startTest(section, difficulty, pool, timeSelectId, sectionEl) {
+function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   currentSection = section
   currentDifficulty = difficulty
-  const t = parseInt(document.getElementById(timeSelectId).value) * 60
-  timeRemaining = t
+
+  // Количество вопросов выбирает пользователь
+  const countEl = document.getElementById(countSelectId)
+  const questionCount = countEl ? parseInt(countEl.value) : 15
+
+  // Время определяется автоматически по уровню и количеству
+  const timePerQuestion = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 90 : 120
+  timeRemaining = questionCount * timePerQuestion
 
   let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
-  currentTest = [...questions].sort(() => 0.5 - Math.random()).slice(0, Math.min(20, questions.length))
+  currentTest = [...questions].sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, questions.length))
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
@@ -514,21 +520,21 @@ function startTest(section, difficulty, pool, timeSelectId, sectionEl) {
   displayQuestion()
 }
 
-window.startIntegralsTest   = (d) => startTest('integrals',   d, easyIntegralsQuestions.concat(d==='easy'?[]:[]).concat(d==='medium'?mediumIntegralsQuestions:[]).concat(d==='hard'?hardIntegralsQuestions:[]) || (d==='easy'?easyIntegralsQuestions:d==='medium'?mediumIntegralsQuestions:hardIntegralsQuestions), 'integralsTime', 'integralsSection')
-window.startDerivativesTest = (d) => startTest('derivatives', d, d==='easy'?easyDerivativesQuestions:d==='medium'?mediumDerivativesQuestions:hardDerivativesQuestions, 'derivativesTime', 'derivativesSection')
-window.startSeriesTest      = (d) => startTest('series',      d, d==='easy'?easySeriesQuestions:d==='medium'?mediumSeriesQuestions:hardSeriesQuestions, 'seriesTime', 'seriesSection')
+window.startIntegralsTest   = (d) => startTest('integrals',   d, easyIntegralsQuestions.concat(d==='easy'?[]:[]).concat(d==='medium'?mediumIntegralsQuestions:[]).concat(d==='hard'?hardIntegralsQuestions:[]) || (d==='easy'?easyIntegralsQuestions:d==='medium'?mediumIntegralsQuestions:hardIntegralsQuestions), 'integralsCount', 'integralsSection')
+window.startDerivativesTest = (d) => startTest('derivatives', d, d==='easy'?easyDerivativesQuestions:d==='medium'?mediumDerivativesQuestions:hardDerivativesQuestions, 'derivativesCount', 'derivativesSection')
+window.startSeriesTest      = (d) => startTest('series',      d, d==='easy'?easySeriesQuestions:d==='medium'?mediumSeriesQuestions:hardSeriesQuestions, 'seriesCount', 'seriesSection')
 
 window.startIntegralsTest = function(d) {
   const pool = d==='easy' ? easyIntegralsQuestions : d==='medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
-  startTest('integrals', d, pool, 'integralsTime', 'integralsSection')
+  startTest('integrals', d, pool, 'integralsCount', 'integralsSection')
 }
 window.startDerivativesTest = function(d) {
   const pool = d==='easy' ? easyDerivativesQuestions : d==='medium' ? mediumDerivativesQuestions : hardDerivativesQuestions
-  startTest('derivatives', d, pool, 'derivativesTime', 'derivativesSection')
+  startTest('derivatives', d, pool, 'derivativesCount', 'derivativesSection')
 }
 window.startSeriesTest = function(d) {
   const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
-  startTest('series', d, pool, 'seriesTime', 'seriesSection')
+  startTest('series', d, pool, 'seriesCount', 'seriesSection')
 }
 
 window.restartTest = function() {
@@ -618,6 +624,12 @@ window.exitTest = function() {
 
 // ── Завершение теста ──────────────────────────────────────
 window.finishTest = async function() {
+  // Защита от двойного нажатия
+  if (window._finishInProgress) return
+  window._finishInProgress = true
+  const finishBtn = document.getElementById('finishBtn')
+  if (finishBtn) { finishBtn.disabled = true; finishBtn.textContent = 'Сохраняем...' }
+
   stopTimer()
   let correct = 0
   const results = currentTest.map((q, i) => {
@@ -641,6 +653,7 @@ window.finishTest = async function() {
     })
   }
 
+  window._finishInProgress = false
   showPage('resultsPage')
 
   const scoreDisplay = document.getElementById('scoreDisplay')
@@ -669,7 +682,6 @@ window.finishTest = async function() {
 
   if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
 }
-
 window.shareResult = function(correct, total, percentage) {
   const section = currentSection==='integrals'?'Интегралы':currentSection==='derivatives'?'Производные':'Ряды'
   const diff = currentDifficulty==='easy'?'Лёгкий':currentDifficulty==='medium'?'Средний':'Сложный'
@@ -734,7 +746,7 @@ window.showProfile = async function() {
   const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
   if (nameEl) {
     nameEl.innerHTML = username + (isCreator
-      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Создатель</span>'
+      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Разработчик</span>'
       : '')
   }
   const emailEl = document.getElementById('profileEmail')
@@ -938,35 +950,63 @@ window.resetStatistics = function() {
 // ── Таблица лидеров ───────────────────────────────────────
 window.showLeaderboard = async function() {
   showPage('leaderboardPage')
+  const container = document.getElementById('leaderboardList')
+  container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
 
   const section = document.getElementById('lbSection')?.value || null
   const difficulty = document.getElementById('lbDifficulty')?.value || null
 
   const { data } = await getLeaderboard(section, difficulty)
-  const container = document.getElementById('leaderboardList')
   if (!data || data.length === 0) {
     container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
     return
   }
 
+  // Веса сложности: hard ценнее
+  const weights = { easy: 1, medium: 1.5, hard: 2 }
+
+  // Берём лучший результат каждого пользователя по каждой уникальной секции+сложность
+  const userBest = {}
+  data.forEach(r => {
+    if (!userBest[r.username]) userBest[r.username] = {}
+    const key = `${r.section}_${r.difficulty}`
+    if (!userBest[r.username][key] || r.score > userBest[r.username][key].score) {
+      userBest[r.username][key] = r
+    }
+  })
+
+  // Считаем взвешенный рейтинг
+  const rankings = Object.entries(userBest).map(([username, attempts]) => {
+    const list = Object.values(attempts)
+    let weightedSum = 0, totalWeight = 0
+    list.forEach(r => {
+      const w = weights[r.difficulty] || 1
+      weightedSum += r.score * w
+      totalWeight += w
+    })
+    const score = Math.round(weightedSum / totalWeight)
+    return { username, score, uniqueAttempts: list.length }
+  }).sort((a, b) => b.score - a.score)
+
   const medals = ['🥇','🥈','🥉']
-  container.innerHTML = data.map((r, i) => `
-    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-2">
+  container.innerHTML = rankings.map((r, i) => `
+    <div class="flex items-center justify-between p-4 rounded-xl mb-2 ${i===0?'bg-yellow-50':i===1?'bg-gray-50':i===2?'bg-orange-50':'bg-gray-50'}">
       <div class="flex items-center gap-3">
-        <span class="text-2xl">${medals[i] || `${i+1}.`}</span>
+        <span class="text-2xl w-8 text-center">${medals[i] || (i+1)+'.'}</span>
         <div>
-          <div class="font-semibold" style="color:var(--text-main)">${r.username}</div>
-          <div class="text-xs text-gray-500">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':'Ряды'} · ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</div>
+          <div class="font-semibold flex items-center gap-1" style="color:var(--text-main)">
+            ${r.username}
+            ${r.username==='Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>' : ''}
+          </div>
+          <div class="text-xs text-gray-500">${r.uniqueAttempts} уник. попыток · с учётом сложности</div>
         </div>
       </div>
       <div class="text-right">
-        <div class="font-bold text-lg ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</div>
-        <div class="text-xs text-gray-500">${r.correct_answers}/${r.total_questions}</div>
+        <div class="font-bold text-xl ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</div>
+        <div class="text-xs text-gray-500">рейтинг</div>
       </div>
     </div>`).join('')
 }
-
-// ── Вспомогательные ───────────────────────────────────────
 window.toggleTheory = function(id) { document.getElementById(id).classList.toggle('hidden') }
 
 window.toggleTheme = function() {
