@@ -64,92 +64,9 @@
 /* ── Базовые стили ───────────────────────────────────────── */
 body {
   overflow-x: hidden;
-  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.16), transparent 20%),
-    radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.14), transparent 16%),
-    #020617;
-  color: #f8fafc;
+  background: var(--bg-main);
+  color: var(--text-main);
   transition: background 0.3s, color 0.3s;
-}
-
-.hero-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.nav-pill {
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  padding: 0.85rem 1.25rem;
-  font-weight: 600;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.nav-pill:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.24);
-  transform: translateY(-1px);
-}
-
-.home-card {
-  min-height: 320px;
-  padding: 2.25rem;
-  border-radius: 1.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.92);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22);
-  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.home-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.card-icon {
-  font-size: 3.75rem;
-  margin-bottom: 1.25rem;
-  color: #60a5fa;
-}
-
-.card-blue .card-icon {
-  color: #38bdf8;
-}
-
-.card-green .card-icon {
-  color: #4ade80;
-}
-
-.card-red .card-icon {
-  color: #fb7185;
-}
-
-.card-blue button {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-}
-
-.card-green button {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.card-red button {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-}
-
-.card-blue h2,
-.card-green h2,
-.card-red h2 {
-  color: #f8fafc;
-}
-
-.card-blue p,
-.card-green p,
-.card-red p {
-  color: rgba(241, 245, 249, 0.78);
 }
 
 /* ── Кнопка темы ─────────────────────────────────────────── */
@@ -412,42 +329,4 @@ select {
   .text-6xl {
     font-size: 2.25rem !important;
   }
-}
-
-/* Header avatar */
-.header-avatar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: fixed;
-  top: 10px;
-  right: 64px;
-  z-index: 1001
-}
-
-.header-avatar img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover
-}
-
-.header-avatar div {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center
-}
-
-/* Improve contrast for light theme pills and buttons */
-.nav-pill {
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-main)
-}
-
-.nav-pill:hover {
-  background: rgba(0, 0, 0, 0.04)
 }

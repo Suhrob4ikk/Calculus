@@ -14,49 +14,6 @@
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ── Анимированный фон ──────────────────────────────── */
-    .math-bg {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .math-symbol {
-      position: absolute;
-      font-family: 'Playfair Display', serif;
-      color: rgba(59, 130, 246, 0.14);
-      user-select: none;
-      animation: floatSymbol linear infinite;
-      opacity: 0.85;
-      filter: blur(0.2px);
-    }
-
-    .dark .math-symbol {
-      color: rgba(147, 197, 253, 0.12);
-    }
-
-    @keyframes floatSymbol {
-      0% {
-        transform: translateY(110vh) rotate(0deg);
-        opacity: 0;
-      }
-
-      5% {
-        opacity: 1;
-      }
-
-      95% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(-10vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
     /* ── Страница авторизации ───────────────────────────── */
     #authPage {
       min-height: 100vh;
@@ -322,34 +279,7 @@
 
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
 
-  <!-- Анимированный фон -->
-  <div class="math-bg" id="mathBg">
-    <span class="math-symbol" style="left:8%; top:20%; font-size:4rem; animation-duration:26s;">∫</span>
-    <span class="math-symbol" style="left:20%; top:78%; font-size:2.6rem; animation-duration:28s;">Σ</span>
-    <span class="math-symbol" style="left:72%; top:18%; font-size:2.8rem; animation-duration:32s;">f'(x)</span>
-    <span class="math-symbol" style="left:60%; top:64%; font-size:2.4rem; animation-duration:24s;">dx</span>
-    <span class="math-symbol" style="left:42%; top:38%; font-size:3rem; animation-duration:30s;">e^x</span>
-    <span class="math-symbol" style="left:84%; top:76%; font-size:2rem; animation-duration:22s;">π</span>
-  </div>
-
   <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
-  <div id="headerAvatar" class="header-avatar" title="Профиль" onclick="showProfile()"
-    style="display:flex;align-items:center;gap:8px;position:fixed;top:10px;right:64px;z-index:1001;cursor:pointer">
-    <img id="headerAvatarImg" src="" alt="avatar"
-      style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
-    <div id="headerAvatarLetter"
-      style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-weight:700;">
-      S</div>
-    <span id="headerUsername"
-      style="color:#f8fafc;font-weight:600;display:none;margin-left:6px;font-size:0.95rem"></span>
-  </div>
-  <div id="sideNav"
-    style="position:fixed;left:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:1001">
-    <button onclick="showProfile()" title="Профиль" class="nav-pill" style="padding:8px 10px;">👤</button>
-    <button onclick="showStatistics()" title="Статистика" class="nav-pill" style="padding:8px 10px;">📊</button>
-    <button onclick="showLeaderboard()" title="Рейтинг" class="nav-pill" style="padding:8px 10px;">🏆</button>
-    <button onclick="showSearchProfiles()" title="Пользователи" class="nav-pill" style="padding:8px 10px;">👥</button>
-  </div>
 
   <!-- ── СТРАНИЦА АВТОРИЗАЦИИ ──────────────────────────── -->
   <div id="authPage" class="hidden" style="display:none">
@@ -394,57 +324,70 @@
   </div>
 
   <!-- ── ГЛАВНАЯ СТРАНИЦА ──────────────────────────────── -->
-  <div id="homePage" class="page-content container mx-auto px-4 py-10 hidden" style="display:none">
-    <div
-      class="hero-card mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/85 shadow-[0_30px_80px_rgba(15,23,42,0.45)] backdrop-blur-2xl text-center text-white">
-      <div class="relative px-6 py-12 sm:px-10 sm:py-16">
-        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight"
-              style="font-family:'Playfair Display',serif">Математический анализ</h1>
-            <p class="mt-4 max-w-3xl text-base sm:text-lg text-slate-300">Проверьте свои знания в области интегралов,
-              производных, рядов и последовательностей</p>
-          </div>
-          <span id="userGreeting"
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 shadow-sm backdrop-blur-sm">👤
-            Гость</span>
-        </div>
-
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <button onclick="showProfile()" class="nav-pill">👤 Профиль</button>
-          <button onclick="showStatistics()" class="nav-pill">📊 Статистика</button>
-          <button onclick="showLeaderboard()" class="nav-pill">🏆 Рейтинг</button>
-          <button onclick="showSearchProfiles()" class="nav-pill">👥 Пользователи</button>
-          <button onclick="handleLogout()"
-            class="nav-pill text-red-200 border-red-400/25 hover:bg-red-500/20">Выйти</button>
-        </div>
+  <div id="homePage" class="page-content container mx-auto px-4 py-8 hidden" style="display:none">
+    <div class="text-center mb-12 fade-in">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family:'Playfair Display',serif">
+        Математический анализ</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Проверьте свои знания в области интегралов, производных, рядов, последовательностей и лимитов</p>
+      <div class="mt-6 flex flex-wrap gap-3 justify-center items-center">
+        <span id="userGreeting" class="text-gray-600 font-medium bg-gray-100 px-4 py-2 rounded-lg"></span>
+        <button onclick="showProfile()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">👤
+          Профиль</button>
+        <button onclick="showStatistics()"
+          class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">📊
+          Статистика</button>
+        <button onclick="showLeaderboard()"
+          class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">🏆
+          Рейтинг</button>
+        <button onclick="showSearchProfiles()"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">👥
+          Пользователи</button>
+        <button onclick="handleLogout()"
+          class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">Выйти</button>
       </div>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-10">
-      <div class="home-card card-blue cursor-pointer" onclick="showSection('integrals')">
-        <div class="card-icon">∫</div>
-        <h2 class="text-3xl font-bold">Интегралы</h2>
-        <p>Тестирование знаний по интегральному исчислению</p>
-        <button
-          class="mt-8 px-8 py-3 rounded-full text-white font-semibold shadow-[0_20px_35px_rgba(14,165,233,0.25)]">Начать
-          тест</button>
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-8 max-w-6xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('integrals')">
+        <div class="text-center">
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">∫</div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Интегралы</h2>
+          <p class="text-gray-600 mb-6">Тестирование знаний по интегральному исчислению</p>
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
+            тест</button>
+        </div>
       </div>
-      <div class="home-card card-green cursor-pointer" onclick="showSection('derivatives')">
-        <div class="card-icon">f'(x)</div>
-        <h2 class="text-3xl font-bold">Производные</h2>
-        <p>Тестирование знаний по дифференциальному исчислению</p>
-        <button
-          class="mt-8 px-8 py-3 rounded-full text-white font-semibold shadow-[0_20px_35px_rgba(34,197,94,0.25)]">Начать
-          тест</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('derivatives')">
+        <div class="text-center">
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">f'(x)</div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Производные</h2>
+          <p class="text-gray-600 mb-6">Тестирование знаний по дифференциальному исчислению</p>
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
+            тест</button>
+        </div>
       </div>
-      <div class="home-card card-red cursor-pointer" onclick="showSection('series')">
-        <div class="card-icon">∑</div>
-        <h2 class="text-3xl font-bold">Ряды и последовательности</h2>
-        <p>Тестирование знаний по рядам и последовательностям</p>
-        <button
-          class="mt-8 px-8 py-3 rounded-full text-white font-semibold shadow-[0_20px_35px_rgba(239,68,68,0.25)]">Начать
-          тест</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('series')">
+        <div class="text-center">
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">∑</div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Ряды и последовательности</h2>
+          <p class="text-gray-600 mb-6">Тестирование знаний по рядам и последовательностям</p>
+          <button
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
+            тест</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-lg p-8 card-hover cursor-pointer" onclick="showSection('limits')">
+        <div class="text-center">
+          <div class="text-6xl mb-4" style="font-family:'Playfair Display',serif">lim</div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Лимиты</h2>
+          <p class="text-gray-600 mb-6">Проверка знаний по пределам функций и последовательностей</p>
+          <button
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Начать
+            тест</button>
+        </div>
       </div>
     </div>
   </div>
@@ -632,6 +575,65 @@
     </div>
   </div>
 
+  <!-- ── РАЗДЕЛ ЛИМИТЫ ────────────────────────────────────── -->
+  <div id="limitsSection" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto fade-in">
+      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
+        раздела</button>
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Лимиты</h2>
+        <button onclick="toggleTheory('limitsTheory')"
+          class="mb-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg">Показать/Скрыть теорию</button>
+        <div id="limitsTheory" class="bg-indigo-50 rounded-xl p-6 mb-6 hidden">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Теория по пределам</h3>
+          <ul class="list-disc list-inside text-gray-700 mb-4">
+            <li>$\lim_{x \to a} f(x)$ — значение функции при подходе x к a.</li>
+            <li>Предел последовательности: $\lim_{n \to \infty} a_n$.</li>
+            <li>Предел суммы: $\lim (f(x) + g(x)) = \lim f(x) + \lim g(x)$.</li>
+            <li>Предел произведения: $\lim (f(x) g(x)) = \lim f(x) \cdot \lim g(x)$.</li>
+          </ul>
+        </div>
+        <div class="mb-6">
+          <label for="limitsCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <select id="limitsCount" class="ml-2 border rounded-lg px-2 py-1">
+            <option value="10">10 вопросов</option>
+            <option value="15" selected>15 вопросов</option>
+            <option value="20">20 вопросов</option>
+            <option value="25">25 вопросов</option>
+          </select>
+        </div>
+        <div class="grid gap-6">
+          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer"
+            onclick="startLimitsTest('easy')">
+            <div class="text-6xl mb-4">lim</div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
+            <p class="text-gray-600 mb-4">Базовые пределы для начинающих</p>
+            <button
+              class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
+              тест</button>
+          </div>
+          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer"
+            onclick="startLimitsTest('medium')">
+            <div class="text-6xl mb-4">lim</div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
+            <p class="text-gray-600 mb-4">Пределы средней сложности</p>
+            <button
+              class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
+              тест</button>
+          </div>
+          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startLimitsTest('hard')">
+            <div class="text-6xl mb-4">lim</div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
+            <p class="text-gray-600 mb-4">Сложные пределы для продвинутых</p>
+            <button
+              class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Начать
+              тест</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── СТРАНИЦА ТЕСТА ─────────────────────────────────── -->
   <div id="testPage" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
@@ -739,6 +741,13 @@
               <div id="seriesProgressBar" class="progress-fill" style="width:0%"></div>
             </div>
           </div>
+          <div>
+            <div class="flex justify-between mb-1"><span class="font-medium">Лимиты</span><span
+                id="limitsProgress">0%</span></div>
+            <div class="progress-bar">
+              <div id="limitsProgressBar" class="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
         </div>
         <h3 class="text-xl font-bold text-gray-800 mb-4">История тестов</h3>
         <div id="testsHistory" class="space-y-3 max-h-96 overflow-y-auto"></div>
@@ -763,11 +772,8 @@
           <img id="profileAvatarImg" src="" alt="avatar"
             style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
           <button id="avatarUploadBtn"
-            class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
+            class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
             title="Сменить фото">📷</button>
-          <button id="avatarDeleteBtn"
-            class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg transition-colors"
-            title="Удалить фото">🗑️</button>
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
@@ -791,6 +797,7 @@
             <option value="integrals">Интегралы</option>
             <option value="derivatives">Производные</option>
             <option value="series">Ряды</option>
+            <option value="limits">Лимиты</option>
           </select>
           <select id="lbDifficulty" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
             <option value="">Все уровни</option>
@@ -901,25 +908,6 @@
   <script type="module" src="js/script.js"></script>
 
   <script>
-    // Анимированный фон
-    (function () {
-      const symbols = ['∫', "f'(x)", '∑', 'dx', 'lim', '∂', '∇', 'Δ', '∞', 'π', 'e', 'ln'];
-      const bg = document.getElementById('mathBg');
-      const count = window.innerWidth < 768 ? 12 : 20;
-      for (let i = 0; i < count; i++) {
-        const el = document.createElement('div');
-        el.className = 'math-symbol';
-        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        el.style.cssText = `
-          left: ${Math.random() * 100}%;
-          font-size: ${Math.random() * 2 + 1.5}rem;
-          animation-duration: ${Math.random() * 20 + 15}s;
-          animation-delay: ${Math.random() * -30}s;
-        `;
-        bg.appendChild(el);
-      }
-    })();
-
     // Тема
     (function () {
       const saved = localStorage.getItem('theme');

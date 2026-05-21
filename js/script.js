@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, deleteAvatar, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
@@ -73,40 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     currentUser = session.user
-    // Restore last page if available
-    const lastPage = sessionStorage.getItem('lastPage')
-    if (lastPage && document.getElementById(lastPage)) {
-      if (lastPage === 'testPage') {
-        const saved = sessionStorage.getItem('testState')
-        if (saved) {
-          try {
-            const state = JSON.parse(saved)
-            currentTest = state.currentTest || []
-            currentQuestionIndex = state.currentQuestionIndex || 0
-            userAnswers = state.userAnswers || new Array(currentTest.length).fill(null)
-            currentSection = state.currentSection || currentSection
-            currentDifficulty = state.currentDifficulty || currentDifficulty
-            timeRemaining = state.timeRemaining || timeRemaining
-            showPage('testPage')
-            updateUserUI()
-            displayQuestion()
-            startTimer()
-          } catch (e) {
-            showPage('homePage')
-            updateUserUI()
-          }
-        } else {
-          showPage('homePage')
-          updateUserUI()
-        }
-      } else {
-        showPage(lastPage)
-        updateUserUI()
-      }
-    } else {
-      showPage('homePage')
-      updateUserUI()
-    }
+    showPage('homePage')
+    updateUserUI()
   } else {
     showPage('authPage')
   }
@@ -117,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
+                 'seriesSection','limitsSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) {
@@ -129,11 +97,10 @@ function showPage(pageId) {
   if (target) {
     target.classList.remove('hidden')
     target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
-    try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
 }
 
-async function updateUserUI() {
+function updateUserUI() {
   const el = document.getElementById('userGreeting')
   if (el && currentUser) {
     const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
@@ -142,29 +109,6 @@ async function updateUserUI() {
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
       : '')
   }
-
-  // Update header avatar
-  try {
-    const headerImg = document.getElementById('headerAvatarImg')
-    const headerLetter = document.getElementById('headerAvatarLetter')
-    const headerName = document.getElementById('headerUsername')
-    if (!currentUser) {
-      if (headerImg) headerImg.style.display = 'none'
-      if (headerLetter) headerLetter.style.display = 'block'
-      if (headerName) headerName.style.display = 'none'
-      return
-    }
-    const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
-    if (headerName) { headerName.textContent = username; headerName.style.display = 'inline-block' }
-    const url = await getAvatarUrl(currentUser.id)
-    if (url) {
-      if (headerImg) { headerImg.src = url; headerImg.style.display = 'block' }
-      if (headerLetter) headerLetter.style.display = 'none'
-    } else {
-      if (headerImg) headerImg.style.display = 'none'
-      if (headerLetter) { headerLetter.textContent = username.charAt(0).toUpperCase(); headerLetter.style.display = 'flex' }
-    }
-  } catch (e) { console.error(e) }
 }
 
 // ── Авторизация ───────────────────────────────────────────
@@ -252,13 +196,6 @@ async function handleAvatarUpload(event) {
     if (img) { img.src = url; img.style.display = 'block' }
     if (letter) letter.style.display = 'none'
     if (btn) { btn.textContent = '✅ Загружено!'; setTimeout(() => { btn.textContent = '📷 Сменить фото'; btn.disabled = false }, 2000) }
-    // Update header avatar
-    try {
-      const headerImg = document.getElementById('headerAvatarImg')
-      const headerLetter = document.getElementById('headerAvatarLetter')
-      if (headerImg) { headerImg.src = url; headerImg.style.display = 'block' }
-      if (headerLetter) headerLetter.style.display = 'none'
-    } catch (e) {}
   }
   if (btn && btn.disabled) { btn.textContent = '📷 Сменить фото'; btn.disabled = false }
 }
@@ -522,8 +459,21 @@ window.showHome = function() {
 
 window.showSection = function(section) {
   currentSection = section
-  const map = { integrals: 'integralsSection', derivatives: 'derivativesSection', series: 'seriesSection' }
+  const map = { integrals: 'integralsSection', derivatives: 'derivativesSection', series: 'seriesSection', limits: 'limitsSection' }
   showPage(map[section])
+}
+
+const sectionLabels = {
+  integrals: 'Интегралы',
+  derivatives: 'Производные',
+  series: 'Ряды',
+  limits: 'Лимиты'
+}
+
+const difficultyLabels = {
+  easy: 'Лёгкий',
+  medium: 'Средний',
+  hard: 'Сложный'
 }
 
 // ── Таймер ────────────────────────────────────────────────
@@ -567,41 +517,26 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   const timePerQuestion = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 90 : 120
   timeRemaining = questionCount * timePerQuestion
 
-  let baseQuestions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
-  // Prepare per-question shuffled options and remap correct index
-  const prepared = baseQuestions.map(q => {
-    const opts = q.options.map((o, idx) => ({ o, idx }))
-    for (let i = opts.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      const tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp
-    }
-    const newOptions = opts.map(x => x.o)
-    const newCorrect = opts.findIndex(x => x.idx === q.correct)
-    return { ...q, options: newOptions, correct: newCorrect }
-  })
-  currentTest = prepared.sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, prepared.length))
+  let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
+  currentTest = [...questions].sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, questions.length))
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
 
-  // Persist test state so it can be restored if page is collapsed
-  try {
-    sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime }))
-  } catch (e) {}
-
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = currentTest.length
-  document.getElementById('testTitle').textContent = `Тест: ${section === 'integrals' ? 'Интегралы' : section === 'derivatives' ? 'Производные' : 'Ряды'}`
-  document.getElementById('difficultyLabel').textContent = `Уровень: ${difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'}`
+  document.getElementById('testTitle').textContent = `Тест: ${sectionLabels[section] || section}`
+  document.getElementById('difficultyLabel').textContent = `Уровень: ${difficultyLabels[difficulty] || difficulty}`
 
   startTimer()
   displayQuestion()
 }
 
-window.startIntegralsTest   = (d) => startTest('integrals',   d, easyIntegralsQuestions.concat(d==='easy'?[]:[]).concat(d==='medium'?mediumIntegralsQuestions:[]).concat(d==='hard'?hardIntegralsQuestions:[]) || (d==='easy'?easyIntegralsQuestions:d==='medium'?mediumIntegralsQuestions:hardIntegralsQuestions), 'integralsCount', 'integralsSection')
+window.startIntegralsTest   = (d) => startTest('integrals',   d, d==='easy'?easyIntegralsQuestions:d==='medium'?mediumIntegralsQuestions:hardIntegralsQuestions, 'integralsCount', 'integralsSection')
 window.startDerivativesTest = (d) => startTest('derivatives', d, d==='easy'?easyDerivativesQuestions:d==='medium'?mediumDerivativesQuestions:hardDerivativesQuestions, 'derivativesCount', 'derivativesSection')
 window.startSeriesTest      = (d) => startTest('series',      d, d==='easy'?easySeriesQuestions:d==='medium'?mediumSeriesQuestions:hardSeriesQuestions, 'seriesCount', 'seriesSection')
+window.startLimitsTest      = (d) => startTest('limits',      d, d==='easy'?easyLimitsQuestions:d==='medium'?mediumLimitsQuestions:hardLimitsQuestions, 'limitsCount', 'limitsSection')
 
 window.startIntegralsTest = function(d) {
   const pool = d==='easy' ? easyIntegralsQuestions : d==='medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
@@ -640,7 +575,6 @@ window.selectAnswer = function(answerIndex) {
       label.style.color = isDark ? '#fca5a5' : '#7f1d1d'
     }
   })
-  try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {}
 }
 
 function displayQuestion() {
@@ -692,11 +626,11 @@ function displayQuestion() {
 }
 
 window.nextQuestion = function() {
-  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion(); try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {} }
+  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion() }
   else finishTest()
 }
 window.previousQuestion = function() {
-  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); try { sessionStorage.setItem('testState', JSON.stringify({ currentTest, currentQuestionIndex, userAnswers, currentSection, currentDifficulty, timeRemaining, testStartTime })) } catch(e) {} }
+  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion() }
 }
 window.exitTest = function() {
   if (confirm('Выйти? Прогресс будет потерян.')) showHome()
@@ -734,7 +668,6 @@ window.finishTest = async function() {
   }
 
   window._finishInProgress = false
-  try { sessionStorage.removeItem('testState') } catch(e) {}
   showPage('resultsPage')
 
   const scoreDisplay = document.getElementById('scoreDisplay')
@@ -764,8 +697,8 @@ window.finishTest = async function() {
   if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
 }
 window.shareResult = function(correct, total, percentage) {
-  const section = currentSection==='integrals'?'Интегралы':currentSection==='derivatives'?'Производные':'Ряды'
-  const diff = currentDifficulty==='easy'?'Лёгкий':currentDifficulty==='medium'?'Средний':'Сложный'
+  const section = sectionLabels[currentSection] || currentSection
+  const diff = difficultyLabels[currentDifficulty] || currentDifficulty
   const emoji = percentage===100?'🏆':percentage>=90?'🌟':percentage>=70?'✅':percentage>=50?'📚':'💪'
   const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://suhrob4ikk.github.io/Calculus`
   navigator.clipboard?.writeText(text).then(() => {
@@ -799,21 +732,6 @@ window.showProfile = async function() {
 
     const avatarInput = document.getElementById('avatarInput')
     if (avatarInput) avatarInput.onchange = handleAvatarUpload
-
-    const avatarDelete = document.getElementById('avatarDeleteBtn')
-    if (avatarDelete) avatarDelete.onclick = async () => {
-      if (!currentUser) return
-      if (!confirm('Удалить фото профиля?')) return
-      const { error } = await deleteAvatar(currentUser.id)
-      if (error) { alert('Ошибка: ' + error.message); return }
-      // Update UI
-      const avatarImg = document.getElementById('profileAvatarImg')
-      const avatarLetter = document.getElementById('profileAvatar')
-      if (avatarImg) { avatarImg.src = ''; avatarImg.style.display = 'none' }
-      if (avatarLetter) { avatarLetter.style.display = 'flex' }
-      await updateUserUI()
-      alert('Фото удалено')
-    }
 
     const searchBtn = document.getElementById('searchProfilesBtn')
     if (searchBtn) searchBtn.onclick = showSearchProfiles
@@ -860,7 +778,7 @@ window.showProfile = async function() {
   const total = data.length
   const best = Math.max(...data.map(r => r.score))
   const avg = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
-  const sections = ['integrals','derivatives','series']
+  const sections = ['integrals','derivatives','series','limits']
 
   // Уровень
   const level = getUserLevel(total, avg)
@@ -875,7 +793,7 @@ window.showProfile = async function() {
   if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
   if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
   const covered = sections.filter(s => data.some(r => r.section === s))
-  if (covered.length === 3) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
+  if (covered.length === 4) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
   // Серия побед
   let streak = 0, maxStreak = 0, cur = 0
   ;[...data].reverse().forEach(r => { if(r.score>=70){cur++;maxStreak=Math.max(maxStreak,cur)}else cur=0 })
@@ -887,7 +805,7 @@ window.showProfile = async function() {
     const secData = data.filter(r => r.section === sec)
     if (!secData.length) return null
     const b = secData.reduce((a,b) => a.score > b.score ? a : b)
-    return { ...b, sectionName: sec==='integrals'?'Интегралы':sec==='derivatives'?'Производные':'Ряды' }
+    return { ...b, sectionName: sectionLabels[sec] || sec }
   }).filter(Boolean)
 
   // Сравнение с другими (топ из leaderboard)
@@ -1013,11 +931,11 @@ window.showStatistics = async function() {
   document.getElementById('averageScore').textContent = avg + '%'
 
   // Прогресс по разделам
-  const sections = ['integrals','derivatives','series']
+  const sections = ['integrals','derivatives','series','limits']
   sections.forEach(sec => {
     const secResults = data.filter(r => r.section === sec)
     const secAvg = secResults.length ? Math.round(secResults.reduce((s,r)=>s+r.score,0)/secResults.length) : 0
-    const nameMap = {integrals:'integrals',derivatives:'derivatives',series:'series'}
+    const nameMap = {integrals:'integrals',derivatives:'derivatives',series:'series',limits:'limits'}
     const el = document.getElementById(`${nameMap[sec]}Progress`)
     const bar = document.getElementById(`${nameMap[sec]}ProgressBar`)
     if (el) el.textContent = secAvg + '%'
@@ -1028,7 +946,7 @@ window.showStatistics = async function() {
     <div class="bg-gray-50 rounded-lg p-4">
       <div class="flex justify-between items-start">
         <div>
-          <h4 class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':'Ряды'} — ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</h4>
+          <h4 class="font-semibold">${sectionLabels[r.section] || r.section} — ${difficultyLabels[r.difficulty] || r.difficulty}</h4>
           <p class="text-sm text-gray-500">${new Date(r.created_at).toLocaleString('ru')}</p>
         </div>
         <div class="text-right">

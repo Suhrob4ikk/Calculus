@@ -88,22 +88,6 @@ export async function getAvatarUrl(userId) {
   return data?.avatar_url || null
 }
 
-export async function deleteAvatar(userId) {
-  // List files in user's avatar folder and remove them
-  const { data: files, error: listError } = await supabase.storage.from('avatars').list(userId)
-  if (listError) return { error: listError }
-  if (!files || files.length === 0) {
-    // Nothing to delete, but clear avatar_url just in case
-    await supabase.from('profiles').update({ avatar_url: null }).eq('id', userId)
-    return { error: null }
-  }
-  const paths = files.map(f => `${userId}/${f.name}`)
-  const { error } = await supabase.storage.from('avatars').remove(paths)
-  if (error) return { error }
-  await supabase.from('profiles').update({ avatar_url: null }).eq('id', userId)
-  return { error: null }
-}
-
 // ── Поиск профилей ────────────────────────────────────────
 export async function searchProfiles(query) {
   const { data, error } = await supabase
