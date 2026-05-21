@@ -533,11 +533,6 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   displayQuestion()
 }
 
-window.startIntegralsTest   = (d) => startTest('integrals',   d, d==='easy'?easyIntegralsQuestions:d==='medium'?mediumIntegralsQuestions:hardIntegralsQuestions, 'integralsCount', 'integralsSection')
-window.startDerivativesTest = (d) => startTest('derivatives', d, d==='easy'?easyDerivativesQuestions:d==='medium'?mediumDerivativesQuestions:hardDerivativesQuestions, 'derivativesCount', 'derivativesSection')
-window.startSeriesTest      = (d) => startTest('series',      d, d==='easy'?easySeriesQuestions:d==='medium'?mediumSeriesQuestions:hardSeriesQuestions, 'seriesCount', 'seriesSection')
-window.startLimitsTest      = (d) => startTest('limits',      d, d==='easy'?easyLimitsQuestions:d==='medium'?mediumLimitsQuestions:hardLimitsQuestions, 'limitsCount', 'limitsSection')
-
 window.startIntegralsTest = function(d) {
   const pool = d==='easy' ? easyIntegralsQuestions : d==='medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
   startTest('integrals', d, pool, 'integralsCount', 'integralsSection')
@@ -549,6 +544,10 @@ window.startDerivativesTest = function(d) {
 window.startSeriesTest = function(d) {
   const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
   startTest('series', d, pool, 'seriesCount', 'seriesSection')
+}
+window.startLimitsTest = function(d) {
+  const pool = d==='easy' ? easyLimitsQuestions : d==='medium' ? mediumLimitsQuestions : hardLimitsQuestions
+  startTest('limits', d, pool, 'limitsCount', 'limitsSection')
 }
 
 window.restartTest = function() {
@@ -577,6 +576,16 @@ window.selectAnswer = function(answerIndex) {
   })
 }
 
+// Перемешивание массива (Фишер-Йетс)
+function shuffleArray(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 function displayQuestion() {
   const question = currentTest[currentQuestionIndex]
   const container = document.getElementById('questionContainer')
@@ -585,6 +594,11 @@ function displayQuestion() {
   const chosen = userAnswers[currentQuestionIndex]
   const isDark = document.documentElement.classList.contains('dark')
 
+  // Создаём массив индексов и перемешиваем, запоминая новый индекс правильного
+  const indices = question.options.map((_, i) => i)
+  const shuffled = shuffleArray(indices)
+  const newCorrect = shuffled.indexOf(correct)
+
   container.innerHTML = `
     <div class="mb-6">
       <h3 class="text-xl font-semibold mb-4 math-container" style="color:var(--text-main)">
@@ -592,23 +606,24 @@ function displayQuestion() {
       </h3>
     </div>
     <div class="space-y-3">
-      ${question.options.map((option, i) => {
+      ${shuffled.map((origIndex, displayIndex) => {
+        const option = question.options[origIndex]
         let border = '', bg = '', color = '', pe = ''
         if (answered) {
           pe = 'pointer-events:none;'
-          if (i === correct) {
+          if (origIndex === correct) {
             border = 'border-color:#10b981;'
             bg = `background-color:${isDark ? '#064e3b' : '#ecfdf5'};`
             color = `color:${isDark ? '#a7f3d0' : '#064e3b'};`
-          } else if (i === chosen && chosen !== correct) {
+          } else if (origIndex === chosen && chosen !== correct) {
             border = 'border-color:#ef4444;'
             bg = `background-color:${isDark ? '#450a0a' : '#fef2f2'};`
             color = `color:${isDark ? '#fca5a5' : '#7f1d1d'};`
           }
         }
-        return `<label class="option-label${chosen===i?' selected':''}" style="${border}${bg}${color}${pe}">
-          <input type="radio" name="answer" value="${i}" class="mr-3 mt-1 flex-shrink-0"
-            ${chosen===i?'checked':''} ${answered?'disabled':''} onchange="selectAnswer(${i})">
+        return `<label class="option-label${chosen===origIndex?' selected':''}" style="${border}${bg}${color}${pe}">
+          <input type="radio" name="answer" value="${origIndex}" class="mr-3 mt-1 flex-shrink-0"
+            ${chosen===origIndex?'checked':''} ${answered?'disabled':''} onchange="selectAnswer(${origIndex})">
           <span class="option-text">${option}</span>
         </label>`
       }).join('')}

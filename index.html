@@ -9,7 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link rel="stylesheet" href="css/style.css">
@@ -393,7 +393,7 @@
   </div>
 
   <!-- ── РАЗДЕЛ ИНТЕГРАЛЫ ──────────────────────────────── -->
-  <div id="integralsSection" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
+  <div id="integralsSection" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
         раздела</button>
@@ -455,7 +455,7 @@
   </div>
 
   <!-- ── РАЗДЕЛ ПРОИЗВОДНЫЕ ────────────────────────────── -->
-  <div id="derivativesSection" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
+  <div id="derivativesSection" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
         раздела</button>
@@ -517,7 +517,7 @@
   </div>
 
   <!-- ── РАЗДЕЛ РЯДЫ ────────────────────────────────────── -->
-  <div id="seriesSection" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
+  <div id="seriesSection" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
         раздела</button>
@@ -576,7 +576,7 @@
   </div>
 
   <!-- ── РАЗДЕЛ ЛИМИТЫ ────────────────────────────────────── -->
-  <div id="limitsSection" class="page-content hidden" style="display:none" container mx-auto px-4 py-8">
+  <div id="limitsSection" class="page-content hidden container mx-auto px-4 py-8" style="display:none">
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к выбору
         раздела</button>
@@ -904,7 +904,10 @@
     </div>
   </div>
 
-  <script src="js/questions.js"></script>
+  <script src="js/integrals-questions.js"></script>
+<script src="js/derivatives-questions.js"></script>
+<script src="js/series-questions.js"></script>
+<script src="js/limits-questions.js"></script>
   <script type="module" src="js/script.js"></script>
 
   <script>

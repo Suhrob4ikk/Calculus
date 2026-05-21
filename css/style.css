@@ -44,6 +44,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --bg-main: #0f172a;
   --bg-card: #1e293b;
   --bg-section: #1e293b;
