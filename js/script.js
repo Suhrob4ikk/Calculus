@@ -2,6 +2,8 @@ import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults,
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
+let timerStartTime = null
+let timerInitialTime = 0
 let currentTest = [], currentQuestionIndex = 0
 let userAnswers = [], testStartTime
 let currentDifficulty = '', currentSection = ''
@@ -73,12 +75,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     currentUser = session.user
+    // Проверяем, есть ли восстанавливаемый тест
+    if (localStorage.getItem('testState')) {
+      if (restoreTestState()) {
+        showPage('testPage')
+        startTimer()
+        displayQuestion()
+        return
+      }
+    }
     showPage('homePage')
     updateUserUI()
   } else {
     showPage('authPage')
   }
 
+  // Предупреждение при попытке уйти со страницы во время теста
+  window.addEventListener('beforeunload', (e) => {
+    if (currentTest.length > 0 && currentQuestionIndex >= 0 && currentQuestionIndex < currentTest.length) {
+      e.preventDefault()
+      e.returnValue = 'Вы не закончили тест. Все изменения будут потеряны.'
+      return e.returnValue
+    }
+  })
 
 })
 
@@ -480,8 +499,13 @@ const difficultyLabels = {
 function startTimer() {
   updateTimerDisplay()
   if (testTimer) clearInterval(testTimer)
+  timerStartTime = Date.now()
+  timerInitialTime = timeRemaining
   testTimer = setInterval(() => {
-    timeRemaining--
+    const elapsed = Math.floor((Date.now() - timerStartTime) / 1000)
+    // Always calculate remaining from initial time, not cumulatively
+    const remaining = Math.max(0, timerInitialTime - elapsed)
+    timeRemaining = remaining
     updateTimerDisplay()
     if (timeRemaining <= 0) { clearInterval(testTimer); alert('Время вышло!'); finishTest() }
   }, 1000)
@@ -504,8 +528,48 @@ function stopTimer() {
   if (testTimer) { clearInterval(testTimer); testTimer = null }
 }
 
+// ── Сохранение и восстановление состояния теста ──────────
+function saveTestState() {
+  if (currentTest.length === 0) return
+  localStorage.setItem('testState', JSON.stringify({
+    section: currentSection,
+    difficulty: currentDifficulty,
+    currentQuestionIndex: currentQuestionIndex,
+    userAnswers: userAnswers,
+    timeRemaining: timeRemaining,
+    currentTest: currentTest.map(q => ({ question: q.question, options: q.options, correct: q.correct }))
+  }))
+}
+
+function restoreTestState() {
+  const saved = localStorage.getItem('testState')
+  if (!saved) return false
+  try {
+    const state = JSON.parse(saved)
+    currentSection = state.section
+    currentDifficulty = state.difficulty
+    currentQuestionIndex = state.currentQuestionIndex
+    userAnswers = state.userAnswers
+    timeRemaining = state.timeRemaining
+    timerInitialTime = state.timeRemaining
+    currentTest = state.currentTest
+    testStartTime = Date.now()
+    timerStartTime = null
+    return true
+  } catch (e) {
+    console.error('Failed to restore test state:', e)
+    localStorage.removeItem('testState')
+    return false
+  }
+}
+
+function clearTestState() {
+  localStorage.removeItem('testState')
+}
+
 // ── Запуск теста ──────────────────────────────────────────
 function startTest(section, difficulty, pool, countSelectId, sectionEl) {
+  clearTestState() // Очищаем любой предыдущий сохранённый тест
   currentSection = section
   currentDifficulty = difficulty
 
@@ -522,6 +586,7 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
+  timerStartTime = null
 
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
@@ -531,6 +596,7 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
 
   startTimer()
   displayQuestion()
+  saveTestState() // Сохраняем состояние после инициализации
 }
 
 window.startIntegralsTest = function(d) {
@@ -560,20 +626,23 @@ window.selectAnswer = function(answerIndex) {
   userAnswers[currentQuestionIndex] = answerIndex
   const correct = currentTest[currentQuestionIndex].correct
   const isDark = document.documentElement.classList.contains('dark')
-  document.querySelectorAll('.option-label').forEach((label, i) => {
+  document.querySelectorAll('.option-label').forEach((label) => {
     label.style.pointerEvents = 'none'
     const radio = label.querySelector('input[type="radio"]')
     if (radio) radio.disabled = true
-    if (i === correct) {
+    // radio.value stores the original option index (origIndex)
+    const val = radio ? parseInt(radio.value, 10) : null
+    if (val === correct) {
       label.style.borderColor = '#10b981'
       label.style.backgroundColor = isDark ? '#064e3b' : '#ecfdf5'
       label.style.color = isDark ? '#a7f3d0' : '#064e3b'
-    } else if (i === answerIndex && answerIndex !== correct) {
+    } else if (val === answerIndex && answerIndex !== correct) {
       label.style.borderColor = '#ef4444'
       label.style.backgroundColor = isDark ? '#450a0a' : '#fef2f2'
       label.style.color = isDark ? '#fca5a5' : '#7f1d1d'
     }
   })
+  saveTestState() // Сохраняем после выбора ответа
 }
 
 // Перемешивание массива (Фишер-Йетс)
@@ -641,14 +710,14 @@ function displayQuestion() {
 }
 
 window.nextQuestion = function() {
-  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion() }
+  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion(); saveTestState() }
   else finishTest()
 }
 window.previousQuestion = function() {
-  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion() }
+  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); saveTestState() }
 }
 window.exitTest = function() {
-  if (confirm('Выйти? Прогресс будет потерян.')) showHome()
+  if (confirm('Выйти? Прогресс будет потерян.')) { clearTestState(); showHome() }
 }
 
 // ── Завершение теста ──────────────────────────────────────
@@ -976,23 +1045,34 @@ window.resetStatistics = function() {
   alert('Для сброса статистики обратитесь к администратору.')
 }
 
+// ── Debounce для фильтров лидерборда ──────────────────────
+let leaderboardTimeout = null
+let isLoadingLeaderboard = false
+
 // ── Таблица лидеров ───────────────────────────────────────
 window.showLeaderboard = async function() {
-  showPage('leaderboardPage')
-  const container = document.getElementById('leaderboardList')
-  container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
+  // Debounce: не более 1 запроса в 500мс
+  clearTimeout(leaderboardTimeout)
+  if (isLoadingLeaderboard) return
+  
+  leaderboardTimeout = setTimeout(async () => {
+    showPage('leaderboardPage')
+    const container = document.getElementById('leaderboardList')
+    container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
+    isLoadingLeaderboard = true
 
-  const section = document.getElementById('lbSection')?.value || null
-  const difficulty = document.getElementById('lbDifficulty')?.value || null
+    const section = document.getElementById('lbSection')?.value || null
+    const difficulty = document.getElementById('lbDifficulty')?.value || null
 
-  const { data } = await getLeaderboard(section, difficulty)
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
-    return
-  }
+    const { data } = await getLeaderboard(section, difficulty)
+    isLoadingLeaderboard = false
+    if (!data || data.length === 0) {
+      container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
+      return
+    }
 
-  // Веса сложности: hard ценнее
-  const weights = { easy: 1, medium: 1.5, hard: 2 }
+    // Веса сложности: hard ценнее
+    const weights = { easy: 1, medium: 1.5, hard: 2 }
 
   // Берём лучший результат каждого пользователя по каждой уникальной секции+сложность
   const userBest = {}
@@ -1035,6 +1115,7 @@ window.showLeaderboard = async function() {
         <div class="text-xs text-gray-500">рейтинг</div>
       </div>
     </div>`).join('')
+  }, 500)
 }
 window.toggleTheory = function(id) { document.getElementById(id).classList.toggle('hidden') }
 
