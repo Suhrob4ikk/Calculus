@@ -1120,9 +1120,9 @@ window.showLeaderboard = async function() {
 window.toggleTheory = function(id) { document.getElementById(id).classList.toggle('hidden') }
 
 window.toggleTheme = function() {
-  const isDark = document.documentElement.classList.toggle('dark')
-  localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙'
+  const isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 // ── Глобальный доступ к функциям ────────────────────────
