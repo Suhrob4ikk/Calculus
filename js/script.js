@@ -66,20 +66,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Слушаем изменения сессии — срабатывает когда Supabase обрабатывает токен из URL
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
-      // Пользователь перешёл по ссылке сброса пароля
       currentUser = session?.user || null
       showPage('updatePasswordPage')
     } else if (event === 'SIGNED_IN') {
-      // Пользователь подтвердил email или вошёл
       currentUser = session?.user || null
       const updatePage = document.getElementById('updatePasswordPage')
       if (updatePage && updatePage.style.display !== 'none') return
       if (currentUser) {
-        showPage('homePage')
-        updateUserUI()
+        // ВАЖНО: навигируем на homePage ТОЛЬКО если пользователь был на authPage.
+        // При сворачивании вкладки Supabase обновляет токен и снова стреляет SIGNED_IN —
+        // без этой проверки пользователя выбрасывало бы из теста на главную.
+        const authPage = document.getElementById('authPage')
+        const onAuthPage = authPage && authPage.style.display !== 'none'
+        if (onAuthPage) {
+          showPage('homePage')
+          updateUserUI()
+        }
+        // Если уже на другой странице (тест, профиль и т.д.) — не трогаем
       }
     } else if (event === 'SIGNED_OUT') {
       currentUser = null
+      clearTestState()
       showPage('authPage')
     }
   })
@@ -100,18 +107,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     currentUser = session.user
-    // Восстанавливаем прерванный тест
-    if (localStorage.getItem('testState')) {
-      if (restoreTestState()) {
-        showPage('testPage')
-        startTimer()
-        displayQuestion()
-        return
-      }
-    }
     showPage('homePage')
     updateUserUI()
     renderStreakBadge()
+    // Если есть сохранённый тест — предлагаем продолжить, а не входим автоматически
+    if (localStorage.getItem('testState')) {
+      showContinueTestBanner()
+    }
   } else {
     showPage('authPage')
   }
@@ -128,6 +130,76 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 })
+
+// ── Оверлей приватности (анти-читерство) ────────────────
+function showPrivacyScreen() {
+  const overlay = document.getElementById('privacyOverlay')
+  if (overlay) overlay.style.display = 'flex'
+}
+function hidePrivacyScreen() {
+  const overlay = document.getElementById('privacyOverlay')
+  if (overlay) overlay.style.display = 'none'
+}
+window.hidePrivacyScreen = hidePrivacyScreen
+
+// Когда пользователь скрывает вкладку/сворачивает окно во время теста
+document.addEventListener('visibilitychange', () => {
+  const testPage = document.getElementById('testPage')
+  const isOnTest = testPage && testPage.style.display !== 'none'
+  if (document.hidden && isOnTest) {
+    showPrivacyScreen()
+  }
+})
+// Дополнительно: blur окна (работает на десктопе)
+window.addEventListener('blur', () => {
+  const testPage = document.getElementById('testPage')
+  if (testPage && testPage.style.display !== 'none') {
+    showPrivacyScreen()
+  }
+})
+
+// ── Баннер "Продолжить тест?" ────────────────────────────
+function showContinueTestBanner() {
+  // Удаляем старый баннер, если есть
+  document.getElementById('continueTestBanner')?.remove()
+  const banner = document.createElement('div')
+  banner.id = 'continueTestBanner'
+  banner.style.cssText = `
+    position:fixed; top:1rem; left:50%; transform:translateX(-50%);
+    z-index:10000; background:rgba(30,41,59,0.96); color:#f1f5f9;
+    border:1px solid rgba(59,130,246,0.4); border-radius:1rem;
+    padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4); backdrop-filter:blur(12px);
+    font-size:0.9rem; max-width:90vw;
+  `
+  banner.innerHTML = `
+    <span style="font-size:1.4rem">📝</span>
+    <span>У вас есть незавершённый тест</span>
+    <button onclick="resumeTestFromBanner()" style="
+      background:#3b82f6;color:white;border:none;padding:6px 16px;
+      border-radius:8px;cursor:pointer;font-weight:600;font-size:0.85rem;
+    ">Продолжить</button>
+    <button onclick="dismissContinueTestBanner()" style="
+      background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);
+      padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;
+    ">Начать заново</button>
+  `
+  document.body.appendChild(banner)
+}
+window.resumeTestFromBanner = function() {
+  document.getElementById('continueTestBanner')?.remove()
+  if (restoreTestState()) {
+    showPage('testPage')
+    startTimer()
+    displayQuestion()
+  } else {
+    clearTestState()
+  }
+}
+window.dismissContinueTestBanner = function() {
+  document.getElementById('continueTestBanner')?.remove()
+  clearTestState()
+}
 
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
@@ -148,12 +220,14 @@ function showPage(pageId) {
     try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
   const noNavPages = ['authPage', 'updatePasswordPage']
+  const showNav   = !noNavPages.includes(pageId)
   const sideNav   = document.getElementById('sideNav')
   const bottomNav = document.getElementById('bottomNav')
   const headerAvatar = document.querySelector('.header-avatar')
-  if (sideNav)   sideNav.style.display   = noNavPages.includes(pageId) ? 'none' : 'flex'
-  if (bottomNav) bottomNav.style.display = noNavPages.includes(pageId) ? 'none' : ''
-  if (headerAvatar) headerAvatar.style.display = noNavPages.includes(pageId) ? 'none' : 'flex'
+  if (sideNav)   sideNav.style.display   = showNav ? 'flex' : 'none'
+  // bottomNav: controlled via JS only; CSS hides on desktop via min-width media query
+  if (bottomNav) bottomNav.style.display = showNav ? 'flex' : 'none'
+  if (headerAvatar) headerAvatar.style.display = showNav ? 'flex' : 'none'
 
   // Подсвечиваем активную вкладку в нижней навигации
   const bnMap = {

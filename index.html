@@ -143,6 +143,15 @@
 
   <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
 
+  <!-- Оверлей приватности (появляется при скрытии вкладки во время теста) -->
+  <div id="privacyOverlay" onclick="hidePrivacyScreen()">
+    <div class="po-inner">
+      <div class="po-icon">🔒</div>
+      <div class="po-title">Тест приостановлен</div>
+      <div class="po-hint">Нажмите, чтобы продолжить</div>
+    </div>
+  </div>
+
 <!-- Шапка: аватар + имя -->
 <!-- Аватар в шапке скрыт, навигация через боковую панель -->
 <div id="headerAvatarImg" style="display:none"></div>
@@ -771,13 +780,12 @@
   <script src="js/series-questions.js"></script>
   <script src="js/limits-questions.js"></script>
 <script>
-    // Глобальная обёртка — вызывается кнопкой до загрузки модуля
+    // Глобальная функция темы — работает и до загрузки модуля, и после
     function toggleTheme() {
-      if (typeof window._toggleThemeImpl === 'function') {
-        window._toggleThemeImpl()
-      } else {
-        window._pendingThemeToggle = true
-      }
+      const isDark = document.documentElement.classList.toggle('dark')
+      localStorage.setItem('theme', isDark ? 'dark' : 'light')
+      const btn = document.getElementById('themeToggle')
+      if (btn) btn.textContent = isDark ? '☀️' : '🌙'
     }
   </script>
   <script type="module" src="js/script.js"></script>

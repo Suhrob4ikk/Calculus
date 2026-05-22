@@ -347,10 +347,92 @@ html:not(.dark) #bottomNav button.bn-active { color: #4f46e5; background: rgba(9
 /* На мобильных — отступ снизу для контента */
 @media (max-width: 640px) {
   .page-content { padding-bottom: 68px !important; }
-  #bottomNav { display: flex !important; }
+  /* Боковая панель скрыта на мобильных (заменена нижней навигацией) */
+  #sideNav { display: none !important; }
 }
+/* На десктопе нижняя навигация скрыта */
 @media (min-width: 641px) {
   #bottomNav { display: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   СВЕТЛАЯ ТЕМА — исправление glass-панелей и slate-текста
+   Карточки используют text-slate-100/400 (для тёмного фона),
+   в светлой теме без фона — текст невидим. Фиксируем здесь.
+   ══════════════════════════════════════════════════════════ */
+html:not(.dark) .glass-panel {
+  background: #ffffff !important;
+  border: 1px solid rgba(99, 102, 241, 0.12) !important;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.06), 0 1px 4px rgba(0,0,0,0.04) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html:not(.dark) .glass-card,
+html:not(.dark) .glass-btn,
+html:not(.dark) .glass-strong {
+  background: #f8fafc !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* Slate — цвета текста в светлой теме */
+html:not(.dark) .text-slate-100 { color: #1e293b !important; }
+html:not(.dark) .text-slate-200 { color: #334155 !important; }
+html:not(.dark) .text-slate-300 { color: #475569 !important; }
+html:not(.dark) .text-slate-400 { color: #64748b !important; }
+html:not(.dark) .text-slate-500 { color: #64748b !important; }
+/* Кнопки с прозрачным фоном */
+html:not(.dark) .bg-blue-600    { background: #2563eb !important; }
+html:not(.dark) .bg-emerald-600 { background: #059669 !important; }
+html:not(.dark) .bg-rose-600    { background: #e11d48 !important; }
+html:not(.dark) .bg-purple-600  { background: #9333ea !important; }
+html:not(.dark) .border-slate-700 { border-color: #e2e8f0 !important; }
+/* Боковая панель в светлой теме */
+html:not(.dark) #sideNav {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-right: 1px solid rgba(99,102,241,0.15) !important;
+}
+html:not(.dark) #sideNav button { color: #64748b !important; }
+html:not(.dark) #sideNav button:hover { color: #4f46e5 !important; }
+
+/* ══════════════════════════════════════════════════════════
+   ОВЕРЛЕЙ ПРИВАТНОСТИ (показывается при скрытии вкладки)
+   ══════════════════════════════════════════════════════════ */
+#privacyOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  backdrop-filter: blur(24px) brightness(0.4);
+  -webkit-backdrop-filter: blur(24px) brightness(0.4);
+  background: rgba(10, 15, 30, 0.85);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+#privacyOverlay .po-inner {
+  text-align: center;
+  color: #f1f5f9;
+  padding: 2rem;
+}
+#privacyOverlay .po-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: poPulse 2s ease-in-out infinite;
+}
+#privacyOverlay .po-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+#privacyOverlay .po-hint {
+  font-size: 0.95rem;
+  opacity: 0.6;
+}
+@keyframes poPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* push-кнопка активное состояние */
