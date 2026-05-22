@@ -1,18 +1,8 @@
 // ── Подключение к Supabase ────────────────────────────────
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-// NOTE: This file contains the Supabase URL and the publishable (anon) key
-// The publishable key *must* remain public for client-side SDK usage.
-// IMPORTANT: Ensure Row Level Security (RLS) is enabled in your Supabase
-// project and create appropriate policies for `test_results` and `profiles`.
-// Example policy: allow insert for authenticated users and allow select for
-// public read where appropriate. Without RLS, your DB is writable by anyone.
 const SUPABASE_URL = 'https://xahjwhoywxgudsefqowd.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_l-Ync04W2cC3hcveYjL0rA_tG0iSvsv'
-
-if (SUPABASE_KEY && SUPABASE_KEY.startsWith('sb_')) {
-  console.info('Supabase publishable key present. Ensure RLS policies are configured on the server.')
-}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -61,46 +51,22 @@ export async function getUserResults(userId) {
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
-    .limit(20)
+    .limit(200)
   return { data, error }
 }
 
 export async function getLeaderboard(section = null, difficulty = null) {
-  // Fetch a reasonable number of recent attempts then aggregate client-side
-  // to present each user's best score. This avoids relying on a single-row
-  // database ordering which may return multiple attempts per user.
   let query = supabase
     .from('test_results')
-    .select('username, user_id, section, difficulty, score, correct_answers, total_questions, created_at')
-    .order('created_at', { ascending: false })
-    .limit(1000) // safety cap to avoid huge result sets
+    .select('username, section, difficulty, score, correct_answers, total_questions, created_at')
+    .order('score', { ascending: false })
+    .limit(1000)
 
   if (section) query = query.eq('section', section)
   if (difficulty) query = query.eq('difficulty', difficulty)
 
   const { data, error } = await query
-  if (error) return { data: [], error }
-
-  // Aggregate best score per username (or user_id if username missing)
-  const bestMap = new Map()
-  for (const row of data || []) {
-    const key = row.username || row.user_id || 'anonymous'
-    const prev = bestMap.get(key)
-    if (!prev) { bestMap.set(key, row); continue }
-    const prevScore = prev.score || 0
-    const curScore = row.score || 0
-    if (curScore > prevScore) bestMap.set(key, row)
-    else if (curScore === prevScore) {
-      // prefer more recent attempt
-      if (new Date(row.created_at) > new Date(prev.created_at)) bestMap.set(key, row)
-    }
-  }
-
-  const aggregated = Array.from(bestMap.values())
-    .sort((a, b) => (b.score || 0) - (a.score || 0) || new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 50)
-
-  return { data: aggregated, error: null }
+  return { data, error }
 }
 
 // ── Аватар ────────────────────────────────────────────────
@@ -128,7 +94,7 @@ export async function searchProfiles(query) {
     .from('profiles')
     .select('id, username, avatar_url, created_at')
     .ilike('username', query ? `${query}%` : '%')
-    .limit(10)
+    .limit(1000)
   return { data, error }
 }
 
@@ -141,6 +107,22 @@ export async function resetPassword(email) {
 
 export async function updatePassword(newPassword) {
   const { error } = await supabase.auth.updateUser({ password: newPassword })
+  return { error }
+}
+
+// ── Push-подписки ─────────────────────────────────────────
+export async function savePushSubscription(userId, subscription) {
+  const { error } = await supabase
+    .from('push_subscriptions')
+    .upsert({ user_id: userId, subscription }, { onConflict: 'user_id' })
+  return { error }
+}
+
+export async function deletePushSubscription(userId) {
+  const { error } = await supabase
+    .from('push_subscriptions')
+    .delete()
+    .eq('user_id', userId)
   return { error }
 }
 

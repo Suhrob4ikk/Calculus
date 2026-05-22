@@ -1,6 +1,6 @@
 /* ── CSS переменные ──────────────────────────────────────── */
 :root {
-  /* Светлая тема (старая) */
+  /* Светлая тема */
   --bg-main: #f0f9ff;
   --bg-card: #ffffff;
   --bg-section: #ffffff;
@@ -17,7 +17,7 @@
   --result-red-text: #7f1d1d;
   --history-bg: #f9fafb;
 
-  /* Glass-переменные (из новой версии) */
+  /* Glass-переменные */
   --glass-bg-dark: rgba(30, 41, 59, 0.7);
   --glass-bg-light: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(148, 163, 184, 0.1);
@@ -55,7 +55,7 @@ body {
 
 /* ── Математический фон (только в тёмной теме) ──────────── */
 .math-bg {
-  display: none; /* скрыт по умолчанию */
+  display: none;
 }
 
 .dark .math-bg {
@@ -166,7 +166,7 @@ body {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
 }
 
-/* ── Старые оверрайды тёмной темы ────────────────────────── */
+/* ── Тёмные оверрайды для Tailwind-классов ───────────────── */
 .dark .bg-white { background-color: var(--bg-card) !important; }
 .dark .text-gray-800 { color: #f1f5f9 !important; }
 .dark .text-gray-700 { color: #cbd5e1 !important; }
@@ -296,4 +296,66 @@ input[type="password"], select {
   .container { padding-left: 1rem; padding-right: 1rem; }
   .text-4xl { font-size: 1.875rem !important; }
   .text-6xl { font-size: 2.25rem !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   НИЖНЯЯ НАВИГАЦИЯ (мобильная)
+   ══════════════════════════════════════════════════════════ */
+#bottomNav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1002;
+  display: flex;
+  align-items: stretch;
+  height: 60px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+#bottomNav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  padding: 6px 4px;
+  border-radius: 0;
+}
+#bottomNav button span:first-child { font-size: 1.25rem; line-height: 1; }
+#bottomNav button:hover,
+#bottomNav button.bn-active { color: #60a5fa; background: rgba(59, 130, 246, 0.08); }
+
+html:not(.dark) #bottomNav {
+  background: rgba(255, 255, 255, 0.96);
+  border-top-color: rgba(165, 180, 252, 0.4);
+}
+html:not(.dark) #bottomNav button { color: #94a3b8; }
+html:not(.dark) #bottomNav button:hover,
+html:not(.dark) #bottomNav button.bn-active { color: #4f46e5; background: rgba(99, 102, 241, 0.08); }
+
+/* На мобильных — отступ снизу для контента */
+@media (max-width: 640px) {
+  .page-content { padding-bottom: 68px !important; }
+  #bottomNav { display: flex !important; }
+}
+@media (min-width: 641px) {
+  #bottomNav { display: none !important; }
+}
+
+/* push-кнопка активное состояние */
+.active-push {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
 }

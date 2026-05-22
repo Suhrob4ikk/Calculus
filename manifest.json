@@ -1,0 +1,40 @@
+{
+  "name": "Математический анализ",
+  "short_name": "МатАнализ",
+  "description": "Интерактивный тренажёр по матанализу для студентов МГУ Душанбе",
+  "start_url": "/Calculus/",
+  "scope": "/Calculus/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "lang": "ru",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Интегралы",
+      "url": "/Calculus/#integrals",
+      "description": "Тест по интегралам"
+    },
+    {
+      "name": "Производные",
+      "url": "/Calculus/#derivatives",
+      "description": "Тест по производным"
+    }
+  ]
+}

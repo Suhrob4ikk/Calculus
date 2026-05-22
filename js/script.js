@@ -1,41 +1,67 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword, savePushSubscription, deletePushSubscription } from './supabase.js'
+
+// ── VAPID публичный ключ (замени после npx web-push generate-vapid-keys) ──
+const VAPID_PUBLIC_KEY = 'BFvc73Owpo8t4uZ_F-_w8Xdt4Bh05LtAHe_4F4aaSsVuHe7_3tpiGhr2jJLabkeYD-uZMRHfIuhs0jaDZP7diR4'
+
+function urlBase64ToUint8Array(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4)
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'))
+  return Uint8Array.from(raw, c => c.charCodeAt(0))
+}
+
+
+// ── Применение темы (вызывается до DOMContentLoaded) ─────
+function applyTheme(dark) {
+  const body = document.body
+  const html = document.documentElement
+  if (dark) {
+    html.classList.add('dark')
+    body.classList.remove('light-theme')
+    body.classList.add('dark-theme')
+  } else {
+    html.classList.remove('dark')
+    body.classList.remove('dark-theme')
+    body.classList.add('light-theme')
+  }
+}
 
 // ── Глобальные переменные ─────────────────────────────────
 let testTimer, timeRemaining = 25 * 60
-let timerStartTime = null
-let timerInitialTime = 0
+let timerInitialTime = 25 * 60, timerStartTime = null
 let currentTest = [], currentQuestionIndex = 0
 let userAnswers = [], testStartTime
 let currentDifficulty = '', currentSection = ''
 let currentUser = null
+let isStudyMode = false
 
 // ── Инициализация ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  registerSW()
+
   // Генерируем плавающие математические символы для тёмной темы
-  const mathBg = document.getElementById('mathBg');
+  const mathBg = document.getElementById('mathBg')
   if (mathBg) {
-    const mathSymbols = ['∫','∑','∏','√','∞','∂','∇','∈','∀','∃','≈','≠','≤','≥','lim','dx','f\'(x)','π','e'];
+    const mathSymbols = ['∫','∑','∏','√','∞','∂','∇','∈','∀','∃','≈','≠','≤','≥','lim','dx','f\'(x)','π','e']
     for (let i = 0; i < 25; i++) {
-      const span = document.createElement('span');
-      span.className = 'math-symbol';
-      span.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
-      span.style.left = Math.random() * 100 + '%';
-      span.style.top = '100vh';
-      span.style.animationDuration = (Math.random() * 20 + 15) + 's';
-      span.style.animationDelay = -(Math.random() * 25) + 's';
-      span.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
-      span.style.opacity = '0';
-      mathBg.appendChild(span);
+      const span = document.createElement('span')
+      span.className = 'math-symbol'
+      span.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)]
+      span.style.left = Math.random() * 100 + '%'
+      span.style.top = '100vh'
+      span.style.animationDuration = (Math.random() * 20 + 15) + 's'
+      span.style.animationDelay = -(Math.random() * 25) + 's'
+      span.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem'
+      span.style.opacity = '0'
+      mathBg.appendChild(span)
     }
   }
   // Применяем тему
   const saved = localStorage.getItem('theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  if (saved === 'dark' || (!saved && prefersDark)) {
-    document.documentElement.classList.add('dark')
-    const btn = document.getElementById('themeToggle')
-    if (btn) btn.textContent = '☀️'
-  }
+  const startDark = saved === 'dark' || (!saved && prefersDark)
+  applyTheme(startDark)
+  const btn = document.getElementById('themeToggle')
+  if (btn) btn.textContent = startDark ? '☀️' : '🌙'
 
   // Слушаем изменения сессии — срабатывает когда Supabase обрабатывает токен из URL
   supabase.auth.onAuthStateChange(async (event, session) => {
@@ -63,36 +89,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tokenType = urlParams.get('type')
   const tokenHash = urlParams.get('token_hash')
 
-  if (tokenType === 'recovery') {
-    // Supabase уже верифицировал токен — просто получаем сессию и показываем форму
-    if (tokenHash) {
-      await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
-    }
-    const { data: { session } } = await supabase.auth.getSession()
-    currentUser = session?.user || null
+  // Supabase обрабатывает токены автоматически через onAuthStateChange.
+  // Ручной verifyOtp не нужен — токен передаётся в хэш URL, а не в query params.
+  // Очищаем URL если есть параметры
+  if (tokenType) {
     history.replaceState(null, '', window.location.pathname)
-    showPage('updatePasswordPage')
-    return
-  }
-
-  if (tokenType === 'signup' || tokenType === 'email') {
-    // Подтверждение email
-    if (tokenHash) {
-      await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
-    }
-    const { data: { session } } = await supabase.auth.getSession()
-    currentUser = session?.user || null
-    history.replaceState(null, '', window.location.pathname)
-    if (currentUser) { showPage('homePage'); updateUserUI() }
-    else showPage('authPage')
-    return
   }
 
   // Обычная загрузка — проверяем сессию
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     currentUser = session.user
-    // Проверяем, есть ли восстанавливаемый тест
+    // Восстанавливаем прерванный тест
     if (localStorage.getItem('testState')) {
       if (restoreTestState()) {
         showPage('testPage')
@@ -103,25 +111,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     showPage('homePage')
     updateUserUI()
+    renderStreakBadge()
   } else {
     showPage('authPage')
   }
 
-  // Предупреждение при попытке уйти со страницы во время теста
+  // Сохраняем прогресс и предупреждаем перед уходом со страницы
   window.addEventListener('beforeunload', (e) => {
-    if (currentTest.length > 0 && currentQuestionIndex >= 0 && currentQuestionIndex < currentTest.length) {
+    if (currentTest.length > 0) {
+      saveTestState()
       e.preventDefault()
-      e.returnValue = 'Вы не закончили тест. Все изменения будут потеряны.'
+      e.returnValue = 'Вы не закончили тест. При следующем входе тест восстановится.'
       return e.returnValue
     }
   })
+
 
 })
 
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','limitsSection','testPage','resultsPage','statisticsPage','leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
+                 'seriesSection','limitsSection','testPage','resultsPage','statisticsPage',
+                 'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) {
@@ -133,7 +145,25 @@ function showPage(pageId) {
   if (target) {
     target.classList.remove('hidden')
     target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
+    try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
+  const noNavPages = ['authPage', 'updatePasswordPage']
+  const sideNav   = document.getElementById('sideNav')
+  const bottomNav = document.getElementById('bottomNav')
+  const headerAvatar = document.querySelector('.header-avatar')
+  if (sideNav)   sideNav.style.display   = noNavPages.includes(pageId) ? 'none' : 'flex'
+  if (bottomNav) bottomNav.style.display = noNavPages.includes(pageId) ? 'none' : ''
+  if (headerAvatar) headerAvatar.style.display = noNavPages.includes(pageId) ? 'none' : 'flex'
+
+  // Подсвечиваем активную вкладку в нижней навигации
+  const bnMap = {
+    profilePage: 'bnProfile', homePage: 'bnHome',
+    statisticsPage: 'bnStats', leaderboardPage: 'bnLeader',
+    searchProfilesPage: 'bnPeople'
+  }
+  document.querySelectorAll('#bottomNav button').forEach(b => b.classList.remove('bn-active'))
+  const active = bnMap[pageId]
+  if (active) document.getElementById(active)?.classList.add('bn-active')
 }
 
 function updateUserUI() {
@@ -145,12 +175,204 @@ function updateUserUI() {
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
       : '')
   }
+  // Шапка: аватар убран, но sidebar Профиль-кнопку можно обновить если нужно
+  // (headerAvatarImg и др. элементы скрыты, но ID сохранены для совместимости)
 }
+
+// ── Service Worker + PWA ─────────────────────────────────
+async function registerSW() {
+  if (!('serviceWorker' in navigator)) return
+  try {
+    const reg = await navigator.serviceWorker.register('/Calculus/sw.js', { scope: '/Calculus/' })
+    console.log('SW registered:', reg.scope)
+    // Если отложенный запрос на показ prompt установки
+    window._swReg = reg
+  } catch (e) {
+    console.warn('SW registration failed:', e)
+  }
+}
+
+// ── PWA: кнопка "Установить приложение" ─────────────────
+let _deferredInstallPrompt = null
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault()
+  _deferredInstallPrompt = e
+  const btn = document.getElementById('installAppBtn')
+  if (btn) btn.style.display = 'flex'
+})
+window.addEventListener('appinstalled', () => {
+  _deferredInstallPrompt = null
+  const btn = document.getElementById('installAppBtn')
+  if (btn) btn.style.display = 'none'
+})
+
+window.installApp = async function() {
+  if (!_deferredInstallPrompt) return
+  _deferredInstallPrompt.prompt()
+  const { outcome } = await _deferredInstallPrompt.userChoice
+  if (outcome === 'accepted') _deferredInstallPrompt = null
+}
+
+// ── Push-уведомления ────────────────────────────────────
+async function subscribePush() {
+  if (!('Notification' in window) || !('PushManager' in window)) return null
+  if (VAPID_PUBLIC_KEY === 'REPLACE_WITH_YOUR_VAPID_PUBLIC_KEY') return null
+
+  const perm = await Notification.requestPermission()
+  if (perm !== 'granted') return null
+
+  try {
+    const reg = window._swReg || await navigator.serviceWorker.ready
+    const existing = await reg.pushManager.getSubscription()
+    if (existing) return existing
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    })
+    if (currentUser) await savePushSubscription(currentUser.id, sub.toJSON())
+    return sub
+  } catch (e) {
+    console.warn('Push subscribe failed:', e)
+    return null
+  }
+}
+
+async function unsubscribePush() {
+  try {
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.getSubscription()
+    if (sub) await sub.unsubscribe()
+    if (currentUser) await deletePushSubscription(currentUser.id)
+  } catch (e) {
+    console.warn('Push unsubscribe failed:', e)
+  }
+}
+
+window.togglePushNotifications = async function() {
+  const btn = document.getElementById('pushToggleBtn')
+  if (!btn) return
+  const reg = await navigator.serviceWorker.ready
+  const existing = await reg.pushManager.getSubscription()
+  if (existing) {
+    await unsubscribePush()
+    btn.textContent = '🔔 Включить уведомления'
+    btn.classList.remove('active-push')
+    localStorage.setItem('pushEnabled', 'false')
+  } else {
+    const sub = await subscribePush()
+    if (sub) {
+      btn.textContent = '🔕 Отключить уведомления'
+      btn.classList.add('active-push')
+      localStorage.setItem('pushEnabled', 'true')
+    }
+  }
+}
+
+// ── Streak (серия дней) ──────────────────────────────────
+function updateStreak() {
+  const today    = new Date().toDateString()
+  const lastVisit = localStorage.getItem('lastVisit')
+  let streak     = parseInt(localStorage.getItem('streak') || '0', 10)
+
+  if (lastVisit === today) {
+    // Уже считали сегодня — ничего не меняем
+  } else {
+    const yesterday = new Date(Date.now() - 86400000).toDateString()
+    streak = lastVisit === yesterday ? streak + 1 : 1
+    localStorage.setItem('streak', streak)
+    localStorage.setItem('lastVisit', today)
+  }
+  return streak
+}
+
+function renderStreakBadge() {
+  const streak = updateStreak()
+  const el = document.getElementById('streakBadge')
+  if (!el) return
+  if (streak >= 2) {
+    el.style.display = 'flex'
+    el.innerHTML = `🔥 <span style="font-weight:700">${streak}</span> <span style="font-size:0.75rem;opacity:0.8">дней подряд</span>`
+  } else {
+    el.style.display = 'none'
+  }
+}
+
+// ── Конфетти при 100% ───────────────────────────────────
+function launchConfetti() {
+  const canvas = document.createElement('canvas')
+  canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999'
+  document.body.appendChild(canvas)
+  const ctx = canvas.getContext('2d')
+  canvas.width  = window.innerWidth
+  canvas.height = window.innerHeight
+
+  const pieces = Array.from({ length: 140 }, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * -canvas.height,
+    w:    Math.random() * 10 + 5,
+    h:    Math.random() * 6 + 3,
+    r:    Math.random() * Math.PI * 2,
+    dr:   (Math.random() - 0.5) * 0.2,
+    dy:   Math.random() * 3 + 2,
+    dx:   (Math.random() - 0.5) * 2,
+    color: `hsl(${Math.random() * 360},90%,60%)`
+  }))
+
+  let frame, elapsed = 0
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    pieces.forEach(p => {
+      ctx.save()
+      ctx.translate(p.x, p.y)
+      ctx.rotate(p.r)
+      ctx.fillStyle = p.color
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+      ctx.restore()
+      p.y  += p.dy
+      p.x  += p.dx
+      p.r  += p.dr
+      p.dy += 0.04
+    })
+    elapsed++
+    if (elapsed < 180) frame = requestAnimationFrame(draw)
+    else { cancelAnimationFrame(frame); canvas.remove() }
+  }
+  frame = requestAnimationFrame(draw)
+}
+
+// ── Keyboard shortcuts ───────────────────────────────────
+document.addEventListener('keydown', e => {
+  const testVisible = document.getElementById('testPage')?.style.display !== 'none'
+  if (!testVisible) return
+
+  // 1-4 → выбор ответа
+  if (['1','2','3','4'].includes(e.key)) {
+    const idx = parseInt(e.key) - 1
+    const labels = document.querySelectorAll('.option-label')
+    if (labels[idx] && userAnswers[currentQuestionIndex] === null) {
+      window.selectAnswer(idx)
+    }
+  }
+  // Enter → следующий вопрос / завершить
+  if (e.key === 'Enter') {
+    const finish = document.getElementById('finishBtn')
+    const next   = document.getElementById('nextBtn')
+    if (finish?.style.display !== 'none') window.finishTest()
+    else if (next?.style.display !== 'none') window.nextQuestion()
+  }
+  // Стрелка влево → предыдущий
+  if (e.key === 'ArrowLeft') window.previousQuestion()
+  // Escape → выйти
+  if (e.key === 'Escape') window.exitTest()
+})
 
 // ── Авторизация ───────────────────────────────────────────
 window.showAuthTab = function(tab) {
   document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login')
   document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register')
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login')
+  document.getElementById('tabRegister').classList.toggle('active', tab !== 'login')
   document.getElementById('tabLogin').classList.toggle('font-bold', tab === 'login')
   document.getElementById('tabRegister').classList.toggle('font-bold', tab === 'register')
 }
@@ -246,19 +468,23 @@ window.showSearchProfiles = async function() {
     if (!input) return
     input.focus()
     input.value = ''
-    input.oninput = async () => {
-      const q = input.value.trim()
-      const { data } = await searchProfiles(q)
-      if (!q) {
-        renderSearchResults(data)
-        return
-      }
-      if (!data || data.length === 0) {
-        document.getElementById('searchResults').innerHTML =
-          `<p class="text-gray-400 text-center py-4">Пользователь "${q}" не найден</p>`
-      } else {
-        renderSearchResults(data)
-      }
+    let _searchTimeout = null
+    input.oninput = () => {
+      clearTimeout(_searchTimeout)
+      _searchTimeout = setTimeout(async () => {
+        const q = input.value.trim()
+        const { data } = await searchProfiles(q)
+        if (!q) {
+          renderSearchResults(data)
+          return
+        }
+        if (!data || data.length === 0) {
+          document.getElementById('searchResults').innerHTML =
+            `<p class="text-gray-400 text-center py-4">Пользователь "${q}" не найден</p>`
+        } else {
+          renderSearchResults(data)
+        }
+      }, 300)
     }
   }, 50)
 }
@@ -357,7 +583,7 @@ window.viewProfile = async function(username) {
       ${results.slice(0,5).map(r => `
         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
           <div>
-            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':'Ряды'}</span>
+            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':'Пределы'}</span>
             <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
           </div>
           <span class="font-bold ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
@@ -491,6 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.showHome = function() {
   stopTimer()
   showPage('homePage')
+  renderStreakBadge()
 }
 
 window.showSection = function(section) {
@@ -499,32 +726,23 @@ window.showSection = function(section) {
   showPage(map[section])
 }
 
-const sectionLabels = {
-  integrals: 'Интегралы',
-  derivatives: 'Производные',
-  series: 'Ряды',
-  limits: 'Лимиты'
-}
-
-const difficultyLabels = {
-  easy: 'Лёгкий',
-  medium: 'Средний',
-  hard: 'Сложный'
-}
-
 // ── Таймер ────────────────────────────────────────────────
 function startTimer() {
   updateTimerDisplay()
   if (testTimer) clearInterval(testTimer)
-  timerStartTime = Date.now()
-  timerInitialTime = timeRemaining
   testTimer = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - timerStartTime) / 1000)
-    // Always calculate remaining from initial time, not cumulatively
-    const remaining = Math.max(0, timerInitialTime - elapsed)
-    timeRemaining = remaining
+    timeRemaining--
     updateTimerDisplay()
-    if (timeRemaining <= 0) { clearInterval(testTimer); alert('Время вышло!'); finishTest() }
+    if (timeRemaining <= 0) {
+      clearInterval(testTimer)
+      // Мягкое уведомление вместо блокирующего alert()
+      const timerEl = document.getElementById('timerDisplay')
+      if (timerEl) {
+        timerEl.textContent = '⏱️ Время вышло!'
+        timerEl.className = 'text-lg font-semibold text-red-600 bg-red-100 px-4 py-2 rounded-lg animate-pulse'
+      }
+      setTimeout(() => finishTest(), 1500)
+    }
   }, 1000)
 }
 
@@ -545,38 +763,20 @@ function stopTimer() {
   if (testTimer) { clearInterval(testTimer); testTimer = null }
 }
 
-// ── Сохранение и восстановление состояния теста ──────────
-function saveTestState() {
-  if (currentTest.length === 0) return
-  localStorage.setItem('testState', JSON.stringify({
-    section: currentSection,
-    difficulty: currentDifficulty,
-    currentQuestionIndex: currentQuestionIndex,
-    userAnswers: userAnswers,
-    timeRemaining: timeRemaining,
-    currentTest: currentTest.map(q => ({ question: q.question, options: q.options, correct: q.correct }))
-  }))
-}
 
-function restoreTestState() {
-  const saved = localStorage.getItem('testState')
-  if (!saved) return false
+// ── Сохранение / очистка / восстановление состояния теста ─
+function saveTestState() {
   try {
-    const state = JSON.parse(saved)
-    currentSection = state.section
-    currentDifficulty = state.difficulty
-    currentQuestionIndex = state.currentQuestionIndex
-    userAnswers = state.userAnswers
-    timeRemaining = state.timeRemaining
-    timerInitialTime = state.timeRemaining
-    currentTest = state.currentTest
-    testStartTime = Date.now()
-    timerStartTime = null
-    return true
+    localStorage.setItem('testState', JSON.stringify({
+      section: currentSection,
+      difficulty: currentDifficulty,
+      currentQuestionIndex,
+      userAnswers,
+      timeRemaining,
+      currentTest
+    }))
   } catch (e) {
-    console.error('Failed to restore test state:', e)
-    localStorage.removeItem('testState')
-    return false
+    console.error('saveTestState failed:', e)
   }
 }
 
@@ -584,9 +784,32 @@ function clearTestState() {
   localStorage.removeItem('testState')
 }
 
+function restoreTestState() {
+  const saved = localStorage.getItem('testState')
+  if (!saved) return false
+  try {
+    const state = JSON.parse(saved)
+    if (!state.currentTest || !state.currentTest.length) return false
+    currentSection          = state.section
+    currentDifficulty       = state.difficulty
+    currentQuestionIndex    = state.currentQuestionIndex || 0
+    userAnswers             = state.userAnswers || []
+    timeRemaining           = state.timeRemaining || 25 * 60
+    timerInitialTime        = state.timeRemaining || 25 * 60
+    currentTest             = state.currentTest
+    testStartTime           = Date.now()
+    timerStartTime          = null
+    return true
+  } catch (e) {
+    console.error('restoreTestState failed:', e)
+    localStorage.removeItem('testState')
+    return false
+  }
+}
+
 // ── Запуск теста ──────────────────────────────────────────
 function startTest(section, difficulty, pool, countSelectId, sectionEl) {
-  clearTestState() // Очищаем любой предыдущий сохранённый тест
+  clearTestState()
   currentSection = section
   currentDifficulty = difficulty
 
@@ -603,38 +826,49 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
-  timerStartTime = null
 
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = currentTest.length
-  document.getElementById('testTitle').textContent = `Тест: ${sectionLabels[section] || section}`
-  document.getElementById('difficultyLabel').textContent = `Уровень: ${difficultyLabels[difficulty] || difficulty}`
+  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }[section] || section
+  const diffName    = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
+  document.getElementById('testTitle').textContent = `${isStudyMode ? '📖 Изучение' : 'Тест'}: ${sectionName}`
+  document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName}${isStudyMode ? ' · Без таймера · Результат не сохраняется' : ''}`
 
-  startTimer()
+  const timerEl = document.getElementById('timerDisplay')
+  if (timerEl) timerEl.style.display = isStudyMode ? 'none' : ''
+
+  if (!isStudyMode) startTimer()
   displayQuestion()
-  saveTestState() // Сохраняем состояние после инициализации
 }
 
-window.startIntegralsTest = function(d) {
+
+
+
+
+window.startIntegralsTest = function(d, study = false) {
+  isStudyMode = study
   const pool = d==='easy' ? easyIntegralsQuestions : d==='medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
   startTest('integrals', d, pool, 'integralsCount', 'integralsSection')
 }
-window.startDerivativesTest = function(d) {
-  const pool = d==='easy' ? easyDerivativesQuestions : d==='medium' ? mediumDerivativesQuestions : hardDerivativesQuestions
-  startTest('derivatives', d, pool, 'derivativesCount', 'derivativesSection')
-}
-window.startSeriesTest = function(d) {
-  const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
-  startTest('series', d, pool, 'seriesCount', 'seriesSection')
-}
-window.startLimitsTest = function(d) {
+window.startLimitsTest = function(d, study = false) {
+  isStudyMode = study
   const pool = d==='easy' ? easyLimitsQuestions : d==='medium' ? mediumLimitsQuestions : hardLimitsQuestions
   startTest('limits', d, pool, 'limitsCount', 'limitsSection')
 }
+window.startDerivativesTest = function(d, study = false) {
+  isStudyMode = study
+  const pool = d==='easy' ? easyDerivativesQuestions : d==='medium' ? mediumDerivativesQuestions : hardDerivativesQuestions
+  startTest('derivatives', d, pool, 'derivativesCount', 'derivativesSection')
+}
+window.startSeriesTest = function(d, study = false) {
+  isStudyMode = study
+  const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
+  startTest('series', d, pool, 'seriesCount', 'seriesSection')
+}
 
 window.restartTest = function() {
-  window[`start${currentSection.charAt(0).toUpperCase()+currentSection.slice(1)}Test`](currentDifficulty)
+  (currentSection==='limits'?window.startLimitsTest:currentSection==='series'?window.startSeriesTest:currentSection==='derivatives'?window.startDerivativesTest:window.startIntegralsTest)(currentDifficulty)
 }
 
 // ── Вопросы ───────────────────────────────────────────────
@@ -643,33 +877,20 @@ window.selectAnswer = function(answerIndex) {
   userAnswers[currentQuestionIndex] = answerIndex
   const correct = currentTest[currentQuestionIndex].correct
   const isDark = document.documentElement.classList.contains('dark')
-  document.querySelectorAll('.option-label').forEach((label) => {
+  document.querySelectorAll('.option-label').forEach((label, i) => {
     label.style.pointerEvents = 'none'
     const radio = label.querySelector('input[type="radio"]')
     if (radio) radio.disabled = true
-    // radio.value stores the original option index (origIndex)
-    const val = radio ? parseInt(radio.value, 10) : null
-    if (val === correct) {
+    if (i === correct) {
       label.style.borderColor = '#10b981'
       label.style.backgroundColor = isDark ? '#064e3b' : '#ecfdf5'
       label.style.color = isDark ? '#a7f3d0' : '#064e3b'
-    } else if (val === answerIndex && answerIndex !== correct) {
+    } else if (i === answerIndex && answerIndex !== correct) {
       label.style.borderColor = '#ef4444'
       label.style.backgroundColor = isDark ? '#450a0a' : '#fef2f2'
       label.style.color = isDark ? '#fca5a5' : '#7f1d1d'
     }
   })
-  saveTestState() // Сохраняем после выбора ответа
-}
-
-// Перемешивание массива (Фишер-Йетс)
-function shuffleArray(arr) {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
 }
 
 function displayQuestion() {
@@ -680,11 +901,6 @@ function displayQuestion() {
   const chosen = userAnswers[currentQuestionIndex]
   const isDark = document.documentElement.classList.contains('dark')
 
-  // Создаём массив индексов и перемешиваем, запоминая новый индекс правильного
-  const indices = question.options.map((_, i) => i)
-  const shuffled = shuffleArray(indices)
-  const newCorrect = shuffled.indexOf(correct)
-
   container.innerHTML = `
     <div class="mb-6">
       <h3 class="text-xl font-semibold mb-4 math-container" style="color:var(--text-main)">
@@ -692,24 +908,23 @@ function displayQuestion() {
       </h3>
     </div>
     <div class="space-y-3">
-      ${shuffled.map((origIndex, displayIndex) => {
-        const option = question.options[origIndex]
+      ${question.options.map((option, i) => {
         let border = '', bg = '', color = '', pe = ''
         if (answered) {
           pe = 'pointer-events:none;'
-          if (origIndex === correct) {
+          if (i === correct) {
             border = 'border-color:#10b981;'
             bg = `background-color:${isDark ? '#064e3b' : '#ecfdf5'};`
             color = `color:${isDark ? '#a7f3d0' : '#064e3b'};`
-          } else if (origIndex === chosen && chosen !== correct) {
+          } else if (i === chosen && chosen !== correct) {
             border = 'border-color:#ef4444;'
             bg = `background-color:${isDark ? '#450a0a' : '#fef2f2'};`
             color = `color:${isDark ? '#fca5a5' : '#7f1d1d'};`
           }
         }
-        return `<label class="option-label${chosen===origIndex?' selected':''}" style="${border}${bg}${color}${pe}">
-          <input type="radio" name="answer" value="${origIndex}" class="mr-3 mt-1 flex-shrink-0"
-            ${chosen===origIndex?'checked':''} ${answered?'disabled':''} onchange="selectAnswer(${origIndex})">
+        return `<label class="option-label${chosen===i?' selected':''}" style="${border}${bg}${color}${pe}">
+          <input type="radio" name="answer" value="${i}" class="mr-3 mt-1 flex-shrink-0"
+            ${chosen===i?'checked':''} ${answered?'disabled':''} onchange="selectAnswer(${i})">
           <span class="option-text">${option}</span>
         </label>`
       }).join('')}
@@ -727,14 +942,17 @@ function displayQuestion() {
 }
 
 window.nextQuestion = function() {
-  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion(); saveTestState() }
+  if (currentQuestionIndex < currentTest.length - 1) { currentQuestionIndex++; displayQuestion() }
   else finishTest()
 }
 window.previousQuestion = function() {
-  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); saveTestState() }
+  if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion() }
 }
 window.exitTest = function() {
-  if (confirm('Выйти? Прогресс будет потерян.')) { clearTestState(); showHome() }
+  if (confirm('Выйти? Прогресс будет потерян.')) {
+    clearTestState()
+    showHome()
+  }
 }
 
 // ── Завершение теста ──────────────────────────────────────
@@ -754,8 +972,8 @@ window.finishTest = async function() {
   })
   const percentage = Math.round(correct / currentTest.length * 100)
 
-  // Сохраняем в Supabase
-  if (currentUser) {
+  // Сохраняем в Supabase (только не в режиме изучения)
+  if (currentUser && !isStudyMode) {
     const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
     await saveResult({
       userId: currentUser.id,
@@ -769,7 +987,10 @@ window.finishTest = async function() {
   }
 
   window._finishInProgress = false
+  if (!isStudyMode) clearTestState()
+  isStudyMode = false
   showPage('resultsPage')
+  if (percentage === 100) setTimeout(launchConfetti, 400)
 
   const scoreDisplay = document.getElementById('scoreDisplay')
   scoreDisplay.textContent = `${correct}/${currentTest.length}`
@@ -798,17 +1019,35 @@ window.finishTest = async function() {
   if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
 }
 window.shareResult = function(correct, total, percentage) {
-  const section = sectionLabels[currentSection] || currentSection
-  const diff = difficultyLabels[currentDifficulty] || currentDifficulty
+  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }
+  const section = sectionNames[currentSection] || currentSection
+  const diff = currentDifficulty==='easy'?'Лёгкий':currentDifficulty==='medium'?'Средний':'Сложный'
   const emoji = percentage===100?'🏆':percentage>=90?'🌟':percentage>=70?'✅':percentage>=50?'📚':'💪'
   const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://suhrob4ikk.github.io/Calculus`
-  navigator.clipboard?.writeText(text).then(() => {
-    const btn = document.getElementById('shareBtn')
-    const orig = btn.textContent
+  const btn = document.getElementById('shareBtn')
+  const orig = btn.textContent
+  const onCopied = () => {
     btn.textContent = '✅ Скопировано!'
     btn.style.backgroundColor = '#10b981'
     setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = '' }, 2500)
-  })
+  }
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).then(onCopied).catch(() => {
+      // Fallback: создаём временный textarea
+      const ta = document.createElement('textarea')
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'
+      document.body.appendChild(ta); ta.select()
+      try { document.execCommand('copy'); onCopied() } catch(e) {}
+      document.body.removeChild(ta)
+    })
+  } else {
+    // Fallback для Safari и старых браузеров
+    const ta = document.createElement('textarea')
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'
+    document.body.appendChild(ta); ta.select()
+    try { document.execCommand('copy'); onCopied() } catch(e) {}
+    document.body.removeChild(ta)
+  }
 }
 
 
@@ -821,21 +1060,74 @@ function getUserLevel(total, avg) {
   return { name: 'Новичок', icon: '⭐', color: '#6b7280', next: 'Студент (1 тест)', progress: 0 }
 }
 
+
+
+function computeBadges(data, sections) {
+  const total = data.length
+  const best = total ? Math.max(...data.map(r => r.score)) : 0
+  const avg = total ? Math.round(data.reduce((s, r) => s + r.score, 0) / total) : 0
+  const badges = []
+  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест',    cls: 'badge-silver' })
+  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов',       cls: 'badge-silver' })
+  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов',      cls: 'badge-gold'   })
+  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов',      cls: 'badge-gold'   })
+  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold'   })
+  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник',       cls: 'badge-gold'   })
+  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный',     cls: 'badge-green'  })
+  const covered = sections.filter(s => data.some(r => r.section === s))
+  if (covered.length >= 4) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
+  let maxStreak = 0, cur = 0
+  const reversed = data.slice().reverse()
+  reversed.forEach(r => { if (r.score >= 70) { cur++; maxStreak = Math.max(maxStreak, cur) } else cur = 0 })
+  if (maxStreak >= 3) badges.push({ icon: '🔆', text: `Серия ${maxStreak} побед`, cls: 'badge-gold' })
+  if (maxStreak >= 5) badges.push({ icon: '⚡', text: 'Горячая серия',            cls: 'badge-gold' })
+  return { badges, total, best, avg }
+}
+
 // ── Профиль ───────────────────────────────────────────────
 window.showProfile = async function() {
   showPage('profilePage')
   if (!currentUser) return
 
-  // Привязываем кнопки после показа страницы
+  // Обновляем состояние кнопки push-уведомлений
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.pushManager.getSubscription().then(sub => {
+        const btn = document.getElementById('pushToggleBtn')
+        if (!btn) return
+        if (sub) {
+          btn.textContent = '🔕 Отключить уведомления'
+          btn.classList.add('active-push')
+        } else {
+          btn.textContent = '🔔 Включить уведомления'
+          btn.classList.remove('active-push')
+        }
+      })
+    })
+  }
+
   setTimeout(() => {
     const avatarBtn = document.getElementById('avatarUploadBtn')
     if (avatarBtn) avatarBtn.onclick = () => document.getElementById('avatarInput').click()
-
     const avatarInput = document.getElementById('avatarInput')
     if (avatarInput) avatarInput.onchange = handleAvatarUpload
-
-    const searchBtn = document.getElementById('searchProfilesBtn')
-    if (searchBtn) searchBtn.onclick = showSearchProfiles
+    // Кнопка удаления аватара
+    const avatarDeleteBtn = document.getElementById('avatarDeleteBtn')
+    if (avatarDeleteBtn) avatarDeleteBtn.onclick = async () => {
+      if (!currentUser) return
+      if (!confirm('Удалить фото профиля?')) return
+      const { data: files } = await supabase.storage.from('avatars').list(currentUser.id)
+      if (files && files.length > 0) {
+        const paths = files.map(f => `${currentUser.id}/${f.name}`)
+        await supabase.storage.from('avatars').remove(paths)
+      }
+      await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUser.id)
+      const img    = document.getElementById('profileAvatarImg')
+      const letter = document.getElementById('profileAvatar')
+      if (img)    { img.src = ''; img.style.display = 'none' }
+      if (letter) letter.style.display = 'flex'
+      updateUserUI()
+    }
   }, 50)
 
   const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
@@ -847,21 +1139,19 @@ window.showProfile = async function() {
   if (avatarImg) {
     const url = await getAvatarUrl(currentUser.id)
     if (url) {
-      avatarImg.src = url
-      avatarImg.style.display = 'block'
-      avatarImg.style.cursor = 'pointer'
+      avatarImg.src = url; avatarImg.style.display = 'block'; avatarImg.style.cursor = 'pointer'
       avatarImg.onclick = () => openPhotoPreview(url, username)
-      if(avatar) avatar.style.display = 'none'
+      if (avatar) avatar.style.display = 'none'
     } else {
       avatarImg.style.display = 'none'
-      if(avatar) avatar.style.display = 'flex'
+      if (avatar) avatar.style.display = 'flex'
     }
   }
   const nameEl = document.getElementById('profileName')
   const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
   if (nameEl) {
     nameEl.innerHTML = username + (isCreator
-      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle;box-shadow:0 2px 8px rgba(245,158,11,0.4)">👑 Разработчик</span>'
+      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle">👑 Разработчик</span>'
       : '')
   }
   const emailEl = document.getElementById('profileEmail')
@@ -872,44 +1162,24 @@ window.showProfile = async function() {
   if (!profileContent) return
 
   if (!data || data.length === 0) {
-    profileContent.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p>'
+    profileContent.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p>'
     return
   }
 
-  const total = data.length
-  const best = Math.max(...data.map(r => r.score))
-  const avg = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
-  const sections = ['integrals','derivatives','series','limits']
-
-  // Уровень
+  const sections = ['integrals', 'derivatives', 'series', 'limits']
+  const { badges, total, best, avg } = computeBadges(data, sections)
   const level = getUserLevel(total, avg)
 
-  // Достижения
-  const badges = []
-  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест', cls: 'badge-silver' })
-  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов', cls: 'badge-silver' })
-  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов', cls: 'badge-gold' })
-  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов', cls: 'badge-gold' })
-  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold' })
-  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник', cls: 'badge-gold' })
-  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный', cls: 'badge-green' })
-  const covered = sections.filter(s => data.some(r => r.section === s))
-  if (covered.length === 4) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
-  // Серия побед
-  let streak = 0, maxStreak = 0, cur = 0
-  ;[...data].reverse().forEach(r => { if(r.score>=70){cur++;maxStreak=Math.max(maxStreak,cur)}else cur=0 })
-  if (maxStreak >= 3) badges.push({ icon: '🔆', text: `Серия ${maxStreak} побед`, cls: 'badge-gold' })
-  if (maxStreak >= 5) badges.push({ icon: '⚡', text: 'Горячая серия', cls: 'badge-gold' })
-
   // Лучшие результаты по разделам
+  const sectionLabelsLocal = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }
   const bestResults = sections.map(sec => {
     const secData = data.filter(r => r.section === sec)
     if (!secData.length) return null
-    const b = secData.reduce((a,b) => a.score > b.score ? a : b)
-    return { ...b, sectionName: sectionLabels[sec] || sec }
+    const b = secData.reduce((a, b) => a.score > b.score ? a : b)
+    return { ...b, sectionName: sectionLabelsLocal[sec] || sec }
   }).filter(Boolean)
 
-  // Сравнение с другими (топ из leaderboard)
+  // Место в рейтинге
   const { data: lbData } = await getLeaderboard(null, null)
   let compareHTML = ''
   if (lbData && lbData.length > 0) {
@@ -919,95 +1189,90 @@ window.showProfile = async function() {
       allAvgs[r.username].push(r.score)
     })
     const rankings = Object.entries(allAvgs)
-      .map(([name, scores]) => ({ name, avg: Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) }))
-      .sort((a,b) => b.avg - a.avg)
+      .map(([name, scores]) => ({ name, avg: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) }))
+      .sort((a, b) => b.avg - a.avg)
     const myRank = rankings.findIndex(r => r.name === username) + 1
-    const total_users = rankings.length
     compareHTML = `
-      <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Место в рейтинге</h3>
-      <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-4">
-        <div class="text-center">
-          <div class="text-3xl font-bold text-blue-600">#${myRank}</div>
-          <div class="text-gray-500 text-sm">из ${total_users} пользователей</div>
+      <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Место в рейтинге</h3>
+      <div class="rounded-xl p-4 mb-4" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">
+        <div class="text-center mb-3">
+          <div class="text-3xl font-bold text-blue-400">#${myRank}</div>
+          <div class="text-slate-400 text-sm">из ${rankings.length} пользователей</div>
         </div>
-        <div class="mt-3 space-y-2">
-          ${rankings.slice(0,3).map((r,i) => `
-            <div class="flex justify-between items-center p-2 rounded-lg ${r.name===username?'bg-blue-100 font-bold':'bg-white'}">
-              <span>${['🥇','🥈','🥉'][i]} ${r.name}</span>
-              <span class="text-blue-600 font-semibold">${r.avg}%</span>
+        <div class="space-y-2">
+          ${rankings.slice(0, 3).map((r, i) => `
+            <div class="flex justify-between items-center p-2 rounded-lg ${r.name === username ? 'bg-blue-900/40 font-bold' : 'bg-slate-800/40'}">
+              <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
+              <span class="text-blue-400 font-semibold">${r.avg}%</span>
             </div>`).join('')}
           ${myRank > 3 ? `
-            <div class="text-center text-gray-400 text-xs">...</div>
-            <div class="flex justify-between items-center p-2 rounded-lg bg-blue-100 font-bold">
-              <span>#${myRank} ${username}</span>
-              <span class="text-blue-600 font-semibold">${avg}%</span>
+            <div class="text-center text-slate-500 text-xs">...</div>
+            <div class="flex justify-between items-center p-2 rounded-lg bg-blue-900/40 font-bold">
+              <span class="text-slate-200">#${myRank} ${username}</span>
+              <span class="text-blue-400 font-semibold">${avg}%</span>
             </div>` : ''}
         </div>
       </div>`
   }
 
-  // График прогресса (последние 7 тестов)
+  // График прогресса
   const recent = [...data].slice(0, 7).reverse()
-  const maxScore = 100
-  const chartBars = recent.map((r, i) => {
-    const h = Math.round((r.score / maxScore) * 80)
+  const chartBars = recent.map(r => {
+    const h = Math.round((r.score / 100) * 80)
     const color = r.score >= 70 ? '#10b981' : r.score >= 50 ? '#f59e0b' : '#ef4444'
-    const date = new Date(r.created_at).toLocaleDateString('ru', {day:'numeric',month:'short'})
+    const date = new Date(r.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short' })
     return `<div class="flex flex-col items-center gap-1" style="flex:1">
       <div class="text-xs font-bold" style="color:${color}">${r.score}%</div>
       <div style="height:${h}px;width:100%;background:${color};border-radius:4px 4px 0 0;min-height:4px"></div>
-      <div class="text-xs text-gray-400" style="font-size:0.6rem">${date}</div>
+      <div style="font-size:0.6rem;color:#64748b">${date}</div>
     </div>`
   }).join('')
 
   profileContent.innerHTML = `
-    <!-- Уровень -->
-    <h3 class="text-lg font-bold text-gray-800 mb-3">🎮 Уровень</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">🎮 Уровень</h3>
     <div class="rounded-xl p-4 mb-4" style="background:linear-gradient(135deg,${level.color}18,${level.color}08);border:1.5px solid ${level.color}30">
       <div class="flex items-center gap-3 mb-2">
         <span style="font-size:2rem">${level.icon}</span>
         <div>
           <div class="font-bold text-lg" style="color:${level.color}">${level.name}</div>
-          ${level.next ? `<div class="text-xs text-gray-500">Следующий: ${level.next}</div>` : '<div class="text-xs text-gray-500">Максимальный уровень!</div>'}
+          ${level.next ? `<div class="text-xs text-slate-400">Следующий: ${level.next}</div>` : '<div class="text-xs text-slate-400">Максимальный уровень!</div>'}
         </div>
       </div>
-      <div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+      <div style="height:8px;background:#334155;border-radius:4px;overflow:hidden">
         <div style="height:100%;width:${level.progress}%;background:${level.color};border-radius:4px;transition:width 0.5s"></div>
       </div>
     </div>
 
-    <!-- Статистика -->
-    <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Статистика</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Статистика</h3>
     <div class="grid grid-cols-3 gap-3 mb-4">
       <div class="profile-stat"><div class="profile-stat-value">${total}</div><div class="profile-stat-label">Тестов</div></div>
       <div class="profile-stat"><div class="profile-stat-value">${best}%</div><div class="profile-stat-label">Лучший</div></div>
       <div class="profile-stat"><div class="profile-stat-value">${avg}%</div><div class="profile-stat-label">Средний</div></div>
     </div>
 
-    <!-- График -->
     ${recent.length > 1 ? `
-    <h3 class="text-lg font-bold text-gray-800 mb-3">📈 График прогресса</h3>
-    <div class="bg-gray-50 rounded-xl p-4 mb-4">
+    <h3 class="text-lg font-bold text-slate-200 mb-3">📈 График прогресса</h3>
+    <div class="rounded-xl p-4 mb-4" style="background:rgba(30,41,59,0.6)">
       <div class="flex items-end gap-1" style="height:100px">${chartBars}</div>
     </div>` : ''}
 
-    <!-- Достижения -->
-    <h3 class="text-lg font-bold text-gray-800 mb-3">🏅 Достижения</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">🏅 Достижения</h3>
     <div class="flex flex-wrap gap-2 mb-4">
-      ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-gray-400 text-sm">Пройдите больше тестов!</p>'}
+      ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-slate-400 text-sm">Пройдите больше тестов!</p>'}
     </div>
 
-    <!-- Сравнение -->
     ${compareHTML}
 
-    <!-- Лучшие результаты -->
-    <h3 class="text-lg font-bold text-gray-800 mb-3">⭐ Лучшие результаты</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">⭐ Лучшие результаты</h3>
     <div class="space-y-2">
       ${bestResults.map(r => `
-        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-          <div><span class="font-semibold">${r.sectionName}</span><span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span></div>
-          <span class="font-bold text-lg ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
-        </div>`).join('') || '<p class="text-gray-400 text-sm">Нет данных</p>'}
+        <div class="flex justify-between items-center p-3 rounded-xl" style="background:rgba(30,41,59,0.6)">
+          <div>
+            <span class="font-semibold text-slate-200">${r.sectionName}</span>
+            <span class="text-slate-400 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
+          </div>
+          <span class="font-bold text-lg ${r.score>=70?'text-green-400':'text-red-400'}">${r.score}%</span>
+        </div>`).join('') || '<p class="text-slate-400 text-sm">Нет данных</p>'}
     </div>
   `
 }
@@ -1036,9 +1301,8 @@ window.showStatistics = async function() {
   sections.forEach(sec => {
     const secResults = data.filter(r => r.section === sec)
     const secAvg = secResults.length ? Math.round(secResults.reduce((s,r)=>s+r.score,0)/secResults.length) : 0
-    const nameMap = {integrals:'integrals',derivatives:'derivatives',series:'series',limits:'limits'}
-    const el = document.getElementById(`${nameMap[sec]}Progress`)
-    const bar = document.getElementById(`${nameMap[sec]}ProgressBar`)
+    const el = document.getElementById(`${sec}Progress`)
+    const bar = document.getElementById(`${sec}ProgressBar`)
     if (el) el.textContent = secAvg + '%'
     if (bar) bar.style.width = secAvg + '%'
   })
@@ -1047,7 +1311,7 @@ window.showStatistics = async function() {
     <div class="bg-gray-50 rounded-lg p-4">
       <div class="flex justify-between items-start">
         <div>
-          <h4 class="font-semibold">${sectionLabels[r.section] || r.section} — ${difficultyLabels[r.difficulty] || r.difficulty}</h4>
+          <h4 class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':'Пределы'} — ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</h4>
           <p class="text-sm text-gray-500">${new Date(r.created_at).toLocaleString('ru')}</p>
         </div>
         <div class="text-right">
@@ -1062,34 +1326,23 @@ window.resetStatistics = function() {
   alert('Для сброса статистики обратитесь к администратору.')
 }
 
-// ── Debounce для фильтров лидерборда ──────────────────────
-let leaderboardTimeout = null
-let isLoadingLeaderboard = false
-
 // ── Таблица лидеров ───────────────────────────────────────
 window.showLeaderboard = async function() {
-  // Debounce: не более 1 запроса в 500мс
-  clearTimeout(leaderboardTimeout)
-  if (isLoadingLeaderboard) return
-  
-  leaderboardTimeout = setTimeout(async () => {
-    showPage('leaderboardPage')
-    const container = document.getElementById('leaderboardList')
-    container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
-    isLoadingLeaderboard = true
+  showPage('leaderboardPage')
+  const container = document.getElementById('leaderboardList')
+  container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
 
-    const section = document.getElementById('lbSection')?.value || null
-    const difficulty = document.getElementById('lbDifficulty')?.value || null
+  const section = document.getElementById('lbSection')?.value || null
+  const difficulty = document.getElementById('lbDifficulty')?.value || null
 
-    const { data } = await getLeaderboard(section, difficulty)
-    isLoadingLeaderboard = false
-    if (!data || data.length === 0) {
-      container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
-      return
-    }
+  const { data } = await getLeaderboard(section, difficulty)
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
+    return
+  }
 
-    // Веса сложности: hard ценнее
-    const weights = { easy: 1, medium: 1.5, hard: 2 }
+  // Веса сложности: hard ценнее
+  const weights = { easy: 1, medium: 1.5, hard: 2 }
 
   // Берём лучший результат каждого пользователя по каждой уникальной секции+сложность
   const userBest = {}
@@ -1132,14 +1385,13 @@ window.showLeaderboard = async function() {
         <div class="text-xs text-gray-500">рейтинг</div>
       </div>
     </div>`).join('')
-  }, 500)
 }
 window.toggleTheory = function(id) { document.getElementById(id).classList.toggle('hidden') }
 
 window.toggleTheme = function() {
-  const isDark = document.documentElement.classList.toggle('dark');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+  const isDark = document.documentElement.classList.toggle('dark')
+  localStorage.setItem('theme', isDark ? 'dark' : 'light')
+  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙'
 }
 
 // ── Глобальный доступ к функциям ────────────────────────
