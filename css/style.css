@@ -305,7 +305,7 @@ input[type="password"], select {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 1002;
-  display: flex;
+  display: none; /* JS управляет видимостью — убрана зависимость от .hidden */
   align-items: stretch;
   height: 60px;
   background: rgba(15, 23, 42, 0.95);
@@ -344,9 +344,11 @@ html:not(.dark) #bottomNav button { color: #94a3b8; }
 html:not(.dark) #bottomNav button:hover,
 html:not(.dark) #bottomNav button.bn-active { color: #4f46e5; background: rgba(99, 102, 241, 0.08); }
 
-/* На мобильных — отступ снизу для контента */
+/* На мобильных — убираем левый отступ под боковую панель, добавляем низ под нижнюю навигацию */
 @media (max-width: 640px) {
-  .page-content { padding-bottom: 68px !important; }
+  .page-content { padding-bottom: 68px !important; margin-left: 0 !important; }
+  /* Боковая панель скрыта на мобильных (её заменяет нижняя навигация) */
+  #sideNav { display: none !important; }
 }
 /* На десктопе нижняя навигация скрыта */
 @media (min-width: 641px) {

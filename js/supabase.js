@@ -11,7 +11,12 @@ export async function signUp(email, password, username) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { username } }
+    options: {
+      data: { username },
+      // Явно указываем куда редиректить после подтверждения почты,
+      // иначе Supabase использует Site URL (suhrob4ikk.github.io без /Calculus/) → 404
+      emailRedirectTo: 'https://suhrob4ikk.github.io/Calculus/'
+    }
   })
   return { data, error }
 }
