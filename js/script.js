@@ -203,6 +203,10 @@ window.dismissContinueTestBanner = function() {
 
 // ── Навигация между страницами ────────────────────────────
 function showPage(pageId) {
+  // Убираем экран загрузки при первом показе любой страницы
+  const ls = document.getElementById('loadingScreen')
+  if (ls) ls.remove()
+
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
                  'seriesSection','limitsSection','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
@@ -896,7 +900,17 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   timeRemaining = questionCount * timePerQuestion
 
   let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
-  currentTest = [...questions].sort(() => 0.5 - Math.random()).slice(0, Math.min(questionCount, questions.length))
+  // Перемешиваем вопросы случайно
+  const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, questions.length))
+  // Перемешиваем варианты ответов в каждом вопросе и пересчитываем индекс correct
+  currentTest = shuffled.map(q => {
+    const order = [0, 1, 2, 3].sort(() => Math.random() - 0.5)  // новый порядок индексов
+    return {
+      ...q,
+      options: order.map(i => q.options[i]),  // перемешанные варианты
+      correct: order.indexOf(q.correct)        // новая позиция правильного ответа
+    }
+  })
   currentQuestionIndex = 0
   userAnswers = new Array(currentTest.length).fill(null)
   testStartTime = Date.now()
