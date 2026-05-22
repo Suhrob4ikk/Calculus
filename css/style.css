@@ -347,8 +347,6 @@ html:not(.dark) #bottomNav button.bn-active { color: #4f46e5; background: rgba(9
 /* На мобильных — отступ снизу для контента */
 @media (max-width: 640px) {
   .page-content { padding-bottom: 68px !important; }
-  /* Боковая панель скрыта на мобильных (заменена нижней навигацией) */
-  #sideNav { display: none !important; }
 }
 /* На десктопе нижняя навигация скрыта */
 @media (min-width: 641px) {

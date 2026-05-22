@@ -1025,6 +1025,11 @@ window.previousQuestion = function() {
 window.exitTest = function() {
   if (confirm('Выйти? Прогресс будет потерян.')) {
     clearTestState()
+    // Сбрасываем in-memory данные теста, иначе beforeunload пересохранит состояние
+    currentTest = []
+    userAnswers = []
+    currentQuestionIndex = 0
+    stopTimer()
     showHome()
   }
 }
@@ -1401,64 +1406,103 @@ window.resetStatistics = function() {
 }
 
 // ── Таблица лидеров ───────────────────────────────────────
+// Система очков: каждый правильный ответ приносит очки в зависимости от сложности
+// easy=1 · medium=2 · hard=3
+// Берётся лучший результат на каждой уникальной комбинации секция+сложность.
+// Итоговый рейтинг = сумма очков по всем комбинациям.
+// Это честно: нужно играть больше и сложнее, чтобы занять высокое место.
+const DIFF_POINTS = { easy: 1, medium: 2, hard: 3 }
+const SECTION_ICONS = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim' }
+const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6' }
+
+function calcRatingPoints(row) {
+  return (row.correct_answers || 0) * (DIFF_POINTS[row.difficulty] || 1)
+}
+
 window.showLeaderboard = async function() {
   showPage('leaderboardPage')
   const container = document.getElementById('leaderboardList')
-  container.innerHTML = '<p class="text-gray-500 text-center py-8">Загрузка...</p>'
+  container.innerHTML = '<p class="text-center py-8" style="color:var(--text-muted)">Загрузка...</p>'
 
-  const section = document.getElementById('lbSection')?.value || null
-  const difficulty = document.getElementById('lbDifficulty')?.value || null
+  const sectionFilter   = document.getElementById('lbSection')?.value   || null
+  const diffFilter = document.getElementById('lbDifficulty')?.value || null
 
-  const { data } = await getLeaderboard(section, difficulty)
+  const { data } = await getLeaderboard(sectionFilter, diffFilter)
   if (!data || data.length === 0) {
-    container.innerHTML = '<p class="text-gray-500 text-center py-8">Пока нет результатов</p>'
+    container.innerHTML = '<p class="text-center py-8" style="color:var(--text-muted)">Пока нет результатов</p>'
     return
   }
 
-  // Веса сложности: hard ценнее
-  const weights = { easy: 1, medium: 1.5, hard: 2 }
-
-  // Берём лучший результат каждого пользователя по каждой уникальной секции+сложность
-  const userBest = {}
+  // Группируем все попытки по username → section_difficulty → берём лучшую
+  const userMap = {}
   data.forEach(r => {
-    if (!userBest[r.username]) userBest[r.username] = {}
+    const name = r.username || 'Аноним'
+    if (!userMap[name]) userMap[name] = {}
     const key = `${r.section}_${r.difficulty}`
-    if (!userBest[r.username][key] || r.score > userBest[r.username][key].score) {
-      userBest[r.username][key] = r
+    const pts = calcRatingPoints(r)
+    const prev = userMap[name][key]
+    // «Лучшая» = больше очков, при равенстве — выше процент
+    if (!prev || pts > calcRatingPoints(prev) || (pts === calcRatingPoints(prev) && (r.score || 0) > (prev.score || 0))) {
+      userMap[name][key] = r
     }
   })
 
-  // Считаем взвешенный рейтинг
-  const rankings = Object.entries(userBest).map(([username, attempts]) => {
-    const list = Object.values(attempts)
-    let weightedSum = 0, totalWeight = 0
-    list.forEach(r => {
-      const w = weights[r.difficulty] || 1
-      weightedSum += r.score * w
-      totalWeight += w
-    })
-    const score = Math.round(weightedSum / totalWeight)
-    return { username, score, uniqueAttempts: list.length }
-  }).sort((a, b) => b.score - a.score)
+  // Считаем итоговый рейтинг каждого пользователя
+  const rankings = Object.entries(userMap).map(([username, comboMap]) => {
+    const combos    = Object.values(comboMap)
+    const totalPts  = combos.reduce((s, r) => s + calcRatingPoints(r), 0)
+    const totalCorr = combos.reduce((s, r) => s + (r.correct_answers || 0), 0)
+    const bestPct   = Math.max(...combos.map(r => r.score || 0))
+    const sections  = [...new Set(combos.map(r => r.section))]
+    const maxDiff   = combos.some(r => r.difficulty === 'hard')   ? 'hard'
+                    : combos.some(r => r.difficulty === 'medium') ? 'medium' : 'easy'
+    return { username, totalPts, totalCorr, bestPct, sections, maxDiff, combos: combos.length }
+  }).sort((a, b) =>
+    b.totalPts - a.totalPts ||    // 1й критерий: больше очков
+    b.totalCorr - a.totalCorr ||  // 2й: больше правильных ответов
+    b.bestPct - a.bestPct         // 3й: лучший процент
+  )
 
   const medals = ['🥇','🥈','🥉']
-  container.innerHTML = rankings.map((r, i) => `
-    <div class="flex items-center justify-between p-4 rounded-xl mb-2 ${i===0?'bg-yellow-50':i===1?'bg-gray-50':i===2?'bg-orange-50':'bg-gray-50'}">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl w-8 text-center">${medals[i] || (i+1)+'.'}</span>
-        <div>
-          <div class="font-semibold flex items-center gap-1" style="color:var(--text-main)">
-            ${r.username}
-            ${r.username==='Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>' : ''}
-          </div>
-          <div class="text-xs text-gray-500">${r.uniqueAttempts} уник. попыток · с учётом сложности</div>
+  const diffLabel = { easy: '🟢 Лёгкий', medium: '🟡 Средний', hard: '🔴 Сложный' }
+  const rowBg = [
+    'background:linear-gradient(135deg,rgba(234,179,8,0.12),rgba(234,179,8,0.04));border:1px solid rgba(234,179,8,0.25)',
+    'background:linear-gradient(135deg,rgba(148,163,184,0.12),rgba(148,163,184,0.04));border:1px solid rgba(148,163,184,0.2)',
+    'background:linear-gradient(135deg,rgba(249,115,22,0.12),rgba(249,115,22,0.04));border:1px solid rgba(249,115,22,0.2)',
+  ]
+
+  container.innerHTML = rankings.map((r, i) => {
+    const sectionBadges = r.sections.map(s =>
+      `<span style="display:inline-block;padding:1px 8px;border-radius:99px;font-size:0.7rem;font-weight:700;
+       background:${SECTION_COLORS[s]}22;color:${SECTION_COLORS[s]};border:1px solid ${SECTION_COLORS[s]}44;
+       font-family:'Playfair Display',serif">${SECTION_ICONS[s] || s}</span>`
+    ).join(' ')
+
+    const isAdmin = r.username === 'Suhrob'
+    const crown = isAdmin ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>' : ''
+    const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
+
+    return `
+    <div style="${rowStyle};border-radius:0.875rem;padding:0.875rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.75rem">
+      <span style="font-size:1.6rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.9rem;color:var(--text-muted)">${i+1}</span>`}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+          ${r.username}${crown}
+          <span style="font-size:0.7rem;font-weight:500;color:var(--text-muted);margin-left:2px">${diffLabel[r.maxDiff]}</span>
+        </div>
+        <div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px">${sectionBadges}</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px">
+          ${r.combos} комбо · ${r.totalCorr} правильных ответов
         </div>
       </div>
-      <div class="text-right">
-        <div class="font-bold text-xl ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</div>
-        <div class="text-xs text-gray-500">рейтинг</div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:1.4rem;font-weight:800;color:${i===0?'#f59e0b':i===1?'#94a3b8':i===2?'#f97316':'var(--text-main)'}">
+          ${r.totalPts}<span style="font-size:0.7rem;font-weight:500;color:var(--text-muted)"> pts</span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted)">лучший: ${r.bestPct}%</div>
       </div>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
 window.toggleTheory = function(id) { document.getElementById(id).classList.toggle('hidden') }
 
