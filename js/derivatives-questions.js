@@ -1143,18 +1143,18 @@ const hardDerivativesQuestions = [
             "$f'(x) = e^{x \\sin x}(\\sin x + x \\cos x) \\cos(x \\cos x)$",
             "$f'(x) = e^{x \\sin x}(\\cos x - x \\sin x) \\sin(x \\cos x)$",
         ],
-        correct: 2,
+        correct: 0,
     },
     {
         question:
             "Найдите производную функции $f(x) = \\frac{\\sqrt{x^2 + a^2} - \\sqrt{x^2 - a^2}}{\\sqrt{x^2 + a^2} + \\sqrt{x^2 - a^2}}$",
         options: [
-            "$f'(x) = \\frac{2a^2x}{\\sqrt{x^2 + a^2}\\sqrt{x^2 - a^2}(\\sqrt{x^2 + a^2} + \\sqrt{x^2 - a^2})^2}$",
+            "$f'(x) = \\frac{-4a^2x}{\\sqrt{x^2 + a^2}\\sqrt{x^2 - a^2}(\\sqrt{x^2 + a^2} + \\sqrt{x^2 - a^2})^2}$",
             "$f'(x) = \\frac{x}{\\sqrt{x^2 + a^2}} - \\frac{x}{\\sqrt{x^2 - a^2}}$",
             "$f'(x) = \\frac{1}{(\\sqrt{x^2 + a^2} + \\sqrt{x^2 - a^2})^2}$",
             "$f'(x) = \\frac{2x}{\\sqrt{x^2 + a^2}\\sqrt{x^2 - a^2}}$",
         ],
-        correct: 2,
+        correct: 0,
     },
     {
         question:
@@ -1173,7 +1173,7 @@ const hardDerivativesQuestions = [
         options: [
             "$f'(x) = \\frac{1}{2\\sqrt{x}(1 + x)}$",
             "$f'(x) = \\frac{\\cos(\\arctan(\\sqrt{x}))}{1 + x}$",
-            "$f'(x) = \\frac{1}{2(1 + x)\\sqrt{x}}$",
+            "$f'(x) = \\frac{1}{2\\sqrt{x}(1 + x)^{3/2}}$",
             "$f'(x) = \\frac{\\sqrt{x}}{2(1 + x)^{3/2}}$",
         ],
         correct: 2,
@@ -1197,7 +1197,7 @@ const hardDerivativesQuestions = [
             "$f'(x) = x^{x^x} \\cdot x^{x-1} \\cdot x$",
             "$f'(x) = x^{x^x} \\ln x$",
         ],
-        correct: 2,
+        correct: 0,
     },
     {
         question:
@@ -1219,7 +1219,7 @@ const hardDerivativesQuestions = [
             "$f'(x) = -\\sin(\\ln(\\sin(e^x))) \\cdot \\frac{\\cos(e^x)}{\\sin(e^x)}$",
             "$f'(x) = \\sin(\\ln(\\sin(e^x))) \\cdot e^x \\cot(e^x)$",
         ],
-        correct: 2,
+        correct: 0,
     },
     {
         question:
