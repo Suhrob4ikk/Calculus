@@ -1754,7 +1754,8 @@ window.showStatistics = async function() {
   showPage('statisticsPage')
   if (!currentUser) return
 
-  const { data } = await getUserResults(currentUser.id)
+  const { data: allData } = await getUserResults(currentUser.id)
+  const data = (allData || []).filter(r => r.section !== 'duel')
   if (!data || data.length === 0) {
     document.getElementById('testsHistory').innerHTML = '<p class="text-gray-500 text-center py-4">История пуста</p>'
     document.getElementById('statsChartsContainer').innerHTML = ''
@@ -2138,6 +2139,21 @@ window.createDuel = async function() {
       _duelOpponentName = payload.name || _duelOpponentName
       _checkDuelComplete()
     })
+    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => {
+      _showRematchRequest(payload.name)
+    })
+    .on('broadcast', { event: 'rematch_accept' }, () => {
+      const newCode = generateDuelCode()
+      _duelCode = newCode
+      _duelMyScore = null; _duelOpponentScore = null
+      _duelChannel.send({ type: 'broadcast', event: 'rematch_start', payload: { code: newCode, section: _duelSection, difficulty: _duelDiff } })
+      document.getElementById('duelResultsModal').style.display = 'none'
+      _beginDuelCountdown()
+    })
+    .on('broadcast', { event: 'rematch_decline' }, () => {
+      const btn = document.getElementById('rematchBtn')
+      if (btn) { btn.textContent = '❌ Соперник отказался'; btn.disabled = true }
+    })
     .subscribe()
 }
 
@@ -2166,6 +2182,21 @@ window.joinDuel = async function() {
       _duelOpponentScore = payload.score
       _duelOpponentName = payload.name || _duelOpponentName
       _checkDuelComplete()
+    })
+    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => {
+      _showRematchRequest(payload.name)
+    })
+    .on('broadcast', { event: 'rematch_start' }, ({ payload }) => {
+      _duelCode = payload.code
+      if (payload.section) _duelSection = payload.section
+      if (payload.difficulty) _duelDiff = payload.difficulty
+      _duelMyScore = null; _duelOpponentScore = null
+      document.getElementById('duelResultsModal').style.display = 'none'
+      _beginDuelCountdown()
+    })
+    .on('broadcast', { event: 'rematch_decline' }, () => {
+      const btn = document.getElementById('rematchBtn')
+      if (btn) { btn.textContent = '❌ Соперник отказался'; btn.disabled = true }
     })
     .subscribe((status) => {
       if (status === 'SUBSCRIBED') {
@@ -2246,11 +2277,43 @@ function _checkDuelComplete() {
   }
 }
 
+window.requestRematch = function() {
+  const btn = document.getElementById('rematchBtn')
+  if (btn) { btn.textContent = '⏳ Ожидаем ответа…'; btn.disabled = true }
+  _duelChannel?.send({ type: 'broadcast', event: 'rematch_request', payload: { name: _duelMyName } })
+}
+
+window.acceptRematch = function() {
+  document.getElementById('rematchRequestBanner').style.display = 'none'
+  const btn = document.getElementById('rematchBtn')
+  if (btn) { btn.textContent = '⏳ Начинаем…'; btn.disabled = true }
+  _duelChannel?.send({ type: 'broadcast', event: 'rematch_accept' })
+}
+
+window.declineRematch = function() {
+  document.getElementById('rematchRequestBanner').style.display = 'none'
+  _duelChannel?.send({ type: 'broadcast', event: 'rematch_decline' })
+}
+
+function _showRematchRequest(name) {
+  const banner = document.getElementById('rematchRequestBanner')
+  if (!banner) return
+  document.getElementById('rematchRequesterName').textContent = `⚔️ ${name} предлагает реванш!`
+  banner.style.display = 'block'
+  document.getElementById('duelResultsModal').style.display = 'flex'
+}
+
 function _showDuelResults() {
   const modal = document.getElementById('duelResultsModal')
   const emojiEl = document.getElementById('duelResultsEmoji')
   const titleEl = document.getElementById('duelResultsTitle')
   const scoresEl = document.getElementById('duelResultsScores')
+
+  // Reset rematch UI
+  const rematchBtn = document.getElementById('rematchBtn')
+  if (rematchBtn) { rematchBtn.textContent = '🔄 Реванш!'; rematchBtn.disabled = false }
+  const rematchBanner = document.getElementById('rematchRequestBanner')
+  if (rematchBanner) rematchBanner.style.display = 'none'
 
   let emoji, title
   if (_duelMyScore > _duelOpponentScore) {
