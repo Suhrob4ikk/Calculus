@@ -68,6 +68,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (event === 'PASSWORD_RECOVERY') {
       currentUser = session?.user || null
       showPage('updatePasswordPage')
+      // Разблокируем кнопку — сессия теперь активна
+      const updateBtn = document.getElementById('updatePasswordBtn')
+      if (updateBtn) { updateBtn.disabled = false; updateBtn.textContent = 'Сохранить пароль' }
+      const updateErr = document.getElementById('updatePasswordError')
+      if (updateErr) updateErr.textContent = ''
     } else if (event === 'SIGNED_IN') {
       currentUser = session?.user || null
       const updatePage = document.getElementById('updatePasswordPage')
@@ -105,7 +110,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // onAuthStateChange PASSWORD_RECOVERY тоже сработает, но гонка могла бы перекрыть форму.
   if (tokenType === 'recovery') {
     showPage('updatePasswordPage')
-    // currentUser будет установлен когда PASSWORD_RECOVERY сработает
+    // Блокируем кнопку пока Supabase не установит сессию (async обмен токена)
+    const updateBtn = document.getElementById('updatePasswordBtn')
+    if (updateBtn) { updateBtn.disabled = true; updateBtn.textContent = '⏳ Проверяем ссылку…' }
+    // Фолбэк: если PASSWORD_RECOVERY не пришёл за 8 с — показываем ошибку
+    setTimeout(() => {
+      const btn = document.getElementById('updatePasswordBtn')
+      if (btn && btn.disabled) {
+        btn.disabled = false; btn.textContent = 'Сохранить пароль'
+        const errEl = document.getElementById('updatePasswordError')
+        if (errEl && !errEl.textContent)
+          errEl.textContent = 'Ссылка устарела или уже использована. Запросите новую.'
+      }
+    }, 8000)
   } else {
     // Обычная загрузка — проверяем сессию
     const { data: { session } } = await supabase.auth.getSession()
@@ -1010,6 +1027,15 @@ async function handleUpdatePassword() {
   const btn = document.getElementById('updatePasswordBtn')
   btn.textContent = 'Сохраняем...'
   btn.disabled = true
+
+  // Убеждаемся, что сессия активна (токен восстановления уже обменян)
+  const { data: { session: activeSession } } = await supabase.auth.getSession()
+  if (!activeSession) {
+    btn.textContent = 'Сохранить пароль'
+    btn.disabled = false
+    errEl.textContent = 'Ссылка устарела или уже использована. Запросите новую.'
+    return
+  }
 
   const { error } = await updatePassword(password)
   btn.textContent = 'Сохранить пароль'
