@@ -1,4 +1,4 @@
-const CACHE = 'calculus-v1'
+const CACHE = 'calculus-v2'
 const ASSETS = [
   '/Calculus/',
   '/Calculus/index.html',
@@ -33,23 +33,40 @@ self.addEventListener('activate', e => {
   )
 })
 
-// ── Fetch: сначала кэш, потом сеть ────────────────────────
+// ── Fetch: JS/CSS — сначала сеть (всегда свежий код),
+//           остальное — сначала кэш (быстрее) ───────────────
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
-  // Не кэшируем запросы к Supabase
   if (e.request.url.includes('supabase.co')) return
 
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      const network = fetch(e.request).then(res => {
+  const url = e.request.url
+  // For JS and CSS always try network first so code updates are instant
+  const isCode = url.endsWith('.js') || url.endsWith('.css')
+
+  if (isCode) {
+    // Network-first: fetch fresh, update cache, fall back to cache if offline
+    e.respondWith(
+      fetch(e.request).then(res => {
         if (res && res.status === 200 && res.type === 'basic') {
           caches.open(CACHE).then(c => c.put(e.request, res.clone()))
         }
         return res
+      }).catch(() => caches.match(e.request))
+    )
+  } else {
+    // Cache-first for HTML, images, fonts
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        const network = fetch(e.request).then(res => {
+          if (res && res.status === 200 && res.type === 'basic') {
+            caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+          }
+          return res
+        })
+        return cached || network
       })
-      return cached || network
-    })
-  )
+    )
+  }
 })
 
 // ── Push-уведомление ─────────────────────────────────────
