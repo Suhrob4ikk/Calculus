@@ -3,6 +3,19 @@ import { showPage } from './ui.js'
 import { searchProfiles, getProfileByUsername } from './supabase.js'
 import { getUserLevel, computeBadges } from './profile.js'
 
+function formatLastSeenVP(iso) {
+  if (!iso) return null
+  const diff  = Date.now() - new Date(iso).getTime()
+  const mins  = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days  = Math.floor(diff / 86400000)
+  if (mins  <  2) return '<span style="color:#10b981;font-weight:600;font-size:0.78rem">● онлайн сейчас</span>'
+  if (mins  < 60) return `<span style="font-size:0.78rem;color:var(--text-muted)">Был(а) ${mins} мин назад</span>`
+  if (hours < 24) return `<span style="font-size:0.78rem;color:var(--text-muted)">Был(а) ${hours} ч назад</span>`
+  if (days  < 30) return `<span style="font-size:0.78rem;color:var(--text-muted)">Был(а) ${days} дн назад</span>`
+  return `<span style="font-size:0.78rem;color:var(--text-muted)">Был(а) ${Math.floor(days/30)} мес назад</span>`
+}
+
 window.showSearchProfiles = async function() {
   showPage('searchProfilesPage')
   const { data } = await searchProfiles('')
@@ -67,19 +80,15 @@ window.viewProfile = async function(username) {
     return
   }
 
-  const total = results.length
-  const best  = total ? Math.max(...results.map(r => r.score)) : 0
-  const avg   = total ? Math.round(results.reduce((s,r) => s+r.score, 0) / total) : 0
+  // Исключаем дуэли из статистики (как в собственном профиле)
+  const data  = results.filter(r => r.section !== 'duel')
+  const total = data.length
+  const best  = total ? Math.max(...data.map(r => r.score)) : 0
+  const avg   = total ? Math.round(data.reduce((s,r) => s+r.score, 0) / total) : 0
   const level = getUserLevel(total, avg)
 
-  const badges = []
-  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест',    cls: 'badge-silver' })
-  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов',       cls: 'badge-silver' })
-  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов',      cls: 'badge-gold'   })
-  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов',      cls: 'badge-gold'   })
-  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold'   })
-  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник',       cls: 'badge-gold'   })
-  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный',     cls: 'badge-green'  })
+  // Используем computeBadges (как в собственном профиле) для единообразия
+  const { badges } = computeBadges(data, ['integrals','derivatives','series','limits','ode'])
 
   const isCreator = profile.username === 'Suhrob'
   const creatorBadge = isCreator
@@ -88,6 +97,11 @@ window.viewProfile = async function(username) {
 
   const viewNameEl = document.getElementById('viewProfileName')
   if (viewNameEl) viewNameEl.innerHTML = profile.username + creatorBadge
+
+  // Last seen под именем
+  const lastSeenHtml = formatLastSeenVP(profile.last_seen_at)
+  const viewSubEl = document.getElementById('viewProfileSub')
+  if (viewSubEl) viewSubEl.innerHTML = lastSeenHtml || ''
 
   const avatarEl    = document.getElementById('viewProfileAvatar')
   const avatarImgEl = document.getElementById('viewProfileAvatarImg')
@@ -118,14 +132,17 @@ window.viewProfile = async function(username) {
     </div>
     <h3 class="text-lg font-bold text-gray-800 mb-3">📋 Последние результаты</h3>
     <div class="space-y-2">
-      ${results.slice(0,5).map(r => `
+      ${data.filter(r => r.section !== 'daily').slice(0,5).map(r => {
+        const sLabel = {integrals:'Интегралы',derivatives:'Производные',series:'Ряды',limits:'Пределы',ode:'Дифф. уравнения'}
+        const dLabel = {easy:'Лёгкий',medium:'Средний',hard:'Сложный'}
+        return `
         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
           <div>
-            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':r.section==='ode'?'Дифф. уравнения':'Пределы'}</span>
-            <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
+            <span class="font-semibold" style="color:var(--text-main)">${sLabel[r.section] || r.section}</span>
+            <span class="text-gray-500 text-sm ml-2">${dLabel[r.difficulty] || r.difficulty}</span>
           </div>
           <span class="font-bold ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
-        </div>`).join('') || '<p class="text-gray-400 text-sm">Нет результатов</p>'}
+        </div>`}).join('') || '<p class="text-gray-400 text-sm">Нет результатов</p>'}
     </div>
   `
 }

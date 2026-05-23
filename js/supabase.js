@@ -133,13 +133,16 @@ export async function deletePushSubscription(userId) {
 
 // ── Ежедневный вызов ─────────────────────────────────────
 export async function getDailyLeaderboard(date) {
-  // date: 'YYYY-MM-DD' (local)
+  // date: 'YYYY-MM-DD' (local) — переводим в UTC, чтобы покрыть полный локальный день
+  const [y, m, d] = date.split('-').map(Number)
+  const startUTC = new Date(y, m - 1, d).toISOString()        // local midnight → UTC
+  const endUTC   = new Date(y, m - 1, d + 1).toISOString()   // next local midnight → UTC
   const { data, error } = await supabase
     .from('test_results')
     .select('username, score, correct_answers, total_questions, created_at')
     .eq('section', 'daily')
-    .gte('created_at', date + 'T00:00:00.000Z')
-    .lt('created_at', date + 'T24:00:00.000Z')
+    .gte('created_at', startUTC)
+    .lt('created_at', endUTC)
     .order('score', { ascending: false })
     .order('created_at', { ascending: true })
     .limit(50)
@@ -167,7 +170,7 @@ export async function getProfilesByUsernames(usernames) {
 export async function getProfileByUsername(username) {
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, username, avatar_url, created_at')
+    .select('id, username, avatar_url, created_at, last_seen_at')
     .eq('username', username)
     .single()
   if (!profile) return { profile: null, results: [] }
