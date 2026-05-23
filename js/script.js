@@ -8,6 +8,7 @@ import { applyTheme, showPage, updateUserUI, renderStreakBadge, renderXPBadge, s
 import { registerSW } from './pwa.js'
 import { setupSessionGuard, teardownSessionGuard } from './auth.js'
 import { clearTestState, saveTestState } from './test.js'
+import { updateLastSeen } from './supabase.js'
 
 // Подключаем все модули, которые регистрируют window.* функции
 import './daily.js'
@@ -44,6 +45,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         // Свежий вход — ждём guard, чтобы не пустить второе устройство
         const loginBtn = document.getElementById('loginBtn')
         if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '⏳ Проверяем…' }
+        updateLastSeen(st.currentUser.id)
         setupSessionGuard(st.currentUser.id, () => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
@@ -126,6 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
       st.currentUser = session.user
+      updateLastSeen(st.currentUser.id)
       setupSessionGuard(st.currentUser.id)
       showPage('homePage')
       updateUserUI()

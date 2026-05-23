@@ -1,6 +1,6 @@
 import { st } from './state.js'
 import { showPage } from './ui.js'
-import { getUserResults, getLeaderboard } from './supabase.js'
+import { getUserResults, getLeaderboard, getProfilesByUsernames } from './supabase.js'
 
 // ── Статистика ────────────────────────────────────────────
 let _chartScore = null, _chartSection = null
@@ -138,6 +138,20 @@ window.toggleTheory = function(id) {
 // ── Таблица лидеров ───────────────────────────────────────
 // Очки: easy=1 · medium=2 · hard=3 за каждый правильный ответ.
 // Берётся лучший результат на каждой уникальной комбинации секция+сложность.
+
+function formatLastSeen(iso) {
+  if (!iso) return ''
+  const diff  = Date.now() - new Date(iso).getTime()
+  const mins  = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days  = Math.floor(diff / 86400000)
+  if (mins  <  2) return '<span style="color:#10b981;font-weight:600">● онлайн</span>'
+  if (mins  < 60) return `${mins} мин назад`
+  if (hours < 24) return `${hours} ч назад`
+  if (days  < 30) return `${days} дн назад`
+  return `${Math.floor(days / 30)} мес назад`
+}
+
 const DIFF_POINTS   = { easy: 1, medium: 2, hard: 3 }
 const SECTION_ICONS  = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim', ode: "y'" }
 const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6', ode: '#f97316' }
@@ -188,6 +202,11 @@ window.showLeaderboard = async function() {
     b.bestPct   - a.bestPct
   )
 
+  // Подгружаем аватарки + last_seen_at одним запросом
+  const profiles = await getProfilesByUsernames(rankings.map(r => r.username))
+  const profMap  = {}
+  profiles.forEach(p => { profMap[p.username] = p })
+
   const medals    = ['🥇', '🥈', '🥉']
   const diffLabel = { easy: '🟢 Лёгкий', medium: '🟡 Средний', hard: '🔴 Сложный' }
   const rowBg = [
@@ -197,6 +216,15 @@ window.showLeaderboard = async function() {
   ]
 
   container.innerHTML = rankings.map((r, i) => {
+    const prof = profMap[r.username] || {}
+
+    // Аватарка: фото или инициал
+    const avatarHtml = prof.avatar_url
+      ? `<img src="${prof.avatar_url}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid ${i===0?'rgba(234,179,8,0.5)':i===1?'rgba(148,163,184,0.4)':i===2?'rgba(249,115,22,0.4)':'var(--border)'}">`
+      : `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:1rem;flex-shrink:0;border:2px solid ${i===0?'rgba(234,179,8,0.5)':i===1?'rgba(148,163,184,0.4)':i===2?'rgba(249,115,22,0.4)':'var(--border)'}">${r.username[0]?.toUpperCase() || '?'}</div>`
+
+    const lastSeen = formatLastSeen(prof.last_seen_at)
+
     const sectionBadges = r.sections.map(s =>
       `<span style="display:inline-block;padding:1px 8px;border-radius:99px;font-size:0.7rem;font-weight:700;
        background:${SECTION_COLORS[s]}22;color:${SECTION_COLORS[s]};border:1px solid ${SECTION_COLORS[s]}44;
@@ -207,23 +235,25 @@ window.showLeaderboard = async function() {
       : ''
     const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
     return `
-    <div onclick="viewProfile('${r.username}')" style="${rowStyle};border-radius:0.875rem;padding:0.875rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer">
-      <span style="font-size:1.6rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.9rem;color:var(--text-muted)">${i+1}</span>`}</span>
+    <div onclick="viewProfile('${r.username}')" style="${rowStyle};border-radius:0.875rem;padding:0.75rem 0.875rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.625rem;cursor:pointer">
+      <span style="font-size:1.5rem;width:1.75rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.85rem;color:var(--text-muted)">${i+1}</span>`}</span>
+      ${avatarHtml}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;flex-wrap:wrap">
           ${r.username}${crown}
           <span style="font-size:0.7rem;font-weight:500;color:var(--text-muted);margin-left:2px">${diffLabel[r.maxDiff]}</span>
         </div>
-        <div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px">${sectionBadges}</div>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px">
-          ${r.combos} комбо · ${r.totalCorr} правильных ответов
+        <div style="margin-top:2px;display:flex;flex-wrap:wrap;gap:3px">${sectionBadges}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span>${r.combos} комбо · ${r.totalCorr} отв.</span>
+          ${lastSeen ? `<span style="opacity:0.8">${lastSeen}</span>` : ''}
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:1.4rem;font-weight:800;color:${i===0?'#f59e0b':i===1?'var(--text-muted)':i===2?'#f97316':'var(--text-main)'}">
-          ${r.totalPts}<span style="font-size:0.7rem;font-weight:500;color:var(--text-muted)"> pts</span>
+        <div style="font-size:1.3rem;font-weight:800;color:${i===0?'#f59e0b':i===1?'var(--text-muted)':i===2?'#f97316':'var(--text-main)'}">
+          ${r.totalPts}<span style="font-size:0.65rem;font-weight:500;color:var(--text-muted)"> pts</span>
         </div>
-        <div style="font-size:0.72rem;color:var(--text-muted)">лучший: ${r.bestPct}%</div>
+        <div style="font-size:0.7rem;color:var(--text-muted)">лучший: ${r.bestPct}%</div>
       </div>
     </div>`
   }).join('')

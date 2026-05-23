@@ -146,6 +146,24 @@ export async function getDailyLeaderboard(date) {
   return { data, error }
 }
 
+// ── Обновление времени последнего визита ──────────────────
+export async function updateLastSeen(userId) {
+  // Колонка last_seen_at добавляется SQL-миграцией (см. PROJECT_MAP.md)
+  await supabase.from('profiles')
+    .update({ last_seen_at: new Date().toISOString() })
+    .eq('id', userId)
+}
+
+// ── Профили нескольких пользователей по именам ────────────
+export async function getProfilesByUsernames(usernames) {
+  if (!usernames || usernames.length === 0) return []
+  const { data } = await supabase
+    .from('profiles')
+    .select('username, avatar_url, last_seen_at')
+    .in('username', usernames)
+  return data || []
+}
+
 export async function getProfileByUsername(username) {
   const { data: profile } = await supabase
     .from('profiles')
