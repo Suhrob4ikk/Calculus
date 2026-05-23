@@ -1221,9 +1221,9 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
 
   // Время определяется автоматически по уровню и количеству
   const minutesMap = {
-    easy: {5: 25, 7: 30, 10: 35},
-    medium: {5: 30, 7: 35, 10: 40},
-    hard: {5: 35, 7: 40, 10: 50}
+    easy:   {5: 25, 7: 30, 10: 35, 15: 40, 20: 50, 25: 60},
+    medium: {5: 30, 7: 35, 10: 40, 15: 50, 20: 60, 25: 75},
+    hard:   {5: 35, 7: 40, 10: 50, 15: 60, 20: 75, 25: 90},
   };
   const totalMinutes = (minutesMap[difficulty] && minutesMap[difficulty][questionCount]) || (questionCount * 25 / 5); // fallback
   timeRemaining = totalMinutes * 60;
