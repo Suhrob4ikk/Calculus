@@ -1118,6 +1118,7 @@ function stopTimer() {
 
 // ── Сохранение / очистка / восстановление состояния теста ─
 function saveTestState() {
+  if (currentSection === 'duel' || currentSection === 'daily') return
   try {
     localStorage.setItem('testState', JSON.stringify({
       section: currentSection,
