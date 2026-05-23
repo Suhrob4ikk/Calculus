@@ -160,3 +160,41 @@ export async function getProfileByUsername(username) {
     .order('created_at', { ascending: false })
   return { profile, results: results || [] }
 }
+
+// ── История дуэлей ────────────────────────────────────────
+export async function getDuelHistory(userId) {
+  // Fetch user's duel records (difficulty field stores the duel code)
+  const { data: mine, error } = await supabase
+    .from('test_results')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('section', 'duel')
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  if (!mine || mine.length === 0) return { data: [], error }
+
+  // Fetch opponent records sharing the same duel codes in one query
+  const codes = mine.map(d => d.difficulty)
+  const { data: theirs } = await supabase
+    .from('test_results')
+    .select('username, score, correct_answers, total_questions, difficulty')
+    .eq('section', 'duel')
+    .in('difficulty', codes)
+    .neq('user_id', userId)
+
+  const oppMap = {}
+  theirs?.forEach(d => { oppMap[d.difficulty] = d })
+
+  return {
+    data: mine.map(d => {
+      const opp = oppMap[d.difficulty] || null
+      const result = !opp ? 'unknown'
+        : d.score > opp.score ? 'win'
+        : d.score < opp.score ? 'loss'
+        : 'draw'
+      return { ...d, opponent: opp, result }
+    }),
+    error
+  }
+}

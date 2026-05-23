@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword, savePushSubscription, deletePushSubscription, getDailyLeaderboard } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword, savePushSubscription, deletePushSubscription, getDailyLeaderboard, getDuelHistory } from './supabase.js'
 
 // ── VAPID публичный ключ (замени после npx web-push generate-vapid-keys) ──
 const VAPID_PUBLIC_KEY = 'BFvc73Owpo8t4uZ_F-_w8Xdt4Bh05LtAHe_4F4aaSsVuHe7_3tpiGhr2jJLabkeYD-uZMRHfIuhs0jaDZP7diR4'
@@ -1346,6 +1346,25 @@ window.finishTest = async function() {
   if (currentSection === 'duel') {
     _duelMyScore = percentage
     _broadcastDuelScore(percentage)
+
+    // Save to Supabase — difficulty stores the duel code to link both players' records
+    if (currentUser) {
+      await saveResult({
+        userId: currentUser.id,
+        username: _duelMyName,
+        section: 'duel',
+        difficulty: _duelCode,
+        score: _duelMyScore,
+        correctAnswers: correct,
+        totalQuestions: currentTest.length
+      })
+    }
+
+    // Award XP for duel
+    const xpGained = correct * (XP_TABLE[_duelDiff] || 20)
+    const newXP = addXP(xpGained)
+    setTimeout(() => { showXPToast(xpGained, newXP); renderXPBadge() }, 700)
+
     window._finishInProgress = false
     clearTestState()
     showPage('resultsPage')
@@ -1356,7 +1375,6 @@ window.finishTest = async function() {
     document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
     const detailedResults = document.getElementById('detailedResults')
     detailedResults.innerHTML = `<p style="color:#94a3b8;text-align:center;padding:1rem">⏳ Ожидаем результата соперника…</p>`
-    // If opponent already sent score, show results immediately
     _checkDuelComplete()
     return
   }
@@ -1567,12 +1585,21 @@ window.showProfile = async function() {
   const emailEl = document.getElementById('profileEmail')
   if (emailEl) emailEl.textContent = email
 
-  const { data } = await getUserResults(currentUser.id)
+  const { data: allData } = await getUserResults(currentUser.id)
   const profileContent = document.getElementById('profileContent')
   if (!profileContent) return
 
+  // Separate duel records — they use a different scoring context
+  const data = (allData || []).filter(r => r.section !== 'duel')
+
   if (!data || data.length === 0) {
-    profileContent.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p>'
+    profileContent.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p><div id="duelHistoryBlock"></div>'
+    // Still load duel history even if no regular tests
+    const block = document.getElementById('duelHistoryBlock')
+    if (block) {
+      const { data: duels } = await getDuelHistory(currentUser.id)
+      if (duels && duels.length > 0) block.innerHTML = '<p class="text-slate-400 text-sm text-center">⚔️ У вас есть история дуэлей — см. ниже</p>'
+    }
     return
   }
 
@@ -1684,7 +1711,39 @@ window.showProfile = async function() {
           <span class="font-bold text-lg ${r.score>=70?'text-green-400':'text-red-400'}">${r.score}%</span>
         </div>`).join('') || '<p class="text-slate-400 text-sm">Нет данных</p>'}
     </div>
+    <div id="duelHistoryBlock"></div>
   `
+
+  // Load duel history asynchronously and inject into placeholder
+  const block = document.getElementById('duelHistoryBlock')
+  if (block) {
+    const { data: duels } = await getDuelHistory(currentUser.id)
+    if (duels && duels.length > 0) {
+      const rows = duels.map(d => {
+        const date  = new Date(d.created_at).toLocaleDateString('ru', { day:'numeric', month:'short' })
+        const rIcon = d.result==='win'?'🏆':d.result==='draw'?'🤝':d.result==='loss'?'💪':'❓'
+        const rText = d.result==='win'?'Победа':d.result==='draw'?'Ничья':d.result==='loss'?'Поражение':'Ожидание'
+        const rClr  = d.result==='win'?'#10b981':d.result==='draw'?'#f59e0b':'#ef4444'
+        const opp   = d.opponent ? `vs <b>${d.opponent.username}</b> (${d.opponent.score}%)` : 'vs <span style="color:#64748b">???</span>'
+        return `
+          <div style="display:flex;justify-content:space-between;align-items:center;
+            padding:10px 14px;border-radius:12px;background:rgba(139,92,246,0.1);
+            border:1px solid rgba(139,92,246,0.2);margin-bottom:6px">
+            <div>
+              <div style="font-weight:600;color:#e2e8f0;font-size:0.9rem">${rIcon} ${rText}</div>
+              <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">${opp} · ${date}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700;font-size:1.1rem;color:${rClr}">${d.score}%</div>
+              <div style="font-size:0.72rem;color:#64748b">${d.correct_answers}/${d.total_questions}</div>
+            </div>
+          </div>`
+      }).join('')
+      block.innerHTML = `
+        <h3 class="text-lg font-bold text-slate-200 mb-3" style="margin-top:1rem">⚔️ Дуэли</h3>
+        ${rows}`
+    }
+  }
 }
 
 // ── Статистика ────────────────────────────────────────────
