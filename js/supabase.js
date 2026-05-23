@@ -186,15 +186,26 @@ export async function getDuelHistory(userId) {
   const oppMap = {}
   theirs?.forEach(d => { oppMap[d.difficulty] = d })
 
+  // Auto-delete orphaned records (no opponent) older than 1 hour — fire-and-forget
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  const orphanIds = mine
+    .filter(d => !oppMap[d.difficulty] && d.created_at < oneHourAgo)
+    .map(d => d.id)
+  if (orphanIds.length > 0) {
+    supabase.from('test_results').delete().in('id', orphanIds).then(() => {})
+  }
+
+  // Only return completed duels (opponent found) — skip "Ожидание" entries
   return {
-    data: mine.map(d => {
-      const opp = oppMap[d.difficulty] || null
-      const result = !opp ? 'unknown'
-        : d.score > opp.score ? 'win'
-        : d.score < opp.score ? 'loss'
-        : 'draw'
-      return { ...d, opponent: opp, result }
-    }),
+    data: mine
+      .filter(d => oppMap[d.difficulty])
+      .map(d => {
+        const opp = oppMap[d.difficulty]
+        const result = d.score > opp.score ? 'win'
+          : d.score < opp.score ? 'loss'
+          : 'draw'
+        return { ...d, opponent: opp, result }
+      }),
     error
   }
 }

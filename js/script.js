@@ -1425,14 +1425,17 @@ window.finishTest = async function() {
     document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
     const detailedResults = document.getElementById('detailedResults')
     detailedResults.innerHTML = `<p style="color:#94a3b8;text-align:center;padding:1rem">⏳ Ожидаем результата соперника…</p>`
-    // Timeout: if opponent doesn't respond in 30 s, treat as disconnected
+    // Timeout: wait until the opponent's timer could possibly still be running,
+    // then treat as disconnected. timeRemaining is how much time WE had left —
+    // the opponent can have at most that many seconds left plus a 30 s buffer.
     if (window._duelOpponentTimeout) clearTimeout(window._duelOpponentTimeout)
+    const _duelWaitMs = Math.max((timeRemaining + 30) * 1000, 15000)
     window._duelOpponentTimeout = setTimeout(() => {
       if (_duelOpponentScore === null) {
-        _duelOpponentScore = -1 // sentinel: opponent timed out
+        _duelOpponentScore = -1 // sentinel: opponent timed out / disconnected
         _showDuelResults()
       }
-    }, 30000)
+    }, _duelWaitMs)
     _checkDuelComplete()
     return
   }
