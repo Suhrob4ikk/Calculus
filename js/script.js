@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const updatePage = document.getElementById('updatePasswordPage')
       if (updatePage && updatePage.style.display !== 'none') return
       if (currentUser) {
+        setupSessionGuard(currentUser.id)
         // ВАЖНО: навигируем на homePage ТОЛЬКО если пользователь был на authPage.
         // При сворачивании вкладки Supabase обновляет токен и снова стреляет SIGNED_IN —
         // без этой проверки пользователя выбрасывало бы из теста на главную.
@@ -90,9 +91,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Если уже на другой странице (тест, профиль и т.д.) — не трогаем
       }
     } else if (event === 'SIGNED_OUT') {
+      teardownSessionGuard()
       currentUser = null
       clearTestState()
       showPage('authPage')
+      if (window._kickedOut) {
+        window._kickedOut = false
+        setTimeout(() => {
+          const errEl = document.getElementById('loginError')
+          if (errEl) errEl.textContent = '⚠️ Аккаунт открыт на другом устройстве. Войдите снова.'
+        }, 50)
+      }
     }
   })
 
@@ -128,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
       currentUser = session.user
+      setupSessionGuard(currentUser.id)
       showPage('homePage')
       updateUserUI()
       renderStreakBadge()
@@ -2474,6 +2484,44 @@ document.addEventListener('click', e => {
     window.closeNavMenu()
   }
 })
+
+// ── Защита от одновременного входа ──────────────────────
+// Когда новое устройство входит в тот же аккаунт, оно рассылает сигнал
+// всем старым сессиям через Realtime broadcast → те сами выходят.
+let _sessionChannel = null
+let _sessionGuardUserId = null
+
+function setupSessionGuard(userId) {
+  // Не переподписываться при обновлении токена (SIGNED_IN стреляет снова)
+  if (_sessionGuardUserId === userId && _sessionChannel) return
+  _sessionGuardUserId = userId
+  if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
+
+  _sessionChannel = supabase.channel(`session:${userId}`, {
+    config: { broadcast: { self: false } }
+  })
+  _sessionChannel
+    .on('broadcast', { event: 'new_session' }, () => {
+      // Нас вытеснило новое устройство — принудительный выход
+      _sessionChannel?.unsubscribe(); _sessionChannel = null; _sessionGuardUserId = null
+      if (_duelChannel) { _duelChannel.unsubscribe(); _duelChannel = null }
+      if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
+      stopTimer(); clearTestState()
+      window._kickedOut = true
+      supabase.auth.signOut()
+    })
+    .subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        // Уведомляем все существующие сессии этого аккаунта
+        await _sessionChannel.send({ type: 'broadcast', event: 'new_session', payload: {} })
+      }
+    })
+}
+
+function teardownSessionGuard() {
+  if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
+  _sessionGuardUserId = null
+}
 
 // ── Глобальный доступ к функциям ────────────────────────
 window.showForgotPassword = showForgotPassword
