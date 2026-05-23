@@ -280,13 +280,14 @@ function showPage(pageId) {
   const showNav   = !noNavPages.includes(pageId)
   const bottomNav = document.getElementById('bottomNav')
   const menuBtn   = document.getElementById('menuBtn')
-  const headerAvatar = document.querySelector('.header-avatar')
+  const desktopNav = document.getElementById('desktopNav')
   // bottomNav: CSS hides on desktop (min-width:641px), JS controls auth visibility
   if (bottomNav) bottomNav.style.display = showNav ? 'flex' : 'none'
   // menuBtn: CSS hides on mobile (max-width:640px), JS controls auth visibility
   if (menuBtn) menuBtn.style.display = showNav ? '' : 'none'
+  // desktopNav: CSS hides on mobile (max-width:640px), JS controls auth visibility
+  if (desktopNav) desktopNav.style.display = showNav ? '' : 'none'
   if (!showNav) window.closeNavMenu?.()
-  if (headerAvatar) headerAvatar.style.display = showNav ? 'flex' : 'none'
 
   // Подсвечиваем активную вкладку в нижней навигации
   const bnMap = {
@@ -297,19 +298,32 @@ function showPage(pageId) {
   document.querySelectorAll('#bottomNav button').forEach(b => b.classList.remove('bn-active'))
   const active = bnMap[pageId]
   if (active) document.getElementById(active)?.classList.add('bn-active')
+
+  // Подсвечиваем активную кнопку в десктоп-шапке
+  const dhMap = {
+    homePage: 'dhHome', statisticsPage: 'dhStats',
+    leaderboardPage: 'dhLeader', searchProfilesPage: 'dhPeople'
+  }
+  document.querySelectorAll('#desktopNav .dh-nav-btn').forEach(b => b.classList.remove('dh-active'))
+  const dhActive = dhMap[pageId]
+  if (dhActive) document.getElementById(dhActive)?.classList.add('dh-active')
 }
 
 function updateUserUI() {
+  if (!currentUser) return
+  const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
+  const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
   const el = document.getElementById('userGreeting')
-  if (el && currentUser) {
-    const username = currentUser.user_metadata?.username || currentUser.email.split('@')[0]
-    const isCreator = currentUser.email === 'davlatovsurob@gmail.com'
+  if (el) {
     el.innerHTML = `👤 ${username}` + (isCreator
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
       : '')
   }
-  // Шапка: аватар убран, но sidebar Профиль-кнопку можно обновить если нужно
-  // (headerAvatarImg и др. элементы скрыты, но ID сохранены для совместимости)
+  // Desktop header
+  const dhUsername = document.getElementById('dhUsername')
+  const dhLetter   = document.getElementById('dhAvatarLetter')
+  if (dhUsername) dhUsername.textContent = username
+  if (dhLetter)   dhLetter.textContent   = username[0]?.toUpperCase() || '?'
 }
 
 // ── Service Worker + PWA ─────────────────────────────────
@@ -513,16 +527,22 @@ function playSound(type) {
 window.toggleSound = function() {
   const on = localStorage.getItem('soundEnabled') !== 'false'
   localStorage.setItem('soundEnabled', on ? 'false' : 'true')
+  const icon = on ? '🔇' : '🔊'
   const btn = document.getElementById('soundToggle')
-  if (btn) btn.textContent = on ? '🔇' : '🔊'
-  if (!on) playSound('correct') // demo sound when turning on
+  if (btn) btn.textContent = icon
+  const dhBtn = document.getElementById('dhSound')
+  if (dhBtn) dhBtn.textContent = icon
+  if (!on) playSound('correct')
 }
 
 // Инициализировать иконку кнопки звука
 ;(function initSoundBtn() {
   const on = localStorage.getItem('soundEnabled') !== 'false'
+  const icon = on ? '🔊' : '🔇'
   const btn = document.getElementById('soundToggle')
-  if (btn) btn.textContent = on ? '🔊' : '🔇'
+  if (btn) btn.textContent = icon
+  const dhBtn = document.getElementById('dhSound')
+  if (dhBtn) dhBtn.textContent = icon
 })()
 
 // ── XP система ───────────────────────────────────────────
@@ -843,6 +863,11 @@ async function handleAvatarUpload(event) {
     const letter = document.getElementById('profileAvatar')
     if (img) { img.src = url; img.style.display = 'block' }
     if (letter) letter.style.display = 'none'
+    // Sync desktop header avatar
+    const dhImg = document.getElementById('dhAvatarImg')
+    const dhLetter = document.getElementById('dhAvatarLetter')
+    if (dhImg) { dhImg.src = url; dhImg.style.display = 'block' }
+    if (dhLetter) dhLetter.style.display = 'none'
     if (btn) { btn.textContent = '✅ Загружено!'; setTimeout(() => { btn.textContent = '📷 Сменить фото'; btn.disabled = false }, 2000) }
   }
   if (btn && btn.disabled) { btn.textContent = '📷 Сменить фото'; btn.disabled = false }
@@ -1631,6 +1656,10 @@ window.showProfile = async function() {
       const letter = document.getElementById('profileAvatar')
       if (img)    { img.src = ''; img.style.display = 'none' }
       if (letter) letter.style.display = 'flex'
+      const dhImg = document.getElementById('dhAvatarImg')
+      const dhLetter = document.getElementById('dhAvatarLetter')
+      if (dhImg) dhImg.style.display = 'none'
+      if (dhLetter) dhLetter.style.display = ''
       updateUserUI()
     }
   }, 50)
@@ -1647,9 +1676,19 @@ window.showProfile = async function() {
       avatarImg.src = url; avatarImg.style.display = 'block'; avatarImg.style.cursor = 'pointer'
       avatarImg.onclick = () => openPhotoPreview(url, username)
       if (avatar) avatar.style.display = 'none'
+      // Sync desktop header avatar
+      const dhImg = document.getElementById('dhAvatarImg')
+      const dhLetter = document.getElementById('dhAvatarLetter')
+      if (dhImg) { dhImg.src = url; dhImg.style.display = 'block' }
+      if (dhLetter) dhLetter.style.display = 'none'
     } else {
       avatarImg.style.display = 'none'
       if (avatar) avatar.style.display = 'flex'
+      // Clear desktop header avatar to letter
+      const dhImg = document.getElementById('dhAvatarImg')
+      const dhLetter = document.getElementById('dhAvatarLetter')
+      if (dhImg) dhImg.style.display = 'none'
+      if (dhLetter) { dhLetter.textContent = username[0]?.toUpperCase() || '?'; dhLetter.style.display = '' }
     }
   }
   const nameEl = document.getElementById('profileName')
@@ -2333,7 +2372,7 @@ function _beginDuelTest() {
   clearTestState()
   showPage('testPage')
   // Hide nav elements so user can't accidentally leave mid-duel
-  const _duelNavIds = ['menuBtn', 'bottomNav', 'themeToggle', 'soundToggle']
+  const _duelNavIds = ['menuBtn', 'bottomNav', 'themeToggle', 'soundToggle', 'desktopNav']
   _duelNavIds.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none' })
   // Set test header info (same as startTest does)
   document.getElementById('totalQuestions').textContent = questions.length
@@ -2419,14 +2458,16 @@ function _showDuelResults() {
   if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
 
   // Restore nav elements hidden during duel
-  const menuBtn = document.getElementById('menuBtn')
-  const bottomNav = document.getElementById('bottomNav')
+  const menuBtn    = document.getElementById('menuBtn')
+  const bottomNav  = document.getElementById('bottomNav')
   const themeToggle = document.getElementById('themeToggle')
   const soundToggle = document.getElementById('soundToggle')
-  if (menuBtn) menuBtn.style.display = ''
-  if (bottomNav) bottomNav.style.display = 'flex'
+  const desktopNav = document.getElementById('desktopNav')
+  if (menuBtn)    menuBtn.style.display    = ''
+  if (bottomNav)  bottomNav.style.display  = 'flex'
   if (themeToggle) themeToggle.style.display = ''
   if (soundToggle) soundToggle.style.display = ''
+  if (desktopNav) desktopNav.style.display  = ''
 
   const modal = document.getElementById('duelResultsModal')
   const emojiEl = document.getElementById('duelResultsEmoji')

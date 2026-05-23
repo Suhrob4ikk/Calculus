@@ -164,6 +164,82 @@
     body.light-theme .auth-card {
       background: rgba(255,255,255,0.96) !important;
     }
+
+    /* ── Desktop top navigation ──────────────────────────── */
+    @media (min-width: 641px) {
+      #menuBtn, #navMenu, #themeToggle, #soundToggle { display: none !important; }
+      .page-content { padding-top: 3.75rem; }
+    }
+    @media (max-width: 640px) {
+      #desktopNav { display: none !important; }
+    }
+    #desktopNav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
+      background: rgba(15,23,42,0.95); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(148,163,184,0.12); height: 56px;
+    }
+    .dh-inner {
+      max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .dh-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; flex-shrink: 0;
+    }
+    .dh-links { display: flex; gap: 2px; }
+    .dh-nav-btn {
+      padding: 6px 13px; border-radius: 8px; border: none; background: transparent;
+      color: #94a3b8; font-size: 0.87rem; font-weight: 500; cursor: pointer;
+      transition: all 0.2s; font-family: inherit; white-space: nowrap;
+    }
+    .dh-nav-btn:hover { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    .dh-nav-btn.dh-active { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .dh-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .dh-icon-btn {
+      width: 34px; height: 34px; border-radius: 8px;
+      border: 1px solid rgba(148,163,184,0.2); background: rgba(30,41,59,0.6);
+      color: #94a3b8; font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .dh-icon-btn:hover { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .dh-user-btn {
+      display: flex; align-items: center; gap: 7px; padding: 4px 10px 4px 4px;
+      border-radius: 20px; border: 1px solid rgba(148,163,184,0.2);
+      background: rgba(30,41,59,0.6); cursor: pointer; transition: all 0.2s;
+    }
+    .dh-user-btn:hover { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
+    .dh-avatar {
+      width: 27px; height: 27px; border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: white; flex-shrink: 0; overflow: hidden;
+    }
+    .dh-username { font-size: 0.85rem; color: #e2e8f0; font-weight: 500; }
+    .dh-logout-btn {
+      padding: 5px 13px; border-radius: 8px;
+      border: 1px solid rgba(239,68,68,0.35); background: rgba(239,68,68,0.12);
+      color: #fca5a5; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .dh-logout-btn:hover { background: rgba(239,68,68,0.25); color: #f87171; }
+    body.light-theme #desktopNav {
+      background: rgba(255,255,255,0.97); border-bottom-color: rgba(165,180,252,0.5);
+      box-shadow: 0 2px 12px rgba(99,102,241,0.08);
+    }
+    body.light-theme .dh-nav-btn { color: #4f46e5; }
+    body.light-theme .dh-nav-btn:hover { background: rgba(99,102,241,0.1); color: #2563eb; }
+    body.light-theme .dh-nav-btn.dh-active { background: rgba(99,102,241,0.15); color: #2563eb; }
+    body.light-theme .dh-icon-btn {
+      background: rgba(255,255,255,0.8); border-color: rgba(165,180,252,0.5); color: #4f46e5;
+    }
+    body.light-theme .dh-user-btn {
+      background: rgba(255,255,255,0.8); border-color: rgba(165,180,252,0.5);
+    }
+    body.light-theme .dh-username { color: #1e293b; }
+    body.light-theme .dh-logout-btn {
+      border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.08); color: #dc2626;
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
@@ -205,6 +281,32 @@
 <div id="headerAvatarImg" style="display:none"></div>
 <div id="headerAvatarLetter" style="display:none"></div>
 <span id="headerUsername" style="display:none"></span>
+
+<!-- ── ДЕСКТОП ШАПКА (≥641px) ── -->
+<header id="desktopNav" style="display:none">
+  <div class="dh-inner">
+    <div class="dh-logo">∫ Матанализ</div>
+    <nav class="dh-links">
+      <button id="dhHome"   onclick="showHome()"           class="dh-nav-btn">🏠 Главная</button>
+      <button id="dhDuel"   onclick="showDuelModal()"      class="dh-nav-btn">⚔️ Дуэль</button>
+      <button id="dhStats"  onclick="showStatistics()"     class="dh-nav-btn">📊 Статистика</button>
+      <button id="dhLeader" onclick="showLeaderboard()"    class="dh-nav-btn">🏆 Рейтинг</button>
+      <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn">👥 Люди</button>
+    </nav>
+    <div class="dh-right">
+      <button id="dhSound" onclick="toggleSound()"  class="dh-icon-btn" title="Звук">🔊</button>
+      <button id="dhTheme" onclick="toggleTheme()"  class="dh-icon-btn" title="Тема">🌙</button>
+      <button onclick="showProfile()" class="dh-user-btn">
+        <div class="dh-avatar">
+          <img id="dhAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+          <span id="dhAvatarLetter">?</span>
+        </div>
+        <span id="dhUsername">…</span>
+      </button>
+      <button onclick="handleLogout()" class="dh-logout-btn">Выйти</button>
+    </div>
+  </div>
+</header>
 
 <!-- ── МЕНЮ (гамбургер + выпадающий список) ── -->
 <button id="menuBtn" onclick="toggleNavMenu()" title="Меню">☰</button>
@@ -276,10 +378,6 @@
         <button id="installAppBtn" onclick="installApp()"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
           📲 Установить приложение
-        </button>
-        <button onclick="handleLogout()"
-          class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-300 px-5 py-2 rounded-full font-semibold transition-all text-sm">
-          Выйти
         </button>
       </div>
     </div>
@@ -765,6 +863,12 @@
           </button>
         </div>
         <div id="profileContent"></div>
+        <div class="mt-6 text-center">
+          <button onclick="handleLogout()"
+            class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-300 px-8 py-2 rounded-full font-semibold transition-all text-sm">
+            Выйти из аккаунта
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -899,8 +1003,13 @@
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark')
       localStorage.setItem('theme', isDark ? 'dark' : 'light')
+      const icon = isDark ? '☀️' : '🌙'
       const btn = document.getElementById('themeToggle')
-      if (btn) btn.textContent = isDark ? '☀️' : '🌙'
+      if (btn) btn.textContent = icon
+      const dhBtn = document.getElementById('dhTheme')
+      if (dhBtn) dhBtn.textContent = icon
+      document.body.classList.toggle('dark-theme', isDark)
+      document.body.classList.toggle('light-theme', !isDark)
     }
   </script>
   <script type="module" src="js/script.js"></script>
@@ -915,8 +1024,11 @@
       document.body.classList.toggle('dark-theme', isDark);
       document.body.classList.toggle('light-theme', !isDark);
       document.addEventListener('DOMContentLoaded', function() {
+        const icon = isDark ? '☀️' : '🌙';
         const btn = document.getElementById('themeToggle');
-        if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+        if (btn) btn.textContent = icon;
+        const dhBtn = document.getElementById('dhTheme');
+        if (dhBtn) dhBtn.textContent = icon;
       });
     })();
   </script>
