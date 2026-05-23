@@ -18,13 +18,9 @@ export function applyTheme(dark) {
 window.toggleTheme = function() {
   const isDark = document.documentElement.classList.toggle('dark')
   localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  const icon = isDark ? '☀️' : '🌙'
-  const btn = document.getElementById('themeToggle')
-  if (btn) btn.textContent = icon
-  const dhBtn = document.getElementById('dhTheme')
-  if (dhBtn) dhBtn.textContent = icon
   document.body.classList.toggle('dark-theme', isDark)
   document.body.classList.toggle('light-theme', !isDark)
+  syncSettingsBtns()
 }
 
 // ── Навигация между страницами ────────────────────────────
@@ -153,21 +149,31 @@ export function playSound(type) {
 window.toggleSound = function() {
   const on = localStorage.getItem('soundEnabled') !== 'false'
   localStorage.setItem('soundEnabled', on ? 'false' : 'true')
-  const icon = on ? '🔇' : '🔊'
-  const btn  = document.getElementById('soundToggle')
-  if (btn) btn.textContent = icon
-  const dhBtn = document.getElementById('dhSound')
-  if (dhBtn) dhBtn.textContent = icon
+  syncSettingsBtns()
   if (!on) playSound('correct')
 }
-;(function initSoundBtn() {
-  const on   = localStorage.getItem('soundEnabled') !== 'false'
-  const icon = on ? '🔊' : '🔇'
-  const btn  = document.getElementById('soundToggle')
-  if (btn) btn.textContent = icon
-  const dhBtn = document.getElementById('dhSound')
-  if (dhBtn) dhBtn.textContent = icon
-})()
+
+// ── Синхронизация кнопок настроек в профиле ──────────────
+export function syncSettingsBtns() {
+  const isDark  = document.documentElement.classList.contains('dark')
+  const soundOn = localStorage.getItem('soundEnabled') !== 'false'
+
+  const themeBtn = document.getElementById('settingsThemeBtn')
+  if (themeBtn) {
+    themeBtn.textContent = isDark ? '🌙 Тёмная' : '☀️ Светлая'
+    themeBtn.style.background   = isDark ? 'rgba(59,130,246,0.12)' : 'rgba(234,179,8,0.12)'
+    themeBtn.style.borderColor  = isDark ? 'rgba(59,130,246,0.35)'  : 'rgba(234,179,8,0.4)'
+    themeBtn.style.color        = isDark ? '#60a5fa'                : '#d97706'
+  }
+
+  const soundBtn = document.getElementById('settingsSoundBtn')
+  if (soundBtn) {
+    soundBtn.textContent        = soundOn ? '🔊 Включён'  : '🔇 Выключен'
+    soundBtn.style.background   = soundOn ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.1)'
+    soundBtn.style.borderColor  = soundOn ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.3)'
+    soundBtn.style.color        = soundOn ? '#34d399'               : '#f87171'
+  }
+}
 
 // ── XP система ───────────────────────────────────────────
 export const XP_TABLE = { easy: 10, medium: 20, hard: 30 }

@@ -145,10 +145,6 @@
       border: 1px solid rgba(165,180,252,0.4) !important;
     }
     body.light-theme .progress-bar { background: #c7d2fe !important; }
-    body.light-theme #themeToggle {
-      background: rgba(255,255,255,0.9) !important;
-      border-color: rgba(165,180,252,0.6) !important;
-    }
     body.light-theme .option-label {
       background: rgba(255,255,255,0.9) !important;
       border-color: rgba(165,180,252,0.4) !important;
@@ -167,7 +163,7 @@
 
     /* ── Desktop top navigation ──────────────────────────── */
     @media (min-width: 641px) {
-      #menuBtn, #navMenu, #themeToggle, #soundToggle { display: none !important; }
+      #menuBtn, #navMenu { display: none !important; }
       .page-content { padding-top: 3.75rem; }
     }
     @media (max-width: 640px) {
@@ -264,8 +260,6 @@
   <!-- Математический фон (виден только в тёмной теме) -->
   <div class="math-bg" id="mathBg"></div>
 
-  <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
-  <button id="soundToggle" onclick="toggleSound()" title="Звук вкл/выкл" style="position:fixed;top:1rem;right:3.8rem;z-index:1002;background:rgba(30,41,59,0.8);border:1px solid rgba(71,85,105,0.5);color:#94a3b8;border-radius:50%;width:2.2rem;height:2.2rem;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">🔊</button>
 
   <!-- Оверлей приватности (появляется при скрытии вкладки во время теста) -->
   <div id="privacyOverlay" onclick="hidePrivacyScreen()">
@@ -294,8 +288,6 @@
       <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn">👥 Люди</button>
     </nav>
     <div class="dh-right">
-      <button id="dhSound" onclick="toggleSound()"  class="dh-icon-btn" title="Звук">🔊</button>
-      <button id="dhTheme" onclick="toggleTheme()"  class="dh-icon-btn" title="Тема">🌙</button>
       <button onclick="showProfile()" class="dh-user-btn">
         <div class="dh-avatar">
           <img id="dhAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
@@ -863,6 +855,33 @@
           </button>
         </div>
         <div id="profileContent"></div>
+
+        <!-- ── Настройки ── -->
+        <div class="mt-5 pt-5" style="border-top:1px solid var(--border,rgba(71,85,105,0.3))">
+          <p style="font-size:0.72rem;font-weight:600;color:var(--text-muted,#94a3b8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem">⚙️ Настройки</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+
+            <!-- Тема -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
+              <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Тема оформления</span>
+              <button id="settingsThemeBtn" onclick="toggleTheme()"
+                style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.12);color:#60a5fa">
+                🌙 Тёмная
+              </button>
+            </div>
+
+            <!-- Звук -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
+              <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Звуковые эффекты</span>
+              <button id="settingsSoundBtn" onclick="toggleSound()"
+                style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.12);color:#34d399">
+                🔊 Включён
+              </button>
+            </div>
+
+          </div>
+        </div>
+
         <div class="mt-6 text-center">
           <button onclick="handleLogout()"
             class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-300 px-8 py-2 rounded-full font-semibold transition-all text-sm">

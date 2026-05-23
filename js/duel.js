@@ -280,7 +280,7 @@ function _beginDuelTest() {
 
   showPage('testPage')
   // Скрываем навигацию на время дуэли
-  ;['menuBtn', 'bottomNav', 'themeToggle', 'soundToggle', 'desktopNav'].forEach(id => {
+  ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.style.display = 'none'
   })
@@ -379,11 +379,9 @@ function _showDuelResults() {
 
   // Восстанавливаем навигацию
   ;[
-    ['menuBtn',     ''],
-    ['bottomNav',   'flex'],
-    ['themeToggle', ''],
-    ['soundToggle', ''],
-    ['desktopNav',  ''],
+    ['menuBtn',    ''],
+    ['bottomNav',  'flex'],
+    ['desktopNav', ''],
   ].forEach(([id, val]) => {
     const el = document.getElementById(id)
     if (el) el.style.display = val

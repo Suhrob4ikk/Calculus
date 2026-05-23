@@ -1,5 +1,5 @@
 import { st } from './state.js'
-import { showPage, updateUserUI, renderStreakBadge, renderXPBadge } from './ui.js'
+import { showPage, updateUserUI, renderStreakBadge, renderXPBadge, syncSettingsBtns } from './ui.js'
 import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getLeaderboard, getDuelHistory } from './supabase.js'
 
 // ── Уровни пользователя ───────────────────────────────────
@@ -93,6 +93,9 @@ async function handleAvatarUpload(event) {
 window.showProfile = async function() {
   showPage('profilePage')
   if (!st.currentUser) return
+
+  // Синхронизируем кнопки настроек с текущим состоянием
+  syncSettingsBtns()
 
   // Состояние кнопки push-уведомлений
   if ('serviceWorker' in navigator && 'PushManager' in window) {

@@ -92,15 +92,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Применяем тему и синхронизируем кнопки
+  // Применяем тему
   const saved      = localStorage.getItem('theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   const startDark  = saved === 'dark' || (!saved && prefersDark)
   applyTheme(startDark)
-  const themeBtn = document.getElementById('themeToggle')
-  if (themeBtn) themeBtn.textContent = startDark ? '☀️' : '🌙'
-  const dhTheme = document.getElementById('dhTheme')
-  if (dhTheme)  dhTheme.textContent  = startDark ? '☀️' : '🌙'
 
   // Обрабатываем URL-параметры (сброс пароля, подтверждение email)
   const urlParams = new URLSearchParams(window.location.search)
