@@ -600,7 +600,8 @@ function getDailyQuestions() {
     ...easyIntegralsQuestions, ...mediumIntegralsQuestions,
     ...easyDerivativesQuestions, ...mediumDerivativesQuestions,
     ...easySeriesQuestions, ...mediumSeriesQuestions,
-    ...easyLimitsQuestions, ...mediumLimitsQuestions
+    ...easyLimitsQuestions, ...mediumLimitsQuestions,
+    ...easyODEQuestions, ...mediumODEQuestions
   ].flat().filter(q => q && q.options && q.options.length === 4)
 
   // Fisher-Yates with seeded rng
@@ -955,7 +956,7 @@ window.viewProfile = async function(username) {
       ${results.slice(0,5).map(r => `
         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
           <div>
-            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':'Пределы'}</span>
+            <span class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':r.section==='ode'?'Дифф. уравнения':'Пределы'}</span>
             <span class="text-gray-500 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
           </div>
           <span class="font-bold ${r.score>=70?'text-green-600':'text-red-600'}">${r.score}%</span>
@@ -1105,7 +1106,7 @@ window.showHome = function() {
 
 window.showSection = function(section) {
   currentSection = section
-  const map = { integrals: 'integralsSection', derivatives: 'derivativesSection', series: 'seriesSection', limits: 'limitsSection' }
+  const map = { integrals: 'integralsSection', derivatives: 'derivativesSection', series: 'seriesSection', limits: 'limitsSection', ode: 'odeSection' }
   showPage(map[section])
 }
 
@@ -1202,8 +1203,13 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   const questionCount = countEl ? parseInt(countEl.value) : 15
 
   // Время определяется автоматически по уровню и количеству
-  const timePerQuestion = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 90 : 120
-  timeRemaining = questionCount * timePerQuestion
+  const minutesMap = {
+    easy: {5: 25, 7: 30, 10: 35},
+    medium: {5: 30, 7: 35, 10: 40},
+    hard: {5: 35, 7: 40, 10: 50}
+  };
+  const totalMinutes = (minutesMap[difficulty] && minutesMap[difficulty][questionCount]) || (questionCount * 25 / 5); // fallback
+  timeRemaining = totalMinutes * 60;
 
   let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
   // Перемешиваем вопросы случайно
@@ -1214,7 +1220,7 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
     return {
       ...q,
       options: order.map(i => q.options[i]),  // перемешанные варианты
-      correct: order.indexOf(q.correct)        // новая позиция правильного ответа
+      correct: order.indexOf(q.correct !== undefined ? q.correct : q.answerIndex)        // новая позиция правильного ответа
     }
   })
   currentQuestionIndex = 0
@@ -1224,7 +1230,7 @@ function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = currentTest.length
-  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }[section] || section
+  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }[section] || section
   const diffName    = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
   document.getElementById('testTitle').textContent = `${isStudyMode ? '📖 Изучение' : 'Тест'}: ${sectionName}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName}${isStudyMode ? ' · Без таймера · Результат не сохраняется' : ''}`
@@ -1260,11 +1266,16 @@ window.startSeriesTest = function(d, study = false) {
   const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
   startTest('series', d, pool, 'seriesCount', 'seriesSection')
 }
+window.startODETest = function(d, study = false) {
+  isStudyMode = study
+  const pool = d==='easy' ? easyODEQuestions : d==='medium' ? mediumODEQuestions : hardODEQuestions
+  startTest('ode', d, pool, 'odeCount', 'odeSection')
+}
 
 window.restartTest = function() {
   if (currentSection === 'daily') { showHome(); return }
   if (currentSection === 'duel') { showDuelModal(); return }
-  ;(currentSection==='limits'?window.startLimitsTest:currentSection==='series'?window.startSeriesTest:currentSection==='derivatives'?window.startDerivativesTest:window.startIntegralsTest)(currentDifficulty)
+  ;(currentSection==='ode'?window.startODETest:currentSection==='limits'?window.startLimitsTest:currentSection==='series'?window.startSeriesTest:currentSection==='derivatives'?window.startDerivativesTest:window.startIntegralsTest)(currentDifficulty)
 }
 
 // ── Вопросы ───────────────────────────────────────────────
@@ -1916,8 +1927,8 @@ window.resetStatistics = function() {
 // Итоговый рейтинг = сумма очков по всем комбинациям.
 // Это честно: нужно играть больше и сложнее, чтобы занять высокое место.
 const DIFF_POINTS = { easy: 1, medium: 2, hard: 3 }
-const SECTION_ICONS = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim' }
-const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6' }
+const SECTION_ICONS = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim', ode: "y'" }
+const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6', ode: '#f97316' }
 
 function calcRatingPoints(row) {
   return (row.correct_answers || 0) * (DIFF_POINTS[row.difficulty] || 1)

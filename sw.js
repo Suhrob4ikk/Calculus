@@ -1,4 +1,4 @@
-const CACHE = 'calculus-v2'
+const CACHE = 'calculus-v4'
 const ASSETS = [
   '/Calculus/',
   '/Calculus/index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   '/Calculus/js/derivatives-questions.js',
   '/Calculus/js/series-questions.js',
   '/Calculus/js/limits-questions.js',
+  '/Calculus/js/ode-questions.js',
   '/Calculus/manifest.json',
   '/Calculus/icons/icon.svg',
   '/Calculus/icons/badge.svg',
