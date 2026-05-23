@@ -1995,6 +1995,7 @@ let _duelOpponentName = ''
 let _duelMyName = ''
 let _duelSection = 'mixed'   // выбор раздела
 let _duelDiff = 'medium'     // выбор уровня
+let _duelIsRematchRequester = false
 
 function generateDuelCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -2139,17 +2140,9 @@ window.createDuel = async function() {
       _duelOpponentName = payload.name || _duelOpponentName
       _checkDuelComplete()
     })
-    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => {
-      _showRematchRequest(payload.name)
-    })
-    .on('broadcast', { event: 'rematch_accept' }, () => {
-      const newCode = generateDuelCode()
-      _duelCode = newCode
-      _duelMyScore = null; _duelOpponentScore = null
-      _duelChannel.send({ type: 'broadcast', event: 'rematch_start', payload: { code: newCode, section: _duelSection, difficulty: _duelDiff } })
-      document.getElementById('duelResultsModal').style.display = 'none'
-      _beginDuelCountdown()
-    })
+    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => { _showRematchRequest(payload.name) })
+    .on('broadcast', { event: 'rematch_accept' },  () => { _onRematchAccepted() })
+    .on('broadcast', { event: 'rematch_start' },   ({ payload }) => { _onRematchStart(payload) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = '❌ Соперник отказался'; btn.disabled = true }
@@ -2183,17 +2176,9 @@ window.joinDuel = async function() {
       _duelOpponentName = payload.name || _duelOpponentName
       _checkDuelComplete()
     })
-    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => {
-      _showRematchRequest(payload.name)
-    })
-    .on('broadcast', { event: 'rematch_start' }, ({ payload }) => {
-      _duelCode = payload.code
-      if (payload.section) _duelSection = payload.section
-      if (payload.difficulty) _duelDiff = payload.difficulty
-      _duelMyScore = null; _duelOpponentScore = null
-      document.getElementById('duelResultsModal').style.display = 'none'
-      _beginDuelCountdown()
-    })
+    .on('broadcast', { event: 'rematch_request' }, ({ payload }) => { _showRematchRequest(payload.name) })
+    .on('broadcast', { event: 'rematch_accept' },  () => { _onRematchAccepted() })
+    .on('broadcast', { event: 'rematch_start' },   ({ payload }) => { _onRematchStart(payload) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = '❌ Соперник отказался'; btn.disabled = true }
@@ -2278,12 +2263,14 @@ function _checkDuelComplete() {
 }
 
 window.requestRematch = function() {
+  _duelIsRematchRequester = true
   const btn = document.getElementById('rematchBtn')
   if (btn) { btn.textContent = '⏳ Ожидаем ответа…'; btn.disabled = true }
   _duelChannel?.send({ type: 'broadcast', event: 'rematch_request', payload: { name: _duelMyName } })
 }
 
 window.acceptRematch = function() {
+  _duelIsRematchRequester = false
   document.getElementById('rematchRequestBanner').style.display = 'none'
   const btn = document.getElementById('rematchBtn')
   if (btn) { btn.textContent = '⏳ Начинаем…'; btn.disabled = true }
@@ -2301,6 +2288,29 @@ function _showRematchRequest(name) {
   document.getElementById('rematchRequesterName').textContent = `⚔️ ${name} предлагает реванш!`
   banner.style.display = 'block'
   document.getElementById('duelResultsModal').style.display = 'flex'
+}
+
+// Called by both players when rematch_accept is received — only requester acts
+function _onRematchAccepted() {
+  if (!_duelIsRematchRequester) return
+  _duelIsRematchRequester = false
+  const newCode = generateDuelCode()
+  _duelCode = newCode
+  _duelMyScore = null; _duelOpponentScore = null
+  _duelChannel.send({ type: 'broadcast', event: 'rematch_start', payload: { code: newCode, section: _duelSection, difficulty: _duelDiff } })
+  document.getElementById('duelResultsModal').style.display = 'none'
+  _beginDuelCountdown()
+}
+
+// Called by both players when rematch_start is received — only accepter acts
+function _onRematchStart(payload) {
+  if (_duelIsRematchRequester) return
+  _duelCode = payload.code
+  if (payload.section) _duelSection = payload.section
+  if (payload.difficulty) _duelDiff = payload.difficulty
+  _duelMyScore = null; _duelOpponentScore = null
+  document.getElementById('duelResultsModal').style.display = 'none'
+  _beginDuelCountdown()
 }
 
 function _showDuelResults() {
