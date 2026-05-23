@@ -78,17 +78,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       const updatePage = document.getElementById('updatePasswordPage')
       if (updatePage && updatePage.style.display !== 'none') return
       if (currentUser) {
-        setupSessionGuard(currentUser.id)
-        // ВАЖНО: навигируем на homePage ТОЛЬКО если пользователь был на authPage.
-        // При сворачивании вкладки Supabase обновляет токен и снова стреляет SIGNED_IN —
-        // без этой проверки пользователя выбрасывало бы из теста на главную.
         const authPage = document.getElementById('authPage')
         const onAuthPage = authPage && authPage.style.display !== 'none'
         if (onAuthPage) {
-          showPage('homePage')
-          updateUserUI()
+          // Свежий вход: НЕ переходим сразу — ждём пока guard проверит Presence.
+          // Если слот занят → signOut произойдёт до того как пользователь увидит главную.
+          const loginBtn = document.getElementById('loginBtn')
+          if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '⏳ Проверяем…' }
+          setupSessionGuard(currentUser.id, () => {
+            // Guard одобрил — теперь открываем приложение
+            if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
+            showPage('homePage')
+            updateUserUI()
+          })
+        } else {
+          // Обновление токена / уже внутри приложения — guard уже активен, пропустим
+          setupSessionGuard(currentUser.id)
         }
-        // Если уже на другой странице (тест, профиль и т.д.) — не трогаем
       }
     } else if (event === 'SIGNED_OUT') {
       teardownSessionGuard()
@@ -99,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window._kickedOut = false
         setTimeout(() => {
           const errEl = document.getElementById('loginError')
-          if (errEl) errEl.textContent = '⚠️ Аккаунт открыт на другом устройстве. Войдите снова.'
+          if (errEl) errEl.textContent = '⚠️ Аккаунт уже используется на другом устройстве.'
         }, 50)
       }
     }
@@ -2489,61 +2495,68 @@ document.addEventListener('click', e => {
 })
 
 // ── Защита от одновременного входа (Presence-based) ─────
-// Каждое устройство отслеживает себя через Realtime Presence.
-// При появлении второй сессии старое устройство само выходит.
-// Presence надёжнее broadcast: состояние синхронизируется при переподключении.
+// Логика: первая активная сессия остаётся, второй вход блокируется.
+// При свежем логине ждём первого Presence sync — если там уже кто-то есть,
+// выходим ДО входа в приложение (без флэша).
+// session_id хранится в localStorage (переживает F5, общий для всех табов
+// одного браузера/устройства) → повторный вход с того же устройства не блокируется.
 let _sessionChannel = null
 let _sessionGuardUserId = null
 let _mySessionId = null
 
-function _signOutKicked() {
+function _blockNewLogin() {
+  // Вызывается когда НОВОЕ устройство пытается войти, но слот уже занят
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
   _sessionGuardUserId = null; _mySessionId = null
-  if (_duelChannel) { _duelChannel.unsubscribe(); _duelChannel = null }
-  if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
-  stopTimer(); clearTestState()
   window._kickedOut = true
   supabase.auth.signOut()
 }
 
-function setupSessionGuard(userId) {
+function setupSessionGuard(userId, onApproved = null) {
   // Не переподписываться при обновлении токена (SIGNED_IN стреляет повторно)
   if (_sessionGuardUserId === userId && _sessionChannel) return
   _sessionGuardUserId = userId
-  _mySessionId = Date.now() + '_' + Math.random().toString(36).slice(2)
-  if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
 
-  _sessionChannel = supabase.channel(`user-active:${userId}`)
-
-  const checkDuplicates = () => {
-    if (!_sessionChannel || !_mySessionId) return
-    const state = _sessionChannel.presenceState()
-    const all = Object.values(state).flat()
-    if (all.length <= 1) return // только я — всё хорошо
-    // Нашли несколько сессий: самая новая (max joined_at) остаётся, остальные уходят
-    const maxJoined = Math.max(...all.map(p => p.joined_at ?? 0))
-    const mine = all.find(p => p.session_id === _mySessionId)
-    if (!mine) return
-    if (mine.joined_at < maxJoined) {
-      _signOutKicked()
-    } else if (mine.joined_at === maxJoined) {
-      // Тай-брейк по строке session_id (меньшая — старая)
-      const rivals = all.filter(p => p.session_id !== _mySessionId && (p.joined_at ?? 0) === maxJoined)
-      if (rivals.some(r => r.session_id > _mySessionId)) _signOutKicked()
+  // Читаем или генерируем ID сессии из localStorage.
+  // localStorage общий для всех табов одного браузера → перезагрузка страницы
+  // и смена таба не меняют ID → собственная старая Presence запись фильтруется.
+  if (!_mySessionId) {
+    _mySessionId = localStorage.getItem('_sId')
+    if (!_mySessionId) {
+      _mySessionId = Date.now() + '_' + Math.random().toString(36).slice(2)
+      localStorage.setItem('_sId', _mySessionId)
     }
   }
 
+  if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
+
+  let _firstSync = true
+  _sessionChannel = supabase.channel(`user-active:${userId}`)
   _sessionChannel
-    .on('presence', { event: 'join' }, checkDuplicates)
-    .on('presence', { event: 'sync' }, checkDuplicates)
-    .subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        await _sessionChannel.track({ session_id: _mySessionId, joined_at: Date.now() })
+    .on('presence', { event: 'sync' }, async () => {
+      if (!_firstSync) return
+      _firstSync = false
+
+      const state = _sessionChannel.presenceState()
+      // Фильтруем собственные записи (могут остаться после перезагрузки/логаута)
+      const others = Object.values(state).flat().filter(p => p.session_id !== _mySessionId)
+
+      if (others.length > 0) {
+        // Слот занят другим устройством — блокируем
+        _blockNewLogin()
+        return
       }
+
+      // Свободно — отмечаем себя и разрешаем вход
+      await _sessionChannel?.track({ session_id: _mySessionId, joined_at: Date.now() })
+      onApproved?.()
     })
+    .subscribe()
 }
 
 function teardownSessionGuard() {
+  // localStorage НЕ очищаем — ID нужен чтобы фильтровать собственную
+  // старую Presence запись при быстром повторном входе
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
   _sessionGuardUserId = null; _mySessionId = null
 }
