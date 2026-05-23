@@ -245,7 +245,7 @@ function showPage(pageId) {
   if (ls) ls.remove()
 
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','limitsSection','testPage','resultsPage','statisticsPage',
+                 'seriesSection','limitsSection','odeSection','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
