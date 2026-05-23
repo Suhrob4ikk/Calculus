@@ -316,6 +316,26 @@
       </div>
     </div>
 
+    <!-- Duel Card -->
+    <div class="max-w-6xl mx-auto mb-6">
+      <div class="glass-panel rounded-3xl p-6 border border-violet-500/20 shadow-[0_0_30px_rgba(139,92,246,0.08)] cursor-pointer card-hover"
+           onclick="showDuelModal()">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <div class="text-5xl select-none">⚔️</div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-100">1v1 Дуэль</h2>
+              <p class="text-slate-400 text-sm">Сыграй против другого игрока · 10 вопросов · Одновременно</p>
+            </div>
+          </div>
+          <button onclick="event.stopPropagation(); showDuelModal()"
+            class="bg-violet-600 hover:bg-violet-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.25)]">
+            ⚔️ Вызов
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Cards grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
       <!-- Интегралы -->
@@ -872,6 +892,107 @@
         color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
     </div>
     <div id="dailyLeaderboardList"></div>
+  </div>
+</div>
+
+<!-- ── Модал: Дуэль ── -->
+<div id="duelModal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9998;
+         align-items:center;justify-content:center;padding:1rem"
+  onclick="if(event.target===this)closeDuelModal()">
+  <div style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
+    padding:1.5rem;width:100%;max-width:440px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.55);position:relative">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+      <h2 style="font-size:1.25rem;font-weight:700;color:#f1f5f9">⚔️ 1v1 Дуэль</h2>
+      <button onclick="closeDuelModal()"
+        style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
+        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
+    </div>
+    <!-- Tabs -->
+    <div id="duelTabsBar" style="display:flex;gap:6px;background:#0f172a;border-radius:10px;padding:4px;margin-bottom:1.2rem">
+      <button id="duelTabCreate" onclick="showDuelTab('create')"
+        style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:rgba(139,92,246,0.8);color:white">
+        Создать
+      </button>
+      <button id="duelTabJoin" onclick="showDuelTab('join')"
+        style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:#94a3b8">
+        Войти
+      </button>
+    </div>
+    <!-- Create tab -->
+    <div id="duelCreatePanel">
+      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Поделись кодом с другом — он введёт его во вкладке «Войти».</p>
+      <div style="text-align:center;margin-bottom:1rem">
+        <div id="duelCodeDisplay"
+          style="font-family:monospace;font-size:2.2rem;font-weight:700;letter-spacing:0.2em;
+                 color:#c4b5fd;background:#0f172a;border:2px dashed rgba(139,92,246,0.5);
+                 border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer"
+          onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</div>
+        <p style="color:#64748b;font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
+      </div>
+      <div id="duelCreateStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">
+        Нажми кнопку чтобы создать дуэль
+      </div>
+      <button onclick="createDuel()" id="duelCreateBtn"
+        style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+               font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
+               box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+        ⚔️ Создать дуэль
+      </button>
+    </div>
+    <!-- Join tab -->
+    <div id="duelJoinPanel" style="display:none">
+      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
+      <input id="duelJoinInput" type="text" maxlength="6"
+        placeholder="ABCD12"
+        style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(139,92,246,0.4);
+               background:#0f172a;color:#f1f5f9;font-size:1.5rem;font-family:monospace;
+               letter-spacing:0.15em;text-align:center;text-transform:uppercase;
+               margin-bottom:1rem;outline:none;box-sizing:border-box"
+        oninput="this.value=this.value.toUpperCase()">
+      <div id="duelJoinStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem"></div>
+      <button onclick="joinDuel()"
+        style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+               font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
+               box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+        🚀 Подключиться
+      </button>
+    </div>
+    <!-- Lobby (waiting / countdown) -->
+    <div id="duelLobby" style="display:none;text-align:center">
+      <div style="font-size:3rem;margin-bottom:0.5rem">⏳</div>
+      <div id="duelLobbyMsg" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-bottom:0.5rem">Ожидаем соперника…</div>
+      <div id="duelLobbyPlayers" style="color:#94a3b8;font-size:0.85rem;margin-bottom:1.2rem"></div>
+      <div id="duelStartCountdown" style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Модал: Результаты дуэли ── -->
+<div id="duelResultsModal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;
+         align-items:center;justify-content:center;padding:1rem"
+  onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
+    padding:2rem;width:100%;max-width:420px;text-align:center;
+    box-shadow:0 25px 60px rgba(0,0,0,0.55)">
+    <div id="duelResultsEmoji" style="font-size:4rem;margin-bottom:0.5rem">🏆</div>
+    <h2 id="duelResultsTitle" style="font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem"></h2>
+    <div id="duelResultsScores" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button onclick="document.getElementById('duelResultsModal').style.display='none';showDuelModal()"
+        style="padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+               background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:0.95rem">
+        🔄 Реванш!
+      </button>
+      <button onclick="document.getElementById('duelResultsModal').style.display='none'"
+        style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
+               background:transparent;color:#94a3b8;cursor:pointer;font-weight:600;font-size:0.95rem">
+        На главную
+      </button>
+    </div>
   </div>
 </div>
 </body>
