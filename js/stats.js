@@ -207,7 +207,7 @@ window.showLeaderboard = async function() {
       : ''
     const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
     return `
-    <div style="${rowStyle};border-radius:0.875rem;padding:0.875rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.75rem">
+    <div onclick="viewProfile('${r.username}')" style="${rowStyle};border-radius:0.875rem;padding:0.875rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer">
       <span style="font-size:1.6rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.9rem;color:var(--text-muted)">${i+1}</span>`}</span>
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;flex-wrap:wrap">
@@ -220,7 +220,7 @@ window.showLeaderboard = async function() {
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:1.4rem;font-weight:800;color:${i===0?'#f59e0b':i===1?'#94a3b8':i===2?'#f97316':'var(--text-main)'}">
+        <div style="font-size:1.4rem;font-weight:800;color:${i===0?'#f59e0b':i===1?'var(--text-muted)':i===2?'#f97316':'var(--text-main)'}">
           ${r.totalPts}<span style="font-size:0.7rem;font-weight:500;color:var(--text-muted)"> pts</span>
         </div>
         <div style="font-size:0.72rem;color:var(--text-muted)">лучший: ${r.bestPct}%</div>

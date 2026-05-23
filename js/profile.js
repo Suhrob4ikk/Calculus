@@ -224,13 +224,13 @@ window.showProfile = async function() {
         </div>
         <div class="space-y-2">
           ${rankings.slice(0, 3).map((r, i) => `
-            <div class="flex justify-between items-center p-2 rounded-lg ${r.name === username ? 'bg-blue-900/40 font-bold' : 'bg-slate-800/40'}">
+            <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
               <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
               <span class="text-blue-400 font-semibold">${r.avg}%</span>
             </div>`).join('')}
           ${myRank > 3 ? `
             <div class="text-center text-slate-500 text-xs">...</div>
-            <div class="flex justify-between items-center p-2 rounded-lg bg-blue-900/40 font-bold">
+            <div class="flex justify-between items-center p-2 rounded-lg font-bold" style="background:rgba(59,130,246,0.12)">
               <span class="text-slate-200">#${myRank} ${username}</span>
               <span class="text-blue-400 font-semibold">${avg}%</span>
             </div>` : ''}
@@ -247,7 +247,7 @@ window.showProfile = async function() {
     return `<div class="flex flex-col items-center gap-1" style="flex:1">
       <div class="text-xs font-bold" style="color:${color}">${r.score}%</div>
       <div style="height:${h}px;width:100%;background:${color};border-radius:4px 4px 0 0;min-height:4px"></div>
-      <div style="font-size:0.6rem;color:#64748b">${date}</div>
+      <div style="font-size:0.6rem;color:var(--text-muted)">${date}</div>
     </div>`
   }).join('')
 
@@ -261,7 +261,7 @@ window.showProfile = async function() {
           ${level.next ? `<div class="text-xs text-slate-400">Следующий: ${level.next}</div>` : '<div class="text-xs text-slate-400">Максимальный уровень!</div>'}
         </div>
       </div>
-      <div style="height:8px;background:#334155;border-radius:4px;overflow:hidden">
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
         <div style="height:100%;width:${level.progress}%;background:${level.color};border-radius:4px;transition:width 0.5s"></div>
       </div>
     </div>
@@ -275,7 +275,7 @@ window.showProfile = async function() {
 
     ${recent.length > 1 ? `
     <h3 class="text-lg font-bold text-slate-200 mb-3">📈 График прогресса</h3>
-    <div class="rounded-xl p-4 mb-4" style="background:rgba(30,41,59,0.6)">
+    <div class="rounded-xl p-4 mb-4" style="background:var(--bg-card)">
       <div class="flex items-end gap-1" style="height:100px">${chartBars}</div>
     </div>` : ''}
 
@@ -289,7 +289,7 @@ window.showProfile = async function() {
     <h3 class="text-lg font-bold text-slate-200 mb-3">⭐ Лучшие результаты</h3>
     <div class="space-y-2">
       ${bestResults.map(r => `
-        <div class="flex justify-between items-center p-3 rounded-xl" style="background:rgba(30,41,59,0.6)">
+        <div class="flex justify-between items-center p-3 rounded-xl" style="background:var(--bg-card)">
           <div>
             <span class="font-semibold text-slate-200">${r.sectionName}</span>
             <span class="text-slate-400 text-sm ml-2">${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</span>
@@ -312,18 +312,18 @@ window.showProfile = async function() {
         const rClr  = d.result==='win'?'#10b981':d.result==='draw'?'#f59e0b':'#ef4444'
         const opp   = d.opponent
           ? `vs <b>${d.opponent.username}</b> (${d.opponent.score}%)`
-          : 'vs <span style="color:#64748b">???</span>'
+          : 'vs <span style="color:var(--text-muted)">???</span>'
         return `
           <div style="display:flex;justify-content:space-between;align-items:center;
             padding:10px 14px;border-radius:12px;background:rgba(139,92,246,0.1);
             border:1px solid rgba(139,92,246,0.2);margin-bottom:6px">
             <div>
-              <div style="font-weight:600;color:#e2e8f0;font-size:0.9rem">${rIcon} ${rText}</div>
-              <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">${opp} · ${date}</div>
+              <div style="font-weight:600;color:var(--text-main);font-size:0.9rem">${rIcon} ${rText}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px">${opp} · ${date}</div>
             </div>
             <div style="text-align:right">
               <div style="font-weight:700;font-size:1.1rem;color:${rClr}">${d.score}%</div>
-              <div style="font-size:0.72rem;color:#64748b">${d.correct_answers}/${d.total_questions}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted)">${d.correct_answers}/${d.total_questions}</div>
             </div>
           </div>`
       }).join('')

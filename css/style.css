@@ -386,6 +386,11 @@ html:not(.dark) .bg-emerald-600 { background: #059669 !important; }
 html:not(.dark) .bg-rose-600    { background: #e11d48 !important; }
 html:not(.dark) .bg-purple-600  { background: #9333ea !important; }
 html:not(.dark) .border-slate-700 { border-color: #e2e8f0 !important; }
+/* Цвета акцентов — достаточный контраст на белом фоне */
+html:not(.dark) .text-green-400  { color: #16a34a !important; }
+html:not(.dark) .text-red-400    { color: #dc2626 !important; }
+html:not(.dark) .text-blue-400   { color: #1d4ed8 !important; }
+html:not(.dark) .text-yellow-400 { color: #b45309 !important; }
 /* Боковая панель в светлой теме */
 html:not(.dark) #sideNav {
   background: rgba(255, 255, 255, 0.95) !important;
