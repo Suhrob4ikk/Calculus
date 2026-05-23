@@ -2317,7 +2317,10 @@ function _beginDuelTest() {
   userAnswers = new Array(questions.length).fill(null)
   isStudyMode = false
   _duelMyScore = null; _duelOpponentScore = null
-  const timePerQ = _duelDiff === 'easy' ? 60 : _duelDiff === 'hard' ? 120 : 90
+  // ODE tasks need more time; all other sections use standard competitive timing
+  const timePerQ = _duelSection === 'ode'
+    ? (_duelDiff === 'easy' ? 60 : _duelDiff === 'hard' ? 120 : 90)
+    : (_duelDiff === 'easy' ? 30 : _duelDiff === 'hard' ? 90 : 60)
   timeRemaining = questions.length * timePerQ
   timerInitialTime = timeRemaining
   timerStartTime = null
@@ -2485,42 +2488,64 @@ document.addEventListener('click', e => {
   }
 })
 
-// ── Защита от одновременного входа ──────────────────────
-// Когда новое устройство входит в тот же аккаунт, оно рассылает сигнал
-// всем старым сессиям через Realtime broadcast → те сами выходят.
+// ── Защита от одновременного входа (Presence-based) ─────
+// Каждое устройство отслеживает себя через Realtime Presence.
+// При появлении второй сессии старое устройство само выходит.
+// Presence надёжнее broadcast: состояние синхронизируется при переподключении.
 let _sessionChannel = null
 let _sessionGuardUserId = null
+let _mySessionId = null
+
+function _signOutKicked() {
+  if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
+  _sessionGuardUserId = null; _mySessionId = null
+  if (_duelChannel) { _duelChannel.unsubscribe(); _duelChannel = null }
+  if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
+  stopTimer(); clearTestState()
+  window._kickedOut = true
+  supabase.auth.signOut()
+}
 
 function setupSessionGuard(userId) {
-  // Не переподписываться при обновлении токена (SIGNED_IN стреляет снова)
+  // Не переподписываться при обновлении токена (SIGNED_IN стреляет повторно)
   if (_sessionGuardUserId === userId && _sessionChannel) return
   _sessionGuardUserId = userId
+  _mySessionId = Date.now() + '_' + Math.random().toString(36).slice(2)
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
 
-  _sessionChannel = supabase.channel(`session:${userId}`, {
-    config: { broadcast: { self: false } }
-  })
+  _sessionChannel = supabase.channel(`user-active:${userId}`)
+
+  const checkDuplicates = () => {
+    if (!_sessionChannel || !_mySessionId) return
+    const state = _sessionChannel.presenceState()
+    const all = Object.values(state).flat()
+    if (all.length <= 1) return // только я — всё хорошо
+    // Нашли несколько сессий: самая новая (max joined_at) остаётся, остальные уходят
+    const maxJoined = Math.max(...all.map(p => p.joined_at ?? 0))
+    const mine = all.find(p => p.session_id === _mySessionId)
+    if (!mine) return
+    if (mine.joined_at < maxJoined) {
+      _signOutKicked()
+    } else if (mine.joined_at === maxJoined) {
+      // Тай-брейк по строке session_id (меньшая — старая)
+      const rivals = all.filter(p => p.session_id !== _mySessionId && (p.joined_at ?? 0) === maxJoined)
+      if (rivals.some(r => r.session_id > _mySessionId)) _signOutKicked()
+    }
+  }
+
   _sessionChannel
-    .on('broadcast', { event: 'new_session' }, () => {
-      // Нас вытеснило новое устройство — принудительный выход
-      _sessionChannel?.unsubscribe(); _sessionChannel = null; _sessionGuardUserId = null
-      if (_duelChannel) { _duelChannel.unsubscribe(); _duelChannel = null }
-      if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
-      stopTimer(); clearTestState()
-      window._kickedOut = true
-      supabase.auth.signOut()
-    })
+    .on('presence', { event: 'join' }, checkDuplicates)
+    .on('presence', { event: 'sync' }, checkDuplicates)
     .subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        // Уведомляем все существующие сессии этого аккаунта
-        await _sessionChannel.send({ type: 'broadcast', event: 'new_session', payload: {} })
+        await _sessionChannel.track({ session_id: _mySessionId, joined_at: Date.now() })
       }
     })
 }
 
 function teardownSessionGuard() {
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
-  _sessionGuardUserId = null
+  _sessionGuardUserId = null; _mySessionId = null
 }
 
 // ── Глобальный доступ к функциям ────────────────────────
