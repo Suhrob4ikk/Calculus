@@ -1365,6 +1365,12 @@ window.exitTest = function() {
     userAnswers = []
     currentQuestionIndex = 0
     stopTimer()
+    // Clean up duel state if exiting during duel
+    if (currentSection === 'duel') {
+      if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
+      if (_duelChannel) { _duelChannel.unsubscribe(); _duelChannel = null }
+      _duelMyScore = null; _duelOpponentScore = null
+    }
     showHome()
   }
 }
@@ -1419,6 +1425,14 @@ window.finishTest = async function() {
     document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
     const detailedResults = document.getElementById('detailedResults')
     detailedResults.innerHTML = `<p style="color:#94a3b8;text-align:center;padding:1rem">⏳ Ожидаем результата соперника…</p>`
+    // Timeout: if opponent doesn't respond in 30 s, treat as disconnected
+    if (window._duelOpponentTimeout) clearTimeout(window._duelOpponentTimeout)
+    window._duelOpponentTimeout = setTimeout(() => {
+      if (_duelOpponentScore === null) {
+        _duelOpponentScore = -1 // sentinel: opponent timed out
+        _showDuelResults()
+      }
+    }, 30000)
     _checkDuelComplete()
     return
   }
@@ -2056,28 +2070,45 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     limits:      { easy: easyLimitsQuestions,      medium: mediumLimitsQuestions,      hard: hardLimitsQuestions },
     ode:         { easy: easyODEQuestions,         medium: mediumODEQuestions,         hard: hardODEQuestions },
   }
-  let rawPool
-  if (section === 'mixed') {
-    rawPool = [
-      ...poolsBySection.integrals[difficulty]   || [],
-      ...poolsBySection.derivatives[difficulty] || [],
-      ...poolsBySection.series[difficulty]      || [],
-      ...poolsBySection.limits[difficulty]      || [],
-    ]
-  } else {
-    rawPool = poolsBySection[section]?.[difficulty] || poolsBySection.integrals.medium
-  }
-  const pool = rawPool.flat().filter(q => q && q.options && q.options.length === 4)
 
   const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng = mulberry32(seed)
-  const shuffled = [...pool]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+
+  let pool
+  if (section === 'mixed') {
+    // Stratified: pick exactly 2 questions from each of the 5 sections
+    // guarantees every section is represented regardless of pool sizes
+    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode']
+    const selected = []
+    for (const s of sects) {
+      const sPool = (poolsBySection[s]?.[difficulty] || [])
+        .flat().filter(q => q && q.options && q.options.length === 4)
+      const copy = [...sPool]
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]]
+      }
+      selected.push(...copy.slice(0, 2))
+    }
+    // Shuffle the combined 10 questions so sections don't appear in order
+    for (let i = selected.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [selected[i], selected[j]] = [selected[j], selected[i]]
+    }
+    pool = selected
+  } else {
+    const rawPool = (poolsBySection[section]?.[difficulty] || poolsBySection.integrals.medium)
+      .flat().filter(q => q && q.options && q.options.length === 4)
+    const shuffled = [...rawPool]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    pool = shuffled
   }
+
   // Shuffle answer options with same seed so both players see identical order
-  return shuffled.slice(0, 10).map(q => {
+  return pool.slice(0, 10).map(q => {
     const order = [0,1,2,3]
     for (let i = 3; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
@@ -2279,9 +2310,12 @@ function _beginDuelTest() {
   timerStartTime = null
   clearTestState()
   showPage('testPage')
+  // Hide nav elements so user can't accidentally leave mid-duel
+  const _duelNavIds = ['menuBtn', 'bottomNav', 'themeToggle', 'soundToggle']
+  _duelNavIds.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none' })
   // Set test header info (same as startTest does)
   document.getElementById('totalQuestions').textContent = questions.length
-  const sectNames = { mixed:'Все разделы', integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы' }
+  const sectNames = { mixed:'Все разделы', integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы', ode:'Дифф. уравнения' }
   const diffName = _duelDiff === 'easy' ? 'Лёгкий' : _duelDiff === 'hard' ? 'Сложный' : 'Средний'
   document.getElementById('testTitle').textContent = `⚔️ Дуэль: ${sectNames[_duelSection] || 'Смешанный'}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName} · Дуэль 1v1`
@@ -2359,6 +2393,19 @@ function _onRematchStart(payload) {
 }
 
 function _showDuelResults() {
+  // Clear opponent timeout if it fired early or we got the score in time
+  if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
+
+  // Restore nav elements hidden during duel
+  const menuBtn = document.getElementById('menuBtn')
+  const bottomNav = document.getElementById('bottomNav')
+  const themeToggle = document.getElementById('themeToggle')
+  const soundToggle = document.getElementById('soundToggle')
+  if (menuBtn) menuBtn.style.display = ''
+  if (bottomNav) bottomNav.style.display = 'flex'
+  if (themeToggle) themeToggle.style.display = ''
+  if (soundToggle) soundToggle.style.display = ''
+
   const modal = document.getElementById('duelResultsModal')
   const emojiEl = document.getElementById('duelResultsEmoji')
   const titleEl = document.getElementById('duelResultsTitle')
@@ -2370,10 +2417,15 @@ function _showDuelResults() {
   const rematchBanner = document.getElementById('rematchRequestBanner')
   if (rematchBanner) rematchBanner.style.display = 'none'
 
+  const opponentTimedOut = _duelOpponentScore === -1
+  const opponentScore = opponentTimedOut ? 0 : _duelOpponentScore
+
   let emoji, title
-  if (_duelMyScore > _duelOpponentScore) {
+  if (opponentTimedOut) {
+    emoji = '🏆'; title = 'Соперник отключился — ты победил!'
+  } else if (_duelMyScore > opponentScore) {
     emoji = '🏆'; title = 'Ты победил!'
-  } else if (_duelMyScore < _duelOpponentScore) {
+  } else if (_duelMyScore < opponentScore) {
     emoji = '💪'; title = 'Соперник победил — реванш?'
   } else {
     emoji = '🤝'; title = 'Ничья!'
@@ -2381,16 +2433,17 @@ function _showDuelResults() {
   emojiEl.textContent = emoji
   titleEl.textContent = title
 
-  const card = (name, score, highlight) => `
+  const card = (name, score, highlight, timedOut = false) => `
     <div style="flex:1;min-width:120px;padding:1rem;border-radius:14px;
       background:${highlight ? 'rgba(139,92,246,0.2)' : 'rgba(15,23,42,0.8)'};
       border:1.5px solid ${highlight ? 'rgba(139,92,246,0.5)' : 'rgba(51,65,85,0.5)'}">
       <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:4px">${name}</div>
-      <div style="font-size:2rem;font-weight:700;color:${score>=70?'#10b981':'#f59e0b'}">${score}%</div>
+      <div style="font-size:2rem;font-weight:700;color:${timedOut?'#64748b':score>=70?'#10b981':'#f59e0b'}">${timedOut ? '—' : score + '%'}</div>
+      ${timedOut ? '<div style="font-size:0.75rem;color:#64748b">отключился</div>' : ''}
     </div>`
   scoresEl.innerHTML =
-    card(_duelMyName + ' (ты)', _duelMyScore, _duelMyScore >= _duelOpponentScore) +
-    card(_duelOpponentName || 'Соперник', _duelOpponentScore, _duelOpponentScore > _duelMyScore)
+    card(_duelMyName + ' (ты)', _duelMyScore, !opponentTimedOut ? _duelMyScore >= opponentScore : true) +
+    card(_duelOpponentName || 'Соперник', opponentScore, opponentScore > _duelMyScore, opponentTimedOut)
 
   modal.style.display = 'flex'
 }
