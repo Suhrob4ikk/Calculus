@@ -726,6 +726,7 @@
           <div><div class="flex justify-between mb-1"><span>Производные</span><span id="derivativesProgress">0%</span></div><div class="progress-bar"><div id="derivativesProgressBar" class="progress-fill" style="width:0%"></div></div></div>
           <div><div class="flex justify-between mb-1"><span>Ряды</span><span id="seriesProgress">0%</span></div><div class="progress-bar"><div id="seriesProgressBar" class="progress-fill" style="width:0%"></div></div></div>
           <div><div class="flex justify-between mb-1"><span>Пределы</span><span id="limitsProgress">0%</span></div><div class="progress-bar"><div id="limitsProgressBar" class="progress-fill" style="width:0%"></div></div></div>
+          <div><div class="flex justify-between mb-1"><span>Дифф. уравнения</span><span id="odeProgress">0%</span></div><div class="progress-bar"><div id="odeProgressBar" class="progress-fill" style="width:0%"></div></div></div>
         </div>
         <!-- Chart.js charts injected here by JS -->
         <div id="statsChartsContainer" class="mb-6"></div>
@@ -783,6 +784,7 @@
             <option value="derivatives">Производные</option>
             <option value="series">Ряды</option>
             <option value="limits">Пределы</option>
+            <option value="ode">Дифф. уравнения</option>
           </select>
           <select id="lbDifficulty" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
             <option value="">Все уровни</option>

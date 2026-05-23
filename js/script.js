@@ -616,7 +616,8 @@ function getDailyQuestions() {
       const j = Math.floor(rng() * (i + 1));
       [order[i], order[j]] = [order[j], order[i]]
     }
-    return { ...q, options: order.map(i => q.options[i]), correct: order.indexOf(q.correct) }
+    const origCorrect = q.correct !== undefined ? q.correct : q.answerIndex
+    return { ...q, options: order.map(i => q.options[i]), correct: order.indexOf(origCorrect) }
   })
 }
 
@@ -1490,7 +1491,7 @@ window.finishTest = async function() {
   if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
 }
 window.shareResult = function(correct, total, percentage) {
-  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', daily: 'Ежедневный вызов' }
+  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', daily: 'Ежедневный вызов' }
   const section = sectionNames[currentSection] || currentSection
   const diff = currentDifficulty==='easy'?'Лёгкий':currentDifficulty==='medium'?'Средний':'Сложный'
   const emoji = percentage===100?'🏆':percentage>=90?'🌟':percentage>=70?'✅':percentage>=50?'📚':'💪'
@@ -1651,7 +1652,7 @@ window.showProfile = async function() {
   const level = getUserLevel(total, avg)
 
   // Лучшие результаты по разделам
-  const sectionLabelsLocal = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }
+  const sectionLabelsLocal = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }
   const bestResults = sections.map(sec => {
     const secData = data.filter(r => r.section === sec)
     if (!secData.length) return null
@@ -1871,8 +1872,8 @@ window.showStatistics = async function() {
   })
 
   // Bar chart: avg score by section
-  const secLabels  = ['Интегралы','Производные','Ряды','Пределы']
-  const secColors  = ['#3b82f6','#10b981','#f43f5e','#8b5cf6']
+  const secLabels  = ['Интегралы','Производные','Ряды','Пределы','Дифф. ур.']
+  const secColors  = ['#3b82f6','#10b981','#f43f5e','#8b5cf6','#f97316']
   const secAvgs    = sections.map(sec => {
     const sd = data.filter(r => r.section === sec)
     return sd.length ? Math.round(sd.reduce((s,r)=>s+r.score,0)/sd.length) : 0
@@ -1900,7 +1901,7 @@ window.showStatistics = async function() {
   })
 
   // История
-  const sLabel = { integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы', daily:'🌟 Ежедневный' }
+  const sLabel = { integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы', ode:'Дифф. уравнения', daily:'🌟 Ежедневный' }
   document.getElementById('testsHistory').innerHTML = data.slice(0,10).map(r => `
     <div class="bg-gray-50 rounded-lg p-4">
       <div class="flex justify-between items-start">
@@ -2053,6 +2054,7 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     derivatives: { easy: easyDerivativesQuestions, medium: mediumDerivativesQuestions, hard: hardDerivativesQuestions },
     series:      { easy: easySeriesQuestions,      medium: mediumSeriesQuestions,      hard: hardSeriesQuestions },
     limits:      { easy: easyLimitsQuestions,      medium: mediumLimitsQuestions,      hard: hardLimitsQuestions },
+    ode:         { easy: easyODEQuestions,         medium: mediumODEQuestions,         hard: hardODEQuestions },
   }
   let rawPool
   if (section === 'mixed') {
@@ -2081,7 +2083,8 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
       const j = Math.floor(rng() * (i + 1));
       [order[i], order[j]] = [order[j], order[i]]
     }
-    return { ...q, options: order.map(k => q.options[k]), correct: order.indexOf(q.correct) }
+    const origCorrect = q.correct !== undefined ? q.correct : q.answerIndex
+    return { ...q, options: order.map(k => q.options[k]), correct: order.indexOf(origCorrect) }
   })
 }
 
