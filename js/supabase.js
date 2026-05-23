@@ -131,6 +131,21 @@ export async function deletePushSubscription(userId) {
   return { error }
 }
 
+// ── Ежедневный вызов ─────────────────────────────────────
+export async function getDailyLeaderboard(date) {
+  // date: 'YYYY-MM-DD' (local)
+  const { data, error } = await supabase
+    .from('test_results')
+    .select('username, score, correct_answers, total_questions, created_at')
+    .eq('section', 'daily')
+    .gte('created_at', date + 'T00:00:00.000Z')
+    .lt('created_at', date + 'T24:00:00.000Z')
+    .order('score', { ascending: false })
+    .order('created_at', { ascending: true })
+    .limit(50)
+  return { data, error }
+}
+
 export async function getProfileByUsername(username) {
   const { data: profile } = await supabase
     .from('profiles')

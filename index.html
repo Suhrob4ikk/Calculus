@@ -285,6 +285,31 @@
       </div>
     </div>
 
+    <!-- Daily Challenge -->
+    <div class="max-w-6xl mx-auto mb-6">
+      <div id="dailyChallengeCard"
+        class="glass-panel rounded-3xl p-6 border border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.08)] cursor-pointer card-hover"
+        onclick="startDailyChallenge()">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <div class="text-5xl select-none">🌟</div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-100">Ежедневный вызов</h2>
+              <p class="text-slate-400 text-sm">10 вопросов из всех разделов · Одна попытка в день</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span id="dailyChallengeCountdown" class="text-amber-400 font-mono text-sm"></span>
+            <button id="dailyChallengeBtn"
+              onclick="event.stopPropagation(); startDailyChallenge()"
+              class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+              🎯 Начать
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Cards grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
       <!-- Интегралы -->
@@ -822,6 +847,24 @@
       });
     })();
   </script>
+
+<!-- ── Модал: рейтинг ежедневного вызова ── -->
+<div id="dailyLeaderboardModal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:9998;
+         align-items:center;justify-content:center;padding:1rem"
+  onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#1e293b;border:1px solid rgba(245,158,11,0.3);border-radius:1.5rem;
+    padding:1.5rem;width:100%;max-width:460px;max-height:80vh;overflow-y:auto;
+    box-shadow:0 25px 60px rgba(0,0,0,0.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <h2 style="font-size:1.2rem;font-weight:700;color:#f1f5f9">🌟 Лидеры сегодня</h2>
+      <button onclick="document.getElementById('dailyLeaderboardModal').style.display='none'"
+        style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
+        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
+    </div>
+    <div id="dailyLeaderboardList"></div>
+  </div>
+</div>
 </body>
 
 </html>

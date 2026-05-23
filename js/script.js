@@ -1,4 +1,4 @@
-import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword, savePushSubscription, deletePushSubscription } from './supabase.js'
+import { supabase, signUp, signIn, signOut, getUser, saveResult, getUserResults, getLeaderboard, uploadAvatar, getAvatarUrl, searchProfiles, getProfileByUsername, resetPassword, updatePassword, savePushSubscription, deletePushSubscription, getDailyLeaderboard } from './supabase.js'
 
 // ── VAPID публичный ключ (замени после npx web-push generate-vapid-keys) ──
 const VAPID_PUBLIC_KEY = 'BFvc73Owpo8t4uZ_F-_w8Xdt4Bh05LtAHe_4F4aaSsVuHe7_3tpiGhr2jJLabkeYD-uZMRHfIuhs0jaDZP7diR4'
@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     showPage('homePage')
     updateUserUI()
     renderStreakBadge()
+    updateDailyChallengeCard()
     // Если есть сохранённый тест — предлагаем продолжить, а не входим автоматически
     if (localStorage.getItem('testState')) {
       showContinueTestBanner()
@@ -417,6 +418,146 @@ function launchConfetti() {
     else { cancelAnimationFrame(frame); canvas.remove() }
   }
   frame = requestAnimationFrame(draw)
+}
+
+// ── Ежедневный вызов ─────────────────────────────────────
+function getDailyDate() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+}
+
+function hashCode(str) {
+  let h = 0
+  for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0
+  return h >>> 0
+}
+
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed)
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
+    return ((t ^ t >>> 14) >>> 0) / 4294967296
+  }
+}
+
+function getDailyQuestions() {
+  const rng = mulberry32(hashCode(getDailyDate()))
+  const all = [
+    ...easyIntegralsQuestions, ...mediumIntegralsQuestions,
+    ...easyDerivativesQuestions, ...mediumDerivativesQuestions,
+    ...easySeriesQuestions, ...mediumSeriesQuestions,
+    ...easyLimitsQuestions, ...mediumLimitsQuestions
+  ].flat().filter(q => q && q.options && q.options.length === 4)
+
+  // Fisher-Yates with seeded rng
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]]
+  }
+  // Pick 10 and shuffle their answer options (also seeded)
+  return all.slice(0, 10).map(q => {
+    const order = [0,1,2,3]
+    for (let i = 3; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]]
+    }
+    return { ...q, options: order.map(i => q.options[i]), correct: order.indexOf(q.correct) }
+  })
+}
+
+window.startDailyChallenge = function() {
+  const today = getDailyDate()
+  if (localStorage.getItem('dailyChallengeDate') === today) {
+    showDailyLeaderboard()
+    return
+  }
+  clearTestState()
+  isStudyMode = false
+  currentSection = 'daily'
+  currentDifficulty = 'medium'
+  currentTest = getDailyQuestions()
+  currentQuestionIndex = 0
+  userAnswers = new Array(currentTest.length).fill(null)
+  testStartTime = Date.now()
+  timeRemaining = 15 * 60
+  timerInitialTime = timeRemaining
+
+  showPage('testPage')
+  document.getElementById('totalQuestions').textContent = currentTest.length
+  document.getElementById('testTitle').textContent = '🌟 Ежедневный вызов'
+  document.getElementById('difficultyLabel').textContent = `${today} · 10 вопросов из всех разделов`
+  startTimer()
+  displayQuestion()
+}
+
+function updateDailyChallengeCard() {
+  const today = getDailyDate()
+  const doneToday = localStorage.getItem('dailyChallengeDate') === today
+  const score = localStorage.getItem('dailyChallengeScore')
+  const btn = document.getElementById('dailyChallengeBtn')
+  const countdown = document.getElementById('dailyChallengeCountdown')
+  const card = document.getElementById('dailyChallengeCard')
+  if (!btn) return
+
+  if (doneToday) {
+    btn.textContent = `✅ ${score}%`
+    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)'
+    if (card) card.onclick = showDailyLeaderboard
+    if (countdown) {
+      if (window._dailyCountdownInterval) clearInterval(window._dailyCountdownInterval)
+      const tick = () => {
+        const now = new Date()
+        const tomorrow = new Date(now)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        tomorrow.setHours(0, 0, 0, 0)
+        const diff = tomorrow - now
+        const h = Math.floor(diff / 3600000)
+        const m = Math.floor((diff % 3600000) / 60000)
+        const s = Math.floor((diff % 60000) / 1000)
+        countdown.textContent = `Следующий через ${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      }
+      tick()
+      window._dailyCountdownInterval = setInterval(tick, 1000)
+    }
+  } else {
+    btn.textContent = '🎯 Начать'
+    btn.style.background = ''
+    if (countdown) countdown.textContent = ''
+    if (card) card.onclick = window.startDailyChallenge
+  }
+}
+
+window.showDailyLeaderboard = async function() {
+  const modal = document.getElementById('dailyLeaderboardModal')
+  if (!modal) return
+  modal.style.display = 'flex'
+  const list = document.getElementById('dailyLeaderboardList')
+  if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#94a3b8">Загрузка...</p>'
+
+  const today = getDailyDate()
+  const { data } = await getDailyLeaderboard(today)
+
+  if (!data || data.length === 0) {
+    if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#94a3b8">Пока никто не прошёл сегодняшний вызов</p>'
+    return
+  }
+  // Keep only best attempt per user
+  const seen = new Set()
+  const unique = data.filter(r => { if (seen.has(r.username)) return false; seen.add(r.username); return true })
+  const medals = ['🥇','🥈','🥉']
+  const myName = currentUser?.user_metadata?.username || currentUser?.email?.split('@')[0]
+
+  if (list) list.innerHTML = unique.map((r, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:6px;
+      ${r.username === myName
+        ? 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35)'
+        : 'background:rgba(30,41,59,0.7)'}">
+      <span style="font-size:1.25rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="color:#64748b;font-size:0.9rem">${i+1}</span>`}</span>
+      <span style="flex:1;font-weight:${r.username===myName?700:500};color:${r.username===myName?'#93c5fd':'#e2e8f0'}">${r.username}</span>
+      <span style="font-weight:700;font-size:1rem;color:${r.score>=70?'#10b981':'#f59e0b'}">${r.score}%</span>
+      <span style="color:#64748b;font-size:0.8rem">${r.correct_answers}/${r.total_questions}</span>
+    </div>`).join('')
 }
 
 // ── Keyboard shortcuts ───────────────────────────────────
@@ -796,6 +937,7 @@ window.showHome = function() {
   stopTimer()
   showPage('homePage')
   renderStreakBadge()
+  updateDailyChallengeCard()
 }
 
 window.showSection = function(section) {
@@ -956,7 +1098,8 @@ window.startSeriesTest = function(d, study = false) {
 }
 
 window.restartTest = function() {
-  (currentSection==='limits'?window.startLimitsTest:currentSection==='series'?window.startSeriesTest:currentSection==='derivatives'?window.startDerivativesTest:window.startIntegralsTest)(currentDifficulty)
+  if (currentSection === 'daily') { showHome(); return }
+  ;(currentSection==='limits'?window.startLimitsTest:currentSection==='series'?window.startSeriesTest:currentSection==='derivatives'?window.startDerivativesTest:window.startIntegralsTest)(currentDifficulty)
 }
 
 // ── Вопросы ───────────────────────────────────────────────
@@ -1079,6 +1222,12 @@ window.finishTest = async function() {
     })
   }
 
+  // Mark daily challenge as done
+  if (currentSection === 'daily') {
+    localStorage.setItem('dailyChallengeDate', getDailyDate())
+    localStorage.setItem('dailyChallengeScore', percentage)
+  }
+
   window._finishInProgress = false
   if (!isStudyMode) clearTestState()
   isStudyMode = false
@@ -1112,7 +1261,7 @@ window.finishTest = async function() {
   if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
 }
 window.shareResult = function(correct, total, percentage) {
-  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы' }
+  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', daily: 'Ежедневный вызов' }
   const section = sectionNames[currentSection] || currentSection
   const diff = currentDifficulty==='easy'?'Лёгкий':currentDifficulty==='medium'?'Средний':'Сложный'
   const emoji = percentage===100?'🏆':percentage>=90?'🌟':percentage>=70?'✅':percentage>=50?'📚':'💪'
@@ -1400,11 +1549,12 @@ window.showStatistics = async function() {
     if (bar) bar.style.width = secAvg + '%'
   })
 
+  const sLabel = { integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы', daily:'🌟 Ежедневный' }
   document.getElementById('testsHistory').innerHTML = data.slice(0,10).map(r => `
     <div class="bg-gray-50 rounded-lg p-4">
       <div class="flex justify-between items-start">
         <div>
-          <h4 class="font-semibold">${r.section==='integrals'?'Интегралы':r.section==='derivatives'?'Производные':r.section==='series'?'Ряды':'Пределы'} — ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</h4>
+          <h4 class="font-semibold">${sLabel[r.section]||r.section} — ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</h4>
           <p class="text-sm text-gray-500">${new Date(r.created_at).toLocaleString('ru')}</p>
         </div>
         <div class="text-right">
