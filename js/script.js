@@ -1930,6 +1930,8 @@ let _duelMyScore = null
 let _duelOpponentScore = null
 let _duelOpponentName = ''
 let _duelMyName = ''
+let _duelSection = 'mixed'   // выбор раздела
+let _duelDiff = 'medium'     // выбор уровня
 
 function generateDuelCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -1938,27 +1940,35 @@ function generateDuelCode() {
   return code
 }
 
-function getDuelQuestions(code) {
-  // Merge easy+medium pools from all sections for balanced duel questions
-  const pools = [
-    ...easyIntegralsQuestions,
-    ...easyDerivativesQuestions,
-    ...easySeriesQuestions,
-    ...easyLimitsQuestions,
-    ...mediumIntegralsQuestions,
-    ...mediumDerivativesQuestions,
-    ...mediumSeriesQuestions,
-    ...mediumLimitsQuestions,
-  ].flat().filter(q => q && q.options && q.options.length === 4)
+function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
+  // Build pool depending on section/difficulty choice
+  const poolsBySection = {
+    integrals:   { easy: easyIntegralsQuestions,   medium: mediumIntegralsQuestions,   hard: hardIntegralsQuestions },
+    derivatives: { easy: easyDerivativesQuestions, medium: mediumDerivativesQuestions, hard: hardDerivativesQuestions },
+    series:      { easy: easySeriesQuestions,      medium: mediumSeriesQuestions,      hard: hardSeriesQuestions },
+    limits:      { easy: easyLimitsQuestions,      medium: mediumLimitsQuestions,      hard: hardLimitsQuestions },
+  }
+  let rawPool
+  if (section === 'mixed') {
+    rawPool = [
+      ...poolsBySection.integrals[difficulty]   || [],
+      ...poolsBySection.derivatives[difficulty] || [],
+      ...poolsBySection.series[difficulty]      || [],
+      ...poolsBySection.limits[difficulty]      || [],
+    ]
+  } else {
+    rawPool = poolsBySection[section]?.[difficulty] || poolsBySection.integrals.medium
+  }
+  const pool = rawPool.flat().filter(q => q && q.options && q.options.length === 4)
 
-  const seed = hashCode(code + '_duel_v2')
+  const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng = mulberry32(seed)
-  const shuffled = [...pools]
+  const shuffled = [...pool]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
-  // Shuffle answer options with same seed for fair play
+  // Shuffle answer options with same seed so both players see identical order
   return shuffled.slice(0, 10).map(q => {
     const order = [0,1,2,3]
     for (let i = 3; i > 0; i--) {
@@ -1989,9 +1999,29 @@ window.showDuelModal = function() {
   document.getElementById('duelJoinPanel').style.display = 'none'
   document.getElementById('duelLobby').style.display = 'none'
   document.getElementById('duelTabsBar').style.display = ''
+  // Restore pickers to saved state
+  _refreshDuelPickers()
   showDuelTab('create')
   const modal = document.getElementById('duelModal')
   modal.style.display = 'flex'
+}
+
+function _refreshDuelPickers() {
+  document.querySelectorAll('#duelSectPicker .duel-pick-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sect === _duelSection)
+  })
+  document.querySelectorAll('#duelDiffPicker .duel-pick-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.diff === _duelDiff)
+  })
+}
+
+window.setDuelSection = function(sect) {
+  _duelSection = sect
+  _refreshDuelPickers()
+}
+window.setDuelDiff = function(diff) {
+  _duelDiff = diff
+  _refreshDuelPickers()
 }
 
 window.closeDuelModal = function() {
@@ -2037,8 +2067,8 @@ window.createDuel = async function() {
     .on('broadcast', { event: 'join' }, ({ payload }) => {
       _duelOpponentName = payload.name
       _duelSetStatus('duelCreateStatus', `✅ ${_duelOpponentName} подключился! Начинаем…`)
-      // Broadcast start in 3s
-      _duelChannel.send({ type: 'broadcast', event: 'start', payload: { code: _duelCode } })
+      // Broadcast start with section/difficulty so guest uses same pool
+      _duelChannel.send({ type: 'broadcast', event: 'start', payload: { code: _duelCode, section: _duelSection, difficulty: _duelDiff } })
       _beginDuelCountdown()
     })
     .on('broadcast', { event: 'score' }, ({ payload }) => {
@@ -2064,7 +2094,10 @@ window.joinDuel = async function() {
   _duelChannel = supabase.channel('duel:' + _duelCode, { config: { broadcast: { self: false } } })
 
   _duelChannel
-    .on('broadcast', { event: 'start' }, () => {
+    .on('broadcast', { event: 'start' }, ({ payload }) => {
+      // Receive host's section/difficulty choice
+      if (payload?.section) _duelSection = payload.section
+      if (payload?.difficulty) _duelDiff = payload.difficulty
       _beginDuelCountdown()
     })
     .on('broadcast', { event: 'score' }, ({ payload }) => {
@@ -2109,17 +2142,28 @@ function _beginDuelCountdown() {
 }
 
 function _beginDuelTest() {
-  const questions = getDuelQuestions(_duelCode)
+  const questions = getDuelQuestions(_duelCode, _duelSection, _duelDiff)
   currentSection = 'duel'
-  currentDifficulty = 'medium'
+  currentDifficulty = _duelDiff
   currentTest = questions
   currentQuestionIndex = 0
   userAnswers = new Array(questions.length).fill(null)
   isStudyMode = false
   _duelMyScore = null; _duelOpponentScore = null
-  timeRemaining = 10 * 60  // 10 minutes for duel
-  timerInitialTime = 10 * 60
+  const timePerQ = _duelDiff === 'easy' ? 60 : _duelDiff === 'hard' ? 120 : 90
+  timeRemaining = questions.length * timePerQ
+  timerInitialTime = timeRemaining
+  timerStartTime = null
+  clearTestState()
   showPage('testPage')
+  // Set test header info (same as startTest does)
+  document.getElementById('totalQuestions').textContent = questions.length
+  const sectNames = { mixed:'Все разделы', integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы' }
+  const diffName = _duelDiff === 'easy' ? 'Лёгкий' : _duelDiff === 'hard' ? 'Сложный' : 'Средний'
+  document.getElementById('testTitle').textContent = `⚔️ Дуэль: ${sectNames[_duelSection] || 'Смешанный'}`
+  document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName} · Дуэль 1v1`
+  const timerEl = document.getElementById('timerDisplay')
+  if (timerEl) timerEl.style.display = ''
   displayQuestion()
   startTimer()
 }
@@ -2170,6 +2214,30 @@ function _showDuelResults() {
 
   modal.style.display = 'flex'
 }
+
+// ── Навигационное меню (гамбургер) ──────────────────────
+let _navOpen = false
+window.toggleNavMenu = function() {
+  _navOpen = !_navOpen
+  const menu = document.getElementById('navMenu')
+  const btn = document.getElementById('menuBtn')
+  menu.style.display = _navOpen ? 'block' : 'none'
+  btn.textContent = _navOpen ? '✕' : '☰'
+  btn.style.color = _navOpen ? '#60a5fa' : ''
+}
+window.closeNavMenu = function() {
+  _navOpen = false
+  const menu = document.getElementById('navMenu')
+  if (menu) menu.style.display = 'none'
+  const btn = document.getElementById('menuBtn')
+  if (btn) { btn.textContent = '☰'; btn.style.color = '' }
+}
+// Close menu when clicking outside
+document.addEventListener('click', e => {
+  if (_navOpen && !e.target.closest('#navMenu') && !e.target.closest('#menuBtn')) {
+    window.closeNavMenu()
+  }
+})
 
 // ── Глобальный доступ к функциям ────────────────────────
 window.showForgotPassword = showForgotPassword

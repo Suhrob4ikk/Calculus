@@ -63,19 +63,52 @@
     .dark .badge-green { background:#064e3b;color:#6ee7b7; }
     body { font-family:'IBM Plex Sans',sans-serif; }
     .hidden { display:none !important; }
-    .page-content {
-      position: relative;
-      z-index: 1;
-      margin-left: 68px;
-    }
-    @media (max-width: 640px) {
-      .page-content { margin-left: 0; }
-      #sideNav { display: none !important; }
-    }
+    .page-content { position:relative;z-index:1;margin-left:0; }
 
-    /* Боковая панель */
-    #sideNav { position:fixed;left:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:1001; }
-    #sideNav .nav-pill { padding:10px 14px;font-size:0.85rem;display:flex;align-items:center;gap:6px; }
+    /* ── Выдвижное меню ─────────────────────────────────── */
+    #menuBtn {
+      position:fixed;top:1rem;left:1rem;z-index:1003;
+      background:rgba(15,23,42,0.85);backdrop-filter:blur(12px);
+      border:1px solid rgba(148,163,184,0.15);border-radius:10px;
+      color:#94a3b8;width:2.4rem;height:2.4rem;font-size:1.25rem;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:all 0.2s;
+    }
+    #menuBtn:hover { background:rgba(59,130,246,0.2);color:#60a5fa; }
+    #navMenu {
+      position:fixed;top:4.2rem;left:1rem;z-index:1002;
+      background:rgba(10,18,38,0.97);backdrop-filter:blur(18px);
+      border:1px solid rgba(148,163,184,0.15);border-radius:14px;
+      padding:6px;min-width:175px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    }
+    .nav-menu-item {
+      display:flex;align-items:center;gap:9px;width:100%;
+      padding:9px 12px;border-radius:8px;background:none;border:none;
+      cursor:pointer;color:#94a3b8;font-size:0.9rem;font-weight:500;
+      text-align:left;transition:all 0.2s;white-space:nowrap;
+    }
+    .nav-menu-item:hover { background:rgba(59,130,246,0.15);color:#93c5fd; }
+    .nav-menu-divider { height:1px;background:rgba(148,163,184,0.12);margin:4px 6px; }
+    /* Кнопки секций/уровня дуэли */
+    .duel-pick-btn {
+      padding:5px 11px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);
+      background:transparent;color:#94a3b8;font-size:0.8rem;cursor:pointer;
+      transition:all 0.2s;font-family:inherit;
+    }
+    .duel-pick-btn.active {
+      background:rgba(139,92,246,0.3);color:#c4b5fd;
+      border-color:rgba(139,92,246,0.65);
+    }
+    body.light-theme #menuBtn {
+      background:rgba(255,255,255,0.92);border-color:rgba(165,180,252,0.6);color:#4f46e5;
+    }
+    body.light-theme #navMenu {
+      background:rgba(255,255,255,0.97);border-color:rgba(165,180,252,0.5);
+      box-shadow:0 8px 30px rgba(99,102,241,0.15);
+    }
+    body.light-theme .nav-menu-item { color:#4f46e5; }
+    body.light-theme .nav-menu-item:hover { background:rgba(99,102,241,0.1);color:#2563eb; }
 
     /* Шапка */
     /* header-avatar moved to sidebar */
@@ -110,12 +143,6 @@
       border: 1px solid rgba(165,180,252,0.4) !important;
     }
     body.light-theme .progress-bar { background: #c7d2fe !important; }
-    body.light-theme #sideNav {
-      background: rgba(255,255,255,0.92) !important;
-      border-right: 1px solid rgba(165,180,252,0.5) !important;
-      box-shadow: 2px 0 12px rgba(99,102,241,0.08) !important;
-    }
-    body.light-theme #sideNav button { color: #4f46e5 !important; }
     body.light-theme #themeToggle {
       background: rgba(255,255,255,0.9) !important;
       border-color: rgba(165,180,252,0.6) !important;
@@ -177,52 +204,16 @@
 <div id="headerAvatarLetter" style="display:none"></div>
 <span id="headerUsername" style="display:none"></span>
 
-<!-- Боковая панель (слева) -->
-<div id="sideNav" style="
-  position:fixed;left:0;top:50%;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:4px;
-  z-index:1001;padding:8px 6px;
-  background:rgba(15,23,42,0.8);
-  backdrop-filter:blur(12px);
-  border-right:1px solid rgba(148,163,184,0.1);
-  border-radius:0 12px 12px 0;
-  ">
-  <button onclick="showProfile()" title="Профиль" style="
-    display:flex;flex-direction:column;align-items:center;gap:2px;
-    background:none;border:none;cursor:pointer;
-    color:#94a3b8;padding:8px 10px;border-radius:8px;
-    font-size:0.65rem;transition:all 0.2s;min-width:52px;
-    " onmouseover="this.style.background='rgba(59,130,246,0.15)';this.style.color='#60a5fa'"
-       onmouseout="this.style.background='none';this.style.color='#94a3b8'">
-    <span style="font-size:1.1rem">👤</span>Профиль
-  </button>
-  <button onclick="showStatistics()" title="Статистика" style="
-    display:flex;flex-direction:column;align-items:center;gap:2px;
-    background:none;border:none;cursor:pointer;
-    color:#94a3b8;padding:8px 10px;border-radius:8px;
-    font-size:0.65rem;transition:all 0.2s;min-width:52px;
-    " onmouseover="this.style.background='rgba(147,51,234,0.15)';this.style.color='#c084fc'"
-       onmouseout="this.style.background='none';this.style.color='#94a3b8'">
-    <span style="font-size:1.1rem">📊</span>Стат.
-  </button>
-  <button onclick="showLeaderboard()" title="Рейтинг" style="
-    display:flex;flex-direction:column;align-items:center;gap:2px;
-    background:none;border:none;cursor:pointer;
-    color:#94a3b8;padding:8px 10px;border-radius:8px;
-    font-size:0.65rem;transition:all 0.2s;min-width:52px;
-    " onmouseover="this.style.background='rgba(234,179,8,0.15)';this.style.color='#fbbf24'"
-       onmouseout="this.style.background='none';this.style.color='#94a3b8'">
-    <span style="font-size:1.1rem">🏆</span>Рейтинг
-  </button>
-  <button onclick="showSearchProfiles()" title="Пользователи" style="
-    display:flex;flex-direction:column;align-items:center;gap:2px;
-    background:none;border:none;cursor:pointer;
-    color:#94a3b8;padding:8px 10px;border-radius:8px;
-    font-size:0.65rem;transition:all 0.2s;min-width:52px;
-    " onmouseover="this.style.background='rgba(99,102,241,0.15)';this.style.color='#818cf8'"
-       onmouseout="this.style.background='none';this.style.color='#94a3b8'">
-    <span style="font-size:1.1rem">👥</span>Люди
-  </button>
+<!-- ── МЕНЮ (гамбургер + выпадающий список) ── -->
+<button id="menuBtn" onclick="toggleNavMenu()" title="Меню">☰</button>
+<div id="navMenu" style="display:none">
+  <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><span>🏠</span>Главная</button>
+  <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><span>⚔️</span>Дуэль</button>
+  <div class="nav-menu-divider"></div>
+  <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><span>👤</span>Профиль</button>
+  <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><span>📊</span>Статистика</button>
+  <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><span>🏆</span>Рейтинг</button>
+  <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><span>👥</span>Люди</button>
 </div>
 
 <!-- ── АВТОРИЗАЦИЯ ── -->
@@ -835,6 +826,9 @@
   <button onclick="showHome()" id="bnHome">
     <span>🏠</span><span>Главная</span>
   </button>
+  <button onclick="showDuelModal()" id="bnDuel">
+    <span>⚔️</span><span>Дуэль</span>
+  </button>
   <button onclick="showStatistics()" id="bnStats">
     <span>📊</span><span>Стат.</span>
   </button>
@@ -931,6 +925,26 @@
                  border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer"
           onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</div>
         <p style="color:#64748b;font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
+      </div>
+      <!-- Раздел -->
+      <div style="margin-bottom:10px">
+        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">📚 Раздел</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
+          <button class="duel-pick-btn active" data-sect="mixed" onclick="setDuelSection('mixed')">🎲 Все</button>
+          <button class="duel-pick-btn" data-sect="integrals" onclick="setDuelSection('integrals')">∫ Интегралы</button>
+          <button class="duel-pick-btn" data-sect="derivatives" onclick="setDuelSection('derivatives')">f' Производные</button>
+          <button class="duel-pick-btn" data-sect="series" onclick="setDuelSection('series')">∑ Ряды</button>
+          <button class="duel-pick-btn" data-sect="limits" onclick="setDuelSection('limits')">lim Пределы</button>
+        </div>
+      </div>
+      <!-- Уровень -->
+      <div style="margin-bottom:14px">
+        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">⚡ Уровень</div>
+        <div style="display:flex;gap:5px" id="duelDiffPicker">
+          <button class="duel-pick-btn" data-diff="easy" onclick="setDuelDiff('easy')">Лёгкий</button>
+          <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
+          <button class="duel-pick-btn" data-diff="hard" onclick="setDuelDiff('hard')">Сложный</button>
+        </div>
       </div>
       <div id="duelCreateStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">
         Нажми кнопку чтобы создать дуэль
