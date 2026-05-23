@@ -64,6 +64,8 @@
     body { font-family:'IBM Plex Sans',sans-serif; }
     .hidden { display:none !important; }
     .page-content { position:relative;z-index:1;margin-left:0; }
+    /* На мобильных — только нижняя панель; на десктопе — только гамбургер */
+    @media (max-width: 640px) { #menuBtn, #navMenu { display: none !important; } }
 
     /* ── Выдвижное меню ─────────────────────────────────── */
     #menuBtn {

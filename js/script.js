@@ -240,12 +240,14 @@ function showPage(pageId) {
   }
   const noNavPages = ['authPage', 'updatePasswordPage']
   const showNav   = !noNavPages.includes(pageId)
-  const sideNav   = document.getElementById('sideNav')
   const bottomNav = document.getElementById('bottomNav')
+  const menuBtn   = document.getElementById('menuBtn')
   const headerAvatar = document.querySelector('.header-avatar')
-  if (sideNav)   sideNav.style.display   = showNav ? 'flex' : 'none'
-  // bottomNav: controlled via JS only; CSS hides on desktop via min-width media query
+  // bottomNav: CSS hides on desktop (min-width:641px), JS controls auth visibility
   if (bottomNav) bottomNav.style.display = showNav ? 'flex' : 'none'
+  // menuBtn: CSS hides on mobile (max-width:640px), JS controls auth visibility
+  if (menuBtn) menuBtn.style.display = showNav ? '' : 'none'
+  if (!showNav) window.closeNavMenu?.()
   if (headerAvatar) headerAvatar.style.display = showNav ? 'flex' : 'none'
 
   // Подсвечиваем активную вкладку в нижней навигации
