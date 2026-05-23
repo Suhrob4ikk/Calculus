@@ -74,6 +74,10 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 document.addEventListener('DOMContentLoaded', async () => {
   registerSW()
 
+  // Инициализируем Lucide SVG-иконки (заменяет <i data-lucide="..."> → <svg>)
+  /* global lucide */
+  if (typeof lucide !== 'undefined') lucide.createIcons()
+
   // Плавающие математические символы (декор тёмной темы)
   const mathBg = document.getElementById('mathBg')
   if (mathBg) {

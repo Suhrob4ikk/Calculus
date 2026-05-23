@@ -14,6 +14,7 @@
   <link rel="apple-touch-icon" href="icons/icon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
@@ -236,6 +237,19 @@
     body.light-theme .dh-logout-btn {
       border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.08); color: #dc2626;
     }
+
+    /* ── Lucide SVG icons ────────────────────────────────── */
+    svg.lucide { display:inline-block; vertical-align:middle; stroke:currentColor; fill:none; flex-shrink:0; }
+    /* Desktop header nav */
+    .dh-nav-btn svg.lucide   { width:15px; height:15px; vertical-align:-2px; margin-right:5px; }
+    .dh-logout-btn svg.lucide { width:14px; height:14px; margin-right:4px; vertical-align:-2px; }
+    /* Hamburger button + dropdown */
+    #menuBtn svg.lucide      { width:18px; height:18px; }
+    .nav-menu-item svg.lucide { width:16px; height:16px; flex-shrink:0; }
+    /* Bottom nav */
+    #bottomNav button svg.lucide { width:22px; height:22px; display:block; }
+    /* Action buttons */
+    button svg.lucide        { width:16px; height:16px; vertical-align:-2px; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
@@ -281,11 +295,11 @@
   <div class="dh-inner">
     <div class="dh-logo">∫ Матанализ</div>
     <nav class="dh-links">
-      <button id="dhHome"   onclick="showHome()"           class="dh-nav-btn">🏠 Главная</button>
-      <button id="dhDuel"   onclick="showDuelModal()"      class="dh-nav-btn">⚔️ Дуэль</button>
-      <button id="dhStats"  onclick="showStatistics()"     class="dh-nav-btn">📊 Статистика</button>
-      <button id="dhLeader" onclick="showLeaderboard()"    class="dh-nav-btn">🏆 Рейтинг</button>
-      <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn">👥 Люди</button>
+      <button id="dhHome"   onclick="showHome()"           class="dh-nav-btn"><i data-lucide="home"></i> Главная</button>
+      <button id="dhDuel"   onclick="showDuelModal()"      class="dh-nav-btn"><i data-lucide="swords"></i> Дуэль</button>
+      <button id="dhStats"  onclick="showStatistics()"     class="dh-nav-btn"><i data-lucide="bar-chart-2"></i> Статистика</button>
+      <button id="dhLeader" onclick="showLeaderboard()"    class="dh-nav-btn"><i data-lucide="trophy"></i> Рейтинг</button>
+      <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn"><i data-lucide="users"></i> Люди</button>
     </nav>
     <div class="dh-right">
       <button onclick="showProfile()" class="dh-user-btn">
@@ -295,21 +309,21 @@
         </div>
         <span id="dhUsername">…</span>
       </button>
-      <button onclick="handleLogout()" class="dh-logout-btn">Выйти</button>
+      <button onclick="handleLogout()" class="dh-logout-btn"><i data-lucide="log-out"></i> Выйти</button>
     </div>
   </div>
 </header>
 
 <!-- ── МЕНЮ (гамбургер + выпадающий список) ── -->
-<button id="menuBtn" onclick="toggleNavMenu()" title="Меню">☰</button>
+<button id="menuBtn" onclick="toggleNavMenu()" title="Меню"><i data-lucide="menu"></i></button>
 <div id="navMenu" style="display:none">
-  <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><span>🏠</span>Главная</button>
-  <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><span>⚔️</span>Дуэль</button>
+  <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><i data-lucide="home"></i>Главная</button>
+  <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><i data-lucide="swords"></i>Дуэль</button>
   <div class="nav-menu-divider"></div>
-  <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><span>👤</span>Профиль</button>
-  <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><span>📊</span>Статистика</button>
-  <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><span>🏆</span>Рейтинг</button>
-  <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><span>👥</span>Люди</button>
+  <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><i data-lucide="user"></i>Профиль</button>
+  <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><i data-lucide="bar-chart-2"></i>Статистика</button>
+  <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><i data-lucide="trophy"></i>Рейтинг</button>
+  <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><i data-lucide="users"></i>Люди</button>
 </div>
 
 <!-- ── АВТОРИЗАЦИЯ ── -->
@@ -770,7 +784,7 @@
         <div class="mt-6 flex justify-between">
           <button id="prevBtn" onclick="previousQuestion()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">← Назад</button>
           <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Следующий →</button>
-          <button id="finishBtn" onclick="finishTest()" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none">✅ Завершить тест</button>
+          <button id="finishBtn" onclick="finishTest()" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none"><i data-lucide="check-circle-2"></i> Завершить тест</button>
           <button onclick="exitTest()" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Выйти</button>
         </div>
       </div>
@@ -790,8 +804,8 @@
         <div class="flex gap-4 justify-center flex-wrap">
           <button onclick="restartTest()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">Пройти снова</button>
           <button onclick="showHome()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">На главную</button>
-          <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold">📊 Статистика</button>
-          <button id="shareBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold">📤 Поделиться</button>
+          <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"><i data-lucide="bar-chart-2"></i> Статистика</button>
+          <button id="shareBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold"><i data-lucide="share-2"></i> Поделиться</button>
         </div>
       </div>
     </div>
@@ -993,22 +1007,22 @@
 <!-- ── НИЖНЯЯ НАВИГАЦИЯ (только мобильные) ── -->
 <nav id="bottomNav">
   <button onclick="showProfile()" id="bnProfile">
-    <span>👤</span><span>Профиль</span>
+    <i data-lucide="user"></i><span>Профиль</span>
   </button>
   <button onclick="showHome()" id="bnHome">
-    <span>🏠</span><span>Главная</span>
+    <i data-lucide="home"></i><span>Главная</span>
   </button>
   <button onclick="showDuelModal()" id="bnDuel">
-    <span>⚔️</span><span>Дуэль</span>
+    <i data-lucide="swords"></i><span>Дуэль</span>
   </button>
   <button onclick="showStatistics()" id="bnStats">
-    <span>📊</span><span>Стат.</span>
+    <i data-lucide="bar-chart-2"></i><span>Стат.</span>
   </button>
   <button onclick="showLeaderboard()" id="bnLeader">
-    <span>🏆</span><span>Рейтинг</span>
+    <i data-lucide="trophy"></i><span>Рейтинг</span>
   </button>
   <button onclick="showSearchProfiles()" id="bnPeople">
-    <span>👥</span><span>Люди</span>
+    <i data-lucide="users"></i><span>Люди</span>
   </button>
 </nav>
 

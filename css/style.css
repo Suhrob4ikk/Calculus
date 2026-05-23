@@ -332,7 +332,7 @@ input[type="password"], select {
   padding: 6px 4px;
   border-radius: 0;
 }
-#bottomNav button span:first-child { font-size: 1.25rem; line-height: 1; }
+#bottomNav button svg.lucide { width: 22px; height: 22px; display: block; }
 #bottomNav button:hover,
 #bottomNav button.bn-active { color: #60a5fa; background: rgba(59, 130, 246, 0.08); }
 
