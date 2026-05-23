@@ -96,28 +96,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tokenType = urlParams.get('type')
   const tokenHash = urlParams.get('token_hash')
 
-  // Supabase обрабатывает токены автоматически через onAuthStateChange.
-  // Ручной verifyOtp не нужен — токен передаётся в хэш URL, а не в query params.
   // Очищаем URL если есть параметры
   if (tokenType) {
     history.replaceState(null, '', window.location.pathname)
   }
 
-  // Обычная загрузка — проверяем сессию
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session) {
-    currentUser = session.user
-    showPage('homePage')
-    updateUserUI()
-    renderStreakBadge()
-    renderXPBadge()
-    updateDailyChallengeCard()
-    // Если есть сохранённый тест — предлагаем продолжить, а не входим автоматически
-    if (localStorage.getItem('testState')) {
-      showContinueTestBanner()
-    }
+  // Если пришли по ссылке сброса пароля — сразу показываем форму, не идём на главную.
+  // onAuthStateChange PASSWORD_RECOVERY тоже сработает, но гонка могла бы перекрыть форму.
+  if (tokenType === 'recovery') {
+    showPage('updatePasswordPage')
+    // currentUser будет установлен когда PASSWORD_RECOVERY сработает
   } else {
-    showPage('authPage')
+    // Обычная загрузка — проверяем сессию
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      currentUser = session.user
+      showPage('homePage')
+      updateUserUI()
+      renderStreakBadge()
+      renderXPBadge()
+      updateDailyChallengeCard()
+      // Если есть сохранённый тест — предлагаем продолжить, а не входим автоматически
+      if (localStorage.getItem('testState')) {
+        showContinueTestBanner()
+      }
+    } else {
+      showPage('authPage')
+    }
   }
 
   // Сохраняем прогресс и предупреждаем перед уходом со страницы

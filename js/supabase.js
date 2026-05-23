@@ -105,7 +105,7 @@ export async function searchProfiles(query) {
 
 export async function resetPassword(email) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://suhrob4ikk.github.io/Calculus?type=recovery'
+    redirectTo: 'https://suhrob4ikk.github.io/Calculus/?type=recovery'
   })
   return { error }
 }
