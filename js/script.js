@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     showPage('homePage')
     updateUserUI()
     renderStreakBadge()
+    renderXPBadge()
     updateDailyChallengeCard()
     // Если есть сохранённый тест — предлагаем продолжить, а не входим автоматически
     if (localStorage.getItem('testState')) {
@@ -129,6 +130,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
+  // ── Realtime leaderboard ────────────────────────────────
+  supabase.channel('leaderboard-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'test_results' }, () => {
+      // Показываем LIVE-индикатор всегда
+      const ind = document.getElementById('liveIndicator')
+      if (ind) ind.style.display = 'inline'
+      // Обновляем таблицу лидеров если она открыта
+      const lb = document.getElementById('leaderboardPage')
+      if (lb && lb.style.display !== 'none') {
+        window.showLeaderboard()
+      }
+    })
+    .subscribe()
 
 })
 
@@ -418,6 +432,121 @@ function launchConfetti() {
     else { cancelAnimationFrame(frame); canvas.remove() }
   }
   frame = requestAnimationFrame(draw)
+}
+
+// ── Звуки (Web Audio API) ────────────────────────────────
+let _audioCtx = null
+function _getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  return _audioCtx
+}
+
+function playSound(type) {
+  if (localStorage.getItem('soundEnabled') === 'false') return
+  try {
+    const ctx = _getAudioCtx()
+    if (ctx.state === 'suspended') ctx.resume()
+    const now = ctx.currentTime
+    const note = (freq, start, dur, vol = 0.25, wave = 'sine') => {
+      const osc = ctx.createOscillator()
+      const g = ctx.createGain()
+      osc.type = wave; osc.frequency.value = freq
+      osc.connect(g); g.connect(ctx.destination)
+      g.gain.setValueAtTime(vol, now + start)
+      g.gain.exponentialRampToValueAtTime(0.001, now + start + dur)
+      osc.start(now + start); osc.stop(now + start + dur + 0.01)
+    }
+    if (type === 'correct') {
+      note(523, 0, 0.18); note(659, 0.1, 0.22)
+    } else if (type === 'wrong') {
+      note(220, 0, 0.22, 0.12, 'sawtooth')
+      note(140, 0.08, 0.18, 0.1, 'sawtooth')
+    } else if (type === 'perfect') {
+      // C-E-G-C fanfare
+      ;[523, 659, 784, 1047].forEach((f, i) => note(f, i * 0.14, 0.32, 0.28))
+    } else if (type === 'finish') {
+      note(440, 0, 0.25); note(554, 0.12, 0.28)
+    }
+  } catch (e) { /* audio not supported */ }
+}
+
+window.toggleSound = function() {
+  const on = localStorage.getItem('soundEnabled') !== 'false'
+  localStorage.setItem('soundEnabled', on ? 'false' : 'true')
+  const btn = document.getElementById('soundToggle')
+  if (btn) btn.textContent = on ? '🔇' : '🔊'
+  if (!on) playSound('correct') // demo sound when turning on
+}
+
+// Инициализировать иконку кнопки звука
+;(function initSoundBtn() {
+  const on = localStorage.getItem('soundEnabled') !== 'false'
+  const btn = document.getElementById('soundToggle')
+  if (btn) btn.textContent = on ? '🔊' : '🔇'
+})()
+
+// ── XP система ───────────────────────────────────────────
+const XP_TABLE = { easy: 10, medium: 20, hard: 30 }
+
+function getXP() { return parseInt(localStorage.getItem('totalXP') || '0', 10) }
+function addXP(amount) {
+  const xp = getXP() + amount
+  localStorage.setItem('totalXP', String(xp))
+  return xp
+}
+
+function getXPLevel(xp) {
+  const levels = [
+    { min: 5000, name: 'Эксперт',     icon: '🏆', color: '#f59e0b', nextAt: null  },
+    { min: 2500, name: 'Знаток',      icon: '💡', color: '#3b82f6', nextAt: 5000  },
+    { min: 1000, name: 'Продвинутый', icon: '🔥', color: '#10b981', nextAt: 2500  },
+    { min: 500,  name: 'Практик',     icon: '📚', color: '#8b5cf6', nextAt: 1000  },
+    { min: 200,  name: 'Студент',     icon: '🎓', color: '#06b6d4', nextAt: 500   },
+    { min: 0,    name: 'Новичок',     icon: '⭐', color: '#6b7280', nextAt: 200   },
+  ]
+  return levels.find(l => xp >= l.min)
+}
+
+function showXPToast(gained, total) {
+  document.getElementById('xpToast')?.remove()
+  const lvl = getXPLevel(total)
+  const toast = document.createElement('div')
+  toast.id = 'xpToast'
+  toast.style.cssText = `
+    position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%) translateY(16px);
+    z-index:10001;background:rgba(15,23,42,0.97);border:1px solid ${lvl.color}55;
+    border-radius:14px;padding:11px 20px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.45);backdrop-filter:blur(12px);
+    font-size:0.9rem;opacity:0;transition:transform 0.3s,opacity 0.3s;pointer-events:none
+  `
+  toast.innerHTML = `
+    <span style="font-size:1.5rem">${lvl.icon}</span>
+    <div>
+      <div style="font-weight:700;color:${lvl.color}">+${gained} XP</div>
+      <div style="color:#94a3b8;font-size:0.75rem">${lvl.name} · ${total} XP всего</div>
+    </div>`
+  document.body.appendChild(toast)
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateX(-50%) translateY(0)'
+    toast.style.opacity = '1'
+  })
+  setTimeout(() => {
+    toast.style.transform = 'translateX(-50%) translateY(-10px)'
+    toast.style.opacity = '0'
+    setTimeout(() => toast.remove(), 350)
+  }, 3200)
+}
+
+function renderXPBadge() {
+  const xp = getXP()
+  const lvl = getXPLevel(xp)
+  const el = document.getElementById('xpBadge')
+  if (!el) return
+  el.style.display = 'flex'
+  el.style.color = lvl.color
+  el.style.borderColor = lvl.color + '55'
+  el.style.background = lvl.color + '18'
+  el.innerHTML = `${lvl.icon} <span style="font-weight:700">${xp}</span><span style="font-size:0.72rem;opacity:0.75"> XP</span>`
 }
 
 // ── Ежедневный вызов ─────────────────────────────────────
@@ -937,6 +1066,7 @@ window.showHome = function() {
   stopTimer()
   showPage('homePage')
   renderStreakBadge()
+  renderXPBadge()
   updateDailyChallengeCard()
 }
 
@@ -1107,6 +1237,7 @@ window.selectAnswer = function(answerIndex) {
   if (userAnswers[currentQuestionIndex] !== null) return
   userAnswers[currentQuestionIndex] = answerIndex
   const correct = currentTest[currentQuestionIndex].correct
+  playSound(answerIndex === correct ? 'correct' : 'wrong')
   const isDark = document.documentElement.classList.contains('dark')
   document.querySelectorAll('.option-label').forEach((label, i) => {
     label.style.pointerEvents = 'none'
@@ -1228,11 +1359,26 @@ window.finishTest = async function() {
     localStorage.setItem('dailyChallengeScore', percentage)
   }
 
+  // Award XP
+  if (!isStudyMode) {
+    const ptsPerQ = XP_TABLE[currentDifficulty] || 10
+    let xpGained = correct * ptsPerQ
+    if (percentage === 100) xpGained += 25          // идеальный результат
+    if (currentSection === 'daily') xpGained += 50  // ежедневный бонус
+    const newXP = addXP(xpGained)
+    setTimeout(() => { showXPToast(xpGained, newXP); renderXPBadge() }, 700)
+  }
+
   window._finishInProgress = false
   if (!isStudyMode) clearTestState()
   isStudyMode = false
   showPage('resultsPage')
-  if (percentage === 100) setTimeout(launchConfetti, 400)
+  if (percentage === 100) {
+    setTimeout(launchConfetti, 400)
+    playSound('perfect')
+  } else {
+    playSound('finish')
+  }
 
   const scoreDisplay = document.getElementById('scoreDisplay')
   scoreDisplay.textContent = `${correct}/${currentTest.length}`
@@ -1520,6 +1666,8 @@ window.showProfile = async function() {
 }
 
 // ── Статистика ────────────────────────────────────────────
+let _chartScore = null, _chartSection = null
+
 window.showStatistics = async function() {
   showPage('statisticsPage')
   if (!currentUser) return
@@ -1527,28 +1675,106 @@ window.showStatistics = async function() {
   const { data } = await getUserResults(currentUser.id)
   if (!data || data.length === 0) {
     document.getElementById('testsHistory').innerHTML = '<p class="text-gray-500 text-center py-4">История пуста</p>'
+    document.getElementById('statsChartsContainer').innerHTML = ''
     return
   }
 
+  const mainData = data.filter(r => r.section !== 'daily')
   const total = data.length
-  const best = Math.max(...data.map(r => r.score))
-  const avg = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
+  const best  = Math.max(...data.map(r => r.score))
+  const avg   = Math.round(data.reduce((s,r) => s+r.score, 0) / total)
 
   document.getElementById('totalTests').textContent = total
-  document.getElementById('bestScore').textContent = best + '%'
+  document.getElementById('bestScore').textContent  = best + '%'
   document.getElementById('averageScore').textContent = avg + '%'
 
-  // Прогресс по разделам
+  // Прогресс-бары по разделам
   const sections = ['integrals','derivatives','series','limits']
   sections.forEach(sec => {
-    const secResults = data.filter(r => r.section === sec)
-    const secAvg = secResults.length ? Math.round(secResults.reduce((s,r)=>s+r.score,0)/secResults.length) : 0
-    const el = document.getElementById(`${sec}Progress`)
+    const sd  = data.filter(r => r.section === sec)
+    const sav = sd.length ? Math.round(sd.reduce((s,r)=>s+r.score,0)/sd.length) : 0
+    const el  = document.getElementById(`${sec}Progress`)
     const bar = document.getElementById(`${sec}ProgressBar`)
-    if (el) el.textContent = secAvg + '%'
-    if (bar) bar.style.width = secAvg + '%'
+    if (el)  el.textContent  = sav + '%'
+    if (bar) bar.style.width = sav + '%'
   })
 
+  // ── Chart.js ──────────────────────────────────────────
+  const container = document.getElementById('statsChartsContainer')
+  container.innerHTML = `
+    <h3 class="text-xl font-bold text-gray-800 mb-3">📈 Динамика результатов</h3>
+    <div style="position:relative;height:200px;margin-bottom:1.5rem">
+      <canvas id="scoreChart"></canvas>
+    </div>
+    <h3 class="text-xl font-bold text-gray-800 mb-3">📊 Средний балл по разделам</h3>
+    <div style="position:relative;height:180px;margin-bottom:1.5rem">
+      <canvas id="sectionChart"></canvas>
+    </div>`
+
+  // Destroy old charts if they exist
+  if (_chartScore)   { _chartScore.destroy();   _chartScore   = null }
+  if (_chartSection) { _chartSection.destroy(); _chartSection = null }
+
+  // Line chart: last 20 results (chronological)
+  const recent = [...mainData].reverse().slice(-20)
+  _chartScore = new Chart(document.getElementById('scoreChart'), {
+    type: 'line',
+    data: {
+      labels: recent.map((r,i) => {
+        const d = new Date(r.created_at)
+        return `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`
+      }),
+      datasets: [{
+        label: 'Результат (%)',
+        data: recent.map(r => r.score),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.12)',
+        tension: 0.35,
+        fill: true,
+        pointBackgroundColor: recent.map(r => r.score >= 70 ? '#10b981' : r.score >= 50 ? '#f59e0b' : '#ef4444'),
+        pointRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  })
+
+  // Bar chart: avg score by section
+  const secLabels  = ['Интегралы','Производные','Ряды','Пределы']
+  const secColors  = ['#3b82f6','#10b981','#f43f5e','#8b5cf6']
+  const secAvgs    = sections.map(sec => {
+    const sd = data.filter(r => r.section === sec)
+    return sd.length ? Math.round(sd.reduce((s,r)=>s+r.score,0)/sd.length) : 0
+  })
+  _chartSection = new Chart(document.getElementById('sectionChart'), {
+    type: 'bar',
+    data: {
+      labels: secLabels,
+      datasets: [{
+        data: secAvgs,
+        backgroundColor: secColors.map(c => c + '33'),
+        borderColor: secColors,
+        borderWidth: 2,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  })
+
+  // История
   const sLabel = { integrals:'Интегралы', derivatives:'Производные', series:'Ряды', limits:'Пределы', daily:'🌟 Ежедневный' }
   document.getElementById('testsHistory').innerHTML = data.slice(0,10).map(r => `
     <div class="bg-gray-50 rounded-lg p-4">

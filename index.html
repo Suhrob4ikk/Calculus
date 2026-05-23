@@ -16,6 +16,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .math-bg { position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;width:100vw;height:100vh; }
@@ -159,6 +160,7 @@
   <div class="math-bg" id="mathBg"></div>
 
   <button id="themeToggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
+  <button id="soundToggle" onclick="toggleSound()" title="Звук вкл/выкл" style="position:fixed;top:1rem;right:3.8rem;z-index:1002;background:rgba(30,41,59,0.8);border:1px solid rgba(71,85,105,0.5);color:#94a3b8;border-radius:50%;width:2.2rem;height:2.2rem;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">🔊</button>
 
   <!-- Оверлей приватности (появляется при скрытии вкладки во время теста) -->
   <div id="privacyOverlay" onclick="hidePrivacyScreen()">
@@ -273,6 +275,10 @@
         <!-- Серия дней -->
         <span id="streakBadge"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(234,179,8,0.2));border:1px solid rgba(239,68,68,0.4);color:#fbbf24;padding:6px 14px;border-radius:9999px;font-size:0.85rem;gap:5px"></span>
+        <!-- XP badge -->
+        <span id="xpBadge"
+          style="display:none;align-items:center;gap:5px;padding:6px 14px;border-radius:9999px;font-size:0.85rem;border:1px solid;cursor:pointer"
+          onclick="showStatistics()" title="Мой XP · нажми для статистики"></span>
         <!-- Кнопка установки PWA -->
         <button id="installAppBtn" onclick="installApp()"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
@@ -663,6 +669,9 @@
           <div><div class="flex justify-between mb-1"><span>Ряды</span><span id="seriesProgress">0%</span></div><div class="progress-bar"><div id="seriesProgressBar" class="progress-fill" style="width:0%"></div></div></div>
           <div><div class="flex justify-between mb-1"><span>Пределы</span><span id="limitsProgress">0%</span></div><div class="progress-bar"><div id="limitsProgressBar" class="progress-fill" style="width:0%"></div></div></div>
         </div>
+        <!-- Chart.js charts injected here by JS -->
+        <div id="statsChartsContainer" class="mb-6"></div>
+
         <h3 class="text-xl font-bold text-gray-800 mb-4">История тестов</h3>
         <div id="testsHistory" class="space-y-3 max-h-96 overflow-y-auto"></div>
         <div class="mt-6 flex justify-center">
@@ -708,7 +717,7 @@
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏆 Таблица лидеров</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏆 Таблица лидеров <span id="liveIndicator" style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;vertical-align:middle;animation:pulse 2s infinite">● LIVE</span></h2>
         <div class="flex gap-3 mb-6">
           <select id="lbSection" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
             <option value="">Все разделы</option>
