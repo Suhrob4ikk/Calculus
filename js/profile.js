@@ -1,5 +1,5 @@
 import { st } from './state.js'
-import { showPage, updateUserUI, renderStreakBadge, renderXPBadge, syncSettingsBtns } from './ui.js'
+import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns } from './ui.js'
 import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getLeaderboard, getDuelHistory } from './supabase.js'
 
 // ── Уровни пользователя ───────────────────────────────────
@@ -40,7 +40,6 @@ window.showHome = function() {
   window._stopTimer?.()
   showPage('homePage')
   renderStreakBadge()
-  renderXPBadge()
   window.updateDailyChallengeCard?.()
 }
 

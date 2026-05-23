@@ -1,5 +1,5 @@
 import { st } from './state.js'
-import { showPage, playSound, XP_TABLE, addXP, showXPToast, renderXPBadge, launchConfetti } from './ui.js'
+import { showPage, playSound, XP_TABLE, addXP, showXPToast, launchConfetti } from './ui.js'
 import { saveResult } from './supabase.js'
 import { getDailyDate } from './utils.js'
 
@@ -295,7 +295,7 @@ window.finishTest = async function() {
     }
     const xpGained = correct * (XP_TABLE[window._duelDiff] || 20)
     const newXP = addXP(xpGained)
-    setTimeout(() => { showXPToast(xpGained, newXP); renderXPBadge() }, 700)
+    setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
     window._finishInProgress = false
     clearTestState()
     showPage('resultsPage')
@@ -341,7 +341,7 @@ window.finishTest = async function() {
     if (percentage === 100) xpGained += 25
     if (st.currentSection === 'daily') xpGained += 50
     const newXP = addXP(xpGained)
-    setTimeout(() => { showXPToast(xpGained, newXP); renderXPBadge() }, 700)
+    setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
   }
 
   window._finishInProgress = false

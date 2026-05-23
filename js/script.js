@@ -4,7 +4,7 @@
 
 import { st } from './state.js'
 import { supabase } from './supabase.js'
-import { applyTheme, showPage, updateUserUI, renderStreakBadge, renderXPBadge, showContinueTestBanner } from './ui.js'
+import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner } from './ui.js'
 import { registerSW } from './pwa.js'
 import { setupSessionGuard, teardownSessionGuard } from './auth.js'
 import { clearTestState, saveTestState } from './test.js'
@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       showPage('homePage')
       updateUserUI()
       renderStreakBadge()
-      renderXPBadge()
       window.updateDailyChallengeCard?.()
       if (localStorage.getItem('testState')) {
         showContinueTestBanner()

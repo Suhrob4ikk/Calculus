@@ -376,10 +376,6 @@
         <!-- Серия дней -->
         <span id="streakBadge"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(234,179,8,0.2));border:1px solid rgba(239,68,68,0.4);color:#fbbf24;padding:6px 14px;border-radius:9999px;font-size:0.85rem;gap:5px"></span>
-        <!-- XP badge -->
-        <span id="xpBadge"
-          style="display:none;align-items:center;gap:5px;padding:6px 14px;border-radius:9999px;font-size:0.85rem;border:1px solid;cursor:pointer"
-          onclick="showStatistics()" title="Мой XP · нажми для статистики"></span>
         <!-- Кнопка установки PWA -->
         <button id="installAppBtn" onclick="installApp()"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
@@ -913,7 +909,25 @@
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏆 Таблица лидеров <span id="liveIndicator" style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;vertical-align:middle;animation:pulse 2s infinite">● LIVE</span></h2>
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <h2 class="text-3xl font-bold text-gray-800">🏆 Таблица лидеров</h2>
+          <span id="liveIndicator" style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;animation:pulse 2s infinite">● LIVE</span>
+          <button onclick="togglePtsInfo()" title="Как считаются баллы?"
+            style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--text-muted);background:transparent;color:var(--text-muted);font-size:0.75rem;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s"
+            onmouseover="this.style.borderColor='#3b82f6';this.style.color='#3b82f6'"
+            onmouseout="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-muted)'">?</button>
+        </div>
+        <!-- Справка по pts -->
+        <div id="ptsInfoBox" style="display:none;margin-bottom:1rem;padding:0.85rem 1rem;border-radius:0.75rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);font-size:0.83rem;color:var(--text-main)">
+          <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa">📐 Как считаются баллы (pts)?</p>
+          <p style="color:var(--text-muted);line-height:1.5">
+            <b style="color:var(--text-main)">pts = правильные ответы × множитель сложности</b><br>
+            🟢 Лёгкий ×1 &nbsp;·&nbsp; 🟡 Средний ×2 &nbsp;·&nbsp; 🔴 Сложный ×3
+          </p>
+          <p style="color:var(--text-muted);margin-top:0.4rem;line-height:1.5">
+            Из всех попыток берётся <b style="color:var(--text-main)">лучший результат</b> на каждую уникальную комбинацию раздел&nbsp;+&nbsp;сложность. Итоговый рейтинг — сумма лучших результатов по всем комбинациям.
+          </p>
+        </div>
         <div class="flex gap-3 mb-6">
           <select id="lbSection" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
             <option value="">Все разделы</option>
@@ -1033,6 +1047,10 @@
   <script src="js/limits-questions.js"></script>
   <script src="js/ode-questions.js"></script>
 <script>
+    function togglePtsInfo() {
+      const box = document.getElementById('ptsInfoBox')
+      if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none'
+    }
     // Глобальная функция темы — работает и до загрузки модуля, и после
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark')

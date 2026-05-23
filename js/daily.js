@@ -1,5 +1,5 @@
 import { st } from './state.js'
-import { showPage, renderXPBadge, renderStreakBadge } from './ui.js'
+import { showPage, renderStreakBadge } from './ui.js'
 import { getDailyLeaderboard } from './supabase.js'
 import { getDailyDate, hashCode, mulberry32 } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
