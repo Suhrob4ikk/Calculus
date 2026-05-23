@@ -1646,7 +1646,7 @@ window.showProfile = async function() {
     return
   }
 
-  const sections = ['integrals', 'derivatives', 'series', 'limits']
+  const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode']
   const { badges, total, best, avg } = computeBadges(data, sections)
   const level = getUserLevel(total, avg)
 
@@ -1814,7 +1814,7 @@ window.showStatistics = async function() {
   document.getElementById('averageScore').textContent = avg + '%'
 
   // Прогресс-бары по разделам
-  const sections = ['integrals','derivatives','series','limits']
+  const sections = ['integrals','derivatives','series','limits','ode']
   sections.forEach(sec => {
     const sd  = data.filter(r => r.section === sec)
     const sav = sd.length ? Math.round(sd.reduce((s,r)=>s+r.score,0)/sd.length) : 0
