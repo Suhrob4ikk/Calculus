@@ -126,19 +126,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 8000)
   } else {
     // Обычная загрузка — восстанавливаем сессию
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session) {
-      st.currentUser = session.user
-      updateLastSeen(st.currentUser.id)
-      setupSessionGuard(st.currentUser.id)
-      showPage('homePage')
-      updateUserUI()
-      renderStreakBadge()
-      window.updateDailyChallengeCard?.()
-      if (localStorage.getItem('testState')) {
-        showContinueTestBanner()
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) throw error
+      if (session) {
+        st.currentUser = session.user
+        updateLastSeen(st.currentUser.id)
+        setupSessionGuard(st.currentUser.id)
+        showPage('homePage')
+        updateUserUI()
+        renderStreakBadge()
+        window.updateDailyChallengeCard?.()
+        if (localStorage.getItem('testState')) {
+          showContinueTestBanner()
+        }
+      } else {
+        showPage('authPage')
       }
-    } else {
+    } catch (err) {
+      // Токен истёк или стал невалидным — тихо выходим и показываем вход
+      await supabase.auth.signOut().catch(() => {})
       showPage('authPage')
     }
   }
