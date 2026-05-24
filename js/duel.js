@@ -24,16 +24,6 @@ window._duelIsRematchRequester = false
 window._duelInvitedUsername    = null
 window._pendingDuelInvite      = null
 
-// ── Глобальный канал для инвайтов ──
-if (!window._duelInvitesChannel) {
-  window._duelInvitesChannel = supabase.channel('duel-invites')
-    .on('broadcast', { event: 'invite' }, ({ payload }) => {
-      const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
-      if (payload.invitedUsername && payload.invitedUsername !== myName) return
-      showDuelInviteBanner(payload)
-    })
-    .subscribe()
-}
 
 window._clearDuelGlobals = function() {
   window._duelJoinHandled = false
@@ -254,6 +244,21 @@ window.createDuel = async function() {
           if (payload.invitedUsername && payload.invitedUsername !== myName) return
           showDuelInviteBanner(payload)
         })
+        .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
+          if (payload.code === window._duelCode && window._duelRole === 'host') {
+            _duelSetStatus('duelCreateStatus', `❌ ${payload.declinedBy} отказался от дуэли`)
+            setTimeout(() => {
+              if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
+                _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
+              }
+            }, 10000)
+          }
+        })
+        .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
+          if (payload.code === window._duelCode && window._duelRole === 'host') {
+            _duelSetStatus('duelCreateStatus', `✅ ${payload.acceptedBy} принял приглашение! Ожидаем входа…`)
+          }
+        })
         .subscribe()
     }
     window._duelInvitesChannel.send({
@@ -424,19 +429,46 @@ function showDuelInviteBanner(payload) {
 }
 
 window.acceptDuelInvite = function() {
-  const payload = window._pendingDuelInvite
-  if (!payload) return
-  document.getElementById('duelInviteBanner').style.display = 'none'
-  document.getElementById('duelResultsModal').style.display = 'none'
-  window._pendingDuelInvite = null
-  window.joinDuelByCode(payload.code)
-}
+  const payload = window._pendingDuelInvite;
+  if (!payload) return;
+  document.getElementById('duelInviteBanner').style.display = 'none';
+  document.getElementById('duelResultsModal').style.display = 'none';
+  
+  // Уведомляем хоста что приглашение принято
+  if (window._duelInvitesChannel) {
+    window._duelInvitesChannel.send({
+      type: 'broadcast',
+      event: 'invite_accepted',
+      payload: {
+        acceptedBy: st.currentUser?.user_metadata?.username || 'Пользователь',
+        code: payload.code
+      }
+    });
+  }
+  
+  window._pendingDuelInvite = null;
+  window.joinDuelByCode(payload.code);
+};
 
 window.declineDuelInvite = function() {
-  document.getElementById('duelInviteBanner').style.display = 'none'
-  document.getElementById('duelResultsModal').style.display = 'none'
-  window._pendingDuelInvite = null
-}
+  const payload = window._pendingDuelInvite;
+  document.getElementById('duelInviteBanner').style.display = 'none';
+  document.getElementById('duelResultsModal').style.display = 'none';
+  
+  // Отправляем отказ хосту через тот же канал duel-invites
+  if (payload && window._duelInvitesChannel) {
+    window._duelInvitesChannel.send({
+      type: 'broadcast',
+      event: 'invite_decline',
+      payload: {
+        declinedBy: st.currentUser?.user_metadata?.username || 'Пользователь',
+        code: payload.code
+      }
+    });
+  }
+  
+  window._pendingDuelInvite = null;
+};
 
 function _showRematchRequest(name) {
   const banner = document.getElementById('rematchRequestBanner')
