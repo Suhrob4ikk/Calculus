@@ -259,7 +259,11 @@
     }
     body.light-theme #mobileBackBtn { color: #2563eb; }
     @media (min-width: 641px) { #mobileBackBar { display: none !important; } }
-    @media (max-width: 640px) { body.has-back-bar .page-content { padding-top: 44px; } }
+    @media (max-width: 640px) {
+      body.has-back-bar .page-content { padding-top: 44px; }
+      /* Скрываем встроенные кнопки «назад» — их заменяет #mobileBackBar */
+      body.has-back-bar .page-back-btn { display: none !important; }
+    }
 
     /* ── Lucide SVG icons ────────────────────────────────── */
     svg.lucide { display:inline-block; vertical-align:middle; stroke:currentColor; fill:none; flex-shrink:0; }
@@ -517,7 +521,7 @@
 <div id="integralsSection" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Интегралы</h2>
         <div class="theory-entry-card" onclick="showTheory('integrals')" style="border-left:3px solid #3b82f6">
@@ -575,7 +579,7 @@
 <div id="derivativesSection" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Производные</h2>
         <div class="theory-entry-card" onclick="showTheory('derivatives')" style="border-left:3px solid #eab308">
@@ -633,7 +637,7 @@
 <div id="seriesSection" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ряды и последовательности</h2>
         <div class="theory-entry-card" onclick="showTheory('series')" style="border-left:3px solid #ef4444">
@@ -693,7 +697,7 @@
 <div id="limitsSection" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Пределы и непрерывность</h2>
         <div class="theory-entry-card" onclick="showTheory('limits')" style="border-left:3px solid #a855f7">
@@ -745,7 +749,7 @@
 <div id="odeSection" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Дифференциальные уравнения</h2>
         <div class="theory-entry-card" onclick="showTheory('ode')" style="border-left:3px solid #f97316">
@@ -803,7 +807,7 @@
 <div id="theoryPage" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
     <div class="max-w-3xl mx-auto fade-in">
-      <button onclick="backFromTheory()" class="mb-4 text-blue-500 hover:text-blue-400 flex items-center gap-1 text-sm font-medium">← Назад к разделу</button>
+      <button onclick="backFromTheory()" class="page-back-btn mb-4 text-blue-500 hover:text-blue-400 flex items-center gap-1 text-sm font-medium">← Назад к разделу</button>
       <div class="rounded-2xl p-3 sm:p-8" style="background:var(--bg-card,white)">
         <div id="theoryPageContent"></div>
       </div>
@@ -867,7 +871,7 @@
 <div id="statisticsPage" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-4xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">📊 Моя статистика</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -900,7 +904,7 @@
 <div id="profilePage" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <div class="relative w-24 h-24 mx-auto mb-3">
           <div class="profile-avatar" id="profileAvatar" style="width:80px;height:80px;font-size:2rem">S</div>
@@ -962,7 +966,7 @@
 <div id="leaderboardPage" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <div class="flex items-center justify-center gap-3 mb-6">
           <h2 class="text-3xl font-bold text-gray-800">🏆 Таблица лидеров</h2>
@@ -1009,7 +1013,7 @@
 <div id="searchProfilesPage" class="page-content hidden" style="display:none">
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">👥 Пользователи</h2>
         <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
