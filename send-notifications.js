@@ -3,10 +3,12 @@
 //  Запуск: node send-notifications.js
 //
 //  Опции:
+//    --list                 показать всех подписчиков и выйти
 //    --dry-run              не отправлять, только показать кому
+//    --all                  отправить ВСЕМ подписчикам (игнорирует --days)
 //    --days N               не заходили N+ дней (по умолчанию 1)
-//    --list                 просто показать всех подписчиков и выйти
 //    "Заголовок" "Текст"    своё сообщение (в кавычках)
+//                           можно использовать {name} — заменится на имя
 // ─────────────────────────────────────────────────────────
 require('dotenv').config()
 const webpush = require('web-push')
@@ -42,12 +44,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 const args     = process.argv.slice(2)
 const isDryRun = args.includes('--dry-run')
 const isList   = args.includes('--list')
+const sendAll  = args.includes('--all')   // отправить всем подписчикам
 
 const daysIdx  = args.indexOf('--days')
 const days     = daysIdx !== -1 ? parseInt(args[daysIdx + 1], 10) || 1 : 1
 
-const textArgs = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--days' && isNaN(Number(a)) || (isNaN(Number(a)) && !a.startsWith('--')))
-// Проще: берём позиционные аргументы без флагов
+// Позиционные аргументы (не флаги и не значение после --days)
 const posArgs  = args.filter((a, i) => {
   if (a.startsWith('--')) return false
   if (args[i - 1] === '--days') return false
@@ -136,42 +138,56 @@ async function main() {
   }
 
   // ── Режим отправки ────────────────────────────────────────
-  console.log(`\n📅  Ищем подписчиков, не заходивших ${days}+ дн. (до ${cutoff.toLocaleString('ru-RU')})...`)
-  if (isDryRun) console.log('⚠️   Режим DRY-RUN — уведомления не будут отправлены\n')
+  const targets = sendAll
+    ? allRows
+    : allRows.filter(r => !r.lastActivity || r.lastActivity < cutoff)
 
-  const inactive = allRows.filter(r =>
-    !r.lastActivity || r.lastActivity < cutoff
-  )
+  if (sendAll) {
+    console.log(`\n📣  Режим --all: отправляем ВСЕМ ${targets.length} подписчикам`)
+  } else {
+    console.log(`\n📅  Ищем подписчиков, не заходивших ${days}+ дн. (до ${cutoff.toLocaleString('ru-RU')})...`)
+  }
+  if (isDryRun) console.log('⚠️   Режим DRY-RUN — уведомления не будут отправлены')
 
-  console.log(`👥  Всего подписок: ${allRows.length}`)
-  console.log(`💤  Не заходили ${days}+ дн.: ${inactive.length}`)
+  console.log(`\n👥  Всего подписок: ${allRows.length}`)
+  if (!sendAll) console.log(`💤  Не заходили ${days}+ дн.: ${targets.length}`)
 
-  if (inactive.length === 0) {
+  if (targets.length === 0) {
     console.log(`\n✅  Все подписчики заходили в течение последних ${days} дн.!\n`)
     return
   }
 
-  // Список тех, кому отправим
+  // Список получателей
   console.log('\n   Кому отправим:')
-  inactive.forEach(r => {
+  targets.forEach(r => {
     const seenStr = r.lastActivity ? r.lastActivity.toLocaleString('ru-RU') : 'никогда'
     console.log(`   → ${r.username} (${r.email})  |  последний вход: ${seenStr}`)
   })
 
-  const title = msgTitle || '🌟 Ежедневный вызов ждёт!'
-  const body  = msgBody  || 'Ты давно не заходил на тренажёр по матанализу. Зайди и проверь себя! 📐'
+  // Шаблоны по умолчанию — {name} заменяется на имя пользователя
+  const titleTpl = msgTitle || '📚 {name}, давно не виделись!'
+  const bodyTpl  = msgBody  || 'На тренажёре по матанализу появилось много нового — зайди и проверь себя! 🔥'
 
-  console.log(`\n📨  Сообщение: "${title}"`)
-  console.log(`    "${body}"\n`)
+  console.log(`\n📨  Шаблон заголовка: "${titleTpl}"`)
+  console.log(`    Шаблон текста:     "${bodyTpl}"\n`)
 
   if (isDryRun) {
-    console.log(`📊  DRY-RUN: отправили бы ${inactive.length} уведомлений\n`)
+    console.log('   Примеры с подстановкой имён:')
+    targets.slice(0, 3).forEach(r => {
+      console.log(`   → "${titleTpl.replace(/{name}/g, r.username)}"`)
+      console.log(`     "${bodyTpl.replace(/{name}/g, r.username)}"`)
+    })
+    console.log(`\n📊  DRY-RUN: отправили бы ${targets.length} уведомлений\n`)
     return
   }
 
   let sent = 0, failed = 0, removed = 0
 
-  for (const row of inactive) {
+  for (const row of targets) {
+    // Подставляем имя пользователя вместо {name}
+    const title = titleTpl.replace(/{name}/g, row.username)
+    const body  = bodyTpl.replace(/{name}/g, row.username)
+
     try {
       await webpush.sendNotification(
         row.subscription,
