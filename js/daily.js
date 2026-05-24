@@ -1,6 +1,6 @@
 import { st } from './state.js'
 import { showPage, renderStreakBadge } from './ui.js'
-import { getDailyLeaderboard } from './supabase.js'
+import { getDailyLeaderboard, getTodayDailyResult } from './supabase.js'
 import { getDailyDate, hashCode, mulberry32 } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
 
@@ -38,7 +38,21 @@ function getDailyQuestions() {
   })
 }
 
-window.startDailyChallenge = function() {
+// Синхронизирует результат ежедневки из Supabase в localStorage.
+// Нужно при входе с нового браузера/устройства — localStorage там пустой.
+async function syncDailyFromDB() {
+  const today = getDailyDate()
+  if (localStorage.getItem(dailyKey('Date')) === today) return  // уже в кэше
+  if (!st.currentUser) return                                    // не залогинен
+  const data = await getTodayDailyResult(st.currentUser.id, today)
+  if (data) {
+    localStorage.setItem(dailyKey('Date'), today)
+    localStorage.setItem(dailyKey('Score'), data.score)
+  }
+}
+
+window.startDailyChallenge = async function() {
+  await syncDailyFromDB()
   const today = getDailyDate()
   if (localStorage.getItem(dailyKey('Date')) === today) {
     window.showDailyLeaderboard()
@@ -62,7 +76,8 @@ window.startDailyChallenge = function() {
   displayQuestion()
 }
 
-export function updateDailyChallengeCard() {
+export async function updateDailyChallengeCard() {
+  await syncDailyFromDB()
   const today     = getDailyDate()
   const doneToday = localStorage.getItem(dailyKey('Date')) === today
   const score     = localStorage.getItem(dailyKey('Score'))

@@ -132,6 +132,22 @@ export async function deletePushSubscription(userId) {
 }
 
 // ── Ежедневный вызов ─────────────────────────────────────
+export async function getTodayDailyResult(userId, date) {
+  const [y, m, d] = date.split('-').map(Number)
+  const startUTC = new Date(y, m - 1, d).toISOString()
+  const endUTC   = new Date(y, m - 1, d + 1).toISOString()
+  const { data } = await supabase
+    .from('test_results')
+    .select('score')
+    .eq('user_id', userId)
+    .eq('section', 'daily')
+    .gte('created_at', startUTC)
+    .lt('created_at', endUTC)
+    .limit(1)
+    .maybeSingle()
+  return data   // { score } или null
+}
+
 export async function getDailyLeaderboard(date) {
   // date: 'YYYY-MM-DD' (local) — переводим в UTC, чтобы покрыть полный локальный день
   const [y, m, d] = date.split('-').map(Number)
