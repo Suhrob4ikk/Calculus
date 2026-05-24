@@ -21,59 +21,61 @@ window._duelMyName             = ''
 window._duelSection            = 'mixed'
 window._duelDiff               = 'medium'
 window._duelIsRematchRequester = false
-window._duelInvitedUsername    = null;
-window._pendingDuelInvite      = null;
+window._duelInvitedUsername    = null
+window._pendingDuelInvite      = null
 
 // ── Глобальный слушатель инвайтов ──
-(function initInvitesListener() {
+// FIX: сохраняем канал в window._duelInvitesChannel чтобы потом через него отправлять события
+;(function initInvitesListener() {
   function trySubscribe() {
     if (!st.currentUser || !st.currentUser.user_metadata?.username) {
-      setTimeout(trySubscribe, 1000);
-      return;
+      setTimeout(trySubscribe, 1000)
+      return
     }
-    console.log('🟡 Подписываемся на duel-invites как', st.currentUser.user_metadata.username);
+    console.log('🟡 Подписываемся на duel-invites как', st.currentUser.user_metadata.username)
     try {
-      const channel = supabase.channel('duel-invites');
-      channel
+      window._duelInvitesChannel = supabase.channel('duel-invites')
+      window._duelInvitesChannel
         .on('broadcast', { event: 'invite' }, ({ payload }) => {
-          console.log('📩 Получен инвайт:', payload);
-          const myName = st.currentUser?.user_metadata?.username?.toLowerCase();
-          console.log('🟡 Моё имя:', myName, '| Приглашён:', payload.invitedUsername);
+          console.log('📩 Получен инвайт:', payload)
+          const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
+          console.log('🟡 Моё имя:', myName, '| Приглашён:', payload.invitedUsername)
           if (payload.invitedUsername && payload.invitedUsername !== myName) {
-            console.log('🔴 Инвайт не для меня');
-            return;
+            console.log('🔴 Инвайт не для меня')
+            return
           }
-          console.log('🟢 Показываю баннер');
-          showDuelInviteBanner(payload);
+          console.log('🟢 Показываю баннер')
+          showDuelInviteBanner(payload)
         })
         .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
           if (payload.code === window._duelCode && window._duelRole === 'host') {
-            _duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли');
+            _duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
             setTimeout(function() {
               if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
-                _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль');
+                _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
               }
-            }, 10000);
+            }, 10000)
           }
         })
         .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
           if (payload.code === window._duelCode && window._duelRole === 'host') {
-            _duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…');
+            _duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
           }
         })
         .subscribe(function(status) {
-          console.log('🟡 Статус подписки duel-invites:', status);
-        });
+          console.log('🟡 Статус подписки duel-invites:', status)
+        })
     } catch(e) {
-      console.error('Ошибка подписки duel-invites:', e);
-      setTimeout(trySubscribe, 2000);
+      console.error('Ошибка подписки duel-invites:', e)
+      window._duelInvitesChannel = null
+      setTimeout(trySubscribe, 2000)
     }
   }
-  setTimeout(trySubscribe, 1000);
-})();
+  setTimeout(trySubscribe, 1000)
+})()
 
 window._clearDuelGlobals = function() {
-  window._duelJoinHandled = false
+  window._duelJoinHandled  = false
   window._duelStartHandled = false
   window._duelInvitedUsername = null
   if (window._duelCountdownInterval) {
@@ -100,8 +102,10 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
   const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng  = mulberry32(seed)
   let pool
-  if (st.currentSection === 'duel') {
-    if (window._clearDuelGlobals) window._clearDuelGlobals()
+
+  // FIX: убрали вызов _clearDuelGlobals отсюда — он не должен вызываться при генерации вопросов,
+  // только при инициализации дуэли (иначе сбрасывает _duelJoinHandled/_duelStartHandled слишком поздно)
+  if (section === 'mixed') {
     const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode']
     const selected = []
     for (const s of sects) {
@@ -128,6 +132,7 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     }
     pool = shuffled
   }
+
   return pool.slice(0, 10).map(q => {
     const order = [0, 1, 2, 3]
     for (let i = 3; i > 0; i--) {
@@ -226,8 +231,7 @@ window.copyDuelCode = function() {
 
 window.createDuel = async function() {
   if (!st.currentUser) { alert('Войди в аккаунт, чтобы создать дуэль'); return }
-  
-  // Валидация username
+
   const valid = await window.validateInviteUsername()
   if (!valid) return
 
@@ -242,14 +246,15 @@ window.createDuel = async function() {
   window._duelRole   = 'host'
   window._duelMyName = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
   document.getElementById('duelCodeDisplay').textContent = window._duelCode
-  _duelSetStatus('duelCreateStatus', window._duelInvitedUsername 
-    ? `⏳ Ожидаем ${invited}…` 
+  _duelSetStatus('duelCreateStatus', window._duelInvitedUsername
+    ? `⏳ Ожидаем ${invited}…`
     : '⏳ Ожидаем соперника…')
 
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   window._duelChannel = supabase.channel('duel:' + window._duelCode, { config: { broadcast: { self: false } } })
 
-  window._duelJoinHandled = false
+  // FIX: сбрасываем флаги здесь, при создании дуэли — а не внутри getDuelQuestions
+  window._duelJoinHandled  = false
   window._duelStartHandled = false
   window._duelCountdownInterval = null
 
@@ -284,11 +289,12 @@ window.createDuel = async function() {
 
   // Отправляем инвайт если указан username
   if (window._duelInvitedUsername) {
-    console.log('📤 Отправляем инвайт:', { invitedUsername: window._duelInvitedUsername, code: window._duelCode });
-    supabase.channel('duel-invites').send({
+    console.log('📤 Отправляем инвайт:', { invitedUsername: window._duelInvitedUsername, code: window._duelCode })
+    // FIX: используем window._duelInvitesChannel вместо анонимного supabase.channel(...)
+    window._duelInvitesChannel?.send({
       type: 'broadcast', event: 'invite',
       payload: { invitedUsername: window._duelInvitedUsername, code: window._duelCode, inviterName: window._duelMyName }
-    });
+    })
   }
 }
 
@@ -391,6 +397,7 @@ function _beginDuelTest() {
   st.timerStartTime   = null
   clearTestState()
   showPage('testPage')
+  // FIX: убрали деструктуризацию ([id, val]) — строка не является парой [id, val]
   ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.style.display = 'none'
@@ -398,7 +405,7 @@ function _beginDuelTest() {
   document.getElementById('totalQuestions').textContent = questions.length
   const sectNames = { mixed: 'Все разделы', integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }
   const diffName  = window._duelDiff === 'easy' ? 'Лёгкий' : window._duelDiff === 'hard' ? 'Сложный' : 'Средний'
-  document.getElementById('testTitle').textContent      = `⚔️ Дуэль: ${sectNames[window._duelSection] || 'Смешанный'}`
+  document.getElementById('testTitle').textContent       = `⚔️ Дуэль: ${sectNames[window._duelSection] || 'Смешанный'}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName} · Дуэль 1v1`
   const timerEl = document.getElementById('timerDisplay')
   if (timerEl) timerEl.style.display = ''
@@ -448,52 +455,47 @@ function showDuelInviteBanner(payload) {
   const name = payload.inviterName || payload.invitedUsername || 'Соперник'
   document.getElementById('duelInviterName').textContent = `⚔️ ${name} приглашает тебя в дуэль!`
   window._pendingDuelInvite = payload
+  // FIX: убрали открытие duelResultsModal здесь — это некорректно при получении инвайта
   banner.style.display = 'block'
-  document.getElementById('duelResultsModal').style.display = 'flex'
 }
 
 window.acceptDuelInvite = function() {
-  const payload = window._pendingDuelInvite;
-  if (!payload) return;
-  document.getElementById('duelInviteBanner').style.display = 'none';
-  document.getElementById('duelResultsModal').style.display = 'none';
-  
-  // Уведомляем хоста что приглашение принято
-  if (window._duelInvitesChannel) {
-    window._duelInvitesChannel.send({
-      type: 'broadcast',
-      event: 'invite_accepted',
-      payload: {
-        acceptedBy: st.currentUser?.user_metadata?.username || 'Пользователь',
-        code: payload.code
-      }
-    });
-  }
-  
-  window._pendingDuelInvite = null;
-  
-  window.joinDuelByCode(payload.code);
-};
+  const payload = window._pendingDuelInvite
+  if (!payload) return
+  document.getElementById('duelInviteBanner').style.display = 'none'
+
+  // FIX: используем window._duelInvitesChannel (теперь он существует)
+  window._duelInvitesChannel?.send({
+    type: 'broadcast',
+    event: 'invite_accepted',
+    payload: {
+      acceptedBy: st.currentUser?.user_metadata?.username || 'Пользователь',
+      code: payload.code
+    }
+  })
+
+  window._pendingDuelInvite = null
+  window.joinDuelByCode(payload.code)
+}
 
 window.declineDuelInvite = function() {
-  const payload = window._pendingDuelInvite;
-  document.getElementById('duelInviteBanner').style.display = 'none';
-  document.getElementById('duelResultsModal').style.display = 'none';
-  
-  // Отправляем отказ хосту через тот же канал duel-invites
-  if (payload && window._duelInvitesChannel) {
-    window._duelInvitesChannel.send({
+  const payload = window._pendingDuelInvite
+  document.getElementById('duelInviteBanner').style.display = 'none'
+
+  // FIX: используем window._duelInvitesChannel (теперь он существует)
+  if (payload) {
+    window._duelInvitesChannel?.send({
       type: 'broadcast',
       event: 'invite_decline',
       payload: {
         declinedBy: st.currentUser?.user_metadata?.username || 'Пользователь',
         code: payload.code
       }
-    });
+    })
   }
-  
-  window._pendingDuelInvite = null;
-};
+
+  window._pendingDuelInvite = null
+}
 
 function _showRematchRequest(name) {
   const banner = document.getElementById('rematchRequestBanner')
@@ -532,9 +534,10 @@ function _showDuelResults() {
     clearTimeout(window._duelOpponentTimeout)
     window._duelOpponentTimeout = null
   }
-  ;['menuBtn','bottomNav','desktopNav'].forEach(([id, val]) => {
+  // FIX: убрали деструктуризацию ([id, val]) — каждый элемент массива строка, не пара
+  ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
-    if (el) el.style.display = val || ''
+    if (el) el.style.display = ''
   })
   const modal    = document.getElementById('duelResultsModal')
   const emojiEl  = document.getElementById('duelResultsEmoji')
