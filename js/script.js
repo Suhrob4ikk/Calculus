@@ -91,21 +91,21 @@ function initInvitesChannel() {
       const myName = username.toLowerCase()
       if (payload.invitedUsername && payload.invitedUsername !== myName) return
       console.log('🟢 Показываю баннер')
-      showDuelInviteBanner(payload)
+      window.showDuelInviteBanner(payload) 
     })
     .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
       if (payload.code === window._duelCode && window._duelRole === 'host') {
-        _duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
+        window._duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
         setTimeout(function() {
           if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
-            _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
+            window._duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
           }
         }, 10000)
       }
     })
     .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
       if (payload.code === window._duelCode && window._duelRole === 'host') {
-        _duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
+        window._duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
       }
     })
     .subscribe(function(status) {

@@ -96,7 +96,7 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
   })
 }
 
-function _duelSetStatus(panelId, msg) {
+window._duelSetStatus = function(panelId, msg) {
   const el = document.getElementById(panelId)
   if (el) el.innerHTML = msg
 }
@@ -173,11 +173,13 @@ window.validateInviteUsername = async function() {
 window.copyDuelCode = function() {
   if (window._duelCode) {
     navigator.clipboard.writeText(window._duelCode).then(() => {
-      const el = document.getElementById('duelCodeDisplay')
-      const orig = el.textContent
-      el.textContent = '✓ Скопировано!'
-      setTimeout(() => { el.textContent = orig }, 1500)
-    })
+  const el = document.getElementById('duelCodeDisplay')
+  const orig = el.textContent
+  el.textContent = '✓ Скопировано!'
+  setTimeout(() => { el.textContent = orig }, 1500)
+}).catch(() => {
+  console.warn('Не удалось скопировать код')
+})
   }
 }
 
@@ -402,7 +404,7 @@ window.declineRematch = function() {
 }
 
 // ── Инвайт-баннер ──
-function showDuelInviteBanner(payload) {
+window.showDuelInviteBanner = function(payload) {
   const banner = document.getElementById('duelInviteBanner')
   if (!banner) return
   const name = payload.inviterName || payload.invitedUsername || 'Соперник'

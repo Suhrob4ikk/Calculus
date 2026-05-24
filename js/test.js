@@ -100,6 +100,7 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   }
   const totalMinutes = (minutesMap[difficulty]?.[questionCount]) || (questionCount * 25 / 5)
   st.timeRemaining = totalMinutes * 60
+  st.timerInitialTime = st.timeRemaining
   let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
   const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, questions.length))
   st.currentTest = shuffled.map(q => {
