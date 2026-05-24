@@ -20,7 +20,9 @@ window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault()
   _deferredInstallPrompt = e
   const btn = document.getElementById('installAppBtn')
+  const btnProfile = document.getElementById('installAppBtnProfile')
   if (btn) btn.style.display = 'flex'
+  if (btnProfile) btnProfile.style.display = 'flex'
 })
 window.addEventListener('appinstalled', () => {
   _deferredInstallPrompt = null

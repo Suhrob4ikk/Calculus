@@ -1,4 +1,12 @@
 import { st } from './state.js'
+// Download App handler
+window.downloadApp = function() {
+  const url = '/Calculus/app.zip'; // adjust path if needed
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '';
+  a.click();
+};
 import { showPage } from './ui.js'
 import { supabase } from './supabase.js'
 import { hashCode, mulberry32 } from './utils.js'
@@ -22,6 +30,15 @@ window._duelSection            = 'mixed'
 window._duelDiff               = 'medium'
 window._duelIsRematchRequester = false
 
+window._clearDuelGlobals = function() {
+  window._duelJoinHandled = false
+  window._duelStartHandled = false
+  if (window._duelCountdownInterval) {
+    clearInterval(window._duelCountdownInterval)
+    window._duelCountdownInterval = null
+  }
+}
+
 function generateDuelCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   let code = ''
@@ -42,7 +59,9 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
   const rng  = mulberry32(seed)
 
   let pool
-  if (section === 'mixed') {
+  if (st.currentSection === 'duel') {
+    // ensure duel globals cleared when exiting duel test
+    if (window._clearDuelGlobals) window._clearDuelGlobals();
     // Стратифицированная выборка: 2 вопроса из каждого из 5 разделов
     const sects   = ['integrals', 'derivatives', 'series', 'limits', 'ode']
     const selected = []
@@ -106,8 +125,8 @@ window.showDuelModal = function() {
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   document.getElementById('duelCodeDisplay').textContent    = '——————'
   document.getElementById('duelCreateStatus').textContent   = 'Нажми кнопку чтобы создать дуэль'
-  document.getElementById('duelCreateBtn').disabled         = false
-  document.getElementById('duelCreateBtn').textContent      = '⚔️ Создать дуэль'
+  document.getElementById('pushToggleBtn').disabled         = false
+  document.getElementById('pushToggleBtn').textContent      = '⚔️ Создать дуэль'
   const ji = document.getElementById('duelJoinInput')
   if (ji) ji.value = ''
   document.getElementById('duelJoinStatus').textContent     = ''
@@ -156,7 +175,7 @@ window.copyDuelCode = function() {
 
 window.createDuel = async function() {
   if (!st.currentUser) { alert('Войди в аккаунт, чтобы создать дуэль'); return }
-  const btn = document.getElementById('duelCreateBtn')
+  const btn = document.getElementById('pushToggleBtn')
   btn.disabled = true; btn.textContent = '⏳ Создаём…'
 
   window._duelCode   = generateDuelCode()
@@ -168,20 +187,31 @@ window.createDuel = async function() {
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   window._duelChannel = supabase.channel('duel:' + window._duelCode, { config: { broadcast: { self: false } } })
 
+  // Initialize guard flags if not present
+  if (typeof window._duelJoinHandled === 'undefined') window._duelJoinHandled = false;
+  if (typeof window._duelStartHandled === 'undefined') window._duelStartHandled = false;
+  if (typeof window._duelCountdownInterval === 'undefined') window._duelCountdownInterval = null;
+
   window._duelChannel
     .on('broadcast', { event: 'join' }, ({ payload }) => {
-      window._duelOpponentName = payload.name
-      _duelSetStatus('duelCreateStatus', `✅ ${window._duelOpponentName} подключился! Начинаем…`)
+      // Guard against multiple join events
+      if (window._duelJoinHandled) return;
+      window._duelJoinHandled = true;
+      window._duelOpponentName = payload.name;
+      _duelSetStatus('duelCreateStatus', `✅ ${window._duelOpponentName} подключился! Начинаем…`);
       window._duelChannel.send({
         type: 'broadcast', event: 'start',
         payload: { code: window._duelCode, section: window._duelSection, difficulty: window._duelDiff }
-      })
-      _beginDuelCountdown()
+      });
+      if (window._duelStartHandled) return; // guard duplicate start
+      window._duelStartHandled = true;
+      if (window._duelCountdownInterval) clearInterval(window._duelCountdownInterval);
+      _beginDuelCountdown();
     })
     .on('broadcast', { event: 'score' }, ({ payload }) => {
-      window._duelOpponentScore = payload.score
-      window._duelOpponentName  = payload.name || window._duelOpponentName
-      _checkDuelComplete()
+      window._duelOpponentScore = payload.score;
+      window._duelOpponentName  = payload.name || window._duelOpponentName;
+      _checkDuelComplete();
     })
     .on('broadcast', { event: 'rematch_request' }, ({ payload }) => { _showRematchRequest(payload.name) })
     .on('broadcast', { event: 'rematch_accept' },  () => { _onRematchAccepted() })
@@ -238,6 +268,9 @@ window.joinDuel = async function() {
 }
 
 function _beginDuelCountdown() {
+  // clear any previous countdown interval
+  if (window._duelCountdownInterval) { clearInterval(window._duelCountdownInterval); window._duelCountdownInterval = null; }
+
   document.getElementById('duelCreatePanel').style.display = 'none'
   document.getElementById('duelJoinPanel').style.display   = 'none'
   document.getElementById('duelTabsBar').style.display     = 'none'
@@ -249,10 +282,13 @@ function _beginDuelCountdown() {
   let c = 3
   countEl.textContent = c
   const iv = setInterval(() => {
+    // store interval ID for later cleanup
+    window._duelCountdownInterval = iv;
     c--
     if (c > 0) { countEl.textContent = c }
     else {
       clearInterval(iv)
+      window._duelCountdownInterval = null;
       document.getElementById('duelModal').style.display = 'none'
       _beginDuelTest()
     }
@@ -351,6 +387,8 @@ function _onRematchAccepted() {
   window._duelCode          = newCode
   window._duelMyScore       = null
   window._duelOpponentScore = null
+  // Reset duel globals before rematch start
+  _clearDuelGlobals();
   window._duelChannel.send({
     type: 'broadcast', event: 'rematch_start',
     payload: { code: newCode, section: window._duelSection, difficulty: window._duelDiff }

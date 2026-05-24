@@ -265,6 +265,8 @@ window.showProfile = async function() {
       </div>
     </div>
 
+    <button id="installAppBtnProfile" onclick="installApp()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:8px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-top:1rem;">📲 Установить приложение</button>
+
     <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Статистика</h3>
     <div class="grid grid-cols-3 gap-3 mb-4">
       <div class="profile-stat"><div class="profile-stat-value">${total}</div><div class="profile-stat-label">Тестов</div></div>
