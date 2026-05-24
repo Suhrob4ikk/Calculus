@@ -7,6 +7,7 @@
 //    --dry-run              не отправлять, только показать кому
 //    --all                  отправить ВСЕМ подписчикам (игнорирует --days)
 //    --days N               не заходили N+ дней (по умолчанию 1)
+//    --to email             отправить только одному пользователю по email
 //    "Заголовок" "Текст"    своё сообщение (в кавычках)
 //                           можно использовать {name} — заменится на имя
 // ─────────────────────────────────────────────────────────
@@ -46,13 +47,17 @@ const isDryRun = args.includes('--dry-run')
 const isList   = args.includes('--list')
 const sendAll  = args.includes('--all')   // отправить всем подписчикам
 
+const toIdx    = args.indexOf('--to')
+const toEmail  = toIdx !== -1 ? args[toIdx + 1] : null   // отправить одному по email
+
 const daysIdx  = args.indexOf('--days')
 const days     = daysIdx !== -1 ? parseInt(args[daysIdx + 1], 10) || 1 : 1
 
-// Позиционные аргументы (не флаги и не значение после --days)
+// Позиционные аргументы (не флаги и не значения после --days / --to)
 const posArgs  = args.filter((a, i) => {
   if (a.startsWith('--')) return false
   if (args[i - 1] === '--days') return false
+  if (args[i - 1] === '--to')   return false
   return true
 })
 const msgTitle = posArgs[0] || null
@@ -104,7 +109,7 @@ async function main() {
   const profileMap = {}
   ;(profiles || []).forEach(p => { profileMap[p.id] = p })
 
-  // 4. Собираем итоговый список
+  // 4. Собираем итоговый список (с фильтром --to если задан)
   const allRows = subs.map(s => {
     const auth    = authMap[s.user_id] || {}
     const profile = profileMap[s.user_id] || {}
@@ -121,6 +126,19 @@ async function main() {
       lastActivity,
     }
   })
+
+  // Если задан --to — оставляем только этого пользователя
+  if (toEmail) {
+    const found = allRows.find(r => r.email.toLowerCase() === toEmail.toLowerCase())
+    if (!found) {
+      console.error(`\n❌  Пользователь с email "${toEmail}" не найден среди подписчиков.\n`)
+      console.error('    Запусти --list чтобы увидеть кто подписан.\n')
+      process.exit(1)
+    }
+    allRows.length = 0
+    allRows.push(found)
+    console.log(`\n🎯  Режим --to: отправляем только ${found.username} (${found.email})`)
+  }
 
   // ── Режим --list: просто таблица всех подписчиков ────────
   if (isList) {
@@ -165,8 +183,8 @@ async function main() {
   })
 
   // Шаблоны по умолчанию — {name} заменяется на имя пользователя
-  const titleTpl = msgTitle || '📚 {name}, давно не виделись!'
-  const bodyTpl  = msgBody  || 'На тренажёре по матанализу появилось много нового — зайди и проверь себя! 🔥'
+  const titleTpl = msgTitle || '👋 Добрый день, {name}!'
+  const bodyTpl  = msgBody  || 'Давно вас не было! С тех пор вышли новые задачи, теории и ежедневные вызовы — загляни, проверь себя 📐 → suhrob4ikk.github.io/Calculus'
 
   console.log(`\n📨  Шаблон заголовка: "${titleTpl}"`)
   console.log(`    Шаблон текста:     "${bodyTpl}"\n`)
