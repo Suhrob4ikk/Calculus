@@ -30,7 +30,8 @@ export function showPage(pageId) {
 
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
                  'seriesSection','limitsSection','odeSection','testPage','resultsPage','statisticsPage',
-                 'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage']
+                 'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
+                 'theoryPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) { el.classList.add('hidden'); el.style.display = 'none' }
