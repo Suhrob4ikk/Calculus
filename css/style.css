@@ -176,6 +176,8 @@ body {
 .dark .bg-yellow-50 { background-color: #3a2e00 !important; }
 .dark .bg-red-50 { background-color: #3a1a1a !important; }
 .dark .bg-indigo-50 { background-color: #1e1f4a !important; }
+.dark .bg-purple-50 { background-color: #2d1b4e !important; }
+.dark .bg-orange-50 { background-color: #3a1f00 !important; }
 .dark .bg-gray-50 { background-color: var(--history-bg) !important; }
 .dark .bg-gray-200 { background-color: #334155 !important; }
 .dark body { background-color: var(--bg-main) !important; }
