@@ -1,5 +1,10 @@
 {
   "dependencies": {
     "mathjs": "^15.2.0"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.106.1",
+    "dotenv": "^16.6.1",
+    "web-push": "^3.6.7"
   }
 }

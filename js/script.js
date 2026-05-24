@@ -153,6 +153,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
+  // ── Прячем шапку при скролле вниз, показываем при скролле вверх ──
+  ;(function() {
+    let lastY = 0
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('desktopNav')
+      if (!nav || nav.style.display === 'none') return
+      const y = window.scrollY
+      if (y > lastY && y > 60) {
+        nav.style.transform = 'translateY(-100%)'
+      } else {
+        nav.style.transform = 'translateY(0)'
+      }
+      lastY = y
+    }, { passive: true })
+  })()
+
   // Realtime: обновляем таблицу лидеров при новых результатах
   supabase.channel('leaderboard-live')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'test_results' }, () => {
