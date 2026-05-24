@@ -1,5 +1,5 @@
 // ── Утилиты ────────────────────────────────────────────────
-export const VAPID_PUBLIC_KEY = 'BFvc73Owpo8t4uZ_F-_w8Xdt4Bh05LtAHe_4F4aaSsVuHe7_3tpiGhr2jJLabkeYD-uZMRHfIuhs0jaDZP7diR4'
+export const VAPID_PUBLIC_KEY = 'BHsONHfLYKW7HZtnpi_1_OaXrtbCJQrQ2I3-gXYbIx-4HK9AkLUAEyGDqJuQyN_ym7XQcIlGD-z0qfmY89iAJRo'
 
 export function urlBase64ToUint8Array(b64) {
   const pad = '='.repeat((4 - b64.length % 4) % 4)
