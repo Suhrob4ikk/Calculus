@@ -337,8 +337,8 @@
       <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
     </div>
     <div id="loginForm">
-      <input id="loginEmail" type="email" placeholder="Email" class="auth-input">
-      <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input">
+      <input id="loginEmail" type="email" placeholder="Email" class="auth-input" oninput="document.getElementById('loginError').textContent=''">
+      <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input" oninput="document.getElementById('loginError').textContent=''">
       <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
       <button id="loginBtn" onclick="handleLogin()" class="auth-btn-primary">Войти</button>
       <button id="forgotPasswordBtn" onclick="showForgotPassword()" class="w-full mt-3 text-sm text-blue-500 hover:text-blue-700 transition-colors">Забыли пароль?</button>
