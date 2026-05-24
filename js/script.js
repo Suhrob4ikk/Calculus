@@ -157,14 +157,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   ;(function() {
     let lastY = 0
     window.addEventListener('scroll', () => {
-      const nav = document.getElementById('desktopNav')
-      if (!nav || nav.style.display === 'none') return
       const y = window.scrollY
-      if (y > lastY && y > 60) {
-        nav.style.transform = 'translateY(-100%)'
-      } else {
-        nav.style.transform = 'translateY(0)'
+      const scrollingDown = y > lastY && y > 60
+
+      const nav = document.getElementById('desktopNav')
+      if (nav && nav.style.display !== 'none') {
+        nav.style.transform = scrollingDown ? 'translateY(-100%)' : 'translateY(0)'
       }
+
+      const mobileBack = document.getElementById('mobileBackBar')
+      if (mobileBack && mobileBack.style.display !== 'none') {
+        mobileBack.style.transform = scrollingDown ? 'translateY(-110%)' : 'translateY(0)'
+      }
+
       lastY = y
     }, { passive: true })
   })()

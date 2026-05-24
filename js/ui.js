@@ -63,6 +63,39 @@ export function showPage(pageId) {
   const active = bnMap[pageId]
   if (active) document.getElementById(active)?.classList.add('bn-active')
 
+  // Мобильная кнопка «Назад»
+  const PAGE_BACK = {
+    integralsSection:   { label: '← Разделы',   fn: 'showHome()' },
+    derivativesSection: { label: '← Разделы',   fn: 'showHome()' },
+    seriesSection:      { label: '← Разделы',   fn: 'showHome()' },
+    limitsSection:      { label: '← Разделы',   fn: 'showHome()' },
+    odeSection:         { label: '← Разделы',   fn: 'showHome()' },
+    theoryPage:         { label: '← К разделу', fn: 'backFromTheory()' },
+    testPage:           { label: '← Выйти',     fn: 'exitTest()' },
+    resultsPage:        { label: '← Главная',   fn: 'showHome()' },
+    statisticsPage:     { label: '← Главная',   fn: 'showHome()' },
+    leaderboardPage:    { label: '← Главная',   fn: 'showHome()' },
+    profilePage:        { label: '← Главная',   fn: 'showHome()' },
+    searchProfilesPage: { label: '← Главная',   fn: 'showHome()' },
+    viewProfilePage:    { label: '← Поиск',     fn: 'showSearchProfiles()' },
+  }
+  const mbb   = document.getElementById('mobileBackBar')
+  const mbbtn = document.getElementById('mobileBackBtn')
+  const back  = PAGE_BACK[pageId]
+  if (mbb && mbbtn) {
+    const isMobile = window.innerWidth <= 640
+    if (back && isMobile) {
+      mbbtn.textContent = back.label
+      mbbtn.setAttribute('onclick', back.fn)
+      mbb.style.display = 'flex'
+      mbb.style.transform = 'translateY(0)'
+      document.body.classList.add('has-back-bar')
+    } else {
+      mbb.style.display = 'none'
+      document.body.classList.remove('has-back-bar')
+    }
+  }
+
   // Подсветка активной кнопки — десктоп-шапка
   const dhMap = {
     homePage: 'dhHome', statisticsPage: 'dhStats',
