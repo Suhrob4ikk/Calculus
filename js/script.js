@@ -16,6 +16,7 @@ import './profile.js'
 import './stats.js'
 import './duel.js'
 import './search.js'
+import './theory.js'
 
 // ── Применяем тему сразу (до DOMContentLoaded) ───────────
 ;(function() {
