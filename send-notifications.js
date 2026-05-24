@@ -51,19 +51,43 @@ async function main() {
   console.log('\n📅  Ищем пользователей, не заходивших сегодня...')
   if (isDryRun) console.log('⚠️   Режим DRY-RUN — уведомления не будут отправлены\n')
 
-  // Получаем все подписки вместе с данными профиля
-  const { data, error } = await supabase
+  // 1. Получаем все подписки
+  const { data: subs, error: subsErr } = await supabase
     .from('push_subscriptions')
-    .select('user_id, subscription, profiles!inner(username, last_seen_at)')
+    .select('user_id, subscription')
 
-  if (error) {
-    console.error('❌  Ошибка запроса к Supabase:', error.message)
-    console.error('    Убедись, что SUPABASE_SERVICE_KEY указан правильно.')
+  if (subsErr) {
+    console.error('❌  Ошибка запроса push_subscriptions:', subsErr.message)
     process.exit(1)
   }
+  if (!subs || subs.length === 0) {
+    console.log('ℹ️   Нет ни одной подписки в базе.\n')
+    return
+  }
+
+  // 2. Получаем профили этих пользователей
+  const userIds = subs.map(s => s.user_id)
+  const { data: profiles, error: profErr } = await supabase
+    .from('profiles')
+    .select('id, username, last_seen_at')
+    .in('id', userIds)
+
+  if (profErr) {
+    console.warn('⚠️   Не удалось загрузить профили:', profErr.message)
+  }
+
+  // 3. Объединяем вручную
+  const profileMap = {}
+  ;(profiles || []).forEach(p => { profileMap[p.id] = p })
+
+  const data = subs.map(s => ({
+    user_id:    s.user_id,
+    subscription: s.subscription,
+    profiles:   profileMap[s.user_id] || null,
+  }))
 
   // Фильтруем тех, кто не заходил сегодня
-  const inactive = (data || []).filter(row => {
+  const inactive = data.filter(row => {
     const lastSeen = row.profiles?.last_seen_at
     if (!lastSeen) return true               // никогда не заходил → включаем
     return new Date(lastSeen) < todayStart   // последний вход раньше сегодняшнего дня
