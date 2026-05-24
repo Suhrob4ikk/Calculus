@@ -625,7 +625,7 @@ const mediumDerivativesQuestions = [
             "\\(\\frac{e^x + e^{-x}}{2}\\)",
             "\\(\\frac{e^x}{2}\\)",
             "\\(\\frac{e^x - e^{-x}}{2}\\)",
-            "\\(\\cosh(x)\\)",
+            "\\(\\frac{e^{2x} + 1}{2}\\)",
         ],
         correct: 0,
     },
@@ -939,7 +939,7 @@ const hardDerivativesQuestions = [
             "$f'(x) = \\tanh x$",
             "$f'(x) = \\frac{1}{\\cosh x}$",
             "$f'(x) = \\sinh x$",
-            "$f'(x) = \\frac{\\sinh x}{\\cosh x}$",
+            "$f'(x) = \\frac{\\cosh x}{\\sinh x}$",
         ],
         correct: 0,
     },
@@ -969,7 +969,7 @@ const hardDerivativesQuestions = [
         question: "Найдите производную функции $f(x) = \\arctan(\\sinh x)$",
         options: [
             "$f'(x) = \\frac{\\cosh x}{1 + \\sinh^2 x}$",
-            "$f'(x) = \\frac{1}{\\cosh x}$",
+            "$f'(x) = \\frac{1}{\\sinh x}$",
             "$f'(x) = \\frac{\\sinh x}{1 + \\cosh^2 x}$",
             "$f'(x) = \\frac{1}{1 + \\sinh^2 x}$",
         ],
@@ -1151,7 +1151,7 @@ const hardDerivativesQuestions = [
         question:
             "Найдите производную функции $f(x) = \\ln(\\sinh(\\sqrt{x}))$",
         options: [
-            "$f'(x) = \\frac{\\cosh(\\sqrt{x})}{2\\sqrt{x} \\sinh(\\sqrt{x})}$",
+            "$f'(x) = \\frac{\\sinh(\\sqrt{x})}{2\\sqrt{x} \\cosh(\\sqrt{x})}$",
             "$f'(x) = \\frac{1}{2\\sqrt{x} \\tanh(\\sqrt{x})}$",
             "$f'(x) = \\frac{1}{\\sinh(\\sqrt{x})}$",
             "$f'(x) = \\frac{\\cosh(\\sqrt{x})}{\\sqrt{x}}$",
