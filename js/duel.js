@@ -21,8 +21,8 @@ window._duelMyName             = ''
 window._duelSection            = 'mixed'
 window._duelDiff               = 'medium'
 window._duelIsRematchRequester = false
-window._duelInvitedUsername    = null
-window._pendingDuelInvite      = null
+window._duelInvitedUsername    = null;
+window._pendingDuelInvite      = null;
 
 // ── Глобальный слушатель инвайтов ──
 (function initInvitesListener() {
