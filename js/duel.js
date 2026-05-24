@@ -1,14 +1,6 @@
 import { st } from './state.js'
-// Download App handler
-window.downloadApp = function() {
-  const url = '/Calculus/app.zip'; // adjust path if needed
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = '';
-  a.click();
-};
 import { showPage } from './ui.js'
-import { supabase } from './supabase.js'
+import { supabase, searchProfiles } from './supabase.js'
 import { hashCode, mulberry32 } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
 
@@ -18,10 +10,10 @@ import { startTimer, displayQuestion, clearTestState } from './test.js'
           easyLimitsQuestions, mediumLimitsQuestions, hardLimitsQuestions,
           easyODEQuestions, mediumODEQuestions, hardODEQuestions */
 
-// ── Мutable дуэльное состояние (на window, чтобы test.js имел прямой доступ) ──
+// ── Мutable дуэльное состояние ──
 window._duelChannel            = null
 window._duelCode               = ''
-window._duelRole               = ''   // 'host' | 'guest'
+window._duelRole               = ''
 window._duelMyScore            = null
 window._duelOpponentScore      = null
 window._duelOpponentName       = ''
@@ -29,10 +21,24 @@ window._duelMyName             = ''
 window._duelSection            = 'mixed'
 window._duelDiff               = 'medium'
 window._duelIsRematchRequester = false
+window._duelInvitedUsername    = null
+window._pendingDuelInvite      = null
+
+// ── Глобальный канал для инвайтов ──
+if (!window._duelInvitesChannel) {
+  window._duelInvitesChannel = supabase.channel('duel-invites')
+    .on('broadcast', { event: 'invite' }, ({ payload }) => {
+      const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
+      if (payload.invitedUsername && payload.invitedUsername !== myName) return
+      showDuelInviteBanner(payload)
+    })
+    .subscribe()
+}
 
 window._clearDuelGlobals = function() {
   window._duelJoinHandled = false
   window._duelStartHandled = false
+  window._duelInvitedUsername = null
   if (window._duelCountdownInterval) {
     clearInterval(window._duelCountdownInterval)
     window._duelCountdownInterval = null
@@ -54,20 +60,15 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     limits:      { easy: easyLimitsQuestions,      medium: mediumLimitsQuestions,      hard: hardLimitsQuestions      },
     ode:         { easy: easyODEQuestions,         medium: mediumODEQuestions,         hard: hardODEQuestions         },
   }
-
   const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng  = mulberry32(seed)
-
   let pool
   if (st.currentSection === 'duel') {
-    // ensure duel globals cleared when exiting duel test
-    if (window._clearDuelGlobals) window._clearDuelGlobals();
-    // Стратифицированная выборка: 2 вопроса из каждого из 5 разделов
-    const sects   = ['integrals', 'derivatives', 'series', 'limits', 'ode']
+    if (window._clearDuelGlobals) window._clearDuelGlobals()
+    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode']
     const selected = []
     for (const s of sects) {
-      const sPool = (poolsBySection[s]?.[difficulty] || [])
-        .flat().filter(q => q && q.options && q.options.length === 4)
+      const sPool = (poolsBySection[s]?.[difficulty] || []).flat().filter(q => q && q.options && q.options.length === 4)
       const copy = [...sPool]
       for (let i = copy.length - 1; i > 0; i--) {
         const j = Math.floor(rng() * (i + 1));
@@ -90,8 +91,6 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     }
     pool = shuffled
   }
-
-  // Перемешиваем варианты ответов тем же rng, чтобы у обоих игроков порядок совпадал
   return pool.slice(0, 10).map(q => {
     const order = [0, 1, 2, 3]
     for (let i = 3; i > 0; i--) {
@@ -117,7 +116,7 @@ function _refreshDuelPickers() {
   })
 }
 
-// ── Публичные функции (window) ────────────────────────────
+// ── Публичные функции ──
 
 window.showDuelModal = function() {
   window._duelMyScore = null; window._duelOpponentScore = null
@@ -125,8 +124,8 @@ window.showDuelModal = function() {
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   document.getElementById('duelCodeDisplay').textContent    = '——————'
   document.getElementById('duelCreateStatus').textContent   = 'Нажми кнопку чтобы создать дуэль'
-  document.getElementById('pushToggleBtn').disabled         = false
-  document.getElementById('pushToggleBtn').textContent      = '⚔️ Создать дуэль'
+  document.getElementById('duelCreateBtn').disabled         = false
+  document.getElementById('duelCreateBtn').textContent      = '⚔️ Создать дуэль'
   const ji = document.getElementById('duelJoinInput')
   if (ji) ji.value = ''
   document.getElementById('duelJoinStatus').textContent     = ''
@@ -153,19 +152,34 @@ window.showDuelTab = function(tab) {
   document.getElementById('duelTabJoin').style.color        = tab === 'join'   ? 'white' : '#94a3b8'
 }
 
-window.setDuelSection = function(sect) {
-  window._duelSection = sect
-  _refreshDuelPickers()
-}
-window.setDuelDiff = function(diff) {
-  window._duelDiff = diff
-  _refreshDuelPickers()
+window.setDuelSection = function(sect) { window._duelSection = sect; _refreshDuelPickers() }
+window.setDuelDiff    = function(diff) { window._duelDiff    = diff; _refreshDuelPickers() }
+
+window.validateInviteUsername = async function() {
+  const input   = document.getElementById('inviteUsernameInput')
+  const errorEl = document.getElementById('inviteError')
+  if (!input) return true
+  const username = input.value.trim().toLowerCase()
+  if (!username) {
+    if (errorEl) errorEl.style.display = 'none'
+    input.style.borderColor = 'rgba(139,92,246,0.3)'
+    return true
+  }
+  const { data, error } = await searchProfiles(username)
+  if (error || !data || !data.some(p => p.username && p.username.toLowerCase() === username)) {
+    if (errorEl) { errorEl.textContent = 'Пользователь не найден'; errorEl.style.display = 'block' }
+    input.style.borderColor = '#f87171'
+    return false
+  }
+  if (errorEl) errorEl.style.display = 'none'
+  input.style.borderColor = '#10b981'
+  return true
 }
 
 window.copyDuelCode = function() {
   if (window._duelCode) {
     navigator.clipboard.writeText(window._duelCode).then(() => {
-      const el   = document.getElementById('duelCodeDisplay')
+      const el = document.getElementById('duelCodeDisplay')
       const orig = el.textContent
       el.textContent = '✓ Скопировано!'
       setTimeout(() => { el.textContent = orig }, 1500)
@@ -175,43 +189,52 @@ window.copyDuelCode = function() {
 
 window.createDuel = async function() {
   if (!st.currentUser) { alert('Войди в аккаунт, чтобы создать дуэль'); return }
-  const btn = document.getElementById('pushToggleBtn')
+  
+  // Валидация username
+  const valid = await window.validateInviteUsername()
+  if (!valid) return
+
+  const btn = document.getElementById('duelCreateBtn')
   btn.disabled = true; btn.textContent = '⏳ Создаём…'
+
+  const inviteInput = document.getElementById('inviteUsernameInput')
+  const invited = inviteInput?.value?.trim() || ''
+  window._duelInvitedUsername = invited ? invited.toLowerCase() : null
 
   window._duelCode   = generateDuelCode()
   window._duelRole   = 'host'
   window._duelMyName = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
   document.getElementById('duelCodeDisplay').textContent = window._duelCode
-  _duelSetStatus('duelCreateStatus', '⏳ Ожидаем соперника…')
+  _duelSetStatus('duelCreateStatus', window._duelInvitedUsername 
+    ? `⏳ Ожидаем ${invited}…` 
+    : '⏳ Ожидаем соперника…')
 
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   window._duelChannel = supabase.channel('duel:' + window._duelCode, { config: { broadcast: { self: false } } })
 
-  // Initialize guard flags if not present
-  if (typeof window._duelJoinHandled === 'undefined') window._duelJoinHandled = false;
-  if (typeof window._duelStartHandled === 'undefined') window._duelStartHandled = false;
-  if (typeof window._duelCountdownInterval === 'undefined') window._duelCountdownInterval = null;
+  window._duelJoinHandled = false
+  window._duelStartHandled = false
+  window._duelCountdownInterval = null
 
   window._duelChannel
     .on('broadcast', { event: 'join' }, ({ payload }) => {
-      // Guard against multiple join events
-      if (window._duelJoinHandled) return;
-      window._duelJoinHandled = true;
-      window._duelOpponentName = payload.name;
-      _duelSetStatus('duelCreateStatus', `✅ ${window._duelOpponentName} подключился! Начинаем…`);
+      if (window._duelJoinHandled) return
+      window._duelJoinHandled = true
+      window._duelOpponentName = payload.name
+      _duelSetStatus('duelCreateStatus', `✅ ${window._duelOpponentName} подключился! Начинаем…`)
       window._duelChannel.send({
         type: 'broadcast', event: 'start',
         payload: { code: window._duelCode, section: window._duelSection, difficulty: window._duelDiff }
-      });
-      if (window._duelStartHandled) return; // guard duplicate start
-      window._duelStartHandled = true;
-      if (window._duelCountdownInterval) clearInterval(window._duelCountdownInterval);
-      _beginDuelCountdown();
+      })
+      if (window._duelStartHandled) return
+      window._duelStartHandled = true
+      if (window._duelCountdownInterval) clearInterval(window._duelCountdownInterval)
+      _beginDuelCountdown()
     })
     .on('broadcast', { event: 'score' }, ({ payload }) => {
-      window._duelOpponentScore = payload.score;
-      window._duelOpponentName  = payload.name || window._duelOpponentName;
-      _checkDuelComplete();
+      window._duelOpponentScore = payload.score
+      window._duelOpponentName  = payload.name || window._duelOpponentName
+      _checkDuelComplete()
     })
     .on('broadcast', { event: 'rematch_request' }, ({ payload }) => { _showRematchRequest(payload.name) })
     .on('broadcast', { event: 'rematch_accept' },  () => { _onRematchAccepted() })
@@ -221,6 +244,23 @@ window.createDuel = async function() {
       if (btn) { btn.textContent = '❌ Соперник отказался'; btn.disabled = true }
     })
     .subscribe()
+
+  // Отправляем инвайт если указан username
+  if (window._duelInvitedUsername) {
+    if (!window._duelInvitesChannel) {
+      window._duelInvitesChannel = supabase.channel('duel-invites')
+        .on('broadcast', { event: 'invite' }, ({ payload }) => {
+          const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
+          if (payload.invitedUsername && payload.invitedUsername !== myName) return
+          showDuelInviteBanner(payload)
+        })
+        .subscribe()
+    }
+    window._duelInvitesChannel.send({
+      type: 'broadcast', event: 'invite',
+      payload: { invitedUsername: window._duelInvitedUsername, code: window._duelCode, inviterName: window._duelMyName }
+    })
+  }
 }
 
 window.joinDuel = async function() {
@@ -228,6 +268,13 @@ window.joinDuel = async function() {
   const input = document.getElementById('duelJoinInput')
   const code  = input.value.trim().toUpperCase()
   if (code.length < 4) { _duelSetStatus('duelJoinStatus', '❌ Введи код (минимум 4 символа)'); return }
+
+  // Проверка: если дуэль приватная, пускать только приглашённого
+  const myName = st.currentUser.user_metadata?.username?.toLowerCase()
+  if (window._duelInvitedUsername && window._duelInvitedUsername !== myName) {
+    _duelSetStatus('duelJoinStatus', '❌ Эта дуэль только для приглашённого участника')
+    return
+  }
 
   window._duelCode   = code
   window._duelRole   = 'guest'
@@ -267,28 +314,30 @@ window.joinDuel = async function() {
     })
 }
 
-function _beginDuelCountdown() {
-  // clear any previous countdown interval
-  if (window._duelCountdownInterval) { clearInterval(window._duelCountdownInterval); window._duelCountdownInterval = null; }
+window.joinDuelByCode = function(code) {
+  const input = document.getElementById('duelJoinInput')
+  if (input) input.value = code
+  window.joinDuel()
+}
 
+function _beginDuelCountdown() {
+  if (window._duelCountdownInterval) { clearInterval(window._duelCountdownInterval); window._duelCountdownInterval = null }
   document.getElementById('duelCreatePanel').style.display = 'none'
   document.getElementById('duelJoinPanel').style.display   = 'none'
   document.getElementById('duelTabsBar').style.display     = 'none'
   document.getElementById('duelLobby').style.display       = ''
-  const lobbyMsg = document.getElementById('duelLobbyMsg')
-  const countEl  = document.getElementById('duelStartCountdown')
-  lobbyMsg.textContent   = 'Соперник найден! Начинаем через…'
-  countEl.style.display  = ''
+  document.getElementById('duelLobbyMsg').textContent      = 'Соперник найден! Начинаем через…'
+  const countEl = document.getElementById('duelStartCountdown')
+  countEl.style.display = ''
   let c = 3
   countEl.textContent = c
   const iv = setInterval(() => {
-    // store interval ID for later cleanup
-    window._duelCountdownInterval = iv;
+    window._duelCountdownInterval = iv
     c--
     if (c > 0) { countEl.textContent = c }
     else {
       clearInterval(iv)
-      window._duelCountdownInterval = null;
+      window._duelCountdownInterval = null
       document.getElementById('duelModal').style.display = 'none'
       _beginDuelTest()
     }
@@ -297,15 +346,14 @@ function _beginDuelCountdown() {
 
 function _beginDuelTest() {
   const questions = getDuelQuestions(window._duelCode, window._duelSection, window._duelDiff)
-  st.currentSection         = 'duel'
-  st.currentDifficulty      = window._duelDiff
-  st.currentTest            = questions
-  st.currentQuestionIndex   = 0
-  st.userAnswers            = new Array(questions.length).fill(null)
-  st.isStudyMode            = false
-  window._duelMyScore       = null
+  st.currentSection    = 'duel'
+  st.currentDifficulty = window._duelDiff
+  st.currentTest       = questions
+  st.currentQuestionIndex = 0
+  st.userAnswers       = new Array(questions.length).fill(null)
+  st.isStudyMode       = false
+  window._duelMyScore  = null
   window._duelOpponentScore = null
-
   const timePerQ = window._duelSection === 'ode'
     ? (window._duelDiff === 'easy' ? 60 : window._duelDiff === 'hard' ? 120 : 90)
     : (window._duelDiff === 'easy' ? 30 : window._duelDiff === 'hard' ? 90  : 60)
@@ -313,14 +361,11 @@ function _beginDuelTest() {
   st.timerInitialTime = st.timeRemaining
   st.timerStartTime   = null
   clearTestState()
-
   showPage('testPage')
-  // Скрываем навигацию на время дуэли
   ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.style.display = 'none'
   })
-
   document.getElementById('totalQuestions').textContent = questions.length
   const sectNames = { mixed: 'Все разделы', integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }
   const diffName  = window._duelDiff === 'easy' ? 'Лёгкий' : window._duelDiff === 'hard' ? 'Сложный' : 'Средний'
@@ -328,18 +373,13 @@ function _beginDuelTest() {
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName} · Дуэль 1v1`
   const timerEl = document.getElementById('timerDisplay')
   if (timerEl) timerEl.style.display = ''
-
   displayQuestion()
   startTimer()
 }
 
-// Эти функции нужны test.js — регистрируем на window
 function _broadcastDuelScore(percentage) {
   if (window._duelChannel) {
-    window._duelChannel.send({
-      type: 'broadcast', event: 'score',
-      payload: { score: percentage, name: window._duelMyName }
-    })
+    window._duelChannel.send({ type: 'broadcast', event: 'score', payload: { score: percentage, name: window._duelMyName } })
   }
 }
 window._broadcastDuelScore = _broadcastDuelScore
@@ -351,7 +391,7 @@ function _checkDuelComplete() {
 }
 window._checkDuelComplete = _checkDuelComplete
 
-// ── Реванш ────────────────────────────────────────────────
+// ── Реванш ──
 window.requestRematch = function() {
   window._duelIsRematchRequester = true
   const btn = document.getElementById('rematchBtn')
@@ -372,6 +412,32 @@ window.declineRematch = function() {
   window._duelChannel?.send({ type: 'broadcast', event: 'rematch_decline' })
 }
 
+// ── Инвайт-баннер ──
+function showDuelInviteBanner(payload) {
+  const banner = document.getElementById('duelInviteBanner')
+  if (!banner) return
+  const name = payload.inviterName || payload.invitedUsername || 'Соперник'
+  document.getElementById('duelInviterName').textContent = `⚔️ ${name} приглашает тебя в дуэль!`
+  window._pendingDuelInvite = payload
+  banner.style.display = 'block'
+  document.getElementById('duelResultsModal').style.display = 'flex'
+}
+
+window.acceptDuelInvite = function() {
+  const payload = window._pendingDuelInvite
+  if (!payload) return
+  document.getElementById('duelInviteBanner').style.display = 'none'
+  document.getElementById('duelResultsModal').style.display = 'none'
+  window._pendingDuelInvite = null
+  window.joinDuelByCode(payload.code)
+}
+
+window.declineDuelInvite = function() {
+  document.getElementById('duelInviteBanner').style.display = 'none'
+  document.getElementById('duelResultsModal').style.display = 'none'
+  window._pendingDuelInvite = null
+}
+
 function _showRematchRequest(name) {
   const banner = document.getElementById('rematchRequestBanner')
   if (!banner) return
@@ -384,11 +450,8 @@ function _onRematchAccepted() {
   if (!window._duelIsRematchRequester) return
   window._duelIsRematchRequester = false
   const newCode = generateDuelCode()
-  window._duelCode          = newCode
-  window._duelMyScore       = null
-  window._duelOpponentScore = null
-  // Reset duel globals before rematch start
-  _clearDuelGlobals();
+  window._duelCode = newCode
+  window._duelMyScore = null; window._duelOpponentScore = null
   window._duelChannel.send({
     type: 'broadcast', event: 'rematch_start',
     payload: { code: newCode, section: window._duelSection, difficulty: window._duelDiff }
@@ -399,54 +462,40 @@ function _onRematchAccepted() {
 
 function _onRematchStart(payload) {
   if (window._duelIsRematchRequester) return
-  window._duelCode          = payload.code
+  window._duelCode = payload.code
   if (payload.section)    window._duelSection = payload.section
   if (payload.difficulty) window._duelDiff    = payload.difficulty
-  window._duelMyScore       = null
-  window._duelOpponentScore = null
+  window._duelMyScore = null; window._duelOpponentScore = null
   document.getElementById('duelResultsModal').style.display = 'none'
   _beginDuelCountdown()
 }
 
-// ── Показ результатов дуэли ───────────────────────────────
 function _showDuelResults() {
   if (window._duelOpponentTimeout) {
     clearTimeout(window._duelOpponentTimeout)
     window._duelOpponentTimeout = null
   }
-
-  // Восстанавливаем навигацию
-  ;[
-    ['menuBtn',    ''],
-    ['bottomNav',  'flex'],
-    ['desktopNav', ''],
-  ].forEach(([id, val]) => {
+  ;['menuBtn','bottomNav','desktopNav'].forEach(([id, val]) => {
     const el = document.getElementById(id)
-    if (el) el.style.display = val
+    if (el) el.style.display = val || ''
   })
-
   const modal    = document.getElementById('duelResultsModal')
   const emojiEl  = document.getElementById('duelResultsEmoji')
   const titleEl  = document.getElementById('duelResultsTitle')
   const scoresEl = document.getElementById('duelResultsScores')
-
   const rematchBtn = document.getElementById('rematchBtn')
   if (rematchBtn) { rematchBtn.textContent = '🔄 Реванш!'; rematchBtn.disabled = false }
   const rematchBanner = document.getElementById('rematchRequestBanner')
   if (rematchBanner) rematchBanner.style.display = 'none'
-
   const opponentTimedOut = window._duelOpponentScore === -1
   const opponentScore    = opponentTimedOut ? 0 : window._duelOpponentScore
-
   let emoji, title
-  if (opponentTimedOut)                             { emoji = '🏆'; title = 'Соперник отключился — ты победил!' }
-  else if (window._duelMyScore > opponentScore)     { emoji = '🏆'; title = 'Ты победил!' }
-  else if (window._duelMyScore < opponentScore)     { emoji = '💪'; title = 'Соперник победил — реванш?' }
-  else                                              { emoji = '🤝'; title = 'Ничья!' }
-
+  if (opponentTimedOut)                         { emoji = '🏆'; title = 'Соперник отключился — ты победил!' }
+  else if (window._duelMyScore > opponentScore) { emoji = '🏆'; title = 'Ты победил!' }
+  else if (window._duelMyScore < opponentScore) { emoji = '💪'; title = 'Соперник победил — реванш?' }
+  else                                          { emoji = '🤝'; title = 'Ничья!' }
   emojiEl.textContent = emoji
   titleEl.textContent = title
-
   const card = (name, score, highlight, timedOut = false) => `
     <div style="flex:1;min-width:120px;padding:1rem;border-radius:14px;
       background:${highlight ? 'rgba(139,92,246,0.2)' : 'rgba(15,23,42,0.8)'};
@@ -455,13 +504,9 @@ function _showDuelResults() {
       <div style="font-size:2rem;font-weight:700;color:${timedOut?'#64748b':score>=70?'#10b981':'#f59e0b'}">${timedOut ? '—' : score + '%'}</div>
       ${timedOut ? '<div style="font-size:0.75rem;color:#64748b">отключился</div>' : ''}
     </div>`
-
   scoresEl.innerHTML =
-    card(window._duelMyName + ' (ты)', window._duelMyScore,
-         !opponentTimedOut ? window._duelMyScore >= opponentScore : true) +
-    card(window._duelOpponentName || 'Соперник', opponentScore,
-         opponentScore > window._duelMyScore, opponentTimedOut)
-
+    card(window._duelMyName + ' (ты)', window._duelMyScore, !opponentTimedOut ? window._duelMyScore >= opponentScore : true) +
+    card(window._duelOpponentName || 'Соперник', opponentScore, opponentScore > window._duelMyScore, opponentTimedOut)
   modal.style.display = 'flex'
 }
 window._showDuelResults = _showDuelResults
