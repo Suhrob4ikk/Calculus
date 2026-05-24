@@ -1286,13 +1286,6 @@
           cursor:pointer;font-weight:600">❌ Отказать</button>
       </div>
     </div>
-    <div id="duelInviteBanner" style="display:none;margin-bottom:1rem;padding:0.75rem 1rem; border-radius:10px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4)">
-      <p id="duelInviterName" style="color:#c4b5fd;font-weight:600;margin:0 0 0.6rem"></p>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button onclick="acceptDuelInvite()" style="padding:7px 18px;border-radius:8px;border:none;cursor:pointer;font-weight:700;background:#10b981;color:white">✅ Принять</button>
-        <button onclick="declineDuelInvite()" style="padding:7px 18px;border-radius:8px;border:1px solid rgba(100,116,139,0.4);background:transparent;color:#94a3b8;cursor:pointer;font-weight:600">❌ Отказать</button>
-      </div>
-    </div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
       <button id="rematchBtn" onclick="requestRematch()"
         style="padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
@@ -1305,6 +1298,13 @@
         На главную
       </button>
     </div>
+  </div>
+</div>
+<div id="duelInviteBanner" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:350px; padding:1rem; border-radius:12px; background:rgba(30,41,59,0.95); backdrop-filter:blur(8px); border:1px solid rgba(139,92,246,0.6); box-shadow:0 10px 25px rgba(0,0,0,0.5); text-align:center;">
+  <p id="duelInviterName" style="color:#c4b5fd; font-weight:600; margin:0 0 1rem; font-size:1.05rem;"></p>
+  <div style="display:flex; gap:10px; justify-content:center;">
+    <button onclick="acceptDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#10b981; color:white; transition:opacity 0.2s;">✅ Принять</button>
+    <button onclick="declineDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">❌ Отказать</button>
   </div>
 </div>
 </body>
