@@ -24,98 +24,9 @@ window._duelIsRematchRequester = false
 window._duelInvitedUsername    = null
 window._pendingDuelInvite      = null
 
-// FIX: канал инвайтов + флаг готовности
+// Канал инвайтов (инициализируется из script.js после входа)
 window._duelInvitesChannel      = null
 window._duelInvitesChannelReady = false
-
-// ── Глобальный слушатель инвайтов ──
-// Канал сохраняется в window._duelInvitesChannel.
-// Флаг _duelInvitesChannelReady выставляется только после статуса SUBSCRIBED —
-// это ключевое условие корректной отправки инвайтов.
-;(function initInvitesListener() {
-  function trySubscribe() {
-    if (!st.currentUser || !st.currentUser.user_metadata?.username) {
-      setTimeout(trySubscribe, 1000)
-      return
-    }
-    // Уже подписан и готов — ничего не делаем
-    if (window._duelInvitesChannel && window._duelInvitesChannelReady) return
-
-    console.log('🟡 Подписываемся на duel-invites как', st.currentUser.user_metadata.username)
-    try {
-      window._duelInvitesChannelReady = false
-      window._duelInvitesChannel = supabase.channel('duel-invites')
-
-      window._duelInvitesChannel
-        .on('broadcast', { event: 'invite' }, ({ payload }) => {
-          console.log('📩 Получен инвайт:', payload)
-          const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
-          if (payload.invitedUsername && payload.invitedUsername !== myName) {
-            console.log('🔴 Инвайт не для меня')
-            return
-          }
-          console.log('🟢 Показываю баннер')
-          showDuelInviteBanner(payload)
-        })
-        .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
-          if (payload.code === window._duelCode && window._duelRole === 'host') {
-            _duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
-            setTimeout(function() {
-              if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
-                _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
-              }
-            }, 10000)
-          }
-        })
-        .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
-          if (payload.code === window._duelCode && window._duelRole === 'host') {
-            _duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
-          }
-        })
-        .subscribe(function(status) {
-          console.log('🟡 Статус подписки duel-invites:', status)
-          if (status === 'SUBSCRIBED') {
-            // FIX: только после SUBSCRIBED помечаем канал готовым
-            window._duelInvitesChannelReady = true
-            console.log('✅ duel-invites готов к отправке')
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            window._duelInvitesChannelReady = false
-            window._duelInvitesChannel = null
-            console.warn('⚠️ duel-invites ошибка, пересоздаём через 2с')
-            setTimeout(trySubscribe, 2000)
-          }
-        })
-    } catch(e) {
-      console.error('Ошибка подписки duel-invites:', e)
-      window._duelInvitesChannel = null
-      window._duelInvitesChannelReady = false
-      setTimeout(trySubscribe, 2000)
-    }
-  }
-  setTimeout(trySubscribe, 1000)
-})()
-
-// FIX: ждём готовности канала (до 5 с), затем отправляем инвайт.
-// Это решает главную проблему: канал мог не завершить handshake к моменту createDuel().
-async function _sendInvite(payload) {
-  const MAX_WAIT_MS = 5000
-  const POLL_MS     = 200
-  let waited = 0
-  while (!window._duelInvitesChannelReady && waited < MAX_WAIT_MS) {
-    await new Promise(r => setTimeout(r, POLL_MS))
-    waited += POLL_MS
-  }
-  if (!window._duelInvitesChannelReady || !window._duelInvitesChannel) {
-    console.error('❌ duel-invites не готов, инвайт не отправлен')
-    return
-  }
-  console.log('📤 Отправляем инвайт:', payload)
-  await window._duelInvitesChannel.send({
-    type: 'broadcast',
-    event: 'invite',
-    payload
-  })
-}
 
 window._clearDuelGlobals = function() {
   window._duelJoinHandled  = false
@@ -327,12 +238,17 @@ window.createDuel = async function() {
     })
     .subscribe()
 
-  // FIX: _sendInvite ждёт готовности канала перед отправкой
+  // Отправляем инвайт, если указан username
   if (window._duelInvitedUsername) {
-    _sendInvite({
-      invitedUsername: window._duelInvitedUsername,
-      code: window._duelCode,
-      inviterName: window._duelMyName
+    console.log('📤 Отправляем инвайт:', { invitedUsername: window._duelInvitedUsername, code: window._duelCode })
+    window._duelInvitesChannel?.send({
+      type: 'broadcast',
+      event: 'invite',
+      payload: {
+        invitedUsername: window._duelInvitedUsername,
+        code: window._duelCode,
+        inviterName: window._duelMyName
+      }
     })
   }
 }

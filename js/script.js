@@ -51,6 +51,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
           updateUserUI()
+          // После успешного входа запускаем канал инвайтов
+          initInvitesChannel()
         })
       } else {
         // Обновление токена — guard уже активен, просто переподпишемся
@@ -72,6 +74,52 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     }
   }
 })
+
+// ── Канал инвайтов дуэлей (глобальный) ─────────────────
+function initInvitesChannel() {
+  if (window._duelInvitesChannel) return
+  const username = st.currentUser?.user_metadata?.username
+  if (!username) {
+    setTimeout(initInvitesChannel, 1000)
+    return
+  }
+  console.log('🟡 Подписываемся на duel-invites как', username)
+  window._duelInvitesChannel = supabase.channel('duel-invites')
+  window._duelInvitesChannel
+    .on('broadcast', { event: 'invite' }, ({ payload }) => {
+      console.log('📩 Получен инвайт:', payload)
+      const myName = username.toLowerCase()
+      if (payload.invitedUsername && payload.invitedUsername !== myName) return
+      console.log('🟢 Показываю баннер')
+      showDuelInviteBanner(payload)
+    })
+    .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
+      if (payload.code === window._duelCode && window._duelRole === 'host') {
+        _duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
+        setTimeout(function() {
+          if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
+            _duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
+          }
+        }, 10000)
+      }
+    })
+    .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
+      if (payload.code === window._duelCode && window._duelRole === 'host') {
+        _duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
+      }
+    })
+    .subscribe(function(status) {
+      console.log('🟡 Статус подписки duel-invites:', status)
+      if (status === 'SUBSCRIBED') {
+        window._duelInvitesChannelReady = true
+        console.log('✅ duel-invites готов')
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        window._duelInvitesChannel = null
+        window._duelInvitesChannelReady = false
+        setTimeout(initInvitesChannel, 2000)
+      }
+    })
+}
 
 // ── Инициализация приложения ─────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -136,6 +184,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         showPage('homePage')
         updateUserUI()
         renderStreakBadge()
+        // Запускаем канал инвайтов после восстановления сессии
+        initInvitesChannel()
         window.updateDailyChallengeCard?.()
         if (localStorage.getItem('testState')) {
           showContinueTestBanner()
