@@ -542,6 +542,157 @@ const easyIntegralsQuestions = [
     ],
     correct: 0,
   },
+  // ── Базовые степенные интегралы (правило степени) ──
+  {
+    question: "Вычислите интеграл $\\int x^4 dx$",
+    options: [
+      "$\\frac{x^5}{5} + C$",
+      "$4x^3 + C$",
+      "$\\frac{x^5}{4} + C$",
+      "$x^5 + C$",
+    ],
+    correct: 0,
+  },
+  {
+    question: "Вычислите интеграл $\\int 5x^3 dx$",
+    options: [
+      "$15x^2 + C$",
+      "$\\frac{5x^4}{3} + C$",
+      "$\\frac{5x^4}{4} + C$",
+      "$5x^4 + C$",
+    ],
+    correct: 2,
+  },
+  {
+    question: "Вычислите интеграл $\\int (x^2 + 2x + 1) dx$",
+    options: [
+      "$x^3 + x^2 + x + C$",
+      "$2x + 2 + C$",
+      "$\\frac{x^3}{3} + x^2 + x + C$",
+      "$\\frac{x^3}{3} + x^2 + C$",
+    ],
+    correct: 2,
+  },
+  {
+    question: "Вычислите интеграл $\\int \\frac{1}{x^3} dx$",
+    options: [
+      "$\\frac{1}{x^2} + C$",
+      "$-\\frac{1}{2x^2} + C$",
+      "$\\ln|x^3| + C$",
+      "$-\\frac{3}{x^4} + C$",
+    ],
+    correct: 1,
+  },
+  {
+    question: "Вычислите интеграл $\\int \\sqrt{x} \\, dx$",
+    options: [
+      "$\\frac{1}{2\\sqrt{x}} + C$",
+      "$\\frac{3}{2}x^{3/2} + C$",
+      "$2x\\sqrt{x} + C$",
+      "$\\frac{2}{3}x^{3/2} + C$",
+    ],
+    correct: 3,
+  },
+  {
+    question: "Вычислите интеграл $\\int (3x^2 - 4x + 5) dx$",
+    options: [
+      "$6x - 4 + C$",
+      "$x^3 - 2x^2 + 5x + C$",
+      "$3x^3 - 4x^2 + 5x + C$",
+      "$x^3 - 4x^2 + 5x + C$",
+    ],
+    correct: 1,
+  },
+  {
+    question: "Вычислите интеграл $\\int x^{-1/2} dx$",
+    options: [
+      "$-\\frac{1}{2}x^{-3/2} + C$",
+      "$\\frac{1}{2}\\sqrt{x} + C$",
+      "$2\\sqrt{x} + C$",
+      "$-2x^{-3/2} + C$",
+    ],
+    correct: 2,
+  },
+  {
+    question: "Вычислите интеграл $\\int (x^5 + x) dx$",
+    options: [
+      "$\\frac{x^6}{6} + \\frac{x^2}{2} + C$",
+      "$x^6 + x^2 + C$",
+      "$5x^4 + 1 + C$",
+      "$\\frac{x^6}{5} + x^2 + C$",
+    ],
+    correct: 0,
+  },
+  {
+    question: "Вычислите интеграл $\\int \\frac{2}{x} dx$",
+    options: [
+      "$-\\frac{2}{x^2} + C$",
+      "$\\frac{2}{x^2} + C$",
+      "$2x + C$",
+      "$2\\ln|x| + C$",
+    ],
+    correct: 3,
+  },
+  {
+    question: "Вычислите интеграл $\\int x^{2/3} dx$",
+    options: [
+      "$\\frac{2}{3}x^{-1/3} + C$",
+      "$\\frac{3}{5}x^{5/3} + C$",
+      "$\\frac{2}{3}x^{5/3} + C$",
+      "$x^{5/3} + C$",
+    ],
+    correct: 1,
+  },
+  {
+    question: "Вычислите интеграл $\\int (4x - 3) dx$",
+    options: [
+      "$4x^2 - 3x + C$",
+      "$4 + C$",
+      "$2x^2 - 3x + C$",
+      "$4x^2 - 3 + C$",
+    ],
+    correct: 2,
+  },
+  {
+    question: "Вычислите интеграл $\\int (x^2 - 5) dx$",
+    options: [
+      "$\\frac{x^3}{3} - 5x + C$",
+      "$x^2 - 5 + C$",
+      "$2x + C$",
+      "$\\frac{x^3}{3} - 5 + C$",
+    ],
+    correct: 0,
+  },
+  {
+    question: "Вычислите интеграл $\\int (2x^3 + 3x^2 - x) dx$",
+    options: [
+      "$6x^2 + 6x - 1 + C$",
+      "$\\frac{x^4}{2} + x^3 - \\frac{x^2}{2} + C$",
+      "$2x^4 + 3x^3 - x^2 + C$",
+      "$\\frac{x^4}{2} + x^3 + \\frac{x^2}{2} + C$",
+    ],
+    correct: 1,
+  },
+  {
+    question: "Вычислите интеграл $\\int \\frac{1}{x^4} dx$",
+    options: [
+      "$\\frac{1}{x^3} + C$",
+      "$-\\frac{4}{x^5} + C$",
+      "$\\ln|x^4| + C$",
+      "$-\\frac{1}{3x^3} + C$",
+    ],
+    correct: 3,
+  },
+  {
+    question: "Вычислите интеграл $\\int (7x^6 + 1) dx$",
+    options: [
+      "$42x^5 + C$",
+      "$x^7 + x + C$",
+      "$7x^7 + x + C$",
+      "$x^6 + x + C$",
+    ],
+    correct: 1,
+  },
 ];
 // ── Интегралы (Средний уровень) ──────────────────────────
 const mediumIntegralsQuestions = [
