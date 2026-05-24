@@ -4,6 +4,12 @@ import { getDailyLeaderboard } from './supabase.js'
 import { getDailyDate, hashCode, mulberry32 } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
 
+// Ключ localStorage привязан к пользователю — разные аккаунты не мешают друг другу
+function dailyKey(suffix) {
+  const uid = st.currentUser?.id || 'guest'
+  return `dailyChallenge${suffix}_${uid}`
+}
+
 function getDailyQuestions() {
   const rng = mulberry32(hashCode(getDailyDate()))
   /* global easyIntegralsQuestions, mediumIntegralsQuestions, easyDerivativesQuestions,
@@ -34,7 +40,7 @@ function getDailyQuestions() {
 
 window.startDailyChallenge = function() {
   const today = getDailyDate()
-  if (localStorage.getItem('dailyChallengeDate') === today) {
+  if (localStorage.getItem(dailyKey('Date')) === today) {
     window.showDailyLeaderboard()
     return
   }
@@ -58,8 +64,8 @@ window.startDailyChallenge = function() {
 
 export function updateDailyChallengeCard() {
   const today     = getDailyDate()
-  const doneToday = localStorage.getItem('dailyChallengeDate') === today
-  const score     = localStorage.getItem('dailyChallengeScore')
+  const doneToday = localStorage.getItem(dailyKey('Date')) === today
+  const score     = localStorage.getItem(dailyKey('Score'))
   const btn       = document.getElementById('dailyChallengeBtn')
   const countdown = document.getElementById('dailyChallengeCountdown')
   const card      = document.getElementById('dailyChallengeCard')

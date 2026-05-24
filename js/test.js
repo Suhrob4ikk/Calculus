@@ -332,8 +332,9 @@ window.finishTest = async function() {
     })
   }
   if (st.currentSection === 'daily') {
-    localStorage.setItem('dailyChallengeDate', getDailyDate())
-    localStorage.setItem('dailyChallengeScore', percentage)
+    const uid = st.currentUser?.id || 'guest'
+    localStorage.setItem(`dailyChallengeDate_${uid}`, getDailyDate())
+    localStorage.setItem(`dailyChallengeScore_${uid}`, percentage)
   }
   if (!st.isStudyMode) {
     const ptsPerQ  = XP_TABLE[st.currentDifficulty] || 10
