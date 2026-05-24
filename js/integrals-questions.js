@@ -899,7 +899,7 @@ const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2\\sqrt{x^2 - 9}}  dx\\)",
     options: [
-      "\\(\\frac{1}{9}\\arcsec(\\frac{x}{3}) + C\\)",
+      "\\(\\frac{1}{9}\\operatorname{arcsec}(\\frac{x}{3}) + C\\)",
       "\\(\\frac{\\sqrt{x^2 - 9}}{9x} + C\\)",
       "\\(\\frac{\\sqrt{x^2 - 9}}{x} + C\\)",
       "\\(\\frac{1}{x}\\sqrt{x^2 - 9} + C\\)",
@@ -959,7 +959,7 @@ const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\ln(x)\\sqrt{\\ln^2(x) - 1}}  dx\\)",
     options: [
-      "\\(\\arcsec(|\\ln(x)|) + C\\)",
+      "\\(\\operatorname{arcsec}(|\\ln(x)|) + C\\)",
       "\\(\\ln|\\ln(x) + \\sqrt{\\ln^2(x) - 1}| + C\\)",
       "\\(\\frac{1}{\\sqrt{\\ln^2(x) - 1}} + C\\)",
       "\\(\\arccos(\\frac{1}{|\\ln(x)|}) + C\\)",
@@ -1019,10 +1019,10 @@ const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{4x^2 - 9}}  dx\\)",
     options: [
-      "\\(\\frac{1}{2}\\arcsec(\\frac{2x}{3}) + C\\)",
+      "\\(\\frac{1}{2}\\operatorname{arcsec}(\\frac{2x}{3}) + C\\)",
       "\\(\\frac{1}{\\sqrt{4x^2 - 9}} + C\\)",
       "\\(\\ln|2x + \\sqrt{4x^2 - 9}| + C\\)",
-      "\\(\\frac{1}{3}\\arcsec(\\frac{2|x|}{3}) + C\\)",
+      "\\(\\frac{1}{3}\\operatorname{arcsec}(\\frac{2|x|}{3}) + C\\)",
     ],
     correct: 3,
   },
@@ -1059,7 +1059,7 @@ const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{1}{(x+1)\\sqrt{x^2 + 2x}}  dx\\)",
     options: [
-      "\\(\\arcsec(|x+1|) + C\\)",
+      "\\(\\operatorname{arcsec}(|x+1|) + C\\)",
       "\\(\\frac{1}{\\sqrt{x^2 + 2x}} + C\\)",
       "\\(\\ln|x + 1 + \\sqrt{x^2 + 2x}| + C\\)",
       "\\(\\arctan(\\sqrt{x^2 + 2x}) + C\\)",
@@ -1109,9 +1109,9 @@ const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{x^6 - 4}}  dx\\)",
     options: [
-      "\\(\\frac{1}{2}\\arcsec(\\frac{x^3}{2}) + C\\)",
+      "\\(\\frac{1}{2}\\operatorname{arcsec}(\\frac{x^3}{2}) + C\\)",
       "\\(\\frac{1}{\\sqrt{x^6 - 4}} + C\\)",
-      "\\(\\frac{1}{6}\\arcsec(\\frac{x^3}{2}) + C\\)",
+      "\\(\\frac{1}{6}\\operatorname{arcsec}(\\frac{x^3}{2}) + C\\)",
       "\\(\\ln|x^3 + \\sqrt{x^6 - 4}| + C\\)",
     ],
     correct: 2,
@@ -1860,8 +1860,8 @@ const mediumIntegralsQuestions = [
     question: "Вычислите интеграл \\(\\int \\frac{dx}{x\\sqrt{x^2 - 9}}\\)",
     options: [
       "\\(\\frac{1}{3} \\arccos\\left(\\frac{3}{|x|}\\right) + C\\)",
-      "\\(\\arcsec\\left(\\frac{|x|}{3}\\right) + C\\)",
-      "\\(\\frac{1}{3} \\arcsec\\left(\\frac{|x|}{3}\\right) + C\\)",
+      "\\(\\operatorname{arcsec}\\left(\\frac{|x|}{3}\\right) + C\\)",
+      "\\(\\frac{1}{3} \\operatorname{arcsec}\\left(\\frac{|x|}{3}\\right) + C\\)",
       "\\(\\arccos\\left(\\frac{3}{|x|}\\right) + C\\)",
     ],
     correct: 2,
@@ -1983,7 +1983,7 @@ const hardIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int \\frac{dx}{x^2\\sqrt{x^2 - 1}}\\)",
     options: [
-      "\\(\\arcsec(x) + C\\)",
+      "\\(\\operatorname{arcsec}(x) + C\\)",
       "\\(\\frac{1}{\\sqrt{x^2 - 1}} + C\\)",
       "\\(\\frac{\\sqrt{x^2 - 1}}{x} + C\\)",
       "\\(\\ln|x + \\sqrt{x^2 - 1}| + C\\)",
@@ -2066,7 +2066,7 @@ const hardIntegralsQuestions = [
       "\\(\\frac{1}{\\sqrt{x^2 - 4}} + C\\)",
       "\\(\\ln|x + \\sqrt{x^2 - 4}| + C\\)",
       "\\(\\frac{1}{2}\\ln\\left|\\frac{x - 2}{x + 2}\\right| + C\\)",
-      "\\(\\frac{1}{2}\\arcsec\\left(\\frac{x}{2}\\right) + C\\)",
+      "\\(\\frac{1}{2}\\operatorname{arcsec}\\left(\\frac{x}{2}\\right) + C\\)",
     ],
     correct: 3,
   },
