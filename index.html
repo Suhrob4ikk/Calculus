@@ -400,7 +400,7 @@
       <h1 class="text-4xl md:text-6xl font-bold text-slate-100 mb-4"
           style="font-family:'Playfair Display',serif">Математический анализ</h1>
       <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
-        Интегралы · Производные · Пределы · Ряды · Дифференциальные уравнения
+        Пределы · Производные · Интегралы · Ряды · Дифференциальные уравнения
       </p>
       <div class="flex flex-wrap gap-3 justify-center items-center">
         <span id="userGreeting"
@@ -443,16 +443,16 @@
 
     <!-- Cards grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-      <!-- Интегралы -->
-      <div class="glass-panel rounded-3xl p-8 border border-blue-500/20
-                  shadow-[0_0_30px_rgba(59,130,246,0.08)] card-hover cursor-pointer
+      <!-- Пределы -->
+      <div class="glass-panel rounded-3xl p-8 border border-violet-500/20
+                  shadow-[0_0_30px_rgba(139,92,246,0.08)] card-hover cursor-pointer
                   flex flex-col items-center text-center"
-           onclick="showSection('integrals')">
-        <div class="text-6xl mb-5 text-blue-400" style="font-family:'Playfair Display',serif">∫</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Интегралы</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по интегральному исчислению</p>
-        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+           onclick="showSection('limits')">
+        <div class="text-6xl mb-5 text-violet-400" style="font-family:'Playfair Display',serif">lim</div>
+        <h2 class="text-2xl font-bold text-slate-100 mb-3">Пределы</h2>
+        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по пределам и непрерывности функций</p>
+        <button class="w-full bg-violet-600 hover:bg-violet-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]">
           Начать тест
         </button>
       </div>
@@ -471,6 +471,20 @@
         </button>
       </div>
 
+      <!-- Интегралы -->
+      <div class="glass-panel rounded-3xl p-8 border border-blue-500/20
+                  shadow-[0_0_30px_rgba(59,130,246,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center"
+           onclick="showSection('integrals')">
+        <div class="text-6xl mb-5 text-blue-400" style="font-family:'Playfair Display',serif">∫</div>
+        <h2 class="text-2xl font-bold text-slate-100 mb-3">Интегралы</h2>
+        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по интегральному исчислению</p>
+        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+          Начать тест
+        </button>
+      </div>
+
       <!-- Ряды -->
       <div class="glass-panel rounded-3xl p-8 border border-rose-500/20
                   shadow-[0_0_30px_rgba(225,29,72,0.08)] card-hover cursor-pointer
@@ -481,20 +495,6 @@
         <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по рядам и последовательностям</p>
         <button class="w-full bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl
                        font-semibold transition-all shadow-[0_0_15px_rgba(225,29,72,0.3)]">
-          Начать тест
-        </button>
-      </div>
-
-      <!-- Пределы -->
-      <div class="glass-panel rounded-3xl p-8 border border-violet-500/20
-                  shadow-[0_0_30px_rgba(139,92,246,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('limits')">
-        <div class="text-6xl mb-5 text-violet-400" style="font-family:'Playfair Display',serif">lim</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Пределы</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по пределам и непрерывности функций</p>
-        <button class="w-full bg-violet-600 hover:bg-violet-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]">
           Начать тест
         </button>
       </div>
