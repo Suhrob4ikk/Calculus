@@ -516,6 +516,33 @@ html:not(.dark) #sideNav button:hover { color: #4f46e5 !important; }
   color: var(--text-muted, #64748b);
   line-height: 1.55;
 }
+.theory-step-detail {
+  margin-top: 0.8rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0,0,0,0.03);
+  border-left: 3px solid rgba(0,0,0,0.09);
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.83rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.7;
+}
+.dark .theory-step-detail {
+  background: rgba(255,255,255,0.04);
+  border-left-color: rgba(255,255,255,0.12);
+}
+.theory-step-detail p {
+  margin: 0 0 0.45rem;
+}
+.theory-step-detail p:last-child {
+  margin-bottom: 0;
+}
+.theory-step-detail strong {
+  color: var(--text-main, #1e293b);
+  font-weight: 600;
+}
+.dark .theory-step-detail strong {
+  color: var(--text-main, #f1f5f9);
+}
 
 /* Кнопка «Перейти к тесту» */
 .theory-start-btn {
