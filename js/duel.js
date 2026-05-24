@@ -10,7 +10,7 @@ import { startTimer, displayQuestion, clearTestState } from './test.js'
           easyLimitsQuestions, mediumLimitsQuestions, hardLimitsQuestions,
           easyODEQuestions, mediumODEQuestions, hardODEQuestions */
 
-// ── Мutable дуэльное состояние ──
+// ── Mutable дуэльное состояние ──
 window._duelChannel            = null
 window._duelCode               = ''
 window._duelRole               = ''
@@ -24,22 +24,32 @@ window._duelIsRematchRequester = false
 window._duelInvitedUsername    = null
 window._pendingDuelInvite      = null
 
+// FIX: канал инвайтов + флаг готовности
+window._duelInvitesChannel      = null
+window._duelInvitesChannelReady = false
+
 // ── Глобальный слушатель инвайтов ──
-// FIX: сохраняем канал в window._duelInvitesChannel чтобы потом через него отправлять события
+// Канал сохраняется в window._duelInvitesChannel.
+// Флаг _duelInvitesChannelReady выставляется только после статуса SUBSCRIBED —
+// это ключевое условие корректной отправки инвайтов.
 ;(function initInvitesListener() {
   function trySubscribe() {
     if (!st.currentUser || !st.currentUser.user_metadata?.username) {
       setTimeout(trySubscribe, 1000)
       return
     }
+    // Уже подписан и готов — ничего не делаем
+    if (window._duelInvitesChannel && window._duelInvitesChannelReady) return
+
     console.log('🟡 Подписываемся на duel-invites как', st.currentUser.user_metadata.username)
     try {
+      window._duelInvitesChannelReady = false
       window._duelInvitesChannel = supabase.channel('duel-invites')
+
       window._duelInvitesChannel
         .on('broadcast', { event: 'invite' }, ({ payload }) => {
           console.log('📩 Получен инвайт:', payload)
           const myName = st.currentUser?.user_metadata?.username?.toLowerCase()
-          console.log('🟡 Моё имя:', myName, '| Приглашён:', payload.invitedUsername)
           if (payload.invitedUsername && payload.invitedUsername !== myName) {
             console.log('🔴 Инвайт не для меня')
             return
@@ -64,15 +74,48 @@ window._pendingDuelInvite      = null
         })
         .subscribe(function(status) {
           console.log('🟡 Статус подписки duel-invites:', status)
+          if (status === 'SUBSCRIBED') {
+            // FIX: только после SUBSCRIBED помечаем канал готовым
+            window._duelInvitesChannelReady = true
+            console.log('✅ duel-invites готов к отправке')
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            window._duelInvitesChannelReady = false
+            window._duelInvitesChannel = null
+            console.warn('⚠️ duel-invites ошибка, пересоздаём через 2с')
+            setTimeout(trySubscribe, 2000)
+          }
         })
     } catch(e) {
       console.error('Ошибка подписки duel-invites:', e)
       window._duelInvitesChannel = null
+      window._duelInvitesChannelReady = false
       setTimeout(trySubscribe, 2000)
     }
   }
   setTimeout(trySubscribe, 1000)
 })()
+
+// FIX: ждём готовности канала (до 5 с), затем отправляем инвайт.
+// Это решает главную проблему: канал мог не завершить handshake к моменту createDuel().
+async function _sendInvite(payload) {
+  const MAX_WAIT_MS = 5000
+  const POLL_MS     = 200
+  let waited = 0
+  while (!window._duelInvitesChannelReady && waited < MAX_WAIT_MS) {
+    await new Promise(r => setTimeout(r, POLL_MS))
+    waited += POLL_MS
+  }
+  if (!window._duelInvitesChannelReady || !window._duelInvitesChannel) {
+    console.error('❌ duel-invites не готов, инвайт не отправлен')
+    return
+  }
+  console.log('📤 Отправляем инвайт:', payload)
+  await window._duelInvitesChannel.send({
+    type: 'broadcast',
+    event: 'invite',
+    payload
+  })
+}
 
 window._clearDuelGlobals = function() {
   window._duelJoinHandled  = false
@@ -103,8 +146,6 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
   const rng  = mulberry32(seed)
   let pool
 
-  // FIX: убрали вызов _clearDuelGlobals отсюда — он не должен вызываться при генерации вопросов,
-  // только при инициализации дуэли (иначе сбрасывает _duelJoinHandled/_duelStartHandled слишком поздно)
   if (section === 'mixed') {
     const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode']
     const selected = []
@@ -253,7 +294,6 @@ window.createDuel = async function() {
   if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
   window._duelChannel = supabase.channel('duel:' + window._duelCode, { config: { broadcast: { self: false } } })
 
-  // FIX: сбрасываем флаги здесь, при создании дуэли — а не внутри getDuelQuestions
   window._duelJoinHandled  = false
   window._duelStartHandled = false
   window._duelCountdownInterval = null
@@ -287,13 +327,12 @@ window.createDuel = async function() {
     })
     .subscribe()
 
-  // Отправляем инвайт если указан username
+  // FIX: _sendInvite ждёт готовности канала перед отправкой
   if (window._duelInvitedUsername) {
-    console.log('📤 Отправляем инвайт:', { invitedUsername: window._duelInvitedUsername, code: window._duelCode })
-    // FIX: используем window._duelInvitesChannel вместо анонимного supabase.channel(...)
-    window._duelInvitesChannel?.send({
-      type: 'broadcast', event: 'invite',
-      payload: { invitedUsername: window._duelInvitedUsername, code: window._duelCode, inviterName: window._duelMyName }
+    _sendInvite({
+      invitedUsername: window._duelInvitedUsername,
+      code: window._duelCode,
+      inviterName: window._duelMyName
     })
   }
 }
@@ -304,7 +343,6 @@ window.joinDuel = async function() {
   const code  = input.value.trim().toUpperCase()
   if (code.length < 4) { _duelSetStatus('duelJoinStatus', '❌ Введи код (минимум 4 символа)'); return }
 
-  // Проверка: если дуэль приватная, пускать только приглашённого
   const myName = st.currentUser.user_metadata?.username?.toLowerCase()
   if (window._duelInvitedUsername && window._duelInvitedUsername !== myName) {
     _duelSetStatus('duelJoinStatus', '❌ Эта дуэль только для приглашённого участника')
@@ -397,7 +435,6 @@ function _beginDuelTest() {
   st.timerStartTime   = null
   clearTestState()
   showPage('testPage')
-  // FIX: убрали деструктуризацию ([id, val]) — строка не является парой [id, val]
   ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.style.display = 'none'
@@ -455,7 +492,6 @@ function showDuelInviteBanner(payload) {
   const name = payload.inviterName || payload.invitedUsername || 'Соперник'
   document.getElementById('duelInviterName').textContent = `⚔️ ${name} приглашает тебя в дуэль!`
   window._pendingDuelInvite = payload
-  // FIX: убрали открытие duelResultsModal здесь — это некорректно при получении инвайта
   banner.style.display = 'block'
 }
 
@@ -464,7 +500,6 @@ window.acceptDuelInvite = function() {
   if (!payload) return
   document.getElementById('duelInviteBanner').style.display = 'none'
 
-  // FIX: используем window._duelInvitesChannel (теперь он существует)
   window._duelInvitesChannel?.send({
     type: 'broadcast',
     event: 'invite_accepted',
@@ -482,7 +517,6 @@ window.declineDuelInvite = function() {
   const payload = window._pendingDuelInvite
   document.getElementById('duelInviteBanner').style.display = 'none'
 
-  // FIX: используем window._duelInvitesChannel (теперь он существует)
   if (payload) {
     window._duelInvitesChannel?.send({
       type: 'broadcast',
@@ -534,15 +568,14 @@ function _showDuelResults() {
     clearTimeout(window._duelOpponentTimeout)
     window._duelOpponentTimeout = null
   }
-  // FIX: убрали деструктуризацию ([id, val]) — каждый элемент массива строка, не пара
   ;['menuBtn', 'bottomNav', 'desktopNav'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.style.display = ''
   })
-  const modal    = document.getElementById('duelResultsModal')
-  const emojiEl  = document.getElementById('duelResultsEmoji')
-  const titleEl  = document.getElementById('duelResultsTitle')
-  const scoresEl = document.getElementById('duelResultsScores')
+  const modal      = document.getElementById('duelResultsModal')
+  const emojiEl    = document.getElementById('duelResultsEmoji')
+  const titleEl    = document.getElementById('duelResultsTitle')
+  const scoresEl   = document.getElementById('duelResultsScores')
   const rematchBtn = document.getElementById('rematchBtn')
   if (rematchBtn) { rematchBtn.textContent = '🔄 Реванш!'; rematchBtn.disabled = false }
   const rematchBanner = document.getElementById('rematchRequestBanner')
