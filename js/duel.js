@@ -177,16 +177,13 @@ window.validateInviteUsername = async function() {
 }
 
 window.copyDuelCode = function() {
-  if (window._duelCode) {
-    navigator.clipboard.writeText(window._duelCode).then(() => {
+  if (!window._duelCode) return
   const el = document.getElementById('duelCodeDisplay')
   const orig = el.textContent
-  el.textContent = '✓ Скопировано!'
-  setTimeout(() => { el.textContent = orig }, 1500)
-}).catch(() => {
-  console.warn('Не удалось скопировать код')
-})
-  }
+  navigator.clipboard.writeText(window._duelCode).then(() => {
+    el.textContent = '✓ Скопировано!'
+    setTimeout(() => { el.textContent = orig }, 1500)
+  }).catch(() => {})
 }
 
 window.createDuel = async function() {
@@ -251,7 +248,6 @@ window.createDuel = async function() {
 
   // Отправляем инвайт, если указан username
   if (window._duelInvitedUsername) {
-    console.log('📤 Отправляем инвайт:', { invitedUsername: window._duelInvitedUsername, code: window._duelCode })
     window._duelInvitesChannel?.send({
       type: 'broadcast',
       event: 'invite',

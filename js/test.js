@@ -102,7 +102,11 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   const totalMinutes = (minutesMap[difficulty]?.[questionCount]) || (questionCount * 25 / 5)
   st.timeRemaining = totalMinutes * 60
   st.timerInitialTime = st.timeRemaining
-  let questions = pool.flat().filter(q => q && q.options && q.options.every(o => o != null))
+  let questions = pool.flat().filter(q => q && q.question && q.options && q.options.length === 4 && q.options.every(o => o != null))
+  if (questions.length === 0) {
+    alert('Вопросы для этого раздела не найдены. Попробуйте другой уровень сложности.')
+    return
+  }
   const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, questions.length))
   st.currentTest = shuffled.map(q => {
     const order = [0, 1, 2, 3].sort(() => Math.random() - 0.5)

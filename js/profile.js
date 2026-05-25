@@ -1,6 +1,6 @@
 import { st } from './state.js'
 import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns } from './ui.js'
-import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getLeaderboard, getDuelHistory } from './supabase.js'
+import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getUserRankData, getDuelHistory } from './supabase.js'
 
 // ── Уровни пользователя ───────────────────────────────────
 export function getUserLevel(total, avg) {
@@ -197,7 +197,16 @@ window.showProfile = async function() {
   const emailEl = document.getElementById('profileEmail')
   if (emailEl) emailEl.textContent = email
 
-  const { data: allData }  = await getUserResults(st.currentUser.id)
+  let allData = null
+  try {
+    const result = await getUserResults(st.currentUser.id)
+    if (result.error) throw result.error
+    allData = result.data
+  } catch (e) {
+    const profileContent = document.getElementById('profileContent')
+    if (profileContent) profileContent.innerHTML = '<p class="text-red-400 text-sm text-center py-4">Ошибка загрузки данных. Проверьте подключение и обновите страницу.</p>'
+    return
+  }
   const profileContent     = document.getElementById('profileContent')
   if (!profileContent) return
 
@@ -227,40 +236,33 @@ window.showProfile = async function() {
   }).filter(Boolean)
 
   // Место в рейтинге
-  const { data: lbData } = await getLeaderboard(null, null)
   let compareHTML = ''
-  if (lbData && lbData.length > 0) {
-    const allAvgs = {}
-    lbData.forEach(r => {
-      if (!allAvgs[r.username]) allAvgs[r.username] = []
-      allAvgs[r.username].push(r.score)
-    })
-    const rankings = Object.entries(allAvgs)
-      .map(([name, scores]) => ({ name, avg: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) }))
-      .sort((a, b) => b.avg - a.avg)
-    const myRank = rankings.findIndex(r => r.name === username) + 1
-    compareHTML = `
-      <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Место в рейтинге</h3>
-      <div class="rounded-xl p-4 mb-4" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">
-        <div class="text-center mb-3">
-          <div class="text-3xl font-bold text-blue-400">#${myRank}</div>
-          <div class="text-slate-400 text-sm">из ${rankings.length} пользователей</div>
-        </div>
-        <div class="space-y-2">
-          ${rankings.slice(0, 3).map((r, i) => `
-            <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
-              <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
-              <span class="text-blue-400 font-semibold">${r.avg}%</span>
-            </div>`).join('')}
-          ${myRank > 3 ? `
-            <div class="text-center text-slate-500 text-xs">...</div>
-            <div class="flex justify-between items-center p-2 rounded-lg font-bold" style="background:rgba(59,130,246,0.12)">
-              <span class="text-slate-200">#${myRank} ${username}</span>
-              <span class="text-blue-400 font-semibold">${avg}%</span>
-            </div>` : ''}
-        </div>
-      </div>`
-  }
+  try {
+    const { rank: myRank, total: totalUsers, rankings } = await getUserRankData(username)
+    if (myRank && rankings) {
+      compareHTML = `
+        <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Место в рейтинге</h3>
+        <div class="rounded-xl p-4 mb-4" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">
+          <div class="text-center mb-3">
+            <div class="text-3xl font-bold text-blue-400">#${myRank}</div>
+            <div class="text-slate-400 text-sm">из ${totalUsers} пользователей</div>
+          </div>
+          <div class="space-y-2">
+            ${rankings.slice(0, 3).map((r, i) => `
+              <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
+                <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
+                <span class="text-blue-400 font-semibold">${r.avg}%</span>
+              </div>`).join('')}
+            ${myRank > 3 ? `
+              <div class="text-center text-slate-500 text-xs">...</div>
+              <div class="flex justify-between items-center p-2 rounded-lg font-bold" style="background:rgba(59,130,246,0.12)">
+                <span class="text-slate-200">#${myRank} ${username}</span>
+                <span class="text-blue-400 font-semibold">${avg}%</span>
+              </div>` : ''}
+          </div>
+        </div>`
+    }
+  } catch (_) { /* рейтинг недоступен — пропускаем блок */ }
 
   // График прогресса
   const recent    = [...data].slice(0, 7).reverse()

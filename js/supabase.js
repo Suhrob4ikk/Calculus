@@ -99,7 +99,7 @@ export async function searchProfiles(query) {
     .from('profiles')
     .select('id, username, avatar_url, created_at')
     .ilike('username', query ? `${query}%` : '%')
-    .limit(1000)
+    .limit(20)
   return { data, error }
 }
 
@@ -171,6 +171,27 @@ export async function updateLastSeen(userId) {
   await supabase.from('profiles')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', userId)
+}
+
+// ── Ранг пользователя в лидерборде ───────────────────────
+export async function getUserRankData(username) {
+  const { data, error } = await supabase
+    .from('test_results')
+    .select('username, score')
+    .not('section', 'eq', 'duel')
+    .limit(2000)
+  if (error || !data) return { rank: null, total: null, error }
+  const avgByUser = {}
+  data.forEach(r => {
+    if (!avgByUser[r.username]) avgByUser[r.username] = { sum: 0, count: 0 }
+    avgByUser[r.username].sum += r.score
+    avgByUser[r.username].count++
+  })
+  const rankings = Object.entries(avgByUser)
+    .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
+    .sort((a, b) => b.avg - a.avg)
+  const rank = rankings.findIndex(r => r.name === username) + 1
+  return { rank: rank || null, total: rankings.length, rankings, error: null }
 }
 
 // ── Профили нескольких пользователей по именам ────────────

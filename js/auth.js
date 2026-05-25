@@ -35,7 +35,9 @@ window.handleRegister = async function() {
   const errEl    = document.getElementById('registerError')
   errEl.textContent = ''
   if (!username || !email || !password) { errEl.textContent = 'Заполните все поля'; return }
-  if (password.length < 6) { errEl.textContent = 'Пароль минимум 6 символов'; return }
+  if (password.length < 8) { errEl.textContent = 'Пароль минимум 8 символов'; return }
+  if (!/\d/.test(password)) { errEl.textContent = 'Пароль должен содержать хотя бы одну цифру'; return }
+  if (!/[a-zA-Z]/.test(password)) { errEl.textContent = 'Пароль должен содержать хотя бы одну букву'; return }
   const btn = document.getElementById('registerBtn')
   btn.textContent = 'Регистрируем...'; btn.disabled = true
   const { data, error } = await signUp(email, password, username)
@@ -78,7 +80,7 @@ async function handleUpdatePassword() {
   const errEl    = document.getElementById('updatePasswordError')
   errEl.textContent = ''
   if (!password) { errEl.textContent = 'Введите новый пароль'; return }
-  if (password.length < 6) { errEl.textContent = 'Пароль минимум 6 символов'; return }
+  if (password.length < 8) { errEl.textContent = 'Пароль минимум 8 символов'; return }
   if (password !== confirm) { errEl.textContent = 'Пароли не совпадают'; return }
   const btn = document.getElementById('updatePasswordBtn')
   btn.textContent = 'Сохраняем...'; btn.disabled = true
@@ -122,10 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const req1 = document.getElementById('req1')
     const req2 = document.getElementById('req2')
     const req3 = document.getElementById('req3')
-    const hasLength = val.length >= 6
+    const hasLength = val.length >= 8
     const hasDigit  = /\d/.test(val)
     const hasLetter = /[a-zA-Zа-яА-Я]/.test(val)
-    if (req1) { req1.textContent = 'Минимум 6 символов'; req1.style.color = hasLength ? '#10b981' : '#94a3b8' }
+    if (req1) { req1.textContent = 'Минимум 8 символов'; req1.style.color = hasLength ? '#10b981' : '#94a3b8' }
     if (req2) { req2.textContent = 'Содержит цифры';    req2.style.color = hasDigit  ? '#10b981' : '#94a3b8' }
     if (req3) { req3.textContent = 'Содержит буквы';    req3.style.color = hasLetter ? '#10b981' : '#94a3b8' }
     const score = [hasLength, hasDigit, hasLetter].filter(Boolean).length
