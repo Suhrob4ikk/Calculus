@@ -358,6 +358,31 @@
   <button id="mobileBackBtn">← Главная</button>
 </div>
 
+<!-- ── ДЕСКТОП БОКОВАЯ ПАНЕЛЬ ── -->
+<aside id="desktopSidebar" style="display:none">
+  <div class="sb-logo">∫ Матанализ</div>
+  <nav class="sb-nav">
+    <button id="sbHome"   onclick="showHome()"           class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
+    <button id="sbDuel"   onclick="showDuelModal()"      class="sb-item"><i data-lucide="swords"></i><span>Дуэль</span></button>
+    <button id="sbStats"  onclick="showStatistics()"     class="sb-item"><i data-lucide="bar-chart-2"></i><span>Статистика</span></button>
+    <button id="sbLeader" onclick="showLeaderboard()"    class="sb-item"><i data-lucide="trophy"></i><span>Рейтинг</span></button>
+    <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i data-lucide="users"></i><span>Люди</span></button>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="showProfile()">
+      <div class="sb-avatar" id="sbAvatarWrap">
+        <img id="sbAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <span id="sbAvatarLetter">?</span>
+      </div>
+      <div class="sb-user-info">
+        <span id="sbUsername" class="sb-username">…</span>
+        <span class="sb-profile-hint">Профиль</span>
+      </div>
+    </div>
+    <button onclick="handleLogout()" class="sb-logout-btn" title="Выйти"><i data-lucide="log-out"></i></button>
+  </div>
+</aside>
+
 <!-- ── АВТОРИЗАЦИЯ ── -->
 <div id="authPage" class="hidden">
   <div class="auth-card">
