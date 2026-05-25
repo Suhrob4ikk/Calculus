@@ -48,9 +48,11 @@ export function showPage(pageId) {
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')
   const desktopNav = document.getElementById('desktopNav')
+  const isDesktop = window.innerWidth >= 1024
   if (bottomNav)  bottomNav.style.display  = showNav ? 'flex' : 'none'
   if (menuBtn)    menuBtn.style.display    = showNav ? '' : 'none'
-  if (desktopNav) desktopNav.style.display = showNav ? '' : 'none'
+  // Верхняя шапка — только на планшете (641–1023px), на десктопе её заменяет sidebar
+  if (desktopNav) desktopNav.style.display = (showNav && !isDesktop) ? '' : 'none'
   if (!showNav) window.closeNavMenu?.()
 
   // Подсветка активной вкладки — нижняя навигация
@@ -109,7 +111,9 @@ export function showPage(pageId) {
 
   // Боковая панель: видимость + активная кнопка
   const desktopSidebar = document.getElementById('desktopSidebar')
-  if (desktopSidebar) desktopSidebar.style.display = showNav ? '' : 'none'
+  if (desktopSidebar) {
+    desktopSidebar.style.display = (showNav && window.innerWidth >= 1024) ? 'flex' : 'none'
+  }
 
   const sbMap = {
     homePage:           'sbHome',
@@ -152,6 +156,19 @@ export function updateUserUI() {
   if (sbUsername) sbUsername.textContent = username
   if (sbLetter)   sbLetter.textContent   = username[0]?.toUpperCase() || '?'
 }
+
+// ── Авто-переключение sidebar/topNav при изменении размера окна ──
+window.addEventListener('resize', () => {
+  const sidebar = document.getElementById('desktopSidebar')
+  const topNav  = document.getElementById('desktopNav')
+  if (!sidebar) return
+  const lastPage   = sessionStorage.getItem('lastPage')
+  const noNavPages = ['authPage', 'updatePasswordPage']
+  const isNavPage  = lastPage && !noNavPages.includes(lastPage)
+  const w = window.innerWidth
+  if (sidebar) sidebar.style.display = (isNavPage && w >= 1024) ? 'flex' : 'none'
+  if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 1024) ? '' : 'none'
+})
 
 // ── Навигационное меню (гамбургер) ──────────────────────
 let _navOpen = false
