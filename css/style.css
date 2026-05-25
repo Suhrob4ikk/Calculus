@@ -51,6 +51,7 @@ body {
   background: var(--bg-main);
   color: var(--text-main);
   transition: background 0.3s, color 0.3s;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* ── Математический фон (только в тёмной теме) ──────────── */
@@ -810,6 +811,13 @@ html:not(.dark) .sb-logout-btn {
   #testPage    .max-w-4xl { max-width: 900px; }
   #resultsPage .max-w-2xl { max-width: 860px; }
 
+  /* Главная: сетка разделов — убираем 3-колонку для старых grid.gap-6 (заменены на diff-grid) */
+  #integralsSection   .grid.gap-6,
+  #derivativesSection .grid.gap-6,
+  #seriesSection      .grid.gap-6,
+  #limitsSection      .grid.gap-6,
+  #odeSection         .grid.gap-6 { grid-template-columns: unset; }
+
   /* Статистика, рейтинг, профиль, поиск */
   #statisticsPage .max-w-4xl,
   #statisticsPage .max-w-3xl,
@@ -821,3 +829,191 @@ html:not(.dark) .sb-logout-btn {
   #searchProfilesPage .max-w-2xl { max-width: 840px; }
   #viewProfilePage   .max-w-2xl { max-width: 840px; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   СЕКЦИЯ-ПАНЕЛЬ (замена bg-white rounded-2xl shadow-lg p-8)
+   ══════════════════════════════════════════════════════════ */
+.section-panel {
+  background: var(--bg-card);
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+.dark .section-panel {
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.28);
+  border-color: rgba(148, 163, 184, 0.1);
+}
+.section-heading {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.015em;
+}
+.section-count-label {
+  font-weight: 600;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+}
+
+/* Кнопка «Назад к разделам» */
+.page-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0.3rem 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+  text-decoration: none;
+}
+.page-back-btn:hover { color: var(--text-main); }
+
+/* ══════════════════════════════════════════════════════════
+   КАРТОЧКИ УРОВНЕЙ СЛОЖНОСТИ (новый tier-дизайн)
+   ══════════════════════════════════════════════════════════ */
+.diff-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+.diff-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem 1rem 1.35rem;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.diff-card:hover { transform: translateX(4px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+/* Левая акцент-полоса */
+.diff-tier-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.diff-easy   .diff-tier-bar { background: linear-gradient(180deg, #10b981, #059669); }
+.diff-medium .diff-tier-bar { background: linear-gradient(180deg, #f59e0b, #d97706); }
+.diff-hard   .diff-tier-bar { background: linear-gradient(180deg, #ef4444, #dc2626); }
+
+/* Hover-фон */
+.diff-easy:hover   { border-color: rgba(16,185,129,0.4);  background: rgba(16,185,129,0.04); }
+.diff-medium:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.04); }
+.diff-hard:hover   { border-color: rgba(239,68,68,0.4);   background: rgba(239,68,68,0.04); }
+.dark .diff-easy:hover   { background: rgba(16,185,129,0.07); }
+.dark .diff-medium:hover { background: rgba(245,158,11,0.07); }
+.dark .diff-hard:hover   { background: rgba(239,68,68,0.07); }
+
+/* Контент */
+.diff-content { flex: 1; min-width: 0; }
+.diff-header  { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.2rem; }
+
+.diff-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.diff-label::before {
+  content: '';
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.diff-label-easy   { color: #059669; }
+.diff-label-easy::before   { background: #10b981; }
+.diff-label-medium { color: #b45309; }
+.diff-label-medium::before { background: #f59e0b; }
+.diff-label-hard   { color: #dc2626; }
+.diff-label-hard::before   { background: #ef4444; }
+.dark .diff-label-easy   { color: #34d399; }
+.dark .diff-label-medium { color: #fbbf24; }
+.dark .diff-label-hard   { color: #f87171; }
+
+.diff-pts {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 20px;
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.diff-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.diff-btn {
+  padding: 0.45rem 1.05rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+.diff-btn-easy   { background: rgba(16,185,129,0.12);  color: #059669; }
+.diff-btn-easy:hover   { background: rgba(16,185,129,0.22); }
+.diff-btn-medium { background: rgba(245,158,11,0.12); color: #b45309; }
+.diff-btn-medium:hover { background: rgba(245,158,11,0.22); }
+.diff-btn-hard   { background: rgba(239,68,68,0.12);   color: #dc2626; }
+.diff-btn-hard:hover   { background: rgba(239,68,68,0.22); }
+.dark .diff-btn-easy   { color: #34d399; }
+.dark .diff-btn-medium { color: #fbbf24; }
+.dark .diff-btn-hard   { color: #f87171; }
+
+/* ── Режим изучения ── */
+.study-mode-wrap {
+  margin-top: 1.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.study-mode-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+.study-mode-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.study-btn {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.study-btn:hover { background: rgba(100,116,139,0.1); color: var(--text-main); border-color: var(--text-muted); }
+.study-btn-easy:hover   { border-color: #10b981; color: #10b981; }
+.study-btn-medium:hover { border-color: #f59e0b; color: #f59e0b; }
+.study-btn-hard:hover   { border-color: #ef4444; color: #ef4444; }

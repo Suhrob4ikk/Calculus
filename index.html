@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="МатАнализ">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="js/mathjax-config.js"></script>
@@ -358,31 +358,6 @@
   <button id="mobileBackBtn">← Главная</button>
 </div>
 
-<!-- ── БОКОВАЯ НАВИГАЦИЯ (десктоп ≥1024px) ── -->
-<aside id="desktopSidebar" style="display:none">
-  <div class="sb-logo">∫ Матанализ</div>
-  <nav class="sb-nav">
-    <button id="sbHome"   onclick="showHome()"           class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
-    <button id="sbDuel"   onclick="showDuelModal()"      class="sb-item"><i data-lucide="swords"></i><span>Дуэль</span></button>
-    <button id="sbStats"  onclick="showStatistics()"     class="sb-item"><i data-lucide="bar-chart-2"></i><span>Статистика</span></button>
-    <button id="sbLeader" onclick="showLeaderboard()"    class="sb-item"><i data-lucide="trophy"></i><span>Рейтинг</span></button>
-    <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i data-lucide="users"></i><span>Люди</span></button>
-  </nav>
-  <div class="sb-bottom">
-    <div class="sb-user" onclick="showProfile()">
-      <div class="sb-avatar" id="sbAvatarWrap">
-        <img id="sbAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
-        <span id="sbAvatarLetter">?</span>
-      </div>
-      <div class="sb-user-info">
-        <span id="sbUsername" class="sb-username">…</span>
-        <span class="sb-profile-hint">Профиль</span>
-      </div>
-    </div>
-    <button onclick="handleLogout()" class="sb-logout-btn" title="Выйти"><i data-lucide="log-out"></i></button>
-  </div>
-</aside>
-
 <!-- ── АВТОРИЗАЦИЯ ── -->
 <div id="authPage" class="hidden">
   <div class="auth-card">
@@ -549,8 +524,8 @@
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Интегралы</h2>
+      <div class="section-panel">
+        <h2 class="section-heading">Интегралы</h2>
         <div class="theory-entry-card" onclick="showTheory('integrals')" style="border-left:3px solid #3b82f6">
           <div class="theory-entry-left">
             <span style="font-size:1.6rem;line-height:1">∫</span>
@@ -562,7 +537,7 @@
           <span class="theory-entry-arrow">→</span>
         </div>
         <div class="mb-6">
-          <label for="integralsCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <label for="integralsCount" class="section-count-label">Количество вопросов:</label>
           <select id="integralsCount" class="ml-2 border rounded-lg px-2 py-1">
             <option value="10">10 вопросов</option>
             <option value="15" selected>15 вопросов</option>
@@ -570,32 +545,47 @@
             <option value="25">25 вопросов</option>
           </select>
         </div>
-        <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('easy')">
-            <div class="text-5xl mb-3">∫</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
-            <p class="text-gray-600 mb-3">Базовые задачи</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+        <div class="diff-grid">
+          <div class="diff-card diff-easy" onclick="startIntegralsTest('easy')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-easy">Лёгкий</span>
+                <span class="diff-pts">×1 балл</span>
+              </div>
+              <div class="diff-sub">Базовые задачи</div>
+            </div>
+            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startIntegralsTest('easy')">Начать →</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('medium')">
-            <div class="text-5xl mb-3">∫</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи средней сложности</p>
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-medium" onclick="startIntegralsTest('medium')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-medium">Средний</span>
+                <span class="diff-pts">×2 балла</span>
+              </div>
+              <div class="diff-sub">Задачи средней сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startIntegralsTest('medium')">Начать →</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startIntegralsTest('hard')">
-            <div class="text-5xl mb-3">∫</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи повышенной сложности</p>
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-hard" onclick="startIntegralsTest('hard')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-hard">Сложный</span>
+                <span class="diff-pts">×3 балла</span>
+              </div>
+              <div class="diff-sub">Задачи повышенной сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startIntegralsTest('hard')">Начать →</button>
           </div>
         </div>
-        <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="startIntegralsTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
-            <button onclick="startIntegralsTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
-            <button onclick="startIntegralsTest('hard', true)" class="bg-gray-100 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Сложный</button>
+        <div class="study-mode-wrap">
+          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+          <div class="study-mode-btns">
+            <button onclick="startIntegralsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+            <button onclick="startIntegralsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+            <button onclick="startIntegralsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
           </div>
         </div>
       </div>
@@ -607,8 +597,8 @@
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Производные</h2>
+      <div class="section-panel">
+        <h2 class="section-heading">Производные</h2>
         <div class="theory-entry-card" onclick="showTheory('derivatives')" style="border-left:3px solid #eab308">
           <div class="theory-entry-left">
             <span style="font-size:1.3rem;font-weight:700;line-height:1">f'(x)</span>
@@ -620,7 +610,7 @@
           <span class="theory-entry-arrow">→</span>
         </div>
         <div class="mb-6">
-          <label for="derivativesCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <label for="derivativesCount" class="section-count-label">Количество вопросов:</label>
           <select id="derivativesCount" class="ml-2 border rounded-lg px-2 py-1">
             <option value="10">10 вопросов</option>
             <option value="15" selected>15 вопросов</option>
@@ -628,32 +618,47 @@
             <option value="25">25 вопросов</option>
           </select>
         </div>
-        <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('easy')">
-            <div class="text-5xl mb-3">f'(x)</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
-            <p class="text-gray-600 mb-3">Базовые задачи</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+        <div class="diff-grid">
+          <div class="diff-card diff-easy" onclick="startDerivativesTest('easy')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-easy">Лёгкий</span>
+                <span class="diff-pts">×1 балл</span>
+              </div>
+              <div class="diff-sub">Базовые задачи</div>
+            </div>
+            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startDerivativesTest('easy')">Начать →</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('medium')">
-            <div class="text-5xl mb-3">f'(x)</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи средней сложности</p>
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-medium" onclick="startDerivativesTest('medium')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-medium">Средний</span>
+                <span class="diff-pts">×2 балла</span>
+              </div>
+              <div class="diff-sub">Задачи средней сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startDerivativesTest('medium')">Начать →</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startDerivativesTest('hard')">
-            <div class="text-5xl mb-3">f'(x)</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи повышенной сложности</p>
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-hard" onclick="startDerivativesTest('hard')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-hard">Сложный</span>
+                <span class="diff-pts">×3 балла</span>
+              </div>
+              <div class="diff-sub">Задачи повышенной сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startDerivativesTest('hard')">Начать →</button>
           </div>
         </div>
-        <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="startDerivativesTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
-            <button onclick="startDerivativesTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
-            <button onclick="startDerivativesTest('hard', true)" class="bg-gray-100 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Сложный</button>
+        <div class="study-mode-wrap">
+          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+          <div class="study-mode-btns">
+            <button onclick="startDerivativesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+            <button onclick="startDerivativesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+            <button onclick="startDerivativesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
           </div>
         </div>
       </div>
@@ -665,8 +670,8 @@
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ряды и последовательности</h2>
+      <div class="section-panel">
+        <h2 class="section-heading">Ряды и последовательности</h2>
         <div class="theory-entry-card" onclick="showTheory('series')" style="border-left:3px solid #ef4444">
           <div class="theory-entry-left">
             <span style="font-size:1.6rem;line-height:1">∑</span>
@@ -678,7 +683,7 @@
           <span class="theory-entry-arrow">→</span>
         </div>
         <div class="mb-6">
-          <label for="seriesCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <label for="seriesCount" class="section-count-label">Количество вопросов:</label>
           <select id="seriesCount" class="ml-2 border rounded-lg px-2 py-1">
             <option value="10">10 вопросов</option>
             <option value="15" selected>15 вопросов</option>
@@ -686,32 +691,47 @@
             <option value="25">25 вопросов</option>
           </select>
         </div>
-        <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('easy')">
-            <div class="text-5xl mb-3">∑</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
-            <p class="text-gray-600 mb-3">Базовые задачи</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+        <div class="diff-grid">
+          <div class="diff-card diff-easy" onclick="startSeriesTest('easy')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-easy">Лёгкий</span>
+                <span class="diff-pts">×1 балл</span>
+              </div>
+              <div class="diff-sub">Базовые задачи</div>
+            </div>
+            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startSeriesTest('easy')">Начать →</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('medium')">
-            <div class="text-5xl mb-3">∑</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи средней сложности</p>
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-medium" onclick="startSeriesTest('medium')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-medium">Средний</span>
+                <span class="diff-pts">×2 балла</span>
+              </div>
+              <div class="diff-sub">Задачи средней сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startSeriesTest('medium')">Начать →</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startSeriesTest('hard')">
-            <div class="text-5xl mb-3">∑</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
-            <p class="text-gray-600 mb-3">Задачи повышенной сложности</p>
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-hard" onclick="startSeriesTest('hard')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-hard">Сложный</span>
+                <span class="diff-pts">×3 балла</span>
+              </div>
+              <div class="diff-sub">Задачи повышенной сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startSeriesTest('hard')">Начать →</button>
           </div>
         </div>
-        <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="startSeriesTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
-            <button onclick="startSeriesTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
-            <button onclick="startSeriesTest('hard', true)" class="bg-gray-100 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Сложный</button>
+        <div class="study-mode-wrap">
+          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+          <div class="study-mode-btns">
+            <button onclick="startSeriesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+            <button onclick="startSeriesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+            <button onclick="startSeriesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
           </div>
         </div>
       </div>
@@ -725,8 +745,8 @@
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Пределы и непрерывность</h2>
+      <div class="section-panel">
+        <h2 class="section-heading">Пределы и непрерывность</h2>
         <div class="theory-entry-card" onclick="showTheory('limits')" style="border-left:3px solid #a855f7">
           <div class="theory-entry-left">
             <span style="font-size:1.3rem;font-weight:700;line-height:1">lim</span>
@@ -738,7 +758,7 @@
           <span class="theory-entry-arrow">→</span>
         </div>
         <div class="mb-6">
-          <label for="limitsCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <label for="limitsCount" class="section-count-label">Количество вопросов:</label>
           <select id="limitsCount" class="ml-2 border rounded-lg px-2 py-1">
             <option value="10">10 вопросов</option>
             <option value="15" selected>15 вопросов</option>
@@ -746,24 +766,47 @@
             <option value="25">25 вопросов</option>
           </select>
         </div>
-        <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startLimitsTest('easy')">
-            <div class="text-5xl mb-3">lim</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
-            <p class="text-gray-600 mb-3">Базовые пределы</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+        <div class="diff-grid">
+          <div class="diff-card diff-easy" onclick="startLimitsTest('easy')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-easy">Лёгкий</span>
+                <span class="diff-pts">×1 балл</span>
+              </div>
+              <div class="diff-sub">Базовые пределы</div>
+            </div>
+            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startLimitsTest('easy')">Начать →</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startLimitsTest('medium')">
-            <div class="text-5xl mb-3">lim</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
-            <p class="text-gray-600 mb-3">Пределы средней сложности</p>
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-medium" onclick="startLimitsTest('medium')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-medium">Средний</span>
+                <span class="diff-pts">×2 балла</span>
+              </div>
+              <div class="diff-sub">Пределы средней сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startLimitsTest('medium')">Начать →</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startLimitsTest('hard')">
-            <div class="text-5xl mb-3">lim</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
-            <p class="text-gray-600 mb-3">Правило Лопиталя и сложные пределы</p>
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-hard" onclick="startLimitsTest('hard')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-hard">Сложный</span>
+                <span class="diff-pts">×3 балла</span>
+              </div>
+              <div class="diff-sub">Правило Лопиталя и сложные пределы</div>
+            </div>
+            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startLimitsTest('hard')">Начать →</button>
+          </div>
+        </div>
+        <div class="study-mode-wrap">
+          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+          <div class="study-mode-btns">
+            <button onclick="startLimitsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+            <button onclick="startLimitsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+            <button onclick="startLimitsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
           </div>
         </div>
         </div>
@@ -777,8 +820,8 @@
   <div class="container mx-auto px-4 py-8" >
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Дифференциальные уравнения</h2>
+      <div class="section-panel">
+        <h2 class="section-heading">Дифференциальные уравнения</h2>
         <div class="theory-entry-card" onclick="showTheory('ode')" style="border-left:3px solid #f97316">
           <div class="theory-entry-left">
             <span style="font-size:1.3rem;font-weight:700;line-height:1">y'</span>
@@ -790,39 +833,54 @@
           <span class="theory-entry-arrow">→</span>
         </div>
         <div class="mb-6">
-          <label for="odeCount" class="text-gray-700 font-semibold">Количество вопросов:</label>
+          <label for="odeCount" class="section-count-label">Количество вопросов:</label>
           <select id="odeCount" class="ml-2 border rounded-lg px-2 py-1">
             <option value="5">5 вопросов</option>
             <option value="7">7 вопросов</option>
             <option value="10" selected>10 вопросов</option>
           </select>
         </div>
-        <div class="grid gap-6">
-          <div class="bg-blue-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startODETest('easy')">
-            <div class="text-5xl mb-3">y'</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Лёгкий уровень</h3>
-            <p class="text-gray-600 mb-3">Базовые уравнения</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+        <div class="diff-grid">
+          <div class="diff-card diff-easy" onclick="startODETest('easy')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-easy">Лёгкий</span>
+                <span class="diff-pts">×1 балл</span>
+              </div>
+              <div class="diff-sub">Базовые уравнения</div>
+            </div>
+            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startODETest('easy')">Начать →</button>
           </div>
-          <div class="bg-yellow-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startODETest('medium')">
-            <div class="text-5xl mb-3">y'</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Средний уровень</h3>
-            <p class="text-gray-600 mb-3">Уравнения средней сложности</p>
-            <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-medium" onclick="startODETest('medium')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-medium">Средний</span>
+                <span class="diff-pts">×2 балла</span>
+              </div>
+              <div class="diff-sub">Уравнения средней сложности</div>
+            </div>
+            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startODETest('medium')">Начать →</button>
           </div>
-          <div class="bg-red-50 rounded-xl p-6 text-center card-hover cursor-pointer" onclick="startODETest('hard')">
-            <div class="text-5xl mb-3">y''</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Сложный уровень</h3>
-            <p class="text-gray-600 mb-3">Уравнения высших порядков</p>
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors">Начать</button>
+          <div class="diff-card diff-hard" onclick="startODETest('hard')">
+            <div class="diff-tier-bar"></div>
+            <div class="diff-content">
+              <div class="diff-header">
+                <span class="diff-label diff-label-hard">Сложный</span>
+                <span class="diff-pts">×3 балла</span>
+              </div>
+              <div class="diff-sub">Уравнения высших порядков</div>
+            </div>
+            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startODETest('hard')">Начать →</button>
           </div>
         </div>
-        <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="startODETest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
-            <button onclick="startODETest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
-            <button onclick="startODETest('hard', true)" class="bg-gray-100 hover:bg-red-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Сложный</button>
+        <div class="study-mode-wrap">
+          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+          <div class="study-mode-btns">
+            <button onclick="startODETest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+            <button onclick="startODETest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+            <button onclick="startODETest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
           </div>
         </div>
       </div>
