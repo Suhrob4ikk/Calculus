@@ -305,7 +305,7 @@
   <!-- Оверлей приватности (появляется при скрытии вкладки во время теста) -->
   <div id="privacyOverlay" onclick="hidePrivacyScreen()">
     <div class="po-inner">
-      <div class="po-icon">🔒</div>
+      <div class="po-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f1f5f9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:4rem;height:4rem"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
       <div class="po-title">Тест приостановлен</div>
       <div class="po-hint">Нажмите, чтобы продолжить</div>
     </div>
@@ -357,6 +357,31 @@
 <div id="mobileBackBar" style="display:none">
   <button id="mobileBackBtn">← Главная</button>
 </div>
+
+<!-- ── БОКОВАЯ НАВИГАЦИЯ (десктоп ≥1024px) ── -->
+<aside id="desktopSidebar" style="display:none">
+  <div class="sb-logo">∫ Матанализ</div>
+  <nav class="sb-nav">
+    <button id="sbHome"   onclick="showHome()"           class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
+    <button id="sbDuel"   onclick="showDuelModal()"      class="sb-item"><i data-lucide="swords"></i><span>Дуэль</span></button>
+    <button id="sbStats"  onclick="showStatistics()"     class="sb-item"><i data-lucide="bar-chart-2"></i><span>Статистика</span></button>
+    <button id="sbLeader" onclick="showLeaderboard()"    class="sb-item"><i data-lucide="trophy"></i><span>Рейтинг</span></button>
+    <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i data-lucide="users"></i><span>Люди</span></button>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="showProfile()">
+      <div class="sb-avatar" id="sbAvatarWrap">
+        <img id="sbAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <span id="sbAvatarLetter">?</span>
+      </div>
+      <div class="sb-user-info">
+        <span id="sbUsername" class="sb-username">…</span>
+        <span class="sb-profile-hint">Профиль</span>
+      </div>
+    </div>
+    <button onclick="handleLogout()" class="sb-logout-btn" title="Выйти"><i data-lucide="log-out"></i></button>
+  </div>
+</aside>
 
 <!-- ── АВТОРИЗАЦИЯ ── -->
 <div id="authPage" class="hidden">
@@ -411,7 +436,7 @@
         <!-- Кнопка установки PWA -->
         <button id="installAppBtn" onclick="installApp()"
           style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
-          📲 Установить приложение
+          <i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px"></i> Установить приложение
         </button>
       </div>
     </div>
@@ -423,7 +448,9 @@
         onclick="startDailyChallenge()">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-4">
-            <div class="text-5xl select-none">🌟</div>
+            <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(234,179,8,0.15));border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
             <div>
               <h2 class="text-xl font-bold text-slate-100">Ежедневный вызов</h2>
               <p class="text-slate-400 text-sm">10 вопросов из всех разделов · Одна попытка в день</p>
@@ -434,7 +461,7 @@
             <button id="dailyChallengeBtn"
               onclick="event.stopPropagation(); startDailyChallenge()"
               class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-              🎯 Начать
+              Начать
             </button>
           </div>
         </div>
@@ -564,7 +591,7 @@
           </div>
         </div>
         <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">📖 Режим изучения — без таймера, результат не сохраняется</p>
+          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="startIntegralsTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
             <button onclick="startIntegralsTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
@@ -622,7 +649,7 @@
           </div>
         </div>
         <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">📖 Режим изучения — без таймера, результат не сохраняется</p>
+          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="startDerivativesTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
             <button onclick="startDerivativesTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
@@ -680,7 +707,7 @@
           </div>
         </div>
         <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">📖 Режим изучения — без таймера, результат не сохраняется</p>
+          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="startSeriesTest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
             <button onclick="startSeriesTest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
@@ -791,7 +818,7 @@
           </div>
         </div>
         <div class="mt-6 pt-5 border-t border-gray-100">
-          <p class="text-gray-500 text-sm text-center mb-3">📖 Режим изучения — без таймера, результат не сохраняется</p>
+          <p class="text-gray-500 text-sm text-center mb-3">Режим изучения — без таймера, результат не сохраняется</p>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="startODETest('easy', true)" class="bg-gray-100 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Лёгкий</button>
             <button onclick="startODETest('medium', true)" class="bg-gray-100 hover:bg-yellow-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">Средний</button>
@@ -873,7 +900,7 @@
     <div class="max-w-4xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">📊 Моя статистика</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Статистика</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="stat-card text-center"><div class="stat-value" id="totalTests">0</div><div class="stat-label">Тестов пройдено</div></div>
           <div class="stat-card text-center"><div class="stat-value" id="bestScore">0%</div><div class="stat-label">Лучший результат</div></div>
@@ -909,8 +936,8 @@
         <div class="relative w-24 h-24 mx-auto mb-3">
           <div class="profile-avatar" id="profileAvatar" style="width:80px;height:80px;font-size:2rem">S</div>
           <img id="profileAvatarImg" src="" alt="avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
-          <button id="avatarUploadBtn" class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg" title="Сменить фото">📷</button>
-          <button id="avatarDeleteBtn" class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-lg" title="Удалить фото">🗑️</button>
+          <button id="avatarUploadBtn" class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg" title="Сменить фото"><i data-lucide="camera" style="width:14px;height:14px"></i></button>
+          <button id="avatarDeleteBtn" class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg" title="Удалить фото"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
         </div>
         <input type="file" id="avatarInput" accept="image/*" style="display:none">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
@@ -920,14 +947,14 @@
           <button id="pushToggleBtn" onclick="togglePushNotifications()"
             class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all"
             style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:#60a5fa">
-            🔔 Включить уведомления
+            <i data-lucide="bell" style="width:14px;height:14px"></i> Включить уведомления
           </button>
         </div>
         <div id="profileContent"></div>
 
         <!-- ── Настройки ── -->
         <div class="mt-5 pt-5" style="border-top:1px solid var(--border,rgba(71,85,105,0.3))">
-          <p style="font-size:0.72rem;font-weight:600;color:var(--text-muted,#94a3b8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem">⚙️ Настройки</p>
+          <p style="font-size:0.72rem;font-weight:600;color:var(--text-muted,#94a3b8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px"><i data-lucide="settings" style="width:12px;height:12px"></i> Настройки</p>
           <div style="display:flex;flex-direction:column;gap:0.5rem">
 
             <!-- Тема -->
@@ -969,7 +996,7 @@
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
         <div class="flex items-center justify-center gap-3 mb-6">
-          <h2 class="text-3xl font-bold text-gray-800">🏆 Таблица лидеров</h2>
+          <h2 class="text-3xl font-bold text-gray-800">Таблица лидеров</h2>
           <span id="liveIndicator" style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;animation:pulse 2s infinite">● LIVE</span>
           <button onclick="togglePtsInfo()" title="Как считаются баллы?"
             style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--text-muted);background:transparent;color:var(--text-muted);font-size:0.75rem;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s"
@@ -981,7 +1008,7 @@
           <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa">📐 Как считаются баллы (pts)?</p>
           <p style="color:var(--text-muted);line-height:1.5">
             <b style="color:var(--text-main)">pts = правильные ответы × множитель сложности</b><br>
-            🟢 Лёгкий ×1 &nbsp;·&nbsp; 🟡 Средний ×2 &nbsp;·&nbsp; 🔴 Сложный ×3
+            <span style="color:#10b981">●</span> Лёгкий ×1 &nbsp;·&nbsp; <span style="color:#f59e0b">●</span> Средний ×2 &nbsp;·&nbsp; <span style="color:#ef4444">●</span> Сложный ×3
           </p>
           <p style="color:var(--text-muted);margin-top:0.4rem;line-height:1.5">
             Из всех попыток берётся <b style="color:var(--text-main)">лучший результат</b> на каждую уникальную комбинацию раздел&nbsp;+&nbsp;сложность. Итоговый рейтинг — сумма лучших результатов по всем комбинациям.
@@ -1015,7 +1042,7 @@
     <div class="max-w-2xl mx-auto fade-in">
       <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
       <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">👥 Пользователи</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Пользователи</h2>
         <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
         <div class="relative mb-4">
           <input id="searchInputField" type="text" placeholder="🔍  Поиск по имени..." class="auth-input mb-0 w-full" autocomplete="off">
@@ -1050,13 +1077,13 @@
   <div class="max-w-md w-full mx-auto px-4 fade-in">
     <div class="auth-card">
       <div style="text-align:center;margin-bottom:1.5rem">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem">🔐</div>
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:white"><i data-lucide="lock" style="width:26px;height:26px"></i></div>
         <div class="auth-title">Новый пароль</div>
         <div class="auth-subtitle">Придумайте надёжный пароль</div>
       </div>
       <div style="position:relative;margin-bottom:0.75rem">
         <input id="newPassword" type="password" placeholder="Новый пароль" class="auth-input" style="margin-bottom:0;padding-right:3rem">
-        <button onclick="togglePasswordVisibility('newPassword','eyeNew')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.1rem" id="eyeNew">👁</button>
+        <button onclick="togglePasswordVisibility('newPassword','eyeNew')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8" id="eyeNew"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
       </div>
       <div id="strengthBar" style="height:4px;border-radius:2px;margin-bottom:0.5rem;background:#e5e7eb;overflow:hidden">
         <div id="strengthFill" style="height:100%;width:0;transition:all 0.3s;border-radius:2px"></div>
@@ -1064,15 +1091,15 @@
       <p id="strengthText" class="text-xs mb-3" style="color:#94a3b8"></p>
       <div style="position:relative;margin-bottom:0.75rem">
         <input id="confirmPassword" type="password" placeholder="Повторите пароль" class="auth-input" style="margin-bottom:0;padding-right:3rem">
-        <button onclick="togglePasswordVisibility('confirmPassword','eyeConfirm')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.1rem" id="eyeConfirm">👁</button>
+        <button onclick="togglePasswordVisibility('confirmPassword','eyeConfirm')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8" id="eyeConfirm"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
       </div>
       <p id="updatePasswordError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
       <button id="updatePasswordBtn" onclick="handleUpdatePassword()" class="auth-btn-primary">Сохранить пароль</button>
       <div style="margin-top:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px">
         <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.4rem;font-weight:600">Требования:</p>
-        <div id="req1" style="font-size:0.75rem;color:#94a3b8">⚪ Минимум 6 символов</div>
-        <div id="req2" style="font-size:0.75rem;color:#94a3b8">⚪ Содержит цифры</div>
-        <div id="req3" style="font-size:0.75rem;color:#94a3b8">⚪ Содержит буквы</div>
+        <div id="req1" style="font-size:0.75rem;color:#94a3b8">Минимум 6 символов</div>
+        <div id="req2" style="font-size:0.75rem;color:#94a3b8">Содержит цифры</div>
+        <div id="req3" style="font-size:0.75rem;color:#94a3b8">Содержит буквы</div>
       </div>
     </div>
   </div>
@@ -1114,13 +1141,10 @@
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark')
       localStorage.setItem('theme', isDark ? 'dark' : 'light')
-      const icon = isDark ? '☀️' : '🌙'
-      const btn = document.getElementById('themeToggle')
-      if (btn) btn.textContent = icon
-      const dhBtn = document.getElementById('dhTheme')
-      if (dhBtn) dhBtn.textContent = icon
       document.body.classList.toggle('dark-theme', isDark)
       document.body.classList.toggle('light-theme', !isDark)
+      // Update settings button if visible
+      if (window.syncSettingsBtns) window.syncSettingsBtns()
     }
   </script>
   <script type="module" src="js/script.js"></script>
@@ -1135,11 +1159,8 @@
       document.body.classList.toggle('dark-theme', isDark);
       document.body.classList.toggle('light-theme', !isDark);
       document.addEventListener('DOMContentLoaded', function() {
-        const icon = isDark ? '☀️' : '🌙';
-        const btn = document.getElementById('themeToggle');
-        if (btn) btn.textContent = icon;
-        const dhBtn = document.getElementById('dhTheme');
-        if (dhBtn) dhBtn.textContent = icon;
+        document.body.classList.toggle('dark-theme', isDark)
+        document.body.classList.toggle('light-theme', !isDark)
       });
     })();
   </script>
@@ -1153,7 +1174,7 @@
     padding:1.5rem;width:100%;max-width:460px;max-height:80vh;overflow-y:auto;
     box-shadow:0 25px 60px rgba(0,0,0,0.5)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-      <h2 style="font-size:1.2rem;font-weight:700;color:#f1f5f9">🌟 Лидеры сегодня</h2>
+      <h2 style="font-size:1.2rem;font-weight:700;color:#f1f5f9">Лидеры сегодня</h2>
       <button onclick="document.getElementById('dailyLeaderboardModal').style.display='none'"
         style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
         color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
@@ -1172,7 +1193,7 @@
     box-shadow:0 25px 60px rgba(0,0,0,0.55);position:relative">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
-      <h2 style="font-size:1.25rem;font-weight:700;color:#f1f5f9">⚔️ 1v1 Дуэль</h2>
+      <h2 style="font-size:1.25rem;font-weight:700;color:#f1f5f9">1v1 Дуэль</h2>
       <button onclick="closeDuelModal()"
         style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
         color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
@@ -1201,9 +1222,9 @@
       </div>
       <!-- Раздел -->
       <div style="margin-bottom:10px">
-        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">📚 Раздел</div>
+        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Раздел</div>
         <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
-          <button class="duel-pick-btn active" data-sect="mixed" onclick="setDuelSection('mixed')">🎲 Все</button>
+          <button class="duel-pick-btn active" data-sect="mixed" onclick="setDuelSection('mixed')">Все</button>
           <button class="duel-pick-btn" data-sect="integrals" onclick="setDuelSection('integrals')">∫ Интегралы</button>
           <button class="duel-pick-btn" data-sect="derivatives" onclick="setDuelSection('derivatives')">f' Производные</button>
           <button class="duel-pick-btn" data-sect="series" onclick="setDuelSection('series')">∑ Ряды</button>
@@ -1213,7 +1234,7 @@
       </div>
       <!-- Уровень -->
       <div style="margin-bottom:14px">
-        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">⚡ Уровень</div>
+        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Уровень</div>
         <div style="display:flex;gap:5px" id="duelDiffPicker">
           <button class="duel-pick-btn" data-diff="easy" onclick="setDuelDiff('easy')">Лёгкий</button>
           <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
@@ -1232,7 +1253,7 @@
         style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
                box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
-        ⚔️ Создать дуэль
+        Создать дуэль
       </button>
     </div>
     <!-- Join tab -->
@@ -1250,12 +1271,13 @@
         style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
                box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
-        🚀 Подключиться
+        Подключиться
       </button>
     </div>
     <!-- Lobby (waiting / countdown) -->
     <div id="duelLobby" style="display:none;text-align:center">
-      <div style="font-size:3rem;margin-bottom:0.5rem">⏳</div>
+      <div style="width:44px;height:44px;border-radius:50%;border:3px solid rgba(139,92,246,0.2);border-top-color:#c4b5fd;animation:spin 0.9s linear infinite;margin:0 auto 0.75rem"></div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
       <div id="duelLobbyMsg" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-bottom:0.5rem">Ожидаем соперника…</div>
       <div id="duelLobbyPlayers" style="color:#94a3b8;font-size:0.85rem;margin-bottom:1.2rem"></div>
       <div id="duelStartCountdown" style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
@@ -1271,7 +1293,7 @@
   <div style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
     padding:2rem;width:100%;max-width:420px;text-align:center;
     box-shadow:0 25px 60px rgba(0,0,0,0.55)">
-    <div id="duelResultsEmoji" style="font-size:4rem;margin-bottom:0.5rem">🏆</div>
+    <div id="duelResultsEmoji" style="font-size:3rem;margin-bottom:0.5rem;line-height:1">🏆</div>
     <h2 id="duelResultsTitle" style="font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem"></h2>
     <div id="duelResultsScores" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem"></div>
     <!-- Баннер входящего запроса реванша -->
@@ -1280,17 +1302,17 @@
       <p id="rematchRequesterName" style="color:#c4b5fd;font-weight:600;margin:0 0 0.6rem"></p>
       <div style="display:flex;gap:8px;justify-content:center">
         <button onclick="acceptRematch()" style="padding:7px 18px;border-radius:8px;border:none;
-          cursor:pointer;font-weight:700;background:#10b981;color:white">✅ Принять</button>
+          cursor:pointer;font-weight:700;background:#10b981;color:white">Принять</button>
         <button onclick="declineRematch()" style="padding:7px 18px;border-radius:8px;
           border:1px solid rgba(100,116,139,0.4);background:transparent;color:#94a3b8;
-          cursor:pointer;font-weight:600">❌ Отказать</button>
+          cursor:pointer;font-weight:600">Отказать</button>
       </div>
     </div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
       <button id="rematchBtn" onclick="requestRematch()"
         style="padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
                background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:0.95rem">
-        🔄 Реванш!
+        Реванш
       </button>
       <button onclick="document.getElementById('duelResultsModal').style.display='none'"
         style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
@@ -1303,8 +1325,8 @@
 <div id="duelInviteBanner" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:350px; padding:1rem; border-radius:12px; background:rgba(30,41,59,0.95); backdrop-filter:blur(8px); border:1px solid rgba(139,92,246,0.6); box-shadow:0 10px 25px rgba(0,0,0,0.5); text-align:center;">
   <p id="duelInviterName" style="color:#c4b5fd; font-weight:600; margin:0 0 1rem; font-size:1.05rem;"></p>
   <div style="display:flex; gap:10px; justify-content:center;">
-    <button onclick="acceptDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#10b981; color:white; transition:opacity 0.2s;">✅ Принять</button>
-    <button onclick="declineDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">❌ Отказать</button>
+    <button onclick="acceptDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#10b981; color:white; transition:opacity 0.2s;">Принять</button>
+    <button onclick="declineDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">Отказать</button>
   </div>
 </div>
 </body>

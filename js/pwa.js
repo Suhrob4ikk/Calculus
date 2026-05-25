@@ -28,6 +28,8 @@ window.addEventListener('appinstalled', () => {
   _deferredInstallPrompt = null
   const btn = document.getElementById('installAppBtn')
   if (btn) btn.style.display = 'none'
+  const btnProfile = document.getElementById('installAppBtnProfile')
+  if (btnProfile) btnProfile.style.display = 'none'
 })
 window.installApp = async function() {
   if (!_deferredInstallPrompt) return
@@ -76,13 +78,15 @@ window.togglePushNotifications = async function() {
   const existing = await reg.pushManager.getSubscription()
   if (existing) {
     await unsubscribePush()
-    btn.textContent = '🔔 Включить уведомления'
+    btn.innerHTML = '<i data-lucide="bell" style="width:14px;height:14px"></i> Включить уведомления'
+    if (window.lucide) window.lucide.createIcons({ el: btn })
     btn.classList.remove('active-push')
     localStorage.setItem('pushEnabled', 'false')
   } else {
     const sub = await subscribePush()
     if (sub) {
-      btn.textContent = '🔕 Отключить уведомления'
+      btn.innerHTML = '<i data-lucide="bell-off" style="width:14px;height:14px"></i> Отключить уведомления'
+      if (window.lucide) window.lucide.createIcons({ el: btn })
       btn.classList.add('active-push')
       localStorage.setItem('pushEnabled', 'true')
     }

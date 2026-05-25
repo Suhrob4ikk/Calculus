@@ -66,7 +66,7 @@ async function handleAvatarUpload(event) {
   if (file.size > 2 * 1024 * 1024) { alert('Файл слишком большой. Максимум 2MB'); return }
 
   const btn = document.getElementById('avatarUploadBtn')
-  if (btn) { btn.textContent = '⏳ Загрузка...'; btn.disabled = true }
+  if (btn) { btn.innerHTML = '…'; btn.disabled = true }
 
   const { url, error } = await uploadAvatar(st.currentUser.id, file)
   if (error) {
@@ -80,12 +80,25 @@ async function handleAvatarUpload(event) {
     const dhLetter = document.getElementById('dhAvatarLetter')
     if (dhImg)    { dhImg.src = url; dhImg.style.display = 'block' }
     if (dhLetter) dhLetter.style.display = 'none'
+    const sbImg    = document.getElementById('sbAvatarImg')
+    const sbLetter = document.getElementById('sbAvatarLetter')
+    if (sbImg)    { sbImg.src = url; sbImg.style.display = 'block' }
+    if (sbLetter) sbLetter.style.display = 'none'
     if (btn) {
-      btn.textContent = '✅ Загружено!'
-      setTimeout(() => { btn.textContent = '📷 Сменить фото'; btn.disabled = false }, 2000)
+      btn.innerHTML = '<i data-lucide="check" style="width:14px;height:14px"></i>'
+      if (window.lucide) window.lucide.createIcons({ el: btn })
+      setTimeout(() => {
+        btn.innerHTML = '<i data-lucide="camera" style="width:14px;height:14px"></i>'
+        if (window.lucide) window.lucide.createIcons({ el: btn })
+        btn.disabled = false
+      }, 2000)
     }
   }
-  if (btn && btn.disabled) { btn.textContent = '📷 Сменить фото'; btn.disabled = false }
+  if (btn && btn.disabled) {
+    btn.innerHTML = '<i data-lucide="camera" style="width:14px;height:14px"></i>'
+    if (window.lucide) window.lucide.createIcons({ el: btn })
+    btn.disabled = false
+  }
 }
 
 // ── Профиль ───────────────────────────────────────────────
@@ -131,6 +144,10 @@ window.showProfile = async function() {
       const dhLetter = document.getElementById('dhAvatarLetter')
       if (dhImg)    dhImg.style.display = 'none'
       if (dhLetter) dhLetter.style.display = ''
+      const sbImg    = document.getElementById('sbAvatarImg')
+      const sbLetter = document.getElementById('sbAvatarLetter')
+      if (sbImg)    { sbImg.src = ''; sbImg.style.display = 'none' }
+      if (sbLetter) sbLetter.style.display = ''
       updateUserUI()
     }
   }, 50)
@@ -153,6 +170,10 @@ window.showProfile = async function() {
       const dhLetter = document.getElementById('dhAvatarLetter')
       if (dhImg)    { dhImg.src = url; dhImg.style.display = 'block' }
       if (dhLetter) dhLetter.style.display = 'none'
+      const sbImg    = document.getElementById('sbAvatarImg')
+      const sbLetter = document.getElementById('sbAvatarLetter')
+      if (sbImg)    { sbImg.src = url; sbImg.style.display = 'block' }
+      if (sbLetter) sbLetter.style.display = 'none'
     } else {
       avatarImg.style.display = 'none'
       if (avatar) avatar.style.display = 'flex'
@@ -160,6 +181,10 @@ window.showProfile = async function() {
       const dhLetter = document.getElementById('dhAvatarLetter')
       if (dhImg)    dhImg.style.display = 'none'
       if (dhLetter) { dhLetter.textContent = username[0]?.toUpperCase() || '?'; dhLetter.style.display = '' }
+      const sbImg    = document.getElementById('sbAvatarImg')
+      const sbLetter = document.getElementById('sbAvatarLetter')
+      if (sbImg)    sbImg.style.display = 'none'
+      if (sbLetter) { sbLetter.textContent = username[0]?.toUpperCase() || '?'; sbLetter.style.display = '' }
     }
   }
 
@@ -251,10 +276,12 @@ window.showProfile = async function() {
   }).join('')
 
   profileContent.innerHTML = `
-    <h3 class="text-lg font-bold text-slate-200 mb-3">🎮 Уровень</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">Уровень</h3>
     <div class="rounded-xl p-4 mb-4" style="background:linear-gradient(135deg,${level.color}18,${level.color}08);border:1.5px solid ${level.color}30">
       <div class="flex items-center gap-3 mb-2">
-        <span style="font-size:2rem">${level.icon}</span>
+        <div style="width:36px;height:36px;border-radius:10px;background:${level.color}22;border:1.5px solid ${level.color}44;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:1.3rem">${level.icon}</span>
+        </div>
         <div>
           <div class="font-bold text-lg" style="color:${level.color}">${level.name}</div>
           ${level.next ? `<div class="text-xs text-slate-400">Следующий: ${level.next}</div>` : '<div class="text-xs text-slate-400">Максимальный уровень!</div>'}
@@ -265,9 +292,9 @@ window.showProfile = async function() {
       </div>
     </div>
 
-    <button id="installAppBtnProfile" onclick="installApp()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:8px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-top:1rem;">📲 Установить приложение</button>
+    <button id="installAppBtnProfile" onclick="installApp()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(139,92,246,0.2));border:1px solid rgba(59,130,246,0.35);color:#93c5fd;padding:8px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-top:1rem;"><i data-lucide="download" style="width:14px;height:14px"></i> Установить приложение</button>
 
-    <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Статистика</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">Статистика</h3>
     <div class="grid grid-cols-3 gap-3 mb-4">
       <div class="profile-stat"><div class="profile-stat-value">${total}</div><div class="profile-stat-label">Тестов</div></div>
       <div class="profile-stat"><div class="profile-stat-value">${best}%</div><div class="profile-stat-label">Лучший</div></div>
@@ -275,19 +302,19 @@ window.showProfile = async function() {
     </div>
 
     ${recent.length > 1 ? `
-    <h3 class="text-lg font-bold text-slate-200 mb-3">📈 График прогресса</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">График прогресса</h3>
     <div class="rounded-xl p-4 mb-4" style="background:var(--bg-card)">
       <div class="flex items-end gap-1" style="height:100px">${chartBars}</div>
     </div>` : ''}
 
-    <h3 class="text-lg font-bold text-slate-200 mb-3">🏅 Достижения</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">Достижения</h3>
     <div class="flex flex-wrap gap-2 mb-4">
       ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-slate-400 text-sm">Пройдите больше тестов!</p>'}
     </div>
 
     ${compareHTML}
 
-    <h3 class="text-lg font-bold text-slate-200 mb-3">⭐ Лучшие результаты</h3>
+    <h3 class="text-lg font-bold text-slate-200 mb-3">Лучшие результаты</h3>
     <div class="space-y-2">
       ${bestResults.map(r => `
         <div class="flex justify-between items-center p-3 rounded-xl" style="background:var(--bg-card)">
@@ -308,7 +335,6 @@ window.showProfile = async function() {
     if (duels && duels.length > 0) {
       const rows = duels.map(d => {
         const date  = new Date(d.created_at).toLocaleDateString('ru', { day: 'numeric', month: 'short' })
-        const rIcon = d.result==='win'?'🏆':d.result==='draw'?'🤝':d.result==='loss'?'💪':'❓'
         const rText = d.result==='win'?'Победа':d.result==='draw'?'Ничья':d.result==='loss'?'Поражение':'Ожидание'
         const rClr  = d.result==='win'?'#10b981':d.result==='draw'?'#f59e0b':'#ef4444'
         const opp   = d.opponent
@@ -319,7 +345,7 @@ window.showProfile = async function() {
             padding:10px 14px;border-radius:12px;background:rgba(139,92,246,0.1);
             border:1px solid rgba(139,92,246,0.2);margin-bottom:6px">
             <div>
-              <div style="font-weight:600;color:var(--text-main);font-size:0.9rem">${rIcon} ${rText}</div>
+              <div style="font-weight:600;color:${rClr};font-size:0.9rem">${rText}</div>
               <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px">${opp} · ${date}</div>
             </div>
             <div style="text-align:right">
@@ -329,7 +355,7 @@ window.showProfile = async function() {
           </div>`
       }).join('')
       block.innerHTML = `
-        <h3 class="text-lg font-bold text-slate-200 mb-3" style="margin-top:1rem">⚔️ Дуэли</h3>
+        <h3 class="text-lg font-bold text-slate-200 mb-3" style="margin-top:1rem">Дуэли</h3>
         ${rows}`
     }
   }

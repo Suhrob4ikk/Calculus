@@ -12,6 +12,7 @@ export function startTimer() {
     updateTimerDisplay()
     if (st.timeRemaining <= 0) {
       clearInterval(st.testTimer)
+      st.testTimer = null   // Bug 6 fix: null out so stale interval can't fire again
       const timerEl = document.getElementById('timerDisplay')
       if (timerEl) {
         timerEl.textContent = '⏱️ Время вышло!'
@@ -119,7 +120,7 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   document.getElementById('totalQuestions').textContent = st.currentTest.length
   const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }[section] || section
   const diffName    = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
-  document.getElementById('testTitle').textContent      = `${st.isStudyMode ? '📖 Изучение' : 'Тест'}: ${sectionName}`
+  document.getElementById('testTitle').textContent      = `${st.isStudyMode ? 'Изучение' : 'Тест'}: ${sectionName}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName}${st.isStudyMode ? ' · Без таймера · Результат не сохраняется' : ''}`
   const timerEl = document.getElementById('timerDisplay')
   if (timerEl) timerEl.style.display = st.isStudyMode ? 'none' : ''
@@ -281,6 +282,8 @@ window.finishTest = async function() {
 
   // ── Дуэль ──────────────────────────────────────────────
   if (st.currentSection === 'duel') {
+    // Set phase to finished so no late event can restart the test
+    if (window._duelPhase !== undefined) window._duelPhase = 'finished'
     window._duelMyScore = percentage
     window._broadcastDuelScore?.(percentage)
     if (st.currentUser) {
@@ -297,7 +300,6 @@ window.finishTest = async function() {
     const xpGained = correct * (XP_TABLE[window._duelDiff] || 20)
     const newXP = addXP(xpGained)
     setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
-    window._finishInProgress = false
     clearTestState()
     showPage('resultsPage')
     playSound(percentage === 100 ? 'perfect' : 'finish')
@@ -306,8 +308,9 @@ window.finishTest = async function() {
     scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
     document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
     document.getElementById('detailedResults').innerHTML =
-      `<p style="color:#94a3b8;text-align:center;padding:1rem">⏳ Ожидаем результата соперника…</p>`
-    if (window._duelOpponentTimeout) clearTimeout(window._duelOpponentTimeout)
+      `<p style="color:#94a3b8;text-align:center;padding:1rem">Ожидаем результата соперника…</p>`
+    // Cancel any existing opponent timeout before setting a new one
+    if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
     const _duelWaitMs = Math.max((st.timeRemaining + 30) * 1000, 15000)
     window._duelOpponentTimeout = setTimeout(() => {
       if (window._duelOpponentScore === null) {
@@ -315,6 +318,7 @@ window.finishTest = async function() {
         window._showDuelResults?.()
       }
     }, _duelWaitMs)
+    window._finishInProgress = false   // Bug 5 fix: reset only after all sync work
     window._checkDuelComplete?.()
     return
   }
@@ -358,7 +362,7 @@ window.finishTest = async function() {
   scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
 
   const username = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0] || 'Студент'
-  const comments = { 100: '🏆 Феноменально! Все баллы!', 90: '🌟 Отлично!', 70: '✅ Хорошо! Можно ещё лучше.', 50: '📚 Неплохо, но есть над чем поработать.', 0: '💪 Не отчаивайся, попробуй ещё раз!' }
+  const comments = { 100: 'Феноменально! Все баллы!', 90: 'Отлично!', 70: 'Хорошо! Можно ещё лучше.', 50: 'Неплохо, но есть над чем поработать.', 0: 'Не отчаивайся, попробуй ещё раз!' }
   const comment = Object.entries(comments).reverse().find(([k]) => percentage >= +k)?.[1] || comments[0]
   document.getElementById('scoreText').textContent = `${username}, ${comment}`
 

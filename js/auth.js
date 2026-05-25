@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasLength = val.length >= 6
     const hasDigit  = /\d/.test(val)
     const hasLetter = /[a-zA-Zа-яА-Я]/.test(val)
-    if (req1) req1.textContent = (hasLength ? '✅' : '⚪') + ' Минимум 6 символов'
-    if (req2) req2.textContent = (hasDigit  ? '✅' : '⚪') + ' Содержит цифры'
-    if (req3) req3.textContent = (hasLetter ? '✅' : '⚪') + ' Содержит буквы'
+    if (req1) { req1.textContent = 'Минимум 6 символов'; req1.style.color = hasLength ? '#10b981' : '#94a3b8' }
+    if (req2) { req2.textContent = 'Содержит цифры';    req2.style.color = hasDigit  ? '#10b981' : '#94a3b8' }
+    if (req3) { req3.textContent = 'Содержит буквы';    req3.style.color = hasLetter ? '#10b981' : '#94a3b8' }
     const score = [hasLength, hasDigit, hasLetter].filter(Boolean).length
     const colors = ['', '#ef4444', '#f59e0b', '#10b981']
     const labels = ['', 'Слабый', 'Средний', 'Надёжный']

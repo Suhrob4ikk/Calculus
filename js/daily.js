@@ -70,7 +70,7 @@ window.startDailyChallenge = async function() {
   st.timerInitialTime  = st.timeRemaining
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = st.currentTest.length
-  document.getElementById('testTitle').textContent      = '🌟 Ежедневный вызов'
+  document.getElementById('testTitle').textContent      = 'Ежедневный вызов'
   document.getElementById('difficultyLabel').textContent = `${today} · 10 вопросов из всех разделов`
   startTimer()
   displayQuestion()
@@ -103,7 +103,7 @@ export async function updateDailyChallengeCard() {
       tick(); window._dailyCountdownInterval = setInterval(tick, 1000)
     }
   } else {
-    btn.textContent = '🎯 Начать'; btn.style.background = ''
+    btn.textContent = 'Начать'; btn.style.background = ''
     if (countdown) countdown.textContent = ''
     if (card) card.onclick = window.startDailyChallenge
   }

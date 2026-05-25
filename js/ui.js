@@ -104,6 +104,29 @@ export function showPage(pageId) {
   document.querySelectorAll('#desktopNav .dh-nav-btn').forEach(b => b.classList.remove('dh-active'))
   const dhActive = dhMap[pageId]
   if (dhActive) document.getElementById(dhActive)?.classList.add('dh-active')
+
+  // Боковая панель: видимость + активная кнопка
+  const desktopSidebar = document.getElementById('desktopSidebar')
+  if (desktopSidebar) desktopSidebar.style.display = showNav ? '' : 'none'
+
+  const sbMap = {
+    homePage:           'sbHome',
+    integralsSection:   'sbHome',
+    derivativesSection: 'sbHome',
+    seriesSection:      'sbHome',
+    limitsSection:      'sbHome',
+    odeSection:         'sbHome',
+    theoryPage:         'sbHome',
+    testPage:           'sbHome',
+    resultsPage:        'sbHome',
+    statisticsPage:     'sbStats',
+    leaderboardPage:    'sbLeader',
+    searchProfilesPage: 'sbPeople',
+    viewProfilePage:    'sbPeople',
+  }
+  document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
+  const sbActive = sbMap[pageId]
+  if (sbActive) document.getElementById(sbActive)?.classList.add('sb-active')
 }
 
 export function updateUserUI() {
@@ -120,6 +143,12 @@ export function updateUserUI() {
   const dhLetter   = document.getElementById('dhAvatarLetter')
   if (dhUsername) dhUsername.textContent = username
   if (dhLetter)   dhLetter.textContent   = username[0]?.toUpperCase() || '?'
+
+  // Боковая панель — имя и аватар-буква
+  const sbUsername = document.getElementById('sbUsername')
+  const sbLetter   = document.getElementById('sbAvatarLetter')
+  if (sbUsername) sbUsername.textContent = username
+  if (sbLetter)   sbLetter.textContent   = username[0]?.toUpperCase() || '?'
 }
 
 // ── Навигационное меню (гамбургер) ──────────────────────
@@ -194,7 +223,9 @@ export function syncSettingsBtns() {
 
   const themeBtn = document.getElementById('settingsThemeBtn')
   if (themeBtn) {
-    themeBtn.textContent = isDark ? '🌙 Тёмная' : '☀️ Светлая'
+    const themeIcon = isDark ? 'moon' : 'sun'
+    themeBtn.innerHTML = `<i data-lucide="${themeIcon}" style="width:13px;height:13px"></i> ${isDark ? 'Тёмная' : 'Светлая'}`
+    if (window.lucide) window.lucide.createIcons({ el: themeBtn })
     themeBtn.style.background   = isDark ? 'rgba(59,130,246,0.12)' : 'rgba(234,179,8,0.12)'
     themeBtn.style.borderColor  = isDark ? 'rgba(59,130,246,0.35)'  : 'rgba(234,179,8,0.4)'
     themeBtn.style.color        = isDark ? '#60a5fa'                : '#d97706'
@@ -202,12 +233,17 @@ export function syncSettingsBtns() {
 
   const soundBtn = document.getElementById('settingsSoundBtn')
   if (soundBtn) {
-    soundBtn.textContent        = soundOn ? '🔊 Включён'  : '🔇 Выключен'
+    const soundIcon = soundOn ? 'volume-2' : 'volume-x'
+    soundBtn.innerHTML          = `<i data-lucide="${soundIcon}" style="width:13px;height:13px"></i> ${soundOn ? 'Включён' : 'Выключен'}`
+    if (window.lucide) window.lucide.createIcons({ el: soundBtn })
     soundBtn.style.background   = soundOn ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.1)'
     soundBtn.style.borderColor  = soundOn ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.3)'
     soundBtn.style.color        = soundOn ? '#34d399'               : '#f87171'
   }
 }
+
+// Expose to window for inline scripts (e.g. toggleTheme in index.html)
+window.syncSettingsBtns = syncSettingsBtns
 
 // ── XP система ───────────────────────────────────────────
 export const XP_TABLE = { easy: 10, medium: 20, hard: 30 }
@@ -289,7 +325,7 @@ export function renderStreakBadge() {
   if (!el) return
   if (streak >= 2) {
     el.style.display = 'flex'
-    el.innerHTML = `🔥 <span style="font-weight:700">${streak}</span> <span style="font-size:0.75rem;opacity:0.8">дней подряд</span>`
+    el.innerHTML = `<span style="font-weight:700">${streak}</span> <span style="font-size:0.75rem;opacity:0.8">дней подряд</span>`
   } else {
     el.style.display = 'none'
   }
