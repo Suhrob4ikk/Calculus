@@ -77,7 +77,9 @@ export function showPage(pageId) {
     leaderboardPage:    { label: '← Главная',   fn: 'showHome()' },
     profilePage:        { label: '← Главная',   fn: 'showHome()' },
     searchProfilesPage: { label: '← Главная',   fn: 'showHome()' },
-    viewProfilePage:    { label: '← Поиск',     fn: 'showSearchProfiles()' },
+    viewProfilePage:    window._viewProfileFrom === 'leaderboardPage'
+      ? { label: '← Рейтинг', fn: 'showLeaderboard()' }
+      : { label: '← Поиск',   fn: 'showSearchProfiles()' },
   }
   const mbb   = document.getElementById('mobileBackBar')
   const mbbtn = document.getElementById('mobileBackBtn')
@@ -122,7 +124,7 @@ export function showPage(pageId) {
     statisticsPage:     'sbStats',
     leaderboardPage:    'sbLeader',
     searchProfilesPage: 'sbPeople',
-    viewProfilePage:    'sbPeople',
+    viewProfilePage:    window._viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
   }
   document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
   const sbActive = sbMap[pageId]

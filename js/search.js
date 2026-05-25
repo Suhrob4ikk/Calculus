@@ -71,6 +71,7 @@ window.handleSearch = async function() {
 }
 
 window.viewProfile = async function(username) {
+  window._viewProfileFrom = sessionStorage.getItem('lastPage') || 'searchProfilesPage'
   showPage('viewProfilePage')
   document.getElementById('viewProfileContent').innerHTML = '<p class="text-gray-400 text-center py-8">Загрузка...</p>'
 
