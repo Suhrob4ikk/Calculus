@@ -639,7 +639,7 @@ mjx-container[display="true"] {
    ДЕСКТОП БОКОВАЯ ПАНЕЛЬ (≥1024px)
    ══════════════════════════════════════════════════════════ */
 #desktopSidebar {
-  display: none;
+  /* display управляется только через JS в ui.js */
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: 240px;
@@ -784,12 +784,11 @@ html:not(.dark) .sb-logout-btn {
 }
 
 /* ══════════════════════════════════════════════════════════
-   ДЕСКТОП-ЛЭЙАУТ (≥1024px)
+   ДЕСКТОП-ЛЭЙАУТ (≥900px)
    ══════════════════════════════════════════════════════════ */
-@media (min-width: 1024px) {
-  /* Показываем боковую панель, скрываем верхнюю шапку */
-  #desktopSidebar { display: flex !important; }
-  #desktopNav     { display: none !important; }
+@media (min-width: 900px) {
+  /* Sidebar — display управляется JS; CSS только скрывает верхнюю шапку */
+  #desktopNav { display: none !important; }
 
   /* Кнопка темы — сдвигаем чуть выше, чтобы не перекрывалась */
   #themeToggle { top: 0.65rem; right: 1rem; }

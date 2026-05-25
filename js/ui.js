@@ -48,10 +48,10 @@ export function showPage(pageId) {
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')
   const desktopNav = document.getElementById('desktopNav')
-  const isDesktop = window.innerWidth >= 1024
+  const isDesktop = window.innerWidth >= 900
   if (bottomNav)  bottomNav.style.display  = showNav ? 'flex' : 'none'
   if (menuBtn)    menuBtn.style.display    = showNav ? '' : 'none'
-  // Верхняя шапка — только на планшете (641–1023px), на десктопе её заменяет sidebar
+  // Верхняя шапка — только на планшете (641–899px), на десктопе её заменяет sidebar
   if (desktopNav) desktopNav.style.display = (showNav && !isDesktop) ? '' : 'none'
   if (!showNav) window.closeNavMenu?.()
 
@@ -112,7 +112,7 @@ export function showPage(pageId) {
   // Боковая панель: видимость + активная кнопка
   const desktopSidebar = document.getElementById('desktopSidebar')
   if (desktopSidebar) {
-    desktopSidebar.style.display = (showNav && window.innerWidth >= 1024) ? 'flex' : 'none'
+    desktopSidebar.style.display = (showNav && window.innerWidth >= 900) ? 'flex' : 'none'
   }
 
   const sbMap = {
@@ -166,8 +166,8 @@ window.addEventListener('resize', () => {
   const noNavPages = ['authPage', 'updatePasswordPage']
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)
   const w = window.innerWidth
-  if (sidebar) sidebar.style.display = (isNavPage && w >= 1024) ? 'flex' : 'none'
-  if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 1024) ? '' : 'none'
+  if (sidebar) sidebar.style.display = (isNavPage && w >= 900) ? 'flex' : 'none'
+  if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 900) ? '' : 'none'
 })
 
 // ── Навигационное меню (гамбургер) ──────────────────────
