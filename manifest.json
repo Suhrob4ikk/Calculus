@@ -1,13 +1,13 @@
 {
-  "name": "Математический анализ",
-  "short_name": "МатАнализ",
-  "description": "Интерактивный тренажёр по матанализу для студентов МГУ Душанбе",
+  "name": "MathCore",
+  "short_name": "MathCore",
+  "description": "Интерактивный тренажёр по высшей математике: интегралы, производные, ряды, пределы, ОДУ, теорвер",
   "start_url": "/Calculus/",
   "scope": "/Calculus/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
+  "background_color": "#03080f",
+  "theme_color": "#38bdf8",
   "lang": "ru",
   "categories": ["education"],
   "icons": [
