@@ -469,15 +469,19 @@ window.finishTest = async function () {
     window._duelMyScore = percentage
     window._broadcastDuelScore?.(percentage)
     if (st.currentUser) {
-      await saveResult({
-        userId: st.currentUser.id,
-        username: window._duelMyName,
-        section: 'duel',
-        difficulty: window._duelCode,
-        score: percentage,
-        correctAnswers: correct,
-        totalQuestions: st.currentTest.length
-      })
+      try {
+        await saveResult({
+          userId: st.currentUser.id,
+          username: window._duelMyName,
+          section: 'duel',
+          difficulty: window._duelCode,
+          score: percentage,
+          correctAnswers: correct,
+          totalQuestions: st.currentTest.length
+        })
+      } catch (e) {
+        console.warn('Duel saveResult failed:', e)
+      }
     }
     const xpGained = correct * (XP_TABLE[window._duelDiff] || 20)
     const newXP = addXP(xpGained)
@@ -508,15 +512,19 @@ window.finishTest = async function () {
   // ── Обычный тест ───────────────────────────────────────
   if (st.currentUser && !st.isStudyMode) {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
-    await saveResult({
-      userId: st.currentUser.id,
-      username,
-      section: st.currentSection,
-      difficulty: st.currentDifficulty,
-      score: percentage,
-      correctAnswers: correct,
-      totalQuestions: st.currentTest.length
-    })
+    try {
+      await saveResult({
+        userId: st.currentUser.id,
+        username,
+        section: st.currentSection,
+        difficulty: st.currentDifficulty,
+        score: percentage,
+        correctAnswers: correct,
+        totalQuestions: st.currentTest.length
+      })
+    } catch (e) {
+      console.warn('saveResult failed:', e)
+    }
   }
   if (st.currentSection === 'daily') {
     const uid = st.currentUser?.id || 'guest'

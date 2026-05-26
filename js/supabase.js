@@ -38,16 +38,27 @@ export async function getUser() {
 
 // ── Результаты ────────────────────────────────────────────
 export async function saveResult({ userId, username, section, difficulty, score, correctAnswers, totalQuestions }) {
-  const { error } = await supabase.from('test_results').insert({
-    user_id: userId,
-    username,
-    section,
-    difficulty,
-    score,
-    correct_answers: correctAnswers,
-    total_questions: totalQuestions
-  })
-  return { error }
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('save_timeout')), 8000)
+  )
+  try {
+    const { error } = await Promise.race([
+      supabase.from('test_results').insert({
+        user_id: userId,
+        username,
+        section,
+        difficulty,
+        score,
+        correct_answers: correctAnswers,
+        total_questions: totalQuestions
+      }),
+      timeout
+    ])
+    return { error }
+  } catch (e) {
+    console.warn('saveResult error:', e.message)
+    return { error: e }
+  }
 }
 
 export async function getUserResults(userId) {
