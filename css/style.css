@@ -1229,11 +1229,12 @@ h1.prob-ch-title {
   background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.17);
   border-left: 3px solid #fbbf24; border-radius: 9px;
   padding: 1rem 1.4rem; margin: 1.1rem 0;
+  overflow-x: auto;
 }
 .ch-content-area .ex b {
-  display: block; color: #fcd34d; font-size: 0.78rem;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  margin-bottom: 0.45rem; font-weight: 700;
+  display: block; color: #fcd34d; font-size: 1.05rem;
+  /* text-transform и letter-spacing убраны: ломают MathJax (y→Y, sinx→SINX) */
+  margin-bottom: 0.5rem; font-weight: 700;
 }
 .ch-content-area .ex p {
   color: #a8cfe0; margin-bottom: 0.45rem; font-size: 1.03rem;
