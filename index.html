@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
@@ -12,7 +13,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="МатАнализ">
   <link rel="apple-touch-icon" href="icons/icon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap"
+    rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="js/mathjax-config.js"></script>
@@ -20,98 +23,421 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .math-bg { position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;width:100vw;height:100vh; }
-    .math-symbol { position:fixed;font-family:'Playfair Display',serif;color:rgba(148,163,184,0.08);user-select:none;animation:floatSymbol linear infinite;pointer-events:none;z-index:0; }
-    .dark .math-symbol { color:rgba(148,163,184,0.07); }
-    @keyframes floatSymbol {
-      0%   { transform:translateY(110vh) rotate(0deg);opacity:0; }
-      5%   { opacity:1; }
-      95%  { opacity:1; }
-      100% { transform:translateY(-10vh) rotate(360deg);opacity:0; }
+    .math-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
     }
-    #authPage { min-height:100vh;align-items:center;justify-content:center;position:relative;z-index:1; }
-    #authPage:not(.hidden) { display:flex; }
-    .auth-card { background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.6);border-radius:24px;box-shadow:0 25px 50px rgba(0,0,0,0.12);padding:2.5rem;width:100%;max-width:420px;position:relative;overflow:hidden; }
-    .dark .auth-card { background:rgba(30,41,59,0.92);border-color:rgba(51,65,85,0.6);box-shadow:0 25px 50px rgba(0,0,0,0.4); }
-    .auth-card::before { content:'';position:absolute;top:-2px;left:-2px;right:-2px;height:4px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#06b6d4);border-radius:24px 24px 0 0; }
-    .auth-logo { font-family:'Playfair Display',serif;font-size:3rem;text-align:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.25rem; }
-    .auth-title { font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-align:center;color:#1e293b;margin-bottom:0.25rem; }
-    .dark .auth-title { color:#f1f5f9; }
-    .auth-subtitle { text-align:center;color:#64748b;font-size:0.85rem;margin-bottom:1.5rem; }
-    .auth-input { width:100%;padding:0.75rem 1rem;border:1.5px solid #e2e8f0;border-radius:12px;font-size:0.95rem;background:#f8fafc;color:#1e293b;transition:all 0.2s;margin-bottom:0.75rem;outline:none; }
-    .auth-input:focus { border-color:#3b82f6;background:white;box-shadow:0 0 0 3px rgba(59,130,246,0.1); }
-    .dark .auth-input { background:#0f172a;border-color:#334155;color:#f1f5f9; }
-    .dark .auth-input:focus { border-color:#60a5fa;background:#1e293b; }
-    .auth-btn-primary { width:100%;padding:0.85rem;border-radius:12px;font-weight:600;font-size:0.95rem;cursor:pointer;transition:all 0.2s;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;box-shadow:0 4px 15px rgba(59,130,246,0.3); }
-    .auth-btn-primary:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,0.4); }
-    .auth-btn-register { background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 15px rgba(16,185,129,0.3); }
-    .auth-tab { flex:1;padding:0.6rem;text-align:center;font-weight:500;cursor:pointer;border-radius:10px;transition:all 0.2s;font-size:0.9rem; }
-    .auth-tab.active { background:white;color:#3b82f6;box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .dark .auth-tab.active { background:#1e293b;color:#60a5fa; }
-    .auth-tabs-wrap { display:flex;gap:4px;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:1.5rem; }
-    .dark .auth-tabs-wrap { background:#0f172a; }
-    .profile-avatar { width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:white;margin:0 auto 1rem;box-shadow:0 8px 25px rgba(59,130,246,0.3); }
-    .profile-stat { text-align:center;padding:1rem;background:var(--bg-main);border-radius:12px; }
-    .profile-stat-value { font-size:1.8rem;font-weight:700;color:#3b82f6; }
-    .dark .profile-stat-value { color:#60a5fa; }
-    .profile-stat-label { font-size:0.75rem;color:var(--text-muted);margin-top:2px; }
-    .badge { display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600; }
-    .badge-gold { background:#fef3c7;color:#92400e; }
-    .badge-silver { background:#f1f5f9;color:#475569; }
-    .badge-green { background:#ecfdf5;color:#065f46; }
-    .dark .badge-gold { background:#451a03;color:#fcd34d; }
-    .dark .badge-silver { background:#1e293b;color:#94a3b8; }
-    .dark .badge-green { background:#064e3b;color:#6ee7b7; }
-    body { font-family:'IBM Plex Sans',sans-serif; }
-    .hidden { display:none !important; }
-    .page-content { position:relative;z-index:1;margin-left:0; }
+
+    .math-symbol {
+      position: fixed;
+      font-family: 'Playfair Display', serif;
+      color: rgba(148, 163, 184, 0.08);
+      user-select: none;
+      animation: floatSymbol linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .dark .math-symbol {
+      color: rgba(56, 189, 248, 0.06);
+    }
+
+    @keyframes floatSymbol {
+      0% {
+        transform: translateY(110vh) rotate(0deg);
+        opacity: 0;
+      }
+
+      5% {
+        opacity: 1;
+      }
+
+      95% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #authPage {
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    #authPage:not(.hidden) {
+      display: flex;
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dark .auth-card {
+      background: rgba(7, 21, 37, 0.96);
+      border-color: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      height: 4px;
+      background: linear-gradient(90deg, #0ea5e9, #38bdf8, #a78bfa);
+      border-radius: 24px 24px 0 0;
+    }
+
+    .auth-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      text-align: center;
+      background: linear-gradient(135deg, #38bdf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .dark .auth-title {
+      color: #f1f5f9;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background: #f8fafc;
+      color: #1e293b;
+      transition: all 0.2s;
+      margin-bottom: 0.75rem;
+      outline: none;
+    }
+
+    .auth-input:focus {
+      border-color: #38bdf8;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    }
+
+    .dark .auth-input {
+      background: #0e2236;
+      border-color: rgba(56, 189, 248, 0.2);
+      color: #dff0ff;
+    }
+
+    .dark .auth-input:focus {
+      border-color: #38bdf8;
+      background: #071525;
+    }
+
+    .auth-btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: white;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    .auth-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+    }
+
+    .auth-btn-register {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 0.6rem;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .auth-tab.active {
+      background: #071525;
+      color: #38bdf8;
+    }
+
+    .auth-tabs-wrap {
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .dark .auth-tabs-wrap {
+      background: #03080f;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 1rem;
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.35);
+    }
+
+    .profile-stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-main);
+      border-radius: 12px;
+    }
+
+    .profile-stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0ea5e9;
+    }
+
+    .dark .profile-stat-value {
+      color: #38bdf8;
+    }
+
+    .profile-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-gold {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-silver {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .badge-green {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .dark .badge-gold {
+      background: #451a03;
+      color: #fcd34d;
+    }
+
+    .dark .badge-silver {
+      background: #1e293b;
+      color: #94a3b8;
+    }
+
+    .dark .badge-green {
+      background: #064e3b;
+      color: #6ee7b7;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+      margin-left: 0;
+    }
+
     /* На мобильных — только нижняя панель; на десктопе — только гамбургер */
-    @media (max-width: 640px) { #menuBtn, #navMenu { display: none !important; } }
+    @media (max-width: 640px) {
+
+      #menuBtn,
+      #navMenu {
+        display: none !important;
+      }
+    }
 
     /* ── Выдвижное меню ─────────────────────────────────── */
     #menuBtn {
-      position:fixed;top:1rem;left:1rem;z-index:1003;
-      background:rgba(15,23,42,0.85);backdrop-filter:blur(12px);
-      border:1px solid rgba(148,163,184,0.15);border-radius:10px;
-      color:#94a3b8;width:2.4rem;height:2.4rem;font-size:1.25rem;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:all 0.2s;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1003;
+      background: rgba(3, 8, 15, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      color: #3a6480;
+      width: 2.4rem;
+      height: 2.4rem;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
     }
-    #menuBtn:hover { background:rgba(59,130,246,0.2);color:#60a5fa; }
+
+    #menuBtn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+    }
+
     #navMenu {
-      position:fixed;top:4.2rem;left:1rem;z-index:1002;
-      background:rgba(10,18,38,0.97);backdrop-filter:blur(18px);
-      border:1px solid rgba(148,163,184,0.15);border-radius:14px;
-      padding:6px;min-width:175px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.5);
+      position: fixed;
+      top: 4.2rem;
+      left: 1rem;
+      z-index: 1002;
+      background: rgba(3, 8, 15, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 189, 248, 0.13);
+      border-radius: 14px;
+      padding: 6px;
+      min-width: 175px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
     }
+
     .nav-menu-item {
-      display:flex;align-items:center;gap:9px;width:100%;
-      padding:9px 12px;border-radius:8px;background:none;border:none;
-      cursor:pointer;color:#94a3b8;font-size:0.9rem;font-weight:500;
-      text-align:left;transition:all 0.2s;white-space:nowrap;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #3a6480;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: left;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
-    .nav-menu-item:hover { background:rgba(59,130,246,0.15);color:#93c5fd; }
-    .nav-menu-divider { height:1px;background:rgba(148,163,184,0.12);margin:4px 6px; }
+
+    .nav-menu-item:hover {
+      background: rgba(56, 189, 248, 0.1);
+      color: #7eb8d8;
+    }
+
+    .nav-menu-divider {
+      height: 1px;
+      background: rgba(148, 163, 184, 0.12);
+      margin: 4px 6px;
+    }
+
     /* Кнопки секций/уровня дуэли */
     .duel-pick-btn {
-      padding:5px 11px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);
-      background:transparent;color:#94a3b8;font-size:0.8rem;cursor:pointer;
-      transition:all 0.2s;font-family:inherit;
+      padding: 5px 11px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: transparent;
+      color: #3a6480;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
     }
+
     .duel-pick-btn.active {
-      background:rgba(139,92,246,0.3);color:#c4b5fd;
-      border-color:rgba(139,92,246,0.65);
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.5);
     }
+
     body.light-theme #menuBtn {
-      background:rgba(255,255,255,0.92);border-color:rgba(165,180,252,0.6);color:#4f46e5;
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(165, 180, 252, 0.6);
+      color: #4f46e5;
     }
+
     body.light-theme #navMenu {
-      background:rgba(255,255,255,0.97);border-color:rgba(165,180,252,0.5);
-      box-shadow:0 8px 30px rgba(99,102,241,0.15);
+      background: rgba(255, 255, 255, 0.97);
+      border-color: rgba(165, 180, 252, 0.5);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
     }
-    body.light-theme .nav-menu-item { color:#4f46e5; }
-    body.light-theme .nav-menu-item:hover { background:rgba(99,102,241,0.1);color:#2563eb; }
+
+    body.light-theme .nav-menu-item {
+      color: #4f46e5;
+    }
+
+    body.light-theme .nav-menu-item:hover {
+      background: rgba(99, 102, 241, 0.1);
+      color: #2563eb;
+    }
 
     /* Шапка */
     /* header-avatar moved to sidebar */
@@ -120,165 +446,404 @@
     body.light-theme {
       background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%) !important;
     }
-    body.light-theme .math-symbol { color: rgba(99,102,241,0.10) !important; }
+
+    body.light-theme .math-symbol {
+      color: rgba(99, 102, 241, 0.10) !important;
+    }
+
     body.light-theme .glass-panel {
-      background: rgba(255,255,255,0.88) !important;
-      border: 1px solid rgba(165,180,252,0.5) !important;
-      box-shadow: 0 4px 24px rgba(99,102,241,0.10), 0 1px 4px rgba(0,0,0,0.05) !important;
+      background: rgba(255, 255, 255, 0.88) !important;
+      border: 1px solid rgba(165, 180, 252, 0.5) !important;
+      box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10), 0 1px 4px rgba(0, 0, 0, 0.05) !important;
     }
+
     body.light-theme .glass-card {
-      background: rgba(255,255,255,0.75) !important;
-      border: 1px solid rgba(165,180,252,0.3) !important;
+      background: rgba(255, 255, 255, 0.75) !important;
+      border: 1px solid rgba(165, 180, 252, 0.3) !important;
     }
+
     /* Текст читаем на светлом фоне */
-    body.light-theme .text-slate-100  { color: #1e293b !important; }
-    body.light-theme .text-slate-200  { color: #1e293b !important; }
-    body.light-theme .text-slate-300  { color: #334155 !important; }
-    body.light-theme .text-slate-400  { color: #64748b !important; }
-    body.light-theme h1,
-    body.light-theme h2,
-    body.light-theme h3 { color: #0f172a !important; }
-    body.light-theme p   { color: #475569; }
-    body.light-theme .stat-value { color: #2563eb !important; }
-    body.light-theme .stat-label { color: #64748b !important; }
-    body.light-theme .stat-card  {
-      background: rgba(255,255,255,0.7) !important;
-      border: 1px solid rgba(165,180,252,0.4) !important;
-    }
-    body.light-theme .progress-bar { background: #c7d2fe !important; }
-    body.light-theme .option-label {
-      background: rgba(255,255,255,0.9) !important;
-      border-color: rgba(165,180,252,0.4) !important;
+    body.light-theme .text-slate-100 {
       color: #1e293b !important;
     }
-    body.light-theme .option-text { color: #1e293b !important; }
+
+    body.light-theme .text-slate-200 {
+      color: #1e293b !important;
+    }
+
+    body.light-theme .text-slate-300 {
+      color: #334155 !important;
+    }
+
+    body.light-theme .text-slate-400 {
+      color: #64748b !important;
+    }
+
+    body.light-theme h1,
+    body.light-theme h2,
+    body.light-theme h3 {
+      color: #0f172a !important;
+    }
+
+    body.light-theme p {
+      color: #475569;
+    }
+
+    body.light-theme .stat-value {
+      color: #2563eb !important;
+    }
+
+    body.light-theme .stat-label {
+      color: #64748b !important;
+    }
+
+    body.light-theme .stat-card {
+      background: rgba(255, 255, 255, 0.7) !important;
+      border: 1px solid rgba(165, 180, 252, 0.4) !important;
+    }
+
+    body.light-theme .progress-bar {
+      background: #c7d2fe !important;
+    }
+
+    body.light-theme .option-label {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(165, 180, 252, 0.4) !important;
+      color: #1e293b !important;
+    }
+
+    body.light-theme .option-text {
+      color: #1e293b !important;
+    }
+
     body.light-theme input,
     body.light-theme select {
       background: #ffffff !important;
       color: #1e293b !important;
       border-color: #c7d2fe !important;
     }
+
     body.light-theme .auth-card {
-      background: rgba(255,255,255,0.96) !important;
+      background: rgba(255, 255, 255, 0.96) !important;
     }
 
     /* ── Desktop top navigation ──────────────────────────── */
     @media (min-width: 641px) {
-      #menuBtn, #navMenu { display: none !important; }
-      .page-content { padding-top: 3.75rem; }
+
+      #menuBtn,
+      #navMenu {
+        display: none !important;
+      }
+
+      .page-content {
+        padding-top: 3.75rem;
+      }
     }
+
     @media (max-width: 640px) {
-      #desktopNav { display: none !important; }
+      #desktopNav {
+        display: none !important;
+      }
     }
+
     #desktopNav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
-      background: rgba(15,23,42,0.95); backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(148,163,184,0.12); height: 56px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      background: rgba(3, 8, 15, 0.97);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+      height: 56px;
       transition: transform 0.28s ease;
     }
+
     .dh-inner {
-      max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;
-      height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
     }
+
     .dh-logo {
-      font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; flex-shrink: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .dh-links { display: flex; gap: 2px; }
+
+    .dh-links {
+      display: flex;
+      gap: 2px;
+    }
+
     .dh-nav-btn {
-      padding: 6px 13px; border-radius: 8px; border: none; background: transparent;
-      color: #94a3b8; font-size: 0.87rem; font-weight: 500; cursor: pointer;
-      transition: all 0.2s; font-family: inherit; white-space: nowrap;
+      padding: 6px 13px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #3a6480;
+      font-size: 0.87rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
     }
-    .dh-nav-btn:hover { background: rgba(59,130,246,0.15); color: #93c5fd; }
-    .dh-nav-btn.dh-active { background: rgba(59,130,246,0.2); color: #60a5fa; }
-    .dh-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+
+    .dh-nav-btn:hover {
+      background: rgba(56, 189, 248, 0.1);
+      color: #7eb8d8;
+    }
+
+    .dh-nav-btn.dh-active {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+    }
+
+    .dh-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
     .dh-icon-btn {
-      width: 34px; height: 34px; border-radius: 8px;
-      border: 1px solid rgba(148,163,184,0.2); background: rgba(30,41,59,0.6);
-      color: #94a3b8; font-size: 1rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      background: rgba(7, 21, 37, 0.7);
+      color: #3a6480;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
     }
-    .dh-icon-btn:hover { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .dh-icon-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+    }
+
     .dh-user-btn {
-      display: flex; align-items: center; gap: 7px; padding: 4px 10px 4px 4px;
-      border-radius: 20px; border: 1px solid rgba(148,163,184,0.2);
-      background: rgba(30,41,59,0.6); cursor: pointer; transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 10px 4px 4px;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      background: rgba(7, 21, 37, 0.7);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .dh-user-btn:hover { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
+
+    .dh-user-btn:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
     .dh-avatar {
-      width: 27px; height: 27px; border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; color: white; flex-shrink: 0; overflow: hidden;
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      overflow: hidden;
     }
-    .dh-username { font-size: 0.85rem; color: #e2e8f0; font-weight: 500; }
+
+    .dh-username {
+      font-size: 0.85rem;
+      color: #dff0ff;
+      font-weight: 500;
+    }
+
     .dh-logout-btn {
-      padding: 5px 13px; border-radius: 8px;
-      border: 1px solid rgba(239,68,68,0.35); background: rgba(239,68,68,0.12);
-      color: #fca5a5; font-size: 0.82rem; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; font-family: inherit;
+      padding: 5px 13px;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
     }
-    .dh-logout-btn:hover { background: rgba(239,68,68,0.25); color: #f87171; }
+
+    .dh-logout-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+    }
+
     body.light-theme #desktopNav {
-      background: rgba(255,255,255,0.97); border-bottom-color: rgba(165,180,252,0.5);
-      box-shadow: 0 2px 12px rgba(99,102,241,0.08);
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom-color: rgba(165, 180, 252, 0.5);
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
     }
-    body.light-theme .dh-nav-btn { color: #4f46e5; }
-    body.light-theme .dh-nav-btn:hover { background: rgba(99,102,241,0.1); color: #2563eb; }
-    body.light-theme .dh-nav-btn.dh-active { background: rgba(99,102,241,0.15); color: #2563eb; }
+
+    body.light-theme .dh-nav-btn {
+      color: #4f46e5;
+    }
+
+    body.light-theme .dh-nav-btn:hover {
+      background: rgba(99, 102, 241, 0.1);
+      color: #2563eb;
+    }
+
+    body.light-theme .dh-nav-btn.dh-active {
+      background: rgba(99, 102, 241, 0.15);
+      color: #2563eb;
+    }
+
     body.light-theme .dh-icon-btn {
-      background: rgba(255,255,255,0.8); border-color: rgba(165,180,252,0.5); color: #4f46e5;
+      background: rgba(255, 255, 255, 0.8);
+      border-color: rgba(165, 180, 252, 0.5);
+      color: #4f46e5;
     }
+
     body.light-theme .dh-user-btn {
-      background: rgba(255,255,255,0.8); border-color: rgba(165,180,252,0.5);
+      background: rgba(255, 255, 255, 0.8);
+      border-color: rgba(165, 180, 252, 0.5);
     }
-    body.light-theme .dh-username { color: #1e293b; }
+
+    body.light-theme .dh-username {
+      color: #1e293b;
+    }
+
     body.light-theme .dh-logout-btn {
-      border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.08); color: #dc2626;
+      border-color: rgba(220, 38, 38, 0.35);
+      background: rgba(220, 38, 38, 0.08);
+      color: #dc2626;
     }
 
     /* ── Мобильная шапка «Назад» (≤640px) ──────────────── */
     #mobileBackBar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      background: rgba(15,23,42,0.93); backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(148,163,184,0.12);
-      padding: 0 1rem; height: 44px;
-      display: flex; align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(3, 8, 15, 0.97);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+      padding: 0 1rem;
+      height: 44px;
+      display: flex;
+      align-items: center;
       transition: transform 0.28s ease;
     }
+
     #mobileBackBtn {
-      background: none; border: none; color: #93c5fd;
-      font-size: 0.9rem; font-weight: 500; cursor: pointer;
-      display: flex; align-items: center; gap: 0.3rem;
-      padding: 0; font-family: inherit;
+      background: none;
+      border: none;
+      color: #38bdf8;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0;
+      font-family: inherit;
     }
+
     body.light-theme #mobileBackBar {
-      background: rgba(255,255,255,0.97); border-bottom-color: rgba(165,180,252,0.5);
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom-color: rgba(165, 180, 252, 0.5);
     }
-    body.light-theme #mobileBackBtn { color: #2563eb; }
-    @media (min-width: 641px) { #mobileBackBar { display: none !important; } }
+
+    body.light-theme #mobileBackBtn {
+      color: #2563eb;
+    }
+
+    @media (min-width: 641px) {
+      #mobileBackBar {
+        display: none !important;
+      }
+    }
+
     @media (max-width: 640px) {
-      body.has-back-bar .page-content { padding-top: 44px; }
+      body.has-back-bar .page-content {
+        padding-top: 44px;
+      }
+
       /* Скрываем встроенные кнопки «назад» — их заменяет #mobileBackBar */
-      body.has-back-bar .page-back-btn { display: none !important; }
+      body.has-back-bar .page-back-btn {
+        display: none !important;
+      }
     }
 
     /* ── Lucide SVG icons ────────────────────────────────── */
-    svg.lucide { display:inline-block; vertical-align:middle; stroke:currentColor; fill:none; flex-shrink:0; }
+    svg.lucide {
+      display: inline-block;
+      vertical-align: middle;
+      stroke: currentColor;
+      fill: none;
+      flex-shrink: 0;
+    }
+
     /* Desktop header nav */
-    .dh-nav-btn svg.lucide   { width:15px; height:15px; vertical-align:-2px; margin-right:5px; }
-    .dh-logout-btn svg.lucide { width:14px; height:14px; margin-right:4px; vertical-align:-2px; }
+    .dh-nav-btn svg.lucide {
+      width: 15px;
+      height: 15px;
+      vertical-align: -2px;
+      margin-right: 5px;
+    }
+
+    .dh-logout-btn svg.lucide {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+      vertical-align: -2px;
+    }
+
     /* Hamburger button + dropdown */
-    #menuBtn svg.lucide      { width:18px; height:18px; }
-    .nav-menu-item svg.lucide { width:16px; height:16px; flex-shrink:0; }
+    #menuBtn svg.lucide {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav-menu-item svg.lucide {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
     /* Bottom nav */
-    #bottomNav button svg.lucide { width:22px; height:22px; display:block; }
+    #bottomNav button svg.lucide {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+
     /* Action buttons */
-    button svg.lucide        { width:16px; height:16px; vertical-align:-2px; }
+    button svg.lucide {
+      width: 16px;
+      height: 16px;
+      vertical-align: -2px;
+    }
   </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
 
   <!-- Экран загрузки: показывается пока JS не определит страницу (напр. после редиректа email) -->
@@ -293,8 +858,17 @@
   </div>
   <style>
     @keyframes loadPulse {
-      0%,100% { opacity:0.5; transform:scale(0.95); }
-      50%      { opacity:1;   transform:scale(1.05); }
+
+      0%,
+      100% {
+        opacity: 0.5;
+        transform: scale(0.95);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
     }
   </style>
 
@@ -305,917 +879,1205 @@
   <!-- Оверлей приватности (появляется при скрытии вкладки во время теста) -->
   <div id="privacyOverlay" onclick="hidePrivacyScreen()">
     <div class="po-inner">
-      <div class="po-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f1f5f9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:4rem;height:4rem"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="po-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f1f5f9" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" style="width:4rem;height:4rem">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg></div>
       <div class="po-title">Тест приостановлен</div>
       <div class="po-hint">Нажмите, чтобы продолжить</div>
     </div>
   </div>
 
-<!-- Шапка: аватар + имя -->
-<!-- Аватар в шапке скрыт, навигация через боковую панель -->
-<div id="headerAvatarImg" style="display:none"></div>
-<div id="headerAvatarLetter" style="display:none"></div>
-<span id="headerUsername" style="display:none"></span>
+  <!-- Шапка: аватар + имя -->
+  <!-- Аватар в шапке скрыт, навигация через боковую панель -->
+  <div id="headerAvatarImg" style="display:none"></div>
+  <div id="headerAvatarLetter" style="display:none"></div>
+  <span id="headerUsername" style="display:none"></span>
 
-<!-- ── ДЕСКТОП ШАПКА (≥641px) ── -->
-<header id="desktopNav" style="display:none">
-  <div class="dh-inner">
-    <div class="dh-logo">∫ Матанализ</div>
-    <nav class="dh-links">
-      <button id="dhHome"   onclick="showHome()"           class="dh-nav-btn"><i data-lucide="home"></i> Главная</button>
-      <button id="dhDuel"   onclick="showDuelModal()"      class="dh-nav-btn"><i data-lucide="swords"></i> Дуэль</button>
-      <button id="dhStats"  onclick="showStatistics()"     class="dh-nav-btn"><i data-lucide="bar-chart-2"></i> Статистика</button>
-      <button id="dhLeader" onclick="showLeaderboard()"    class="dh-nav-btn"><i data-lucide="trophy"></i> Рейтинг</button>
-      <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn"><i data-lucide="users"></i> Люди</button>
-    </nav>
-    <div class="dh-right">
-      <button onclick="showProfile()" class="dh-user-btn">
-        <div class="dh-avatar">
-          <img id="dhAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
-          <span id="dhAvatarLetter">?</span>
-        </div>
-        <span id="dhUsername">…</span>
-      </button>
-      <button onclick="handleLogout()" class="dh-logout-btn"><i data-lucide="log-out"></i> Выйти</button>
-    </div>
-  </div>
-</header>
-
-<!-- ── МЕНЮ (гамбургер + выпадающий список) ── -->
-<button id="menuBtn" onclick="toggleNavMenu()" title="Меню"><i data-lucide="menu"></i></button>
-<div id="navMenu" style="display:none">
-  <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><i data-lucide="home"></i>Главная</button>
-  <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><i data-lucide="swords"></i>Дуэль</button>
-  <div class="nav-menu-divider"></div>
-  <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><i data-lucide="user"></i>Профиль</button>
-  <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><i data-lucide="bar-chart-2"></i>Статистика</button>
-  <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><i data-lucide="trophy"></i>Рейтинг</button>
-  <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><i data-lucide="users"></i>Люди</button>
-</div>
-
-<!-- ── МОБИЛЬНАЯ ШАПКА (кнопка «Назад») ── -->
-<div id="mobileBackBar" style="display:none">
-  <button id="mobileBackBtn">← Главная</button>
-</div>
-
-<!-- ── ДЕСКТОП БОКОВАЯ ПАНЕЛЬ ── -->
-<aside id="desktopSidebar" style="display:none">
-  <div class="sb-logo">∫ Матанализ</div>
-  <nav class="sb-nav">
-    <button id="sbHome"   onclick="showHome()"           class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
-    <button id="sbDuel"   onclick="showDuelModal()"      class="sb-item"><i data-lucide="swords"></i><span>Дуэль</span></button>
-    <button id="sbStats"  onclick="showStatistics()"     class="sb-item"><i data-lucide="bar-chart-2"></i><span>Статистика</span></button>
-    <button id="sbLeader" onclick="showLeaderboard()"    class="sb-item"><i data-lucide="trophy"></i><span>Рейтинг</span></button>
-    <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i data-lucide="users"></i><span>Люди</span></button>
-  </nav>
-  <div class="sb-bottom">
-    <div class="sb-user" onclick="showProfile()">
-      <div class="sb-avatar" id="sbAvatarWrap">
-        <img id="sbAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
-        <span id="sbAvatarLetter">?</span>
-      </div>
-      <div class="sb-user-info">
-        <span id="sbUsername" class="sb-username">…</span>
-        <span class="sb-profile-hint">Профиль</span>
-      </div>
-    </div>
-    <button onclick="handleLogout()" class="sb-logout-btn" title="Выйти"><i data-lucide="log-out"></i></button>
-  </div>
-</aside>
-
-<!-- ── АВТОРИЗАЦИЯ ── -->
-<div id="authPage" class="hidden">
-  <div class="auth-card">
-    <div class="auth-logo">∫</div>
-    <div class="auth-title">Математический анализ</div>
-    <div class="auth-subtitle">Тренажёр для студентов МГУ Душанбе</div>
-    <div class="auth-tabs-wrap">
-      <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Войти</button>
-      <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
-    </div>
-    <div id="loginForm">
-      <input id="loginEmail" type="email" placeholder="Email" class="auth-input" oninput="document.getElementById('loginError').textContent=''">
-      <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input" oninput="document.getElementById('loginError').textContent=''">
-      <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-      <button id="loginBtn" onclick="handleLogin()" class="auth-btn-primary">Войти</button>
-      <button id="forgotPasswordBtn" onclick="showForgotPassword()" class="w-full mt-3 text-sm text-blue-500 hover:text-blue-700 transition-colors">Забыли пароль?</button>
-    </div>
-    <div id="forgotForm" style="display:none">
-      <button id="backToLoginBtn" onclick="showLoginFromForgot()" class="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">← Назад</button>
-      <p class="text-gray-600 text-sm mb-4">Введите email — пришлём ссылку для сброса пароля.</p>
-      <input id="forgotEmail" type="email" placeholder="Email" class="auth-input">
-      <p id="forgotError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-      <button id="forgotBtn" onclick="handleForgotPassword()" class="auth-btn-primary">Отправить</button>
-    </div>
-    <div id="registerForm" class="hidden">
-      <input id="regUsername" type="text" placeholder="Имя пользователя (видно в рейтинге)" class="auth-input">
-      <input id="regEmail" type="email" placeholder="Email" class="auth-input">
-      <input id="regPassword" type="password" placeholder="Пароль (минимум 6 символов)" class="auth-input">
-      <p id="registerError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-      <button id="registerBtn" onclick="handleRegister()" class="auth-btn-primary auth-btn-register">Зарегистрироваться</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── ГЛАВНАЯ ── -->
-<div id="homePage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8">
-    <!-- Hero -->
-    <div class="text-center mb-10 fade-in">
-      <h1 class="text-4xl md:text-6xl font-bold text-slate-100 mb-4"
-          style="font-family:'Playfair Display',serif">Математический анализ</h1>
-      <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
-        Пределы · Производные · Интегралы · Ряды · Дифференциальные уравнения
-      </p>
-      <div class="flex flex-wrap gap-3 justify-center items-center">
-        <span id="userGreeting"
-          class="text-slate-300 font-medium border border-slate-600 px-4 py-2 rounded-full text-sm"></span>
-        <!-- Серия дней -->
-        <span id="streakBadge"
-          style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(234,179,8,0.2));border:1px solid rgba(239,68,68,0.4);color:#fbbf24;padding:6px 14px;border-radius:9999px;font-size:0.85rem;gap:5px"></span>
-        <!-- Кнопка установки PWA -->
-        <button id="installAppBtn" onclick="installApp()"
-          style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
-          <i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px"></i> Установить приложение
+  <!-- ── ДЕСКТОП ШАПКА (≥641px) ── -->
+  <header id="desktopNav" style="display:none">
+    <div class="dh-inner">
+      <div class="dh-logo">∫ Матанализ</div>
+      <nav class="dh-links">
+        <button id="dhHome" onclick="showHome()" class="dh-nav-btn"><i data-lucide="home"></i> Главная</button>
+        <button id="dhDuel" onclick="showDuelModal()" class="dh-nav-btn"><i data-lucide="swords"></i> Дуэль</button>
+        <button id="dhStats" onclick="showStatistics()" class="dh-nav-btn"><i data-lucide="bar-chart-2"></i>
+          Статистика</button>
+        <button id="dhLeader" onclick="showLeaderboard()" class="dh-nav-btn"><i data-lucide="trophy"></i>
+          Рейтинг</button>
+        <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn"><i data-lucide="users"></i>
+          Люди</button>
+      </nav>
+      <div class="dh-right">
+        <button onclick="showProfile()" class="dh-user-btn">
+          <div class="dh-avatar">
+            <img id="dhAvatarImg" src="" alt=""
+              style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+            <span id="dhAvatarLetter">?</span>
+          </div>
+          <span id="dhUsername">…</span>
         </button>
+        <button onclick="handleLogout()" class="dh-logout-btn"><i data-lucide="log-out"></i> Выйти</button>
       </div>
     </div>
+  </header>
 
-    <!-- Daily Challenge -->
-    <div class="max-w-6xl mx-auto mb-6">
-      <div id="dailyChallengeCard"
-        class="glass-panel rounded-3xl p-6 border border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.08)] cursor-pointer card-hover"
-        onclick="startDailyChallenge()">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <div class="flex items-center gap-4">
-            <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(234,179,8,0.15));border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  <!-- ── МЕНЮ (гамбургер + выпадающий список) ── -->
+  <button id="menuBtn" onclick="toggleNavMenu()" title="Меню"><i data-lucide="menu"></i></button>
+  <div id="navMenu" style="display:none">
+    <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><i data-lucide="home"></i>Главная</button>
+    <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><i data-lucide="swords"></i>Дуэль</button>
+    <div class="nav-menu-divider"></div>
+    <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><i data-lucide="user"></i>Профиль</button>
+    <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><i
+        data-lucide="bar-chart-2"></i>Статистика</button>
+    <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><i
+        data-lucide="trophy"></i>Рейтинг</button>
+    <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><i data-lucide="users"></i>Люди</button>
+  </div>
+
+  <!-- ── МОБИЛЬНАЯ ШАПКА (кнопка «Назад») ── -->
+  <div id="mobileBackBar" style="display:none">
+    <button id="mobileBackBtn">← Главная</button>
+  </div>
+
+  <!-- ── ДЕСКТОП БОКОВАЯ ПАНЕЛЬ ── -->
+  <aside id="desktopSidebar" style="display:none">
+    <div class="sb-logo">∫ Матанализ</div>
+    <nav class="sb-nav">
+      <button id="sbHome" onclick="showHome()" class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
+      <button id="sbDuel" onclick="showDuelModal()" class="sb-item"><i
+          data-lucide="swords"></i><span>Дуэль</span></button>
+      <button id="sbStats" onclick="showStatistics()" class="sb-item"><i
+          data-lucide="bar-chart-2"></i><span>Статистика</span></button>
+      <button id="sbLeader" onclick="showLeaderboard()" class="sb-item"><i
+          data-lucide="trophy"></i><span>Рейтинг</span></button>
+      <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i
+          data-lucide="users"></i><span>Люди</span></button>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-user" onclick="showProfile()">
+        <div class="sb-avatar" id="sbAvatarWrap">
+          <img id="sbAvatarImg" src="" alt=""
+            style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+          <span id="sbAvatarLetter">?</span>
+        </div>
+        <div class="sb-user-info">
+          <span id="sbUsername" class="sb-username">…</span>
+          <span class="sb-profile-hint">Профиль</span>
+        </div>
+      </div>
+      <button onclick="handleLogout()" class="sb-logout-btn" title="Выйти"><i data-lucide="log-out"></i></button>
+    </div>
+  </aside>
+
+  <!-- ── АВТОРИЗАЦИЯ ── -->
+  <div id="authPage" class="hidden">
+    <div class="auth-card">
+      <div class="auth-logo">∫</div>
+      <div class="auth-title">Математический анализ</div>
+      <div class="auth-subtitle">Тренажёр для студентов МГУ Душанбе</div>
+      <div class="auth-tabs-wrap">
+        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Войти</button>
+        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
+      </div>
+      <div id="loginForm">
+        <input id="loginEmail" type="email" placeholder="Email" class="auth-input"
+          oninput="document.getElementById('loginError').textContent=''">
+        <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input"
+          oninput="document.getElementById('loginError').textContent=''">
+        <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="loginBtn" onclick="handleLogin()" class="auth-btn-primary">Войти</button>
+        <button id="forgotPasswordBtn" onclick="showForgotPassword()"
+          class="w-full mt-3 text-sm text-blue-500 hover:text-blue-700 transition-colors">Забыли пароль?</button>
+      </div>
+      <div id="forgotForm" style="display:none">
+        <button id="backToLoginBtn" onclick="showLoginFromForgot()"
+          class="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">← Назад</button>
+        <p class="text-gray-600 text-sm mb-4">Введите email — пришлём ссылку для сброса пароля.</p>
+        <input id="forgotEmail" type="email" placeholder="Email" class="auth-input">
+        <p id="forgotError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="forgotBtn" onclick="handleForgotPassword()" class="auth-btn-primary">Отправить</button>
+      </div>
+      <div id="registerForm" class="hidden">
+        <input id="regUsername" type="text" placeholder="Имя пользователя (видно в рейтинге)" class="auth-input">
+        <input id="regEmail" type="email" placeholder="Email" class="auth-input">
+        <input id="regPassword" type="password" placeholder="Пароль (минимум 6 символов)" class="auth-input">
+        <p id="registerError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="registerBtn" onclick="handleRegister()"
+          class="auth-btn-primary auth-btn-register">Зарегистрироваться</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ГЛАВНАЯ ── -->
+  <div id="homePage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Hero -->
+      <div class="text-center mb-10 fade-in">
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-100 mb-4" style="font-family:'Playfair Display',serif">
+          Математический анализ</h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
+          Пределы · Производные · Интегралы · Ряды · Дифференциальные уравнения · Теория вероятностей
+        </p>
+        <div class="flex flex-wrap gap-3 justify-center items-center">
+          <span id="userGreeting"
+            class="text-slate-300 font-medium border border-slate-600 px-4 py-2 rounded-full text-sm"></span>
+          <!-- Серия дней -->
+          <span id="streakBadge"
+            style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(234,179,8,0.2));border:1px solid rgba(239,68,68,0.4);color:#fbbf24;padding:6px 14px;border-radius:9999px;font-size:0.85rem;gap:5px"></span>
+          <!-- Кнопка установки PWA -->
+          <button id="installAppBtn" onclick="installApp()"
+            style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
+            <i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px"></i> Установить приложение
+          </button>
+        </div>
+      </div>
+
+      <!-- Daily Challenge -->
+      <div class="max-w-6xl mx-auto mb-6">
+        <div id="dailyChallengeCard"
+          class="glass-panel rounded-3xl p-6 border border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.08)] cursor-pointer card-hover"
+          onclick="startDailyChallenge()">
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <div
+                style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(234,179,8,0.15));border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-slate-100">Ежедневный вызов</h2>
+                <p class="text-slate-400 text-sm">10 вопросов из всех разделов · Одна попытка в день</p>
+              </div>
             </div>
-            <div>
-              <h2 class="text-xl font-bold text-slate-100">Ежедневный вызов</h2>
-              <p class="text-slate-400 text-sm">10 вопросов из всех разделов · Одна попытка в день</p>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span id="dailyChallengeCountdown" class="text-amber-400 font-mono text-sm"></span>
+              <button id="dailyChallengeBtn" onclick="event.stopPropagation(); startDailyChallenge()"
+                class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+                Начать
+              </button>
             </div>
           </div>
-          <div class="flex items-center gap-3 flex-wrap">
-            <span id="dailyChallengeCountdown" class="text-amber-400 font-mono text-sm"></span>
-            <button id="dailyChallengeBtn"
-              onclick="event.stopPropagation(); startDailyChallenge()"
-              class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-              Начать
+        </div>
+      </div>
+
+      <!-- Cards grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <!-- Пределы -->
+        <div class="glass-panel rounded-3xl p-8 border border-violet-500/20
+                  shadow-[0_0_30px_rgba(139,92,246,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('limits')">
+          <div class="text-6xl mb-5 text-violet-400" style="font-family:'Playfair Display',serif">lim</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Пределы</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по пределам и непрерывности функций</p>
+          <button class="w-full bg-violet-600 hover:bg-violet-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+            Начать тест
+          </button>
+        </div>
+
+        <!-- Производные -->
+        <div class="glass-panel rounded-3xl p-8 border border-emerald-500/20
+                  shadow-[0_0_30px_rgba(16,185,129,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('derivatives')">
+          <div class="text-6xl mb-5 text-emerald-400" style="font-family:'Playfair Display',serif">f'(x)</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Производные</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальному исчислению</p>
+          <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            Начать тест
+          </button>
+        </div>
+
+        <!-- Интегралы -->
+        <div class="glass-panel rounded-3xl p-8 border border-blue-500/20
+                  shadow-[0_0_30px_rgba(59,130,246,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('integrals')">
+          <div class="text-6xl mb-5 text-blue-400" style="font-family:'Playfair Display',serif">∫</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Интегралы</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по интегральному исчислению</p>
+          <button class="w-full bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+            Начать тест
+          </button>
+        </div>
+
+        <!-- Ряды -->
+        <div class="glass-panel rounded-3xl p-8 border border-rose-500/20
+                  shadow-[0_0_30px_rgba(225,29,72,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('series')">
+          <div class="text-6xl mb-5 text-rose-400" style="font-family:'Playfair Display',serif">∑</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Ряды и последовательности</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по рядам и последовательностям</p>
+          <button class="w-full bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(225,29,72,0.3)]">
+            Начать тест
+          </button>
+        </div>
+
+        <!-- Дифференциальные уравнения -->
+        <div class="glass-panel rounded-3xl p-8 border border-orange-500/20
+                  shadow-[0_0_30px_rgba(249,115,22,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('ode')">
+          <div class="text-6xl mb-5 text-orange-400" style="font-family:'Playfair Display',serif">y'</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Дифф. уравнения</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальным уравнениям</p>
+          <button class="w-full bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+            Начать тест
+          </button>
+        </div>
+
+        <!-- Теория вероятностей -->
+        <div class="glass-panel rounded-3xl p-8 border border-sky-500/20
+                  shadow-[0_0_30px_rgba(14,165,233,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('probability')">
+          <div class="text-6xl mb-5 text-sky-400" style="font-family:'Playfair Display',serif">P</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Теория вероятностей</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по вероятности, комбинаторике и
+            распределениям</p>
+          <button class="w-full bg-sky-600 hover:bg-sky-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+            Начать тест
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── РАЗДЕЛЫ ── -->
+
+  <div id="integralsSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">←
+          Назад к разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Интегралы</h2>
+          <div class="theory-entry-card" onclick="showTheory('integrals')" style="border-left:3px solid #3b82f6">
+            <div class="theory-entry-left">
+              <span style="font-size:1.6rem;line-height:1">∫</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Формулы и правила перед тестом</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="mb-6">
+            <label for="integralsCount" class="section-count-label">Количество вопросов:</label>
+            <select id="integralsCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+              <option value="25">25 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startIntegralsTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые задачи</div>
+              </div>
+              <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startIntegralsTest('easy')">Начать
+                →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startIntegralsTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Задачи средней сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-medium"
+                onclick="event.stopPropagation();startIntegralsTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startIntegralsTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Задачи повышенной сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startIntegralsTest('hard')">Начать
+                →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startIntegralsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startIntegralsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startIntegralsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="derivativesSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">←
+          Назад к разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Производные</h2>
+          <div class="theory-entry-card" onclick="showTheory('derivatives')" style="border-left:3px solid #eab308">
+            <div class="theory-entry-left">
+              <span style="font-size:1.3rem;font-weight:700;line-height:1">f'(x)</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Формулы и правила перед тестом</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="test-type-selector mb-4">
+            <div class="test-type-label">Тип теста:</div>
+            <div class="test-type-btns">
+              <button id="derivClosedBtn" class="test-type-btn active"
+                onclick="window.setDerivativesTestMode('closed')">🔘 Закрытый</button>
+              <button id="derivOpenBtn" class="test-type-btn" onclick="window.setDerivativesTestMode('open')">✏️
+                Открытый</button>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="derivativesCount" class="section-count-label">Количество вопросов:</label>
+            <select id="derivativesCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+              <option value="25">25 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startDerivativesTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые задачи</div>
+              </div>
+              <button class="diff-btn diff-btn-easy"
+                onclick="event.stopPropagation();startDerivativesTest('easy')">Начать →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startDerivativesTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Задачи средней сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-medium"
+                onclick="event.stopPropagation();startDerivativesTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startDerivativesTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Задачи повышенной сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-hard"
+                onclick="event.stopPropagation();startDerivativesTest('hard')">Начать →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startDerivativesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startDerivativesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startDerivativesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="seriesSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">←
+          Назад к разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Ряды и последовательности</h2>
+          <div class="theory-entry-card" onclick="showTheory('series')" style="border-left:3px solid #ef4444">
+            <div class="theory-entry-left">
+              <span style="font-size:1.6rem;line-height:1">∑</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Формулы и правила перед тестом</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="mb-6">
+            <label for="seriesCount" class="section-count-label">Количество вопросов:</label>
+            <select id="seriesCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+              <option value="25">25 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startSeriesTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые задачи</div>
+              </div>
+              <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startSeriesTest('easy')">Начать
+                →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startSeriesTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Задачи средней сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-medium"
+                onclick="event.stopPropagation();startSeriesTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startSeriesTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Задачи повышенной сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startSeriesTest('hard')">Начать
+                →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startSeriesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startSeriesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startSeriesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── РАЗДЕЛ ЛИМИТЫ ── -->
+  <div id="limitsSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к
+          разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Пределы и непрерывность</h2>
+          <div class="theory-entry-card" onclick="showTheory('limits')" style="border-left:3px solid #a855f7">
+            <div class="theory-entry-left">
+              <span style="font-size:1.3rem;font-weight:700;line-height:1">lim</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Формулы и правила перед тестом</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="test-type-selector mb-4">
+            <div class="test-type-label">Тип теста:</div>
+            <div class="test-type-btns">
+              <button id="limitsClosedBtn" class="test-type-btn active" onclick="window.setLimitsTestMode('closed')">🔘
+                Закрытый</button>
+              <button id="limitsOpenBtn" class="test-type-btn" onclick="window.setLimitsTestMode('open')">✏️
+                Открытый</button>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="limitsCount" class="section-count-label">Количество вопросов:</label>
+            <select id="limitsCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+              <option value="25">25 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startLimitsTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые пределы</div>
+              </div>
+              <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startLimitsTest('easy')">Начать
+                →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startLimitsTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Пределы средней сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-medium"
+                onclick="event.stopPropagation();startLimitsTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startLimitsTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Правило Лопиталя и сложные пределы</div>
+              </div>
+              <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startLimitsTest('hard')">Начать
+                →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startLimitsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startLimitsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startLimitsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── РАЗДЕЛ ДИФФЕРЕНЦИАЛЬНЫЕ УРАВНЕНИЯ ── -->
+  <div id="odeSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к
+          разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Дифференциальные уравнения</h2>
+          <div class="theory-entry-card" onclick="showTheory('ode')" style="border-left:3px solid #f97316">
+            <div class="theory-entry-left">
+              <span style="font-size:1.3rem;font-weight:700;line-height:1">y'</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Формулы и правила перед тестом</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="test-type-selector mb-4">
+            <div class="test-type-label">Тип теста:</div>
+            <div class="test-type-btns">
+              <button id="odeClosedBtn" class="test-type-btn active" onclick="window.setODETestMode('closed')">🔘
+                Закрытый</button>
+              <button id="odeOpenBtn" class="test-type-btn" onclick="window.setODETestMode('open')">✏️ Открытый</button>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="odeCount" class="section-count-label">Количество вопросов:</label>
+            <select id="odeCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="5">5 вопросов</option>
+              <option value="7">7 вопросов</option>
+              <option value="10" selected>10 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startODETest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые уравнения</div>
+              </div>
+              <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startODETest('easy')">Начать
+                →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startODETest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Уравнения средней сложности</div>
+              </div>
+              <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startODETest('medium')">Начать
+                →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startODETest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Уравнения высших порядков</div>
+              </div>
+              <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startODETest('hard')">Начать
+                →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startODETest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startODETest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startODETest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── РАЗДЕЛ ТЕОРИЯ ВЕРОЯТНОСТЕЙ ── -->
+  <div id="probabilitySection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-sky-400 hover:text-sky-300 flex items-center">←
+          Назад к разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Теория вероятностей</h2>
+          <div class="theory-entry-card" onclick="window.showProbabilityTheory()" style="border-left:3px solid #38bdf8">
+            <div class="theory-entry-left">
+              <span style="font-size:1.6rem;font-weight:700;line-height:1;color:#38bdf8">P</span>
+              <div>
+                <div class="theory-entry-title">Теория — 17 глав</div>
+                <div class="theory-entry-sub">Полный курс: от случайных событий до нормального распределения и ЦПТ</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="test-type-selector mb-4">
+            <div class="test-type-label">Тип теста:</div>
+            <div class="test-type-btns">
+              <button id="probClosedBtn" class="test-type-btn active" onclick="window.setProbTestMode('closed')">🔘
+                Закрытый</button>
+              <button id="probOpenBtn" class="test-type-btn" onclick="window.setProbTestMode('open')">✏️
+                Открытый</button>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="probabilityCount" class="section-count-label">Количество вопросов:</label>
+            <select id="probabilityCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startProbabilityTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Определения и базовые формулы</div>
+              </div>
+              <button class="diff-btn diff-btn-easy"
+                onclick="event.stopPropagation();startProbabilityTest('easy')">Начать →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startProbabilityTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Вычисления и применения</div>
+              </div>
+              <button class="diff-btn diff-btn-medium"
+                onclick="event.stopPropagation();startProbabilityTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startProbabilityTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Многошаговые задачи</div>
+              </div>
+              <button class="diff-btn diff-btn-hard"
+                onclick="event.stopPropagation();startProbabilityTest('hard')">Начать →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startProbabilityTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startProbabilityTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startProbabilityTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ТЕОРИЯ ВЕРОЯТНОСТЕЙ — БРАУЗЕР ГЛАВ ── -->
+  <div id="probabilityTheoryPage" class="page-content hidden" style="display:none">
+    <div class="prob-theory-layout">
+      <!-- Боковая панель (десктоп) -->
+      <aside class="prob-sidebar" id="probSidebar"></aside>
+      <!-- Мобильная горизонтальная навигация -->
+      <div class="prob-mob-nav" id="probMobNav"></div>
+      <!-- Контент глав -->
+      <main class="prob-ch-content ch-content-area" id="probChapterContent">
+        <button class="prob-back-btn" onclick="window.backFromProbTheory()">← Назад к разделу</button>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── БРАУЗЕР ТЕОРИИ ДЛЯ ОСТАЛЬНЫХ РАЗДЕЛОВ ── -->
+  <div id="sectionTheoryPage" class="page-content hidden" style="display:none">
+    <div class="prob-theory-layout">
+      <aside class="prob-sidebar" id="calcSidebar"></aside>
+      <div class="prob-mob-nav" id="calcMobNav"></div>
+      <main class="prob-ch-content ch-content-area" id="calcChapterContent">
+        <button class="prob-back-btn" onclick="window.backFromSectionTheory()">← Назад к разделу</button>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── СТРАНИЦА ТЕОРИИ (старая, fallback) ── -->
+  <div id="theoryPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div class="max-w-3xl mx-auto fade-in">
+        <button onclick="backFromTheory()"
+          class="page-back-btn mb-4 text-blue-500 hover:text-blue-400 flex items-center gap-1 text-sm font-medium">←
+          Назад к разделу</button>
+        <div class="rounded-2xl p-3 sm:p-8" style="background:var(--bg-card,white)">
+          <div id="theoryPageContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ТЕСТ ── -->
+  <div id="testPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div class="flex justify-between items-center flex-wrap gap-4">
+            <div>
+              <h3 id="testTitle" class="text-xl font-bold text-gray-800">Тест</h3>
+              <p id="difficultyLabel" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+            <div class="flex items-center gap-4">
+              <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">⏱️
+                25:00</div>
+              <div class="text-sm text-gray-600">Вопрос <span id="currentQuestion">1</span> из <span
+                  id="totalQuestions">15</span></div>
+            </div>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
+            <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width:5%">
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <div id="questionContainer"></div>
+          <div class="mt-6 flex justify-between">
+            <button id="prevBtn" onclick="previousQuestion()"
+              class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">← Назад</button>
+            <button id="nextBtn" onclick="nextQuestion()"
+              class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Следующий →</button>
+            <button id="finishBtn" onclick="finishTest()"
+              class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none"><i
+                data-lucide="check-circle-2"></i> Завершить тест</button>
+            <button onclick="exitTest()"
+              class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Выйти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── РЕЗУЛЬТАТЫ ── -->
+  <div id="resultsPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto text-center fade-in">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-6">Результаты теста</h2>
+          <div id="scoreDisplay" class="text-6xl font-bold mb-4"></div>
+          <div id="scoreText" class="text-xl text-gray-600 mb-8"></div>
+          <div id="detailedResults" class="text-left mb-8"></div>
+          <div class="flex gap-4 justify-center flex-wrap">
+            <button onclick="restartTest()"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">Пройти
+              снова</button>
+            <button onclick="showHome()"
+              class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">На главную</button>
+            <button onclick="showStatistics()"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"><i
+                data-lucide="bar-chart-2"></i> Статистика</button>
+            <button id="shareBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold"><i
+                data-lucide="share-2"></i> Поделиться</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── СТАТИСТИКА ── -->
+  <div id="statisticsPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Статистика</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card text-center">
+              <div class="stat-value" id="totalTests">0</div>
+              <div class="stat-label">Тестов пройдено</div>
+            </div>
+            <div class="stat-card text-center">
+              <div class="stat-value" id="bestScore">0%</div>
+              <div class="stat-label">Лучший результат</div>
+            </div>
+            <div class="stat-card text-center">
+              <div class="stat-value" id="averageScore">0%</div>
+              <div class="stat-label">Средний балл</div>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Прогресс по разделам</h3>
+          <div class="space-y-4 mb-6">
+            <div>
+              <div class="flex justify-between mb-1"><span>Интегралы</span><span id="integralsProgress">0%</span></div>
+              <div class="progress-bar">
+                <div id="integralsProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Производные</span><span id="derivativesProgress">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div id="derivativesProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Ряды</span><span id="seriesProgress">0%</span></div>
+              <div class="progress-bar">
+                <div id="seriesProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Пределы</span><span id="limitsProgress">0%</span></div>
+              <div class="progress-bar">
+                <div id="limitsProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Дифф. уравнения</span><span id="odeProgress">0%</span></div>
+              <div class="progress-bar">
+                <div id="odeProgressBar" class="progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Вероятность</span><span id="probabilityProgress">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div id="probabilityProgressBar" class="progress-fill" style="width:0%;background:#38bdf8"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Chart.js charts injected here by JS -->
+          <div id="statsChartsContainer" class="mb-6"></div>
+
+          <h3 class="text-xl font-bold text-gray-800 mb-4">История тестов</h3>
+          <div id="testsHistory" class="space-y-3 max-h-96 overflow-y-auto"></div>
+          <div class="mt-6 flex justify-center">
+            <button onclick="resetStatistics()"
+              class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold">Сбросить
+              статистику</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ПРОФИЛЬ ── -->
+  <div id="profilePage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <div class="relative w-24 h-24 mx-auto mb-3">
+            <div class="profile-avatar" id="profileAvatar" style="width:80px;height:80px;font-size:2rem">S</div>
+            <img id="profileAvatarImg" src="" alt="avatar"
+              style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
+            <button id="avatarUploadBtn"
+              class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg"
+              title="Сменить фото"><i data-lucide="camera" style="width:14px;height:14px"></i></button>
+            <button id="avatarDeleteBtn"
+              class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg"
+              title="Удалить фото"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none">
+          <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
+          <p class="text-center text-gray-500 text-sm mb-4" id="profileEmail"></p>
+          <!-- Push-уведомления -->
+          <div class="mb-4 text-center">
+            <button id="pushToggleBtn" onclick="togglePushNotifications()"
+              class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all"
+              style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:#60a5fa">
+              <i data-lucide="bell" style="width:14px;height:14px"></i> Включить уведомления
+            </button>
+          </div>
+          <div id="profileContent"></div>
+
+          <!-- ── Настройки ── -->
+          <div class="mt-5 pt-5" style="border-top:1px solid var(--border,rgba(71,85,105,0.3))">
+            <p
+              style="font-size:0.72rem;font-weight:600;color:var(--text-muted,#94a3b8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px">
+              <i data-lucide="settings" style="width:12px;height:12px"></i> Настройки</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+
+              <!-- Тема -->
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
+                <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Тема оформления</span>
+                <button id="settingsThemeBtn" onclick="toggleTheme()"
+                  style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.12);color:#60a5fa">
+                  🌙 Тёмная
+                </button>
+              </div>
+
+              <!-- Звук -->
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
+                <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Звуковые эффекты</span>
+                <button id="settingsSoundBtn" onclick="toggleSound()"
+                  style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.12);color:#34d399">
+                  🔊 Включён
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="mt-6 text-center">
+            <button onclick="handleLogout()"
+              class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-300 px-8 py-2 rounded-full font-semibold transition-all text-sm">
+              Выйти из аккаунта
             </button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Cards grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-      <!-- Пределы -->
-      <div class="glass-panel rounded-3xl p-8 border border-violet-500/20
-                  shadow-[0_0_30px_rgba(139,92,246,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('limits')">
-        <div class="text-6xl mb-5 text-violet-400" style="font-family:'Playfair Display',serif">lim</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Пределы</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по пределам и непрерывности функций</p>
-        <button class="w-full bg-violet-600 hover:bg-violet-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-          Начать тест
-        </button>
-      </div>
-
-      <!-- Производные -->
-      <div class="glass-panel rounded-3xl p-8 border border-emerald-500/20
-                  shadow-[0_0_30px_rgba(16,185,129,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('derivatives')">
-        <div class="text-6xl mb-5 text-emerald-400" style="font-family:'Playfair Display',serif">f'(x)</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Производные</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальному исчислению</p>
-        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-          Начать тест
-        </button>
-      </div>
-
-      <!-- Интегралы -->
-      <div class="glass-panel rounded-3xl p-8 border border-blue-500/20
-                  shadow-[0_0_30px_rgba(59,130,246,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('integrals')">
-        <div class="text-6xl mb-5 text-blue-400" style="font-family:'Playfair Display',serif">∫</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Интегралы</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по интегральному исчислению</p>
-        <button class="w-full bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-          Начать тест
-        </button>
-      </div>
-
-      <!-- Ряды -->
-      <div class="glass-panel rounded-3xl p-8 border border-rose-500/20
-                  shadow-[0_0_30px_rgba(225,29,72,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('series')">
-        <div class="text-6xl mb-5 text-rose-400" style="font-family:'Playfair Display',serif">∑</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Ряды и последовательности</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по рядам и последовательностям</p>
-        <button class="w-full bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(225,29,72,0.3)]">
-          Начать тест
-        </button>
-      </div>
-
-      <!-- Дифференциальные уравнения -->
-      <div class="glass-panel rounded-3xl p-8 border border-orange-500/20
-                  shadow-[0_0_30px_rgba(249,115,22,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center"
-           onclick="showSection('ode')">
-        <div class="text-6xl mb-5 text-orange-400" style="font-family:'Playfair Display',serif">y'</div>
-        <h2 class="text-2xl font-bold text-slate-100 mb-3">Дифф. уравнения</h2>
-        <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальным уравнениям</p>
-        <button class="w-full bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-          Начать тест
-        </button>
-      </div>
-    </div>
   </div>
-</div>
 
-<!-- ── РАЗДЕЛЫ ── -->
-
-<div id="integralsSection" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="section-panel">
-        <h2 class="section-heading">Интегралы</h2>
-        <div class="theory-entry-card" onclick="showTheory('integrals')" style="border-left:3px solid #3b82f6">
-          <div class="theory-entry-left">
-            <span style="font-size:1.6rem;line-height:1">∫</span>
-            <div>
-              <div class="theory-entry-title">Теория — 8 шагов</div>
-              <div class="theory-entry-sub">Формулы и правила перед тестом</div>
-            </div>
+  <!-- ── РЕЙТИНГ ── -->
+  <div id="leaderboardPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <div class="flex items-center justify-center gap-3 mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Таблица лидеров</h2>
+            <span id="liveIndicator"
+              style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;animation:pulse 2s infinite">●
+              LIVE</span>
+            <button onclick="togglePtsInfo()" title="Как считаются баллы?"
+              style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--text-muted);background:transparent;color:var(--text-muted);font-size:0.75rem;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s"
+              onmouseover="this.style.borderColor='#3b82f6';this.style.color='#3b82f6'"
+              onmouseout="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-muted)'">?</button>
           </div>
-          <span class="theory-entry-arrow">→</span>
-        </div>
-        <div class="mb-6">
-          <label for="integralsCount" class="section-count-label">Количество вопросов:</label>
-          <select id="integralsCount" class="ml-2 border rounded-lg px-2 py-1">
-            <option value="10">10 вопросов</option>
-            <option value="15" selected>15 вопросов</option>
-            <option value="20">20 вопросов</option>
-            <option value="25">25 вопросов</option>
-          </select>
-        </div>
-        <div class="diff-grid">
-          <div class="diff-card diff-easy" onclick="startIntegralsTest('easy')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-easy">Лёгкий</span>
-                <span class="diff-pts">×1 балл</span>
-              </div>
-              <div class="diff-sub">Базовые задачи</div>
-            </div>
-            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startIntegralsTest('easy')">Начать →</button>
+          <!-- Справка по pts -->
+          <div id="ptsInfoBox"
+            style="display:none;margin-bottom:1rem;padding:0.85rem 1rem;border-radius:0.75rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);font-size:0.83rem;color:var(--text-main)">
+            <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa">📐 Как считаются баллы (pts)?</p>
+            <p style="color:var(--text-muted);line-height:1.5">
+              <b style="color:var(--text-main)">pts = правильные ответы × множитель сложности</b><br>
+              <span style="color:#10b981">●</span> Лёгкий ×1 &nbsp;·&nbsp; <span style="color:#f59e0b">●</span> Средний
+              ×2 &nbsp;·&nbsp; <span style="color:#ef4444">●</span> Сложный ×3
+            </p>
+            <p style="color:var(--text-muted);margin-top:0.4rem;line-height:1.5">
+              Из всех попыток берётся <b style="color:var(--text-main)">лучший результат</b> на каждую уникальную
+              комбинацию раздел&nbsp;+&nbsp;сложность. Итоговый рейтинг — сумма лучших результатов по всем комбинациям.
+            </p>
           </div>
-          <div class="diff-card diff-medium" onclick="startIntegralsTest('medium')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-medium">Средний</span>
-                <span class="diff-pts">×2 балла</span>
-              </div>
-              <div class="diff-sub">Задачи средней сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startIntegralsTest('medium')">Начать →</button>
+          <div class="flex gap-3 mb-6">
+            <select id="lbSection" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
+              <option value="">Все разделы</option>
+              <option value="integrals">Интегралы</option>
+              <option value="derivatives">Производные</option>
+              <option value="series">Ряды</option>
+              <option value="limits">Пределы</option>
+              <option value="ode">Дифф. уравнения</option>
+              <option value="probability">Вероятность</option>
+            </select>
+            <select id="lbDifficulty" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
+              <option value="">Все уровни</option>
+              <option value="easy">Лёгкий</option>
+              <option value="medium">Средний</option>
+              <option value="hard">Сложный</option>
+            </select>
           </div>
-          <div class="diff-card diff-hard" onclick="startIntegralsTest('hard')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-hard">Сложный</span>
-                <span class="diff-pts">×3 балла</span>
-              </div>
-              <div class="diff-sub">Задачи повышенной сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startIntegralsTest('hard')">Начать →</button>
-          </div>
-        </div>
-        <div class="study-mode-wrap">
-          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
-          <div class="study-mode-btns">
-            <button onclick="startIntegralsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
-            <button onclick="startIntegralsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
-            <button onclick="startIntegralsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+          <div id="leaderboardList">
+            <p class="text-gray-500 text-center py-8">Загрузка...</p>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div id="derivativesSection" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="section-panel">
-        <h2 class="section-heading">Производные</h2>
-        <div class="theory-entry-card" onclick="showTheory('derivatives')" style="border-left:3px solid #eab308">
-          <div class="theory-entry-left">
-            <span style="font-size:1.3rem;font-weight:700;line-height:1">f'(x)</span>
-            <div>
-              <div class="theory-entry-title">Теория — 8 шагов</div>
-              <div class="theory-entry-sub">Формулы и правила перед тестом</div>
-            </div>
+  <!-- ── ПОИСК ПОЛЬЗОВАТЕЛЕЙ ── -->
+  <div id="searchProfilesPage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Пользователи</h2>
+          <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
+          <div class="relative mb-4">
+            <input id="searchInputField" type="text" placeholder="🔍  Поиск по имени..." class="auth-input mb-0 w-full"
+              autocomplete="off">
+            <div id="searchSuggestions"
+              class="absolute left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 mt-1 overflow-hidden"
+              style="display:none"></div>
           </div>
-          <span class="theory-entry-arrow">→</span>
-        </div>
-        <div class="mb-6">
-          <label for="derivativesCount" class="section-count-label">Количество вопросов:</label>
-          <select id="derivativesCount" class="ml-2 border rounded-lg px-2 py-1">
-            <option value="10">10 вопросов</option>
-            <option value="15" selected>15 вопросов</option>
-            <option value="20">20 вопросов</option>
-            <option value="25">25 вопросов</option>
-          </select>
-        </div>
-        <div class="diff-grid">
-          <div class="diff-card diff-easy" onclick="startDerivativesTest('easy')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-easy">Лёгкий</span>
-                <span class="diff-pts">×1 балл</span>
-              </div>
-              <div class="diff-sub">Базовые задачи</div>
-            </div>
-            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startDerivativesTest('easy')">Начать →</button>
-          </div>
-          <div class="diff-card diff-medium" onclick="startDerivativesTest('medium')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-medium">Средний</span>
-                <span class="diff-pts">×2 балла</span>
-              </div>
-              <div class="diff-sub">Задачи средней сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startDerivativesTest('medium')">Начать →</button>
-          </div>
-          <div class="diff-card diff-hard" onclick="startDerivativesTest('hard')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-hard">Сложный</span>
-                <span class="diff-pts">×3 балла</span>
-              </div>
-              <div class="diff-sub">Задачи повышенной сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startDerivativesTest('hard')">Начать →</button>
-          </div>
-        </div>
-        <div class="study-mode-wrap">
-          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
-          <div class="study-mode-btns">
-            <button onclick="startDerivativesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
-            <button onclick="startDerivativesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
-            <button onclick="startDerivativesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
-          </div>
+          <div id="searchResults" class="space-y-2"></div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div id="seriesSection" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800 flex items-center">← Назад к разделам</button>
-      <div class="section-panel">
-        <h2 class="section-heading">Ряды и последовательности</h2>
-        <div class="theory-entry-card" onclick="showTheory('series')" style="border-left:3px solid #ef4444">
-          <div class="theory-entry-left">
-            <span style="font-size:1.6rem;line-height:1">∑</span>
-            <div>
-              <div class="theory-entry-title">Теория — 8 шагов</div>
-              <div class="theory-entry-sub">Формулы и правила перед тестом</div>
-            </div>
+  <!-- ── ПРОСМОТР ПРОФИЛЯ ── -->
+  <div id="viewProfilePage" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showSearchProfiles()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к
+          поиску</button>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <div class="relative w-24 h-24 mx-auto mb-3">
+            <div class="profile-avatar" id="viewProfileAvatar" style="width:80px;height:80px;font-size:2rem">?</div>
+            <img id="viewProfileAvatarImg" src="" alt="avatar"
+              style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
           </div>
-          <span class="theory-entry-arrow">→</span>
-        </div>
-        <div class="mb-6">
-          <label for="seriesCount" class="section-count-label">Количество вопросов:</label>
-          <select id="seriesCount" class="ml-2 border rounded-lg px-2 py-1">
-            <option value="10">10 вопросов</option>
-            <option value="15" selected>15 вопросов</option>
-            <option value="20">20 вопросов</option>
-            <option value="25">25 вопросов</option>
-          </select>
-        </div>
-        <div class="diff-grid">
-          <div class="diff-card diff-easy" onclick="startSeriesTest('easy')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-easy">Лёгкий</span>
-                <span class="diff-pts">×1 балл</span>
-              </div>
-              <div class="diff-sub">Базовые задачи</div>
-            </div>
-            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startSeriesTest('easy')">Начать →</button>
-          </div>
-          <div class="diff-card diff-medium" onclick="startSeriesTest('medium')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-medium">Средний</span>
-                <span class="diff-pts">×2 балла</span>
-              </div>
-              <div class="diff-sub">Задачи средней сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startSeriesTest('medium')">Начать →</button>
-          </div>
-          <div class="diff-card diff-hard" onclick="startSeriesTest('hard')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-hard">Сложный</span>
-                <span class="diff-pts">×3 балла</span>
-              </div>
-              <div class="diff-sub">Задачи повышенной сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startSeriesTest('hard')">Начать →</button>
-          </div>
-        </div>
-        <div class="study-mode-wrap">
-          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
-          <div class="study-mode-btns">
-            <button onclick="startSeriesTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
-            <button onclick="startSeriesTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
-            <button onclick="startSeriesTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
-          </div>
+          <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="viewProfileName"></h2>
+          <p class="text-center mb-5" id="viewProfileSub"></p>
+          <div id="viewProfileContent"></div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-
-<!-- ── РАЗДЕЛ ЛИМИТЫ ── -->
-<div id="limitsSection" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
-      <div class="section-panel">
-        <h2 class="section-heading">Пределы и непрерывность</h2>
-        <div class="theory-entry-card" onclick="showTheory('limits')" style="border-left:3px solid #a855f7">
-          <div class="theory-entry-left">
-            <span style="font-size:1.3rem;font-weight:700;line-height:1">lim</span>
-            <div>
-              <div class="theory-entry-title">Теория — 8 шагов</div>
-              <div class="theory-entry-sub">Формулы и правила перед тестом</div>
-            </div>
-          </div>
-          <span class="theory-entry-arrow">→</span>
+  <!-- ── СБРОС ПАРОЛЯ ── -->
+  <div id="updatePasswordPage" class="hidden"
+    style="display:none;min-height:100vh;align-items:center;justify-content:center;position:relative;z-index:1">
+    <div class="max-w-md w-full mx-auto px-4 fade-in">
+      <div class="auth-card">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div
+            style="width:56px;height:56px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:white">
+            <i data-lucide="lock" style="width:26px;height:26px"></i></div>
+          <div class="auth-title">Новый пароль</div>
+          <div class="auth-subtitle">Придумайте надёжный пароль</div>
         </div>
-        <div class="mb-6">
-          <label for="limitsCount" class="section-count-label">Количество вопросов:</label>
-          <select id="limitsCount" class="ml-2 border rounded-lg px-2 py-1">
-            <option value="10">10 вопросов</option>
-            <option value="15" selected>15 вопросов</option>
-            <option value="20">20 вопросов</option>
-            <option value="25">25 вопросов</option>
-          </select>
+        <div style="position:relative;margin-bottom:0.75rem">
+          <input id="newPassword" type="password" placeholder="Новый пароль" class="auth-input"
+            style="margin-bottom:0;padding-right:3rem">
+          <button onclick="togglePasswordVisibility('newPassword','eyeNew')"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8"
+            id="eyeNew"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
         </div>
-        <div class="diff-grid">
-          <div class="diff-card diff-easy" onclick="startLimitsTest('easy')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-easy">Лёгкий</span>
-                <span class="diff-pts">×1 балл</span>
-              </div>
-              <div class="diff-sub">Базовые пределы</div>
-            </div>
-            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startLimitsTest('easy')">Начать →</button>
-          </div>
-          <div class="diff-card diff-medium" onclick="startLimitsTest('medium')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-medium">Средний</span>
-                <span class="diff-pts">×2 балла</span>
-              </div>
-              <div class="diff-sub">Пределы средней сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startLimitsTest('medium')">Начать →</button>
-          </div>
-          <div class="diff-card diff-hard" onclick="startLimitsTest('hard')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-hard">Сложный</span>
-                <span class="diff-pts">×3 балла</span>
-              </div>
-              <div class="diff-sub">Правило Лопиталя и сложные пределы</div>
-            </div>
-            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startLimitsTest('hard')">Начать →</button>
-          </div>
+        <div id="strengthBar"
+          style="height:4px;border-radius:2px;margin-bottom:0.5rem;background:#e5e7eb;overflow:hidden">
+          <div id="strengthFill" style="height:100%;width:0;transition:all 0.3s;border-radius:2px"></div>
         </div>
-        <div class="study-mode-wrap">
-          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
-          <div class="study-mode-btns">
-            <button onclick="startLimitsTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
-            <button onclick="startLimitsTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
-            <button onclick="startLimitsTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
-          </div>
+        <p id="strengthText" class="text-xs mb-3" style="color:#94a3b8"></p>
+        <div style="position:relative;margin-bottom:0.75rem">
+          <input id="confirmPassword" type="password" placeholder="Повторите пароль" class="auth-input"
+            style="margin-bottom:0;padding-right:3rem">
+          <button onclick="togglePasswordVisibility('confirmPassword','eyeConfirm')"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8"
+            id="eyeConfirm"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
         </div>
+        <p id="updatePasswordError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
+        <button id="updatePasswordBtn" onclick="handleUpdatePassword()" class="auth-btn-primary">Сохранить
+          пароль</button>
+        <div style="margin-top:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px">
+          <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.4rem;font-weight:600">Требования:</p>
+          <div id="req1" style="font-size:0.75rem;color:#94a3b8">Минимум 6 символов</div>
+          <div id="req2" style="font-size:0.75rem;color:#94a3b8">Содержит цифры</div>
+          <div id="req3" style="font-size:0.75rem;color:#94a3b8">Содержит буквы</div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ── РАЗДЕЛ ДИФФЕРЕНЦИАЛЬНЫЕ УРАВНЕНИЯ ── -->
-<div id="odeSection" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к разделам</button>
-      <div class="section-panel">
-        <h2 class="section-heading">Дифференциальные уравнения</h2>
-        <div class="theory-entry-card" onclick="showTheory('ode')" style="border-left:3px solid #f97316">
-          <div class="theory-entry-left">
-            <span style="font-size:1.3rem;font-weight:700;line-height:1">y'</span>
-            <div>
-              <div class="theory-entry-title">Теория — 8 шагов</div>
-              <div class="theory-entry-sub">Формулы и правила перед тестом</div>
-            </div>
-          </div>
-          <span class="theory-entry-arrow">→</span>
-        </div>
-        <div class="mb-6">
-          <label for="odeCount" class="section-count-label">Количество вопросов:</label>
-          <select id="odeCount" class="ml-2 border rounded-lg px-2 py-1">
-            <option value="5">5 вопросов</option>
-            <option value="7">7 вопросов</option>
-            <option value="10" selected>10 вопросов</option>
-          </select>
-        </div>
-        <div class="diff-grid">
-          <div class="diff-card diff-easy" onclick="startODETest('easy')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-easy">Лёгкий</span>
-                <span class="diff-pts">×1 балл</span>
-              </div>
-              <div class="diff-sub">Базовые уравнения</div>
-            </div>
-            <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startODETest('easy')">Начать →</button>
-          </div>
-          <div class="diff-card diff-medium" onclick="startODETest('medium')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-medium">Средний</span>
-                <span class="diff-pts">×2 балла</span>
-              </div>
-              <div class="diff-sub">Уравнения средней сложности</div>
-            </div>
-            <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startODETest('medium')">Начать →</button>
-          </div>
-          <div class="diff-card diff-hard" onclick="startODETest('hard')">
-            <div class="diff-tier-bar"></div>
-            <div class="diff-content">
-              <div class="diff-header">
-                <span class="diff-label diff-label-hard">Сложный</span>
-                <span class="diff-pts">×3 балла</span>
-              </div>
-              <div class="diff-sub">Уравнения высших порядков</div>
-            </div>
-            <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startODETest('hard')">Начать →</button>
-          </div>
-        </div>
-        <div class="study-mode-wrap">
-          <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
-          <div class="study-mode-btns">
-            <button onclick="startODETest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
-            <button onclick="startODETest('medium', true)" class="study-btn study-btn-medium">Средний</button>
-            <button onclick="startODETest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- ── НИЖНЯЯ НАВИГАЦИЯ (только мобильные) ── -->
+  <nav id="bottomNav">
+    <button onclick="showProfile()" id="bnProfile">
+      <i data-lucide="user"></i><span>Профиль</span>
+    </button>
+    <button onclick="showHome()" id="bnHome">
+      <i data-lucide="home"></i><span>Главная</span>
+    </button>
+    <button onclick="showDuelModal()" id="bnDuel">
+      <i data-lucide="swords"></i><span>Дуэль</span>
+    </button>
+    <button onclick="showStatistics()" id="bnStats">
+      <i data-lucide="bar-chart-2"></i><span>Стат.</span>
+    </button>
+    <button onclick="showLeaderboard()" id="bnLeader">
+      <i data-lucide="trophy"></i><span>Рейтинг</span>
+    </button>
+    <button onclick="showSearchProfiles()" id="bnPeople">
+      <i data-lucide="users"></i><span>Люди</span>
+    </button>
+  </nav>
 
-<!-- ── СТРАНИЦА ТЕОРИИ ── -->
-<div id="theoryPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-    <div class="max-w-3xl mx-auto fade-in">
-      <button onclick="backFromTheory()" class="page-back-btn mb-4 text-blue-500 hover:text-blue-400 flex items-center gap-1 text-sm font-medium">← Назад к разделу</button>
-      <div class="rounded-2xl p-3 sm:p-8" style="background:var(--bg-card,white)">
-        <div id="theoryPageContent"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ТЕСТ ── -->
-<div id="testPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-4xl mx-auto">
-      <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <div class="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <h3 id="testTitle" class="text-xl font-bold text-gray-800">Тест</h3>
-            <p id="difficultyLabel" class="text-sm text-gray-600 mt-1"></p>
-          </div>
-          <div class="flex items-center gap-4">
-            <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">⏱️ 25:00</div>
-            <div class="text-sm text-gray-600">Вопрос <span id="currentQuestion">1</span> из <span id="totalQuestions">15</span></div>
-          </div>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-          <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width:5%"></div>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div id="questionContainer"></div>
-        <div class="mt-6 flex justify-between">
-          <button id="prevBtn" onclick="previousQuestion()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">← Назад</button>
-          <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Следующий →</button>
-          <button id="finishBtn" onclick="finishTest()" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700" style="display:none"><i data-lucide="check-circle-2"></i> Завершить тест</button>
-          <button onclick="exitTest()" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Выйти</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── РЕЗУЛЬТАТЫ ── -->
-<div id="resultsPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto text-center fade-in">
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">Результаты теста</h2>
-        <div id="scoreDisplay" class="text-6xl font-bold mb-4"></div>
-        <div id="scoreText" class="text-xl text-gray-600 mb-8"></div>
-        <div id="detailedResults" class="text-left mb-8"></div>
-        <div class="flex gap-4 justify-center flex-wrap">
-          <button onclick="restartTest()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">Пройти снова</button>
-          <button onclick="showHome()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">На главную</button>
-          <button onclick="showStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"><i data-lucide="bar-chart-2"></i> Статистика</button>
-          <button id="shareBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold"><i data-lucide="share-2"></i> Поделиться</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── СТАТИСТИКА ── -->
-<div id="statisticsPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-4xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Статистика</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="stat-card text-center"><div class="stat-value" id="totalTests">0</div><div class="stat-label">Тестов пройдено</div></div>
-          <div class="stat-card text-center"><div class="stat-value" id="bestScore">0%</div><div class="stat-label">Лучший результат</div></div>
-          <div class="stat-card text-center"><div class="stat-value" id="averageScore">0%</div><div class="stat-label">Средний балл</div></div>
-        </div>
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Прогресс по разделам</h3>
-        <div class="space-y-4 mb-6">
-          <div><div class="flex justify-between mb-1"><span>Интегралы</span><span id="integralsProgress">0%</span></div><div class="progress-bar"><div id="integralsProgressBar" class="progress-fill" style="width:0%"></div></div></div>
-          <div><div class="flex justify-between mb-1"><span>Производные</span><span id="derivativesProgress">0%</span></div><div class="progress-bar"><div id="derivativesProgressBar" class="progress-fill" style="width:0%"></div></div></div>
-          <div><div class="flex justify-between mb-1"><span>Ряды</span><span id="seriesProgress">0%</span></div><div class="progress-bar"><div id="seriesProgressBar" class="progress-fill" style="width:0%"></div></div></div>
-          <div><div class="flex justify-between mb-1"><span>Пределы</span><span id="limitsProgress">0%</span></div><div class="progress-bar"><div id="limitsProgressBar" class="progress-fill" style="width:0%"></div></div></div>
-          <div><div class="flex justify-between mb-1"><span>Дифф. уравнения</span><span id="odeProgress">0%</span></div><div class="progress-bar"><div id="odeProgressBar" class="progress-fill" style="width:0%"></div></div></div>
-        </div>
-        <!-- Chart.js charts injected here by JS -->
-        <div id="statsChartsContainer" class="mb-6"></div>
-
-        <h3 class="text-xl font-bold text-gray-800 mb-4">История тестов</h3>
-        <div id="testsHistory" class="space-y-3 max-h-96 overflow-y-auto"></div>
-        <div class="mt-6 flex justify-center">
-          <button onclick="resetStatistics()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold">Сбросить статистику</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ПРОФИЛЬ ── -->
-<div id="profilePage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div class="relative w-24 h-24 mx-auto mb-3">
-          <div class="profile-avatar" id="profileAvatar" style="width:80px;height:80px;font-size:2rem">S</div>
-          <img id="profileAvatarImg" src="" alt="avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
-          <button id="avatarUploadBtn" class="absolute bottom-0 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg" title="Сменить фото"><i data-lucide="camera" style="width:14px;height:14px"></i></button>
-          <button id="avatarDeleteBtn" class="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg" title="Удалить фото"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
-        </div>
-        <input type="file" id="avatarInput" accept="image/*" style="display:none">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="profileName">Пользователь</h2>
-        <p class="text-center text-gray-500 text-sm mb-4" id="profileEmail"></p>
-        <!-- Push-уведомления -->
-        <div class="mb-4 text-center">
-          <button id="pushToggleBtn" onclick="togglePushNotifications()"
-            class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all"
-            style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:#60a5fa">
-            <i data-lucide="bell" style="width:14px;height:14px"></i> Включить уведомления
-          </button>
-        </div>
-        <div id="profileContent"></div>
-
-        <!-- ── Настройки ── -->
-        <div class="mt-5 pt-5" style="border-top:1px solid var(--border,rgba(71,85,105,0.3))">
-          <p style="font-size:0.72rem;font-weight:600;color:var(--text-muted,#94a3b8);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px"><i data-lucide="settings" style="width:12px;height:12px"></i> Настройки</p>
-          <div style="display:flex;flex-direction:column;gap:0.5rem">
-
-            <!-- Тема -->
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
-              <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Тема оформления</span>
-              <button id="settingsThemeBtn" onclick="toggleTheme()"
-                style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.12);color:#60a5fa">
-                🌙 Тёмная
-              </button>
-            </div>
-
-            <!-- Звук -->
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;border-radius:0.75rem;background:var(--bg-card,rgba(30,41,59,0.4));border:1px solid var(--border,rgba(71,85,105,0.3))">
-              <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Звуковые эффекты</span>
-              <button id="settingsSoundBtn" onclick="toggleSound()"
-                style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.12);color:#34d399">
-                🔊 Включён
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="mt-6 text-center">
-          <button onclick="handleLogout()"
-            class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-300 px-8 py-2 rounded-full font-semibold transition-all text-sm">
-            Выйти из аккаунта
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── РЕЙТИНГ ── -->
-<div id="leaderboardPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div class="flex items-center justify-center gap-3 mb-6">
-          <h2 class="text-3xl font-bold text-gray-800">Таблица лидеров</h2>
-          <span id="liveIndicator" style="display:none;font-size:0.7rem;font-weight:600;background:#ef4444;color:white;padding:2px 8px;border-radius:20px;animation:pulse 2s infinite">● LIVE</span>
-          <button onclick="togglePtsInfo()" title="Как считаются баллы?"
-            style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--text-muted);background:transparent;color:var(--text-muted);font-size:0.75rem;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s"
-            onmouseover="this.style.borderColor='#3b82f6';this.style.color='#3b82f6'"
-            onmouseout="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-muted)'">?</button>
-        </div>
-        <!-- Справка по pts -->
-        <div id="ptsInfoBox" style="display:none;margin-bottom:1rem;padding:0.85rem 1rem;border-radius:0.75rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);font-size:0.83rem;color:var(--text-main)">
-          <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa">📐 Как считаются баллы (pts)?</p>
-          <p style="color:var(--text-muted);line-height:1.5">
-            <b style="color:var(--text-main)">pts = правильные ответы × множитель сложности</b><br>
-            <span style="color:#10b981">●</span> Лёгкий ×1 &nbsp;·&nbsp; <span style="color:#f59e0b">●</span> Средний ×2 &nbsp;·&nbsp; <span style="color:#ef4444">●</span> Сложный ×3
-          </p>
-          <p style="color:var(--text-muted);margin-top:0.4rem;line-height:1.5">
-            Из всех попыток берётся <b style="color:var(--text-main)">лучший результат</b> на каждую уникальную комбинацию раздел&nbsp;+&nbsp;сложность. Итоговый рейтинг — сумма лучших результатов по всем комбинациям.
-          </p>
-        </div>
-        <div class="flex gap-3 mb-6">
-          <select id="lbSection" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
-            <option value="">Все разделы</option>
-            <option value="integrals">Интегралы</option>
-            <option value="derivatives">Производные</option>
-            <option value="series">Ряды</option>
-            <option value="limits">Пределы</option>
-            <option value="ode">Дифф. уравнения</option>
-          </select>
-          <select id="lbDifficulty" onchange="showLeaderboard()" class="border rounded-lg px-3 py-2 flex-1">
-            <option value="">Все уровни</option>
-            <option value="easy">Лёгкий</option>
-            <option value="medium">Средний</option>
-            <option value="hard">Сложный</option>
-          </select>
-        </div>
-        <div id="leaderboardList"><p class="text-gray-500 text-center py-8">Загрузка...</p></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ПОИСК ПОЛЬЗОВАТЕЛЕЙ ── -->
-<div id="searchProfilesPage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showHome()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← На главную</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Пользователи</h2>
-        <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
-        <div class="relative mb-4">
-          <input id="searchInputField" type="text" placeholder="🔍  Поиск по имени..." class="auth-input mb-0 w-full" autocomplete="off">
-          <div id="searchSuggestions" class="absolute left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 mt-1 overflow-hidden" style="display:none"></div>
-        </div>
-        <div id="searchResults" class="space-y-2"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ПРОСМОТР ПРОФИЛЯ ── -->
-<div id="viewProfilePage" class="page-content hidden" style="display:none">
-  <div class="container mx-auto px-4 py-8" >
-    <div class="max-w-2xl mx-auto fade-in">
-      <button onclick="showSearchProfiles()" class="page-back-btn mb-6 text-blue-600 hover:text-blue-800">← Назад к поиску</button>
-      <div class="bg-white rounded-2xl shadow-lg p-8">
-        <div class="relative w-24 h-24 mx-auto mb-3">
-          <div class="profile-avatar" id="viewProfileAvatar" style="width:80px;height:80px;font-size:2rem">?</div>
-          <img id="viewProfileAvatarImg" src="" alt="avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto">
-        </div>
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-1" id="viewProfileName"></h2>
-        <p class="text-center mb-5" id="viewProfileSub"></p>
-        <div id="viewProfileContent"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── СБРОС ПАРОЛЯ ── -->
-<div id="updatePasswordPage" class="hidden" style="display:none;min-height:100vh;align-items:center;justify-content:center;position:relative;z-index:1">
-  <div class="max-w-md w-full mx-auto px-4 fade-in">
-    <div class="auth-card">
-      <div style="text-align:center;margin-bottom:1.5rem">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:white"><i data-lucide="lock" style="width:26px;height:26px"></i></div>
-        <div class="auth-title">Новый пароль</div>
-        <div class="auth-subtitle">Придумайте надёжный пароль</div>
-      </div>
-      <div style="position:relative;margin-bottom:0.75rem">
-        <input id="newPassword" type="password" placeholder="Новый пароль" class="auth-input" style="margin-bottom:0;padding-right:3rem">
-        <button onclick="togglePasswordVisibility('newPassword','eyeNew')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8" id="eyeNew"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
-      </div>
-      <div id="strengthBar" style="height:4px;border-radius:2px;margin-bottom:0.5rem;background:#e5e7eb;overflow:hidden">
-        <div id="strengthFill" style="height:100%;width:0;transition:all 0.3s;border-radius:2px"></div>
-      </div>
-      <p id="strengthText" class="text-xs mb-3" style="color:#94a3b8"></p>
-      <div style="position:relative;margin-bottom:0.75rem">
-        <input id="confirmPassword" type="password" placeholder="Повторите пароль" class="auth-input" style="margin-bottom:0;padding-right:3rem">
-        <button onclick="togglePasswordVisibility('confirmPassword','eyeConfirm')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8" id="eyeConfirm"><i data-lucide="eye" style="width:18px;height:18px"></i></button>
-      </div>
-      <p id="updatePasswordError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>
-      <button id="updatePasswordBtn" onclick="handleUpdatePassword()" class="auth-btn-primary">Сохранить пароль</button>
-      <div style="margin-top:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px">
-        <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.4rem;font-weight:600">Требования:</p>
-        <div id="req1" style="font-size:0.75rem;color:#94a3b8">Минимум 6 символов</div>
-        <div id="req2" style="font-size:0.75rem;color:#94a3b8">Содержит цифры</div>
-        <div id="req3" style="font-size:0.75rem;color:#94a3b8">Содержит буквы</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── НИЖНЯЯ НАВИГАЦИЯ (только мобильные) ── -->
-<nav id="bottomNav">
-  <button onclick="showProfile()" id="bnProfile">
-    <i data-lucide="user"></i><span>Профиль</span>
-  </button>
-  <button onclick="showHome()" id="bnHome">
-    <i data-lucide="home"></i><span>Главная</span>
-  </button>
-  <button onclick="showDuelModal()" id="bnDuel">
-    <i data-lucide="swords"></i><span>Дуэль</span>
-  </button>
-  <button onclick="showStatistics()" id="bnStats">
-    <i data-lucide="bar-chart-2"></i><span>Стат.</span>
-  </button>
-  <button onclick="showLeaderboard()" id="bnLeader">
-    <i data-lucide="trophy"></i><span>Рейтинг</span>
-  </button>
-  <button onclick="showSearchProfiles()" id="bnPeople">
-    <i data-lucide="users"></i><span>Люди</span>
-  </button>
-</nav>
-
-<script src="js/integrals-questions.js"></script>
+  <script src="js/integrals-questions.js"></script>
   <script src="js/derivatives-questions.js"></script>
+  <script src="js/open-questions.js"></script>
   <script src="js/series-questions.js"></script>
   <script src="js/limits-questions.js"></script>
   <script src="js/ode-questions.js"></script>
-<script>
+  <script src="js/probability-questions.js"></script>
+  <script src="js/prob-chapters.js"></script>
+  <script src="js/prob-theory.js"></script>
+  <script src="js/calculus-chapters.js"></script>
+  <script src="js/section-theory.js"></script>
+  <script>
     function togglePtsInfo() {
       const box = document.getElementById('ptsInfoBox')
       if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none'
@@ -1232,186 +2094,191 @@
   </script>
   <script type="module" src="js/script.js"></script>
 
-<script>
+  <script>
     // Применяем тему немедленно — без вспышки белого/тёмного
-    (function() {
+    (function () {
       const saved = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = saved ? saved === 'dark' : prefersDark;
       document.documentElement.classList.toggle('dark', isDark);
       document.body.classList.toggle('dark-theme', isDark);
       document.body.classList.toggle('light-theme', !isDark);
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.toggle('dark-theme', isDark)
         document.body.classList.toggle('light-theme', !isDark)
       });
     })();
   </script>
 
-<!-- ── Модал: рейтинг ежедневного вызова ── -->
-<div id="dailyLeaderboardModal"
-  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:9998;
+  <!-- ── Модал: рейтинг ежедневного вызова ── -->
+  <div id="dailyLeaderboardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:9998;
          align-items:center;justify-content:center;padding:1rem"
-  onclick="if(event.target===this)this.style.display='none'">
-  <div style="background:#1e293b;border:1px solid rgba(245,158,11,0.3);border-radius:1.5rem;
+    onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#1e293b;border:1px solid rgba(245,158,11,0.3);border-radius:1.5rem;
     padding:1.5rem;width:100%;max-width:460px;max-height:80vh;overflow-y:auto;
     box-shadow:0 25px 60px rgba(0,0,0,0.5)">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-      <h2 style="font-size:1.2rem;font-weight:700;color:#f1f5f9">Лидеры сегодня</h2>
-      <button onclick="document.getElementById('dailyLeaderboardModal').style.display='none'"
-        style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <h2 style="font-size:1.2rem;font-weight:700;color:#f1f5f9">Лидеры сегодня</h2>
+        <button onclick="document.getElementById('dailyLeaderboardModal').style.display='none'" style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
         color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
+      </div>
+      <div id="dailyLeaderboardList"></div>
     </div>
-    <div id="dailyLeaderboardList"></div>
   </div>
-</div>
 
-<!-- ── Модал: Дуэль ── -->
-<div id="duelModal"
-  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9998;
-         align-items:center;justify-content:center;padding:1rem"
-  onclick="if(event.target===this)closeDuelModal()">
-  <div style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
+  <!-- ── Модал: Дуэль ── -->
+  <div id="duelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9998;
+         align-items:center;justify-content:center;padding:1rem" onclick="if(event.target===this)closeDuelModal()">
+    <div class="duel-panel" style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
     padding:1.5rem;width:100%;max-width:440px;
     box-shadow:0 25px 60px rgba(0,0,0,0.55);position:relative">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
-      <h2 style="font-size:1.25rem;font-weight:700;color:#f1f5f9">1v1 Дуэль</h2>
-      <button onclick="closeDuelModal()"
-        style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+        <h2 style="font-size:1.25rem;font-weight:700;color:#f1f5f9">1v1 Дуэль</h2>
+        <button onclick="closeDuelModal()" style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
         color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
-    </div>
-    <!-- Tabs -->
-    <div id="duelTabsBar" style="display:flex;gap:6px;background:#0f172a;border-radius:10px;padding:4px;margin-bottom:1.2rem">
-      <button id="duelTabCreate" onclick="showDuelTab('create')"
-        style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:rgba(139,92,246,0.8);color:white">
-        Создать
-      </button>
-      <button id="duelTabJoin" onclick="showDuelTab('join')"
-        style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:#94a3b8">
-        Войти
-      </button>
-    </div>
-    <!-- Create tab -->
-    <div id="duelCreatePanel">
-      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Поделись кодом с другом — он введёт его во вкладке «Войти».</p>
-      <div style="text-align:center;margin-bottom:1rem">
-        <div id="duelCodeDisplay"
-          style="font-family:monospace;font-size:2.2rem;font-weight:700;letter-spacing:0.2em;
+      </div>
+      <!-- Tabs -->
+      <div id="duelTabsBar"
+        style="display:flex;gap:6px;background:#0f172a;border-radius:10px;padding:4px;margin-bottom:1.2rem">
+        <button id="duelTabCreate" onclick="showDuelTab('create')"
+          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:rgba(139,92,246,0.8);color:white">
+          Создать
+        </button>
+        <button id="duelTabJoin" onclick="showDuelTab('join')"
+          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:#94a3b8">
+          Войти
+        </button>
+      </div>
+      <!-- Create tab -->
+      <div id="duelCreatePanel">
+        <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Поделись кодом с другом — он введёт его во вкладке
+          «Войти».</p>
+        <div style="text-align:center;margin-bottom:1rem">
+          <div id="duelCodeDisplay" style="font-family:monospace;font-size:2.2rem;font-weight:700;letter-spacing:0.2em;
                  color:#c4b5fd;background:#0f172a;border:2px dashed rgba(139,92,246,0.5);
-                 border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer"
-          onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</div>
-        <p style="color:#64748b;font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
-      </div>
-      <!-- Раздел -->
-      <div style="margin-bottom:10px">
-        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Раздел</div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
-          <button class="duel-pick-btn active" data-sect="mixed" onclick="setDuelSection('mixed')">Все</button>
-          <button class="duel-pick-btn" data-sect="integrals" onclick="setDuelSection('integrals')">∫ Интегралы</button>
-          <button class="duel-pick-btn" data-sect="derivatives" onclick="setDuelSection('derivatives')">f' Производные</button>
-          <button class="duel-pick-btn" data-sect="series" onclick="setDuelSection('series')">∑ Ряды</button>
-          <button class="duel-pick-btn" data-sect="limits" onclick="setDuelSection('limits')">lim Пределы</button>
-          <button class="duel-pick-btn" data-sect="ode" onclick="setDuelSection('ode')">y' Дифф. уравнения</button>
+                 border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer" onclick="copyDuelCode()"
+            title="Нажми чтобы скопировать">——————</div>
+          <p style="color:#64748b;font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
         </div>
-      </div>
-      <!-- Уровень -->
-      <div style="margin-bottom:14px">
-        <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Уровень</div>
-        <div style="display:flex;gap:5px" id="duelDiffPicker">
-          <button class="duel-pick-btn" data-diff="easy" onclick="setDuelDiff('easy')">Лёгкий</button>
-          <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
-          <button class="duel-pick-btn" data-diff="hard" onclick="setDuelDiff('hard')">Сложный</button>
+        <!-- Раздел -->
+        <div style="margin-bottom:10px">
+          <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Раздел</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
+            <button class="duel-pick-btn active" data-sect="mixed" onclick="setDuelSection('mixed')">Все</button>
+            <button class="duel-pick-btn" data-sect="integrals" onclick="setDuelSection('integrals')">∫
+              Интегралы</button>
+            <button class="duel-pick-btn" data-sect="derivatives" onclick="setDuelSection('derivatives')">f'
+              Производные</button>
+            <button class="duel-pick-btn" data-sect="series" onclick="setDuelSection('series')">∑ Ряды</button>
+            <button class="duel-pick-btn" data-sect="limits" onclick="setDuelSection('limits')">lim Пределы</button>
+            <button class="duel-pick-btn" data-sect="ode" onclick="setDuelSection('ode')">y' Дифф. уравнения</button>
+            <button class="duel-pick-btn" data-sect="probability" onclick="setDuelSection('probability')">P
+              Вероятность</button>
+          </div>
         </div>
-      </div>
-      <div id="duelCreateStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">
-  Нажми кнопку чтобы создать дуэль
-</div>
-<input id="inviteUsernameInput" type="text" placeholder="Имя пользователя (опционально)"
-  style="width:100%;padding:8px 12px;border-radius:10px;
+        <!-- Уровень -->
+        <div style="margin-bottom:14px">
+          <div style="color:#64748b;font-size:0.78rem;margin-bottom:5px">Уровень</div>
+          <div style="display:flex;gap:5px" id="duelDiffPicker">
+            <button class="duel-pick-btn" data-diff="easy" onclick="setDuelDiff('easy')">Лёгкий</button>
+            <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
+            <button class="duel-pick-btn" data-diff="hard" onclick="setDuelDiff('hard')">Сложный</button>
+          </div>
+        </div>
+        <div id="duelCreateStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">
+          Нажми кнопку чтобы создать дуэль
+        </div>
+        <input id="inviteUsernameInput" type="text" placeholder="Имя пользователя (опционально)" style="width:100%;padding:8px 12px;border-radius:10px;
          border:1.5px solid rgba(139,92,246,0.3);
-         background:#0f172a;color:#e2e8f0;font-size:0.9rem;outline:none;margin-bottom:8px;box-sizing:border-box" onblur="validateInviteUsername()">
-<p id="inviteError" style="color:#f87171;font-size:0.75rem;margin-top:4px;display:none"></p>
-      <button onclick="createDuel()" id="duelCreateBtn"
-        style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+         background:#0f172a;color:#e2e8f0;font-size:0.9rem;outline:none;margin-bottom:8px;box-sizing:border-box"
+          onblur="validateInviteUsername()">
+        <p id="inviteError" style="color:#f87171;font-size:0.75rem;margin-top:4px;display:none"></p>
+        <button onclick="createDuel()" id="duelCreateBtn" style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
                box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
-        Создать дуэль
-      </button>
-    </div>
-    <!-- Join tab -->
-    <div id="duelJoinPanel" style="display:none">
-      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
-      <input id="duelJoinInput" type="text" maxlength="6"
-        placeholder="ABCD12"
-        style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(139,92,246,0.4);
+          Создать дуэль
+        </button>
+      </div>
+      <!-- Join tab -->
+      <div id="duelJoinPanel" style="display:none">
+        <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
+        <input id="duelJoinInput" type="text" maxlength="6" placeholder="ABCD12" style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(139,92,246,0.4);
                background:#0f172a;color:#f1f5f9;font-size:1.5rem;font-family:monospace;
                letter-spacing:0.15em;text-align:center;text-transform:uppercase;
-               margin-bottom:1rem;outline:none;box-sizing:border-box"
-        oninput="this.value=this.value.toUpperCase()">
-      <div id="duelJoinStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem"></div>
-      <button onclick="joinDuel()"
-        style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+               margin-bottom:1rem;outline:none;box-sizing:border-box" oninput="this.value=this.value.toUpperCase()">
+        <div id="duelJoinStatus" style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-bottom:1rem"></div>
+        <button onclick="joinDuel()" style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
                box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
-        Подключиться
-      </button>
-    </div>
-    <!-- Lobby (waiting / countdown) -->
-    <div id="duelLobby" style="display:none;text-align:center">
-      <div style="width:44px;height:44px;border-radius:50%;border:3px solid rgba(139,92,246,0.2);border-top-color:#c4b5fd;animation:spin 0.9s linear infinite;margin:0 auto 0.75rem"></div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-      <div id="duelLobbyMsg" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-bottom:0.5rem">Ожидаем соперника…</div>
-      <div id="duelLobbyPlayers" style="color:#94a3b8;font-size:0.85rem;margin-bottom:1.2rem"></div>
-      <div id="duelStartCountdown" style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── Модал: Результаты дуэли ── -->
-<div id="duelResultsModal"
-  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;
-         align-items:center;justify-content:center;padding:1rem"
-  onclick="if(event.target===this)this.style.display='none'">
-  <div style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
-    padding:2rem;width:100%;max-width:420px;text-align:center;
-    box-shadow:0 25px 60px rgba(0,0,0,0.55)">
-    <div id="duelResultsEmoji" style="font-size:3rem;margin-bottom:0.5rem;line-height:1">🏆</div>
-    <h2 id="duelResultsTitle" style="font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem"></h2>
-    <div id="duelResultsScores" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem"></div>
-    <!-- Баннер входящего запроса реванша -->
-    <div id="rematchRequestBanner" style="display:none;margin-bottom:1rem;padding:0.75rem 1rem;
-      border-radius:10px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4)">
-      <p id="rematchRequesterName" style="color:#c4b5fd;font-weight:600;margin:0 0 0.6rem"></p>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button onclick="acceptRematch()" style="padding:7px 18px;border-radius:8px;border:none;
-          cursor:pointer;font-weight:700;background:#10b981;color:white">Принять</button>
-        <button onclick="declineRematch()" style="padding:7px 18px;border-radius:8px;
-          border:1px solid rgba(100,116,139,0.4);background:transparent;color:#94a3b8;
-          cursor:pointer;font-weight:600">Отказать</button>
+          Подключиться
+        </button>
+      </div>
+      <!-- Lobby (waiting / countdown) -->
+      <div id="duelLobby" style="display:none;text-align:center">
+        <div
+          style="width:44px;height:44px;border-radius:50%;border:3px solid rgba(139,92,246,0.2);border-top-color:#c4b5fd;animation:spin 0.9s linear infinite;margin:0 auto 0.75rem">
+        </div>
+        <style>
+          @keyframes spin {
+            to {
+              transform: rotate(360deg)
+            }
+          }
+        </style>
+        <div id="duelLobbyMsg" style="color:#f1f5f9;font-weight:600;font-size:1rem;margin-bottom:0.5rem">Ожидаем
+          соперника…</div>
+        <div id="duelLobbyPlayers" style="color:#94a3b8;font-size:0.85rem;margin-bottom:1.2rem"></div>
+        <div id="duelStartCountdown"
+          style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button id="rematchBtn" onclick="requestRematch()"
-        style="padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+  </div>
+
+  <!-- ── Модал: Результаты дуэли ── -->
+  <div id="duelResultsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;
+         align-items:center;justify-content:center;padding:1rem"
+    onclick="if(event.target===this)this.style.display='none'">
+    <div class="duel-panel" style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
+    padding:2rem;width:100%;max-width:420px;text-align:center;
+    box-shadow:0 25px 60px rgba(0,0,0,0.55)">
+      <div id="duelResultsEmoji" style="font-size:3rem;margin-bottom:0.5rem;line-height:1">🏆</div>
+      <h2 id="duelResultsTitle" style="font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem"></h2>
+      <div id="duelResultsScores" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem"></div>
+      <!-- Баннер входящего запроса реванша -->
+      <div id="rematchRequestBanner" style="display:none;margin-bottom:1rem;padding:0.75rem 1rem;
+      border-radius:10px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4)">
+        <p id="rematchRequesterName" style="color:#c4b5fd;font-weight:600;margin:0 0 0.6rem"></p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button onclick="acceptRematch()" style="padding:7px 18px;border-radius:8px;border:none;
+          cursor:pointer;font-weight:700;background:#10b981;color:white">Принять</button>
+          <button onclick="declineRematch()" style="padding:7px 18px;border-radius:8px;
+          border:1px solid rgba(100,116,139,0.4);background:transparent;color:#94a3b8;
+          cursor:pointer;font-weight:600">Отказать</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button id="rematchBtn" onclick="requestRematch()" style="padding:10px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
                background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:0.95rem">
-        Реванш
-      </button>
-      <button onclick="document.getElementById('duelResultsModal').style.display='none'"
-        style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
+          Реванш
+        </button>
+        <button onclick="document.getElementById('duelResultsModal').style.display='none'" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
                background:transparent;color:#94a3b8;cursor:pointer;font-weight:600;font-size:0.95rem">
-        На главную
-      </button>
+          На главную
+        </button>
+      </div>
     </div>
   </div>
-</div>
-<div id="duelInviteBanner" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:350px; padding:1rem; border-radius:12px; background:rgba(30,41,59,0.95); backdrop-filter:blur(8px); border:1px solid rgba(139,92,246,0.6); box-shadow:0 10px 25px rgba(0,0,0,0.5); text-align:center;">
-  <p id="duelInviterName" style="color:#c4b5fd; font-weight:600; margin:0 0 1rem; font-size:1.05rem;"></p>
-  <div style="display:flex; gap:10px; justify-content:center;">
-    <button onclick="acceptDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#10b981; color:white; transition:opacity 0.2s;">Принять</button>
-    <button onclick="declineDuelInvite()" style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">Отказать</button>
+  <div id="duelInviteBanner"
+    style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:350px; padding:1rem; border-radius:12px; background:rgba(30,41,59,0.95); backdrop-filter:blur(8px); border:1px solid rgba(139,92,246,0.6); box-shadow:0 10px 25px rgba(0,0,0,0.5); text-align:center;">
+    <p id="duelInviterName" style="color:#c4b5fd; font-weight:600; margin:0 0 1rem; font-size:1.05rem;"></p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="acceptDuelInvite()"
+        style="flex:1; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#10b981; color:white; transition:opacity 0.2s;">Принять</button>
+      <button onclick="declineDuelInvite()"
+        style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">Отказать</button>
+    </div>
   </div>
-</div>
 </body>
 
 </html>

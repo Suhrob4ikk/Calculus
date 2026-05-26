@@ -17,4 +17,5 @@ export const st = {
   currentDifficulty: '',
   currentSection: '',
   isStudyMode: false,
+  testMode: 'closed',   // 'closed' | 'open'
 }

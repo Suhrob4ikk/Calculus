@@ -50,7 +50,8 @@ window.showSection = function(section) {
     derivatives: 'derivativesSection',
     series:      'seriesSection',
     limits:      'limitsSection',
-    ode:         'odeSection'
+    ode:         'odeSection',
+    probability: 'probabilitySection'
   }
   showPage(map[section])
 }

@@ -51,18 +51,19 @@ function generateDuelCode() {
 
 function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
   const poolsBySection = {
-    integrals:   { easy: easyIntegralsQuestions,   medium: mediumIntegralsQuestions,   hard: hardIntegralsQuestions   },
-    derivatives: { easy: easyDerivativesQuestions, medium: mediumDerivativesQuestions, hard: hardDerivativesQuestions },
-    series:      { easy: easySeriesQuestions,      medium: mediumSeriesQuestions,      hard: hardSeriesQuestions      },
-    limits:      { easy: easyLimitsQuestions,      medium: mediumLimitsQuestions,      hard: hardLimitsQuestions      },
-    ode:         { easy: easyODEQuestions,         medium: mediumODEQuestions,         hard: hardODEQuestions         },
+    integrals:   { easy: easyIntegralsQuestions,     medium: mediumIntegralsQuestions,     hard: hardIntegralsQuestions     },
+    derivatives: { easy: easyDerivativesQuestions,   medium: mediumDerivativesQuestions,   hard: hardDerivativesQuestions   },
+    series:      { easy: easySeriesQuestions,        medium: mediumSeriesQuestions,        hard: hardSeriesQuestions        },
+    limits:      { easy: easyLimitsQuestions,        medium: mediumLimitsQuestions,        hard: hardLimitsQuestions        },
+    ode:         { easy: easyODEQuestions,           medium: mediumODEQuestions,           hard: hardODEQuestions           },
+    probability: { easy: easyProbabilityQuestions,   medium: mediumProbabilityQuestions,   hard: hardProbabilityQuestions   },
   }
   const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng  = mulberry32(seed)
   let pool
 
   if (section === 'mixed') {
-    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode']
+    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability']
     const selected = []
     for (const s of sects) {
       const sPool = (poolsBySection[s]?.[difficulty] || []).flat().filter(q => q && q.options && q.options.length === 4)
@@ -248,15 +249,21 @@ window.createDuel = async function() {
 
   // Отправляем инвайт, если указан username
   if (window._duelInvitedUsername) {
-    window._duelInvitesChannel?.send({
-      type: 'broadcast',
-      event: 'invite',
-      payload: {
-        invitedUsername: window._duelInvitedUsername,
-        code: window._duelCode,
-        inviterName: window._duelMyName
-      }
-    })
+    // Validate username: non-empty, alphanumeric, 3-16 chars
+    const isValid = /^[a-zA-Z][a-zA-Z0-9_]{2,15}$/.test(window._duelInvitedUsername);
+    if (!isValid) {
+      _duelSetStatus('duelCreateStatus', '❌ Некорректный ник приглашённого');
+    } else {
+      window._duelInvitesChannel?.send({
+        type: 'broadcast',
+        event: 'invite',
+        payload: {
+          invitedUsername: window._duelInvitedUsername,
+          code: window._duelCode,
+          inviterName: window._duelMyName
+        }
+      });
+    }
   }
 }
 

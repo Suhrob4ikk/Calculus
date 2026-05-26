@@ -24,8 +24,8 @@ export function startTimer() {
 }
 
 function updateTimerDisplay() {
-  const m  = Math.floor(st.timeRemaining / 60)
-  const s  = st.timeRemaining % 60
+  const m = Math.floor(st.timeRemaining / 60)
+  const s = st.timeRemaining % 60
   const el = document.getElementById('timerDisplay')
   if (!el) return
   el.textContent = `⏱️ ${m}:${s.toString().padStart(2, '0')}`
@@ -47,6 +47,7 @@ export function saveTestState() {
     localStorage.setItem('testState', JSON.stringify({
       section: st.currentSection,
       difficulty: st.currentDifficulty,
+      testMode: st.testMode,
       currentQuestionIndex: st.currentQuestionIndex,
       userAnswers: st.userAnswers,
       timeRemaining: st.timeRemaining,
@@ -63,15 +64,16 @@ export function restoreTestState() {
   try {
     const data = JSON.parse(saved)
     if (!data.currentTest || !data.currentTest.length) return false
-    st.currentSection       = data.section
-    st.currentDifficulty    = data.difficulty
+    st.currentSection = data.section
+    st.currentDifficulty = data.difficulty
     st.currentQuestionIndex = data.currentQuestionIndex || 0
-    st.userAnswers          = data.userAnswers || []
-    st.timeRemaining        = data.timeRemaining || 25 * 60
-    st.timerInitialTime     = data.timeRemaining || 25 * 60
-    st.currentTest          = data.currentTest
-    st.testStartTime        = Date.now()
-    st.timerStartTime       = null
+    st.userAnswers = data.userAnswers || []
+    st.timeRemaining = data.timeRemaining || 25 * 60
+    st.timerInitialTime = data.timeRemaining || 25 * 60
+    st.currentTest = data.currentTest
+    st.testMode = data.testMode || 'closed'
+    st.testStartTime = Date.now()
+    st.timerStartTime = null
     return true
   } catch (e) {
     console.error('restoreTestState failed:', e)
@@ -81,34 +83,69 @@ export function restoreTestState() {
 }
 
 // Регистрируем как window callbacks для других модулей
-window._startTimer       = startTimer
-window._stopTimer        = stopTimer
-window._displayQuestion  = displayQuestion
-window._clearTestState   = clearTestState
+window._startTimer = startTimer
+window._stopTimer = stopTimer
+window._displayQuestion = displayQuestion
+window._clearTestState = clearTestState
 window._restoreTestState = restoreTestState
 
 // ── Запуск теста ──────────────────────────────────────────
 export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   clearTestState()
-  st.currentSection    = section
+  st.currentSection = section
   st.currentDifficulty = difficulty
   const countEl = document.getElementById(countSelectId)
   const questionCount = countEl ? parseInt(countEl.value) : 15
   const minutesMap = {
-    easy:   {5: 25, 7: 30, 10: 35, 15: 40, 20: 50, 25: 60},
-    medium: {5: 30, 7: 35, 10: 40, 15: 50, 20: 60, 25: 75},
-    hard:   {5: 35, 7: 40, 10: 50, 15: 60, 20: 75, 25: 90},
+    easy: { 5: 25, 7: 30, 10: 35, 15: 40, 20: 50, 25: 60 },
+    medium: { 5: 30, 7: 35, 10: 40, 15: 50, 20: 60, 25: 75 },
+    hard: { 5: 35, 7: 40, 10: 50, 15: 60, 20: 75, 25: 90 },
   }
   const totalMinutes = (minutesMap[difficulty]?.[questionCount]) || (questionCount * 25 / 5)
   st.timeRemaining = totalMinutes * 60
   st.timerInitialTime = st.timeRemaining
   let questions = pool.flat().filter(q => q && q.question && q.options && q.options.length === 4 && q.options.every(o => o != null))
+// Generate simple numeric open answers when in open mode
+if (st.testMode === 'open') {
+  questions = questions.map(q => {
+    const correctIdx = q.correct !== undefined ? q.correct : q.answerIndex
+    const correctOption = q.options && correctIdx !== undefined ? q.options[correctIdx] : null
+    if (correctOption && /^-?\d+(\.\d+)?$/.test(correctOption.trim())) {
+      q.open = [correctOption.trim()]
+    }
+    return q
+  })
+}
+if (st.testMode === 'open') {
+  questions = questions.filter(q => {
+    if (!q.open || q.open.length === 0) return false
+    // Оставляем только печатаемые ответы — без кириллицы (словесных ответов) и не слишком длинные
+    const typeable = q.open.filter(a => !/[а-яёА-ЯЁ]/.test(String(a)) && String(a).trim().length <= 22)
+    if (typeable.length === 0) return false
+    q.open = typeable   // обновляем — только то, что можно набрать
+    return true
+  })
   if (questions.length === 0) {
+    alert('Нет вопросов с открытым ответом для этого раздела/уровня. Попробуйте другой.')
+    return
+  }
+}
+if (questions.length === 0) {
     alert('Вопросы для этого раздела не найдены. Попробуйте другой уровень сложности.')
     return
   }
   const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, questions.length))
-  st.currentTest = shuffled.map(q => {
+  // Generate simple numeric open answers for open mode
+  const processed = shuffled.map(q => {
+    // Determine correct option text (may be stored in q.correct or q.answerIndex)
+    const correctIdx = q.correct !== undefined ? q.correct : q.answerIndex
+    const correctOption = q.options && correctIdx !== undefined ? q.options[correctIdx] : null
+    if (st.testMode === 'open' && correctOption && /^-?\d+(\.\d+)?$/.test(correctOption.trim())) {
+      q.open = [correctOption.trim()]
+    }
+    return q
+  })
+  st.currentTest = processed.map(q => {
     const order = [0, 1, 2, 3].sort(() => Math.random() - 0.5)
     return {
       ...q,
@@ -117,14 +154,15 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
     }
   })
   st.currentQuestionIndex = 0
-  st.userAnswers  = new Array(st.currentTest.length).fill(null)
+  st.userAnswers = new Array(st.currentTest.length).fill(null)
   st.testStartTime = Date.now()
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = st.currentTest.length
-  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }[section] || section
-  const diffName    = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
-  document.getElementById('testTitle').textContent      = `${st.isStudyMode ? 'Изучение' : 'Тест'}: ${sectionName}`
+  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность' }[section] || section
+  const diffName = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
+  const modeName = st.testMode === 'open' ? ' · Открытый' : ''
+  document.getElementById('testTitle').textContent = `${st.isStudyMode ? 'Изучение' : 'Тест'}: ${sectionName}${modeName}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName}${st.isStudyMode ? ' · Без таймера · Результат не сохраняется' : ''}`
   const timerEl = document.getElementById('timerDisplay')
   if (timerEl) timerEl.style.display = st.isStudyMode ? 'none' : ''
@@ -132,49 +170,68 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   displayQuestion()
 }
 
-window.startIntegralsTest = function(d, study = false) {
-  st.isStudyMode = study
+window.startIntegralsTest = function (d, study = false) {
+  st.isStudyMode = study; st.testMode = 'closed'
   /* global easyIntegralsQuestions, mediumIntegralsQuestions, hardIntegralsQuestions */
-  const pool = d==='easy' ? easyIntegralsQuestions : d==='medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
+  const pool = d === 'easy' ? easyIntegralsQuestions : d === 'medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
   startTest('integrals', d, pool, 'integralsCount', 'integralsSection')
 }
-window.startLimitsTest = function(d, study = false) {
+window.startLimitsTest = function (d, study = false) {
   st.isStudyMode = study
+  const openBtn = document.getElementById('limitsOpenBtn')
+  st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
   /* global easyLimitsQuestions, mediumLimitsQuestions, hardLimitsQuestions */
-  const pool = d==='easy' ? easyLimitsQuestions : d==='medium' ? mediumLimitsQuestions : hardLimitsQuestions
+  const pool = d === 'easy' ? easyLimitsQuestions : d === 'medium' ? mediumLimitsQuestions : hardLimitsQuestions
   startTest('limits', d, pool, 'limitsCount', 'limitsSection')
 }
-window.startDerivativesTest = function(d, study = false) {
+window.startDerivativesTest = function (d, study = false) {
   st.isStudyMode = study
+  const openBtn = document.getElementById('derivOpenBtn')
+  st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
   /* global easyDerivativesQuestions, mediumDerivativesQuestions, hardDerivativesQuestions */
-  const pool = d==='easy' ? easyDerivativesQuestions : d==='medium' ? mediumDerivativesQuestions : hardDerivativesQuestions
+  /* global easyDerivativesOpenQuestions, mediumDerivativesOpenQuestions, hardDerivativesOpenQuestions */
+  const pool = st.testMode === 'open'
+    ? (d === 'easy' ? easyDerivativesOpenQuestions : d === 'medium' ? mediumDerivativesOpenQuestions : hardDerivativesOpenQuestions)
+    : (d === 'easy' ? easyDerivativesQuestions : d === 'medium' ? mediumDerivativesQuestions : hardDerivativesQuestions)
   startTest('derivatives', d, pool, 'derivativesCount', 'derivativesSection')
 }
-window.startSeriesTest = function(d, study = false) {
-  st.isStudyMode = study
+window.startSeriesTest = function (d, study = false) {
+  st.isStudyMode = study; st.testMode = 'closed'
   /* global easySeriesQuestions, mediumSeriesQuestions, hardSeriesQuestions */
-  const pool = d==='easy' ? easySeriesQuestions : d==='medium' ? mediumSeriesQuestions : hardSeriesQuestions
+  const pool = d === 'easy' ? easySeriesQuestions : d === 'medium' ? mediumSeriesQuestions : hardSeriesQuestions
   startTest('series', d, pool, 'seriesCount', 'seriesSection')
 }
-window.startODETest = function(d, study = false) {
+window.startODETest = function (d, study = false) {
   st.isStudyMode = study
+  const openBtn = document.getElementById('odeOpenBtn')
+  st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
   /* global easyODEQuestions, mediumODEQuestions, hardODEQuestions */
-  const pool = d==='easy' ? easyODEQuestions : d==='medium' ? mediumODEQuestions : hardODEQuestions
+  const pool = d === 'easy' ? easyODEQuestions : d === 'medium' ? mediumODEQuestions : hardODEQuestions
   startTest('ode', d, pool, 'odeCount', 'odeSection')
 }
-window.restartTest = function() {
+window.startProbabilityTest = function (d, study = false) {
+  st.isStudyMode = study
+  const openBtn = document.getElementById('probOpenBtn')
+  st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
+  /* global easyProbabilityQuestions, mediumProbabilityQuestions, hardProbabilityQuestions */
+  const pool = d === 'easy' ? easyProbabilityQuestions : d === 'medium' ? mediumProbabilityQuestions : hardProbabilityQuestions
+  startTest('probability', d, pool, 'probabilityCount', 'probabilitySection')
+}
+window.restartTest = function () {
   if (st.currentSection === 'daily') { window.showHome(); return }
-  if (st.currentSection === 'duel')  { window.showDuelModal(); return }
-  const fn = st.currentSection==='ode' ? window.startODETest
-    : st.currentSection==='limits'      ? window.startLimitsTest
-    : st.currentSection==='series'      ? window.startSeriesTest
-    : st.currentSection==='derivatives' ? window.startDerivativesTest
-    : window.startIntegralsTest
+  if (st.currentSection === 'duel') { window.showDuelModal(); return }
+  const fn = st.currentSection === 'ode' ? window.startODETest
+    : st.currentSection === 'limits' ? window.startLimitsTest
+      : st.currentSection === 'series' ? window.startSeriesTest
+        : st.currentSection === 'derivatives' ? window.startDerivativesTest
+          : st.currentSection === 'probability' ? window.startProbabilityTest
+            : window.startIntegralsTest
   fn(st.currentDifficulty)
 }
 
 // ── Вопросы ───────────────────────────────────────────────
-window.selectAnswer = function(answerIndex) {
+window.selectAnswer = function (answerIndex) {
+  if (st.testMode === 'open') return
   if (st.userAnswers[st.currentQuestionIndex] !== null) return
   st.userAnswers[st.currentQuestionIndex] = answerIndex
   const correct = st.currentTest[st.currentQuestionIndex].correct
@@ -196,60 +253,174 @@ window.selectAnswer = function(answerIndex) {
   })
 }
 
-export function displayQuestion() {
-  const question  = st.currentTest[st.currentQuestionIndex]
-  const container = document.getElementById('questionContainer')
-  const answered  = st.userAnswers[st.currentQuestionIndex] !== null
-  const correct   = question.correct
-  const chosen    = st.userAnswers[st.currentQuestionIndex]
-  const isDark    = document.documentElement.classList.contains('dark')
+// ── Открытый ответ ────────────────────────────────────────
+function normalizeAnswer(s) {
+  return String(s).trim().toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/,/g, '.')
+}
+function checkOpenCorrect(userInput, openAnswers) {
+  if (!openAnswers || openAnswers.length === 0) return false
+  const norm = normalizeAnswer(userInput)
+  return openAnswers.some(a => normalizeAnswer(a) === norm)
+}
 
-  container.innerHTML = `
+window.submitOpenAnswer = function () {
+  if (st.testMode !== 'open') return
+  if (st.userAnswers[st.currentQuestionIndex] !== null) return
+  const input = document.getElementById('openAnswerInput')
+  if (!input) return
+  const val = input.value.trim()
+  if (!val) return
+  const q = st.currentTest[st.currentQuestionIndex]
+  const isCorrect = checkOpenCorrect(val, q.open || [])
+  st.userAnswers[st.currentQuestionIndex] = val
+  playSound(isCorrect ? 'correct' : 'wrong')
+  displayQuestion()
+}
+
+window.setDerivativesTestMode = function (mode) {
+  st.testMode = mode
+  document.querySelectorAll('#derivativesSection .test-type-btn').forEach(btn => btn.classList.remove('active'))
+  const activeId = mode === 'open' ? 'derivOpenBtn' : 'derivClosedBtn'
+  const btn = document.getElementById(activeId)
+  if (btn) btn.classList.add('active')
+}
+
+window.setLimitsTestMode = function (mode) {
+  st.testMode = mode
+  document.querySelectorAll('#limitsSection .test-type-btn').forEach(btn => btn.classList.remove('active'))
+  const activeId = mode === 'open' ? 'limitsOpenBtn' : 'limitsClosedBtn'
+  const btn = document.getElementById(activeId)
+  if (btn) btn.classList.add('active')
+}
+
+window.setODETestMode = function (mode) {
+  st.testMode = mode
+  document.querySelectorAll('#odeSection .test-type-btn').forEach(btn => btn.classList.remove('active'))
+  const activeId = mode === 'open' ? 'odeOpenBtn' : 'odeClosedBtn'
+  const btn = document.getElementById(activeId)
+  if (btn) btn.classList.add('active')
+}
+
+window.setProbTestMode = function (mode) {
+  st.testMode = mode
+  document.querySelectorAll('#probabilitySection .test-type-btn').forEach(btn => btn.classList.remove('active'))
+  const activeId = mode === 'open' ? 'probOpenBtn' : 'probClosedBtn'
+  const btn = document.getElementById(activeId)
+  if (btn) btn.classList.add('active')
+}
+
+export function displayQuestion() {
+  const question = st.currentTest[st.currentQuestionIndex]
+  const container = document.getElementById('questionContainer')
+  const answered = st.userAnswers[st.currentQuestionIndex] !== null
+  const isDark = document.documentElement.classList.contains('dark')
+
+  const questionHeader = `
     <div class="mb-6">
       <h3 class="text-xl font-semibold mb-4 math-container" style="color:var(--text-main)">
         <div class="math-content">${question.question}</div>
       </h3>
-    </div>
-    <div class="space-y-3">
-      ${question.options.map((option, i) => {
-        let border = '', bg = '', color = '', pe = ''
-        if (answered) {
-          pe = 'pointer-events:none;'
-          if (i === correct) {
-            border = 'border-color:#10b981;'
-            bg     = `background-color:${isDark ? '#064e3b' : '#ecfdf5'};`
-            color  = `color:${isDark ? '#a7f3d0' : '#064e3b'};`
-          } else if (i === chosen && chosen !== correct) {
-            border = 'border-color:#ef4444;'
-            bg     = `background-color:${isDark ? '#450a0a' : '#fef2f2'};`
-            color  = `color:${isDark ? '#fca5a5' : '#7f1d1d'};`
-          }
-        }
-        return `<label class="option-label${chosen===i?' selected':''}" style="${border}${bg}${color}${pe}">
-          <input type="radio" name="answer" value="${i}" class="mr-3 mt-1 flex-shrink-0"
-            ${chosen===i?'checked':''} ${answered?'disabled':''} onchange="selectAnswer(${i})">
-          <span class="option-text">${option}</span>
-        </label>`
-      }).join('')}
     </div>`
 
+  if (st.testMode === 'open') {
+    // ── Открытый режим ─────────────────────────────────────
+    const userVal = answered ? (st.userAnswers[st.currentQuestionIndex] || '') : ''
+    let openResult = ''
+    if (answered) {
+      const isCorrect = checkOpenCorrect(userVal, question.open || [])
+      if (isCorrect) {
+        openResult = `<div class="open-answer-result open-correct">✓ Правильно!</div>`
+      } else {
+        const correctAns = question.open ? question.open[0] : '?'
+        openResult = `<div class="open-answer-result open-wrong">✗ Неправильно. Правильный ответ: <strong>${correctAns}</strong></div>`
+      }
+    }
+    container.innerHTML = questionHeader + `
+      <div class="open-answer-wrap">
+        <div class="open-answer-hint">
+          💡 <b>Формат:</b>
+          целые: <code>3</code> <code>-2</code> &nbsp;·&nbsp;
+          дроби: <code>1/2</code> <code>-3/4</code> &nbsp;·&nbsp;
+          дес.: <code>0.5</code> <code>-1.25</code> &nbsp;·&nbsp;
+          корни: <code>sqrt(2)</code> <code>sqrt(3)/2</code> &nbsp;·&nbsp;
+          конст.: <code>pi</code> <code>e</code> &nbsp;·&nbsp;
+          лог.: <code>ln(2)</code> <code>ln2</code> &nbsp;·&nbsp;
+          степени: <code>e^2</code> <code>pi/4</code> <code>1/e</code> &nbsp;·&nbsp;
+          смешан.: <code>-pi/2</code> <code>1/sqrt(2)</code> <code>3*pi</code>
+        </div>
+        <input type="text" id="openAnswerInput" class="open-answer-input"
+          placeholder="Введите ответ..."
+          value="${answered ? userVal.replace(/"/g, '&quot;') : ''}"
+          ${answered ? 'disabled' : ''}
+          onkeydown="if(event.key==='Enter'&&!this.disabled){event.stopPropagation();window.submitOpenAnswer()}">
+        <button onclick="window.submitOpenAnswer()" class="open-answer-btn" ${answered ? 'disabled' : ''}>
+          Ответить
+        </button>
+        ${openResult}
+      </div>`
+    if (!answered) {
+      // Autofocus after render
+      setTimeout(() => { const inp = document.getElementById('openAnswerInput'); if (inp) inp.focus() }, 50)
+    }
+  } else {
+    // ── Закрытый режим (radio buttons) ─────────────────────
+    const correct = question.correct
+    const chosen = st.userAnswers[st.currentQuestionIndex]
+    container.innerHTML = questionHeader + `
+      <div class="space-y-3">
+        ${question.options.map((option, i) => {
+      let border = '', bg = '', color = '', pe = ''
+      if (answered) {
+        pe = 'pointer-events:none;'
+        if (i === correct) {
+          border = 'border-color:#10b981;'
+          bg = `background-color:${isDark ? '#064e3b' : '#ecfdf5'};`
+          color = `color:${isDark ? '#a7f3d0' : '#064e3b'};`
+        } else if (i === chosen && chosen !== correct) {
+          border = 'border-color:#ef4444;'
+          bg = `background-color:${isDark ? '#450a0a' : '#fef2f2'};`
+          color = `color:${isDark ? '#fca5a5' : '#7f1d1d'};`
+        }
+      }
+      return `<label class="option-label${chosen === i ? ' selected' : ''}" style="${border}${bg}${color}${pe}">
+            <input type="radio" name="answer" value="${i}" class="mr-3 mt-1 flex-shrink-0"
+              ${chosen === i ? 'checked' : ''} ${answered ? 'disabled' : ''} onchange="selectAnswer(${i})">
+            <span class="option-text">${option}</span>
+          </label>`
+    }).join('')}
+      </div>`
+  }
+
   document.getElementById('currentQuestion').textContent = st.currentQuestionIndex + 1
-  document.getElementById('progressBar').style.width = ((st.currentQuestionIndex+1)/st.currentTest.length*100) + '%'
+  document.getElementById('progressBar').style.width = ((st.currentQuestionIndex + 1) / st.currentTest.length * 100) + '%'
   document.getElementById('prevBtn').disabled = st.currentQuestionIndex === 0
   const isLast = st.currentQuestionIndex === st.currentTest.length - 1
-  document.getElementById('nextBtn').style.display   = isLast ? 'none'         : 'inline-block'
+  document.getElementById('nextBtn').style.display = isLast ? 'none' : 'inline-block'
   document.getElementById('finishBtn').style.display = isLast ? 'inline-block' : 'none'
   if (window.MathJax) MathJax.typesetPromise([container]).catch(console.error)
 }
 
-window.nextQuestion     = function() {
+// Автосохранение открытого ответа при навигации (без клика «Ответить»)
+function autoSaveOpenAnswer() {
+  if (st.testMode !== 'open') return
+  if (st.userAnswers[st.currentQuestionIndex] !== null) return // уже сохранён
+  const input = document.getElementById('openAnswerInput')
+  if (!input || !input.value.trim()) return // поле пустое
+  st.userAnswers[st.currentQuestionIndex] = input.value.trim()
+}
+
+window.nextQuestion = function () {
+  autoSaveOpenAnswer()
   if (st.currentQuestionIndex < st.currentTest.length - 1) { st.currentQuestionIndex++; displayQuestion() }
   else window.finishTest()
 }
-window.previousQuestion = function() {
+window.previousQuestion = function () {
+  autoSaveOpenAnswer()
   if (st.currentQuestionIndex > 0) { st.currentQuestionIndex--; displayQuestion() }
 }
-window.exitTest = function() {
+window.exitTest = function () {
   if (confirm('Выйти? Прогресс будет потерян.')) {
     clearTestState()
     st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0
@@ -264,8 +435,9 @@ window.exitTest = function() {
 }
 
 // ── Завершение теста ──────────────────────────────────────
-window.finishTest = async function() {
+window.finishTest = async function () {
   if (window._finishInProgress) return
+  autoSaveOpenAnswer()  // сохранить ответ на текущий вопрос если не был отправлен
   window._finishInProgress = true
   const finishBtn = document.getElementById('finishBtn')
   if (finishBtn) { finishBtn.disabled = true; finishBtn.textContent = 'Сохраняем...' }
@@ -273,14 +445,20 @@ window.finishTest = async function() {
 
   let correct = 0
   const results = st.currentTest.map((q, i) => {
-    const ok = st.userAnswers[i] === q.correct
-    if (ok) correct++
-    return {
-      question: q.question,
-      userAnswer: st.userAnswers[i] != null ? q.options[st.userAnswers[i]] : 'Не отвечено',
-      correctAnswer: q.options[q.correct],
-      isCorrect: ok
+    let ok
+    if (st.testMode === 'open') {
+      ok = st.userAnswers[i] !== null && checkOpenCorrect(st.userAnswers[i], q.open || [])
+    } else {
+      ok = st.userAnswers[i] === q.correct
     }
+    if (ok) correct++
+    const userAnswer = st.userAnswers[i] != null
+      ? (st.testMode === 'open' ? st.userAnswers[i] : q.options[st.userAnswers[i]])
+      : 'Не отвечено'
+    const correctAnswer = st.testMode === 'open'
+      ? (q.open ? q.open[0] : q.options[q.correct])
+      : q.options[q.correct]
+    return { question: q.question, userAnswer, correctAnswer, isCorrect: ok }
   })
   const percentage = Math.round(correct / st.currentTest.length * 100)
 
@@ -346,8 +524,8 @@ window.finishTest = async function() {
     localStorage.setItem(`dailyChallengeScore_${uid}`, percentage)
   }
   if (!st.isStudyMode) {
-    const ptsPerQ  = XP_TABLE[st.currentDifficulty] || 10
-    let xpGained   = correct * ptsPerQ
+    const ptsPerQ = XP_TABLE[st.currentDifficulty] || 10
+    let xpGained = correct * ptsPerQ
     if (percentage === 100) xpGained += 25
     if (st.currentSection === 'daily') xpGained += 50
     const newXP = addXP(xpGained)
@@ -357,6 +535,7 @@ window.finishTest = async function() {
   window._finishInProgress = false
   if (!st.isStudyMode) clearTestState()
   st.isStudyMode = false
+  // testMode is NOT reset here so restartTest preserves the mode
   showPage('resultsPage')
   if (percentage === 100) { setTimeout(launchConfetti, 400); playSound('perfect') }
   else playSound('finish')
@@ -376,9 +555,9 @@ window.finishTest = async function() {
     <div class="max-h-64 overflow-y-auto space-y-2">
       ${results.map((r, i) => `
         <div class="${r.isCorrect ? 'result-card-correct' : 'result-card-wrong'}">
-          <div class="text-sm font-medium mb-1">Вопрос ${i+1}:</div>
+          <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
           <div class="text-sm mb-1 math-content">${r.question}</div>
-          <div class="text-xs">Ваш: ${r.userAnswer}<br>Правильный: ${r.correctAnswer}<br>${r.isCorrect?'✓ Правильно':'✗ Неправильно'}</div>
+          <div class="text-xs">Ваш: ${r.userAnswer}<br>Правильный: ${r.correctAnswer}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
         </div>`).join('')}
     </div>`
 
@@ -389,12 +568,12 @@ window.finishTest = async function() {
   window.updateDailyChallengeCard?.()
 }
 
-window.shareResult = function(correct, total, percentage) {
+window.shareResult = function (correct, total, percentage) {
   const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', daily: 'Ежедневный вызов' }
   const section = sectionNames[st.currentSection] || st.currentSection
-  const diff  = st.currentDifficulty==='easy'?'Лёгкий':st.currentDifficulty==='medium'?'Средний':'Сложный'
-  const emoji = percentage===100?'🏆':percentage>=90?'🌟':percentage>=70?'✅':percentage>=50?'📚':'💪'
-  const text  = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://suhrob4ikk.github.io/Calculus`
+  const diff = st.currentDifficulty === 'easy' ? 'Лёгкий' : st.currentDifficulty === 'medium' ? 'Средний' : 'Сложный'
+  const emoji = percentage === 100 ? '🏆' : percentage >= 90 ? '🌟' : percentage >= 70 ? '✅' : percentage >= 50 ? '📚' : '💪'
+  const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://suhrob4ikk.github.io/Calculus`
   const btn = document.getElementById('shareBtn')
   const orig = btn.textContent
   const onCopied = () => {
@@ -411,7 +590,7 @@ function fallbackCopy(text, cb) {
   const ta = document.createElement('textarea')
   ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'
   document.body.appendChild(ta); ta.select()
-  try { document.execCommand('copy'); cb() } catch(e) {}
+  try { document.execCommand('copy'); cb() } catch (e) { }
   document.body.removeChild(ta)
 }
 
@@ -419,17 +598,21 @@ function fallbackCopy(text, cb) {
 document.addEventListener('keydown', e => {
   const testVisible = document.getElementById('testPage')?.style.display !== 'none'
   if (!testVisible) return
-  if (['1','2','3','4'].includes(e.key)) {
+  if (st.testMode !== 'open' && ['1', '2', '3', '4'].includes(e.key)) {
     const idx = parseInt(e.key) - 1
     const labels = document.querySelectorAll('.option-label')
     if (labels[idx] && st.userAnswers[st.currentQuestionIndex] === null) window.selectAnswer(idx)
   }
   if (e.key === 'Enter') {
-    const finish = document.getElementById('finishBtn')
-    const next   = document.getElementById('nextBtn')
-    if (finish?.style.display !== 'none') window.finishTest()
-    else if (next?.style.display !== 'none') window.nextQuestion()
+    if (st.testMode === 'open') {
+      // Input's own onkeydown with stopPropagation handles submission — nothing here
+    } else {
+      const finish = document.getElementById('finishBtn')
+      const next = document.getElementById('nextBtn')
+      if (finish?.style.display !== 'none') window.finishTest()
+      else if (next?.style.display !== 'none') window.nextQuestion()
+    }
   }
   if (e.key === 'ArrowLeft') window.previousQuestion()
-  if (e.key === 'Escape')    window.exitTest()
+  if (e.key === 'Escape') window.exitTest()
 })

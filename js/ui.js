@@ -29,7 +29,8 @@ export function showPage(pageId) {
   if (ls) ls.remove()
 
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','limitsSection','odeSection','testPage','resultsPage','statisticsPage',
+                 'seriesSection','limitsSection','odeSection','probabilitySection','probabilityTheoryPage',
+                 'sectionTheoryPage','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
                  'theoryPage']
   pages.forEach(p => {
@@ -72,6 +73,9 @@ export function showPage(pageId) {
     seriesSection:      { label: '← Разделы',   fn: 'showHome()' },
     limitsSection:      { label: '← Разделы',   fn: 'showHome()' },
     odeSection:         { label: '← Разделы',   fn: 'showHome()' },
+    probabilitySection:   { label: '← Разделы', fn: 'showHome()' },
+    probabilityTheoryPage:{ label: '← Раздел',  fn: 'window.backFromProbTheory()' },
+    sectionTheoryPage:    { label: '← Раздел',  fn: 'window.backFromSectionTheory()' },
     theoryPage:         { label: '← К разделу', fn: 'backFromTheory()' },
     testPage:           { label: '← Выйти',     fn: 'exitTest()' },
     resultsPage:        { label: '← Главная',   fn: 'showHome()' },
@@ -109,10 +113,19 @@ export function showPage(pageId) {
   const dhActive = dhMap[pageId]
   if (dhActive) document.getElementById(dhActive)?.classList.add('dh-active')
 
+  // Страницы с фокусом на контенте — боковая панель скрыта
+  const noSidebarPages = [
+    'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
+    'odeSection', 'probabilitySection', 'probabilityTheoryPage',
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
+  ]
+  const showSidebar = showNav && !noSidebarPages.includes(pageId) && window.innerWidth >= 900
+  document.body.classList.toggle('no-sidebar', !showSidebar)
+
   // Боковая панель: видимость + активная кнопка
   const desktopSidebar = document.getElementById('desktopSidebar')
   if (desktopSidebar) {
-    desktopSidebar.style.display = (showNav && window.innerWidth >= 900) ? 'flex' : 'none'
+    desktopSidebar.style.display = showSidebar ? 'flex' : 'none'
   }
 
   const sbMap = {
@@ -123,6 +136,7 @@ export function showPage(pageId) {
     limitsSection:      'sbHome',
     odeSection:         'sbHome',
     theoryPage:         'sbHome',
+    sectionTheoryPage:  'sbHome',
     testPage:           'sbHome',
     resultsPage:        'sbHome',
     statisticsPage:     'sbStats',
@@ -164,9 +178,16 @@ window.addEventListener('resize', () => {
   if (!sidebar) return
   const lastPage   = sessionStorage.getItem('lastPage')
   const noNavPages = ['authPage', 'updatePasswordPage']
+  const noSidebarPages = [
+    'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
+    'odeSection', 'probabilitySection', 'probabilityTheoryPage',
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
+  ]
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)
   const w = window.innerWidth
-  if (sidebar) sidebar.style.display = (isNavPage && w >= 900) ? 'flex' : 'none'
+  const showSidebar = isNavPage && !noSidebarPages.includes(lastPage) && w >= 900
+  sidebar.style.display = showSidebar ? 'flex' : 'none'
+  document.body.classList.toggle('no-sidebar', !showSidebar)
   if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 900) ? '' : 'none'
 })
 
@@ -439,3 +460,6 @@ window.dismissContinueTestBanner = function() {
   document.getElementById('continueTestBanner')?.remove()
   window._clearTestState?.()
 }
+
+// Expose showPage globally so non-module scripts (prob-theory.js etc.) can use it
+window.showPage = showPage

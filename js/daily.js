@@ -14,13 +14,15 @@ function getDailyQuestions() {
   const rng = mulberry32(hashCode(getDailyDate()))
   /* global easyIntegralsQuestions, mediumIntegralsQuestions, easyDerivativesQuestions,
             mediumDerivativesQuestions, easySeriesQuestions, mediumSeriesQuestions,
-            easyLimitsQuestions, mediumLimitsQuestions, easyODEQuestions, mediumODEQuestions */
+            easyLimitsQuestions, mediumLimitsQuestions, easyODEQuestions, mediumODEQuestions,
+            easyProbabilityQuestions, mediumProbabilityQuestions */
   const all = [
     ...easyIntegralsQuestions,    ...mediumIntegralsQuestions,
     ...easyDerivativesQuestions,  ...mediumDerivativesQuestions,
     ...easySeriesQuestions,       ...mediumSeriesQuestions,
     ...easyLimitsQuestions,       ...mediumLimitsQuestions,
-    ...easyODEQuestions,          ...mediumODEQuestions
+    ...easyODEQuestions,          ...mediumODEQuestions,
+    ...easyProbabilityQuestions,  ...mediumProbabilityQuestions
   ].flat().filter(q => q && q.options && q.options.length === 4)
 
   for (let i = all.length - 1; i > 0; i--) {
