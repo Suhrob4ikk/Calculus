@@ -1303,14 +1303,37 @@ h1.prob-ch-title {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Кнопка «Назад» в верхней части */
+/* Кнопка «Назад» — sticky, всегда видна при скролле */
 .prob-back-btn {
+  position: sticky;
+  top: 0.75rem;        /* desktop ≥900px: нет фиксированной шапки */
+  z-index: 40;
+  align-self: flex-start;
   display: inline-flex; align-items: center; gap: 0.4rem;
-  font-size: 0.875rem; font-weight: 500; color: #3a6480;
-  background: none; border: none; padding: 0.5rem 0 1rem;
-  cursor: pointer; font-family: inherit; transition: color 0.15s;
+  font-size: 0.875rem; font-weight: 500; color: #7eb8d8;
+  background: rgba(7, 21, 37, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  border-radius: 10px;
+  padding: 0.42rem 0.85rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer; font-family: inherit; transition: color 0.15s, border-color 0.15s;
 }
-.prob-back-btn:hover { color: #38bdf8; }
+.prob-back-btn:hover { color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); }
+
+/* Планшет 760–899px: фиксированная шапка 56px, mob-nav скрыт */
+@media (min-width: 760px) and (max-width: 899px) {
+  .prob-back-btn { top: 62px; }
+}
+/* Планшет 641–759px: фиксированная шапка 56px + mob-nav ~46px */
+@media (min-width: 641px) and (max-width: 759px) {
+  .prob-back-btn { top: 106px; }
+}
+/* Мобильный ≤640px: mob-nav sticky ~46px (back-bar фиксирован отдельно) */
+@media (max-width: 640px) {
+  .prob-back-btn { top: 46px; }
+  body.has-back-bar .prob-back-btn { top: 90px; } /* 44px back-bar + 46px mob-nav */
+}
 
 /* ── Адаптив ── */
 @media (min-width: 760px) {
