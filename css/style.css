@@ -1326,6 +1326,75 @@ h1.prob-ch-title {
 }
 .ch-content-area .pcell.hi { background: rgba(56,189,248,0.22); color: #38bdf8; }
 
+/* ── Светлая тема для блоков теории ── */
+html:not(.dark) .ch-content-area .tb {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+html:not(.dark) .ch-content-area .tb h2 { color: #0f172a; }
+html:not(.dark) .ch-content-area .tb h3 { color: #1e293b; }
+html:not(.dark) .ch-content-area .tb p,
+html:not(.dark) .ch-content-area .tb ul,
+html:not(.dark) .ch-content-area .tb ol { color: #475569; }
+html:not(.dark) .ch-content-area .tb strong { color: #0f172a; }
+html:not(.dark) .ch-content-area .tb li { color: #475569; }
+
+html:not(.dark) .ch-content-area .def {
+  background: rgba(16,185,129,0.06);
+  border-color: rgba(16,185,129,0.25);
+  border-left-color: #10b981;
+}
+html:not(.dark) .ch-content-area .def b { color: #065f46; }
+html:not(.dark) .ch-content-area .def p { color: #374151; }
+
+html:not(.dark) .ch-content-area .fml {
+  background: rgba(14,165,233,0.06);
+  border-color: rgba(14,165,233,0.25);
+  border-left-color: #0ea5e9;
+  color: #0f172a;
+}
+
+html:not(.dark) .ch-content-area .ex {
+  background: rgba(251,191,36,0.06);
+  border-color: rgba(251,191,36,0.3);
+  border-left-color: #d97706;
+}
+html:not(.dark) .ch-content-area .ex b { color: #92400e; }
+html:not(.dark) .ch-content-area .ex p { color: #374151; }
+
+html:not(.dark) .ch-content-area .note {
+  background: rgba(6,182,212,0.06);
+  border-color: rgba(6,182,212,0.25);
+  border-left-color: #0891b2;
+}
+html:not(.dark) .ch-content-area .note p { color: #155e75; }
+
+html:not(.dark) .ch-content-area .ttbl th {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+html:not(.dark) .ch-content-area .ttbl td {
+  color: #374151;
+  border-bottom-color: #e2e8f0;
+}
+html:not(.dark) .ch-content-area .ttbl tr:hover td { background: #f8fafc; }
+
+html:not(.dark) .ch-content-area .venn-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+html:not(.dark) .ch-content-area .venn-lbl { color: #374151; }
+html:not(.dark) .ch-content-area .venn-sub { color: #94a3b8; }
+
+html:not(.dark) .ch-content-area .pcell {
+  background: #f1f5f9;
+  color: #374151;
+}
+html:not(.dark) .ch-content-area .pcell.hi {
+  background: rgba(14,165,233,0.15);
+  color: #0284c7;
+}
+
 /* Анимация появления */
 .prob-chapter { display: none; animation: probFadeUp 0.25s ease; }
 .prob-chapter.active { display: block; }
