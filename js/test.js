@@ -236,19 +236,15 @@ window.selectAnswer = function (answerIndex) {
   st.userAnswers[st.currentQuestionIndex] = answerIndex
   const correct = st.currentTest[st.currentQuestionIndex].correct
   playSound(answerIndex === correct ? 'correct' : 'wrong')
-  const isDark = document.documentElement.classList.contains('dark')
   document.querySelectorAll('.option-label').forEach((label, i) => {
-    label.style.pointerEvents = 'none'
     const radio = label.querySelector('input[type="radio"]')
     if (radio) radio.disabled = true
     if (i === correct) {
-      label.style.borderColor = '#10b981'
-      label.style.backgroundColor = isDark ? '#064e3b' : '#ecfdf5'
-      label.style.color = isDark ? '#a7f3d0' : '#064e3b'
+      label.classList.add('answered-correct')
     } else if (i === answerIndex && answerIndex !== correct) {
-      label.style.borderColor = '#ef4444'
-      label.style.backgroundColor = isDark ? '#450a0a' : '#fef2f2'
-      label.style.color = isDark ? '#fca5a5' : '#7f1d1d'
+      label.classList.add('answered-wrong')
+    } else {
+      label.classList.add('answered-locked')
     }
   })
 }
@@ -315,7 +311,6 @@ export function displayQuestion() {
   const question = st.currentTest[st.currentQuestionIndex]
   const container = document.getElementById('questionContainer')
   const answered = st.userAnswers[st.currentQuestionIndex] !== null
-  const isDark = document.documentElement.classList.contains('dark')
 
   const questionHeader = `
     <div class="mb-6">
@@ -339,8 +334,15 @@ export function displayQuestion() {
     }
     container.innerHTML = questionHeader + `
       <div class="open-answer-wrap">
-        <div class="open-answer-hint">
-          💡 <b>Формат:</b>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <button onclick="(function(btn){var h=btn.parentElement.nextElementSibling;var open=h.style.display!=='none';h.style.display=open?'none':'block';btn.querySelector('.hint-arrow').textContent=open?'▼':'▲'})(this)"
+            style="font-size:0.76rem;background:transparent;border:1.5px solid var(--text-muted);color:var(--text-muted);padding:2px 10px;border-radius:20px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;transition:border-color 0.2s,color 0.2s"
+            onmouseover="this.style.borderColor='#38bdf8';this.style.color='#38bdf8'"
+            onmouseout="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-muted)'">
+            💡 Формат <span class="hint-arrow">▼</span>
+          </button>
+        </div>
+        <div class="open-answer-hint" style="display:none">
           целые: <code>3</code> <code>-2</code> &nbsp;·&nbsp;
           дроби: <code>1/2</code> <code>-3/4</code> &nbsp;·&nbsp;
           дес.: <code>0.5</code> <code>-1.25</code> &nbsp;·&nbsp;
@@ -361,7 +363,6 @@ export function displayQuestion() {
         ${openResult}
       </div>`
     if (!answered) {
-      // Autofocus after render
       setTimeout(() => { const inp = document.getElementById('openAnswerInput'); if (inp) inp.focus() }, 50)
     }
   } else {
@@ -371,20 +372,15 @@ export function displayQuestion() {
     container.innerHTML = questionHeader + `
       <div class="space-y-3">
         ${question.options.map((option, i) => {
-      let border = '', bg = '', color = '', pe = ''
+      let labelClass = 'option-label'
       if (answered) {
-        pe = 'pointer-events:none;'
-        if (i === correct) {
-          border = 'border-color:#10b981;'
-          bg = `background-color:${isDark ? '#064e3b' : '#ecfdf5'};`
-          color = `color:${isDark ? '#a7f3d0' : '#064e3b'};`
-        } else if (i === chosen && chosen !== correct) {
-          border = 'border-color:#ef4444;'
-          bg = `background-color:${isDark ? '#450a0a' : '#fef2f2'};`
-          color = `color:${isDark ? '#fca5a5' : '#7f1d1d'};`
-        }
+        if (i === correct) labelClass += ' answered-correct'
+        else if (i === chosen && chosen !== correct) labelClass += ' answered-wrong'
+        else labelClass += ' answered-locked'
+      } else if (chosen === i) {
+        labelClass += ' selected'
       }
-      return `<label class="option-label${chosen === i ? ' selected' : ''}" style="${border}${bg}${color}${pe}">
+      return `<label class="${labelClass}">
             <input type="radio" name="answer" value="${i}" class="mr-3 mt-1 flex-shrink-0"
               ${chosen === i ? 'checked' : ''} ${answered ? 'disabled' : ''} onchange="selectAnswer(${i})">
             <span class="option-text">${option}</span>

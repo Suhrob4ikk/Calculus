@@ -485,6 +485,19 @@
       color: #0f172a !important;
     }
 
+    /* Тёмные блоки теории — сохраняем светлый текст */
+    body.light-theme .ch-content-area .tb h2,
+    body.light-theme .ch-content-area .tb h3 {
+      color: #dff0ff !important;
+    }
+    body.light-theme .ch-content-area .tb p,
+    body.light-theme .ch-content-area .tb ul,
+    body.light-theme .ch-content-area .tb ol { color: #a8cfe0 !important; }
+    body.light-theme .ch-content-area .tb strong { color: #dff0ff !important; }
+    body.light-theme .ch-content-area .def p { color: #a8cfe0 !important; }
+    body.light-theme .ch-content-area .note p { color: #a8cfe0 !important; }
+    body.light-theme .ch-content-area .ex p  { color: #a8cfe0 !important; }
+
     body.light-theme p {
       color: #475569;
     }
@@ -514,6 +527,23 @@
 
     body.light-theme .option-text {
       color: #1e293b !important;
+    }
+
+    body.light-theme .option-label.answered-correct {
+      background-color: #ecfdf5 !important;
+      border-color: #10b981 !important;
+      color: #064e3b !important;
+    }
+    body.light-theme .option-label.answered-correct .option-text {
+      color: #064e3b !important;
+    }
+    body.light-theme .option-label.answered-wrong {
+      background-color: #fef2f2 !important;
+      border-color: #ef4444 !important;
+      color: #7f1d1d !important;
+    }
+    body.light-theme .option-label.answered-wrong .option-text {
+      color: #7f1d1d !important;
     }
 
     body.light-theme input,

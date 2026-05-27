@@ -71,6 +71,23 @@ export async function getUserResults(userId) {
   return { data, error }
 }
 
+export async function deleteResultById(id, userId) {
+  const { error } = await supabase
+    .from('test_results')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId)
+  return { error }
+}
+
+export async function deleteAllUserResults(userId) {
+  const { error } = await supabase
+    .from('test_results')
+    .delete()
+    .eq('user_id', userId)
+  return { error }
+}
+
 export async function getLeaderboard(section = null, difficulty = null) {
   let query = supabase
     .from('test_results')

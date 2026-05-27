@@ -246,6 +246,36 @@ input[type="password"], select {
   color: #6ee7b7 !important;
 }
 
+.option-label.answered-correct {
+  border-color: #10b981 !important;
+  background-color: #ecfdf5 !important;
+  color: #064e3b !important;
+  pointer-events: none !important;
+}
+.option-label.answered-correct .option-text { color: #064e3b !important; }
+.dark .option-label.answered-correct {
+  background-color: #064e3b !important;
+  color: #a7f3d0 !important;
+}
+.dark .option-label.answered-correct .option-text { color: #a7f3d0 !important; }
+
+.option-label.answered-wrong {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+  color: #7f1d1d !important;
+  pointer-events: none !important;
+}
+.option-label.answered-wrong .option-text { color: #7f1d1d !important; }
+.dark .option-label.answered-wrong {
+  background-color: #450a0a !important;
+  color: #fca5a5 !important;
+}
+.dark .option-label.answered-wrong .option-text { color: #fca5a5 !important; }
+
+.option-label.answered-locked {
+  pointer-events: none !important;
+}
+
 .option-text {
   flex: 1;
   min-width: 0;

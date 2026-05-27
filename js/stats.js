@@ -1,6 +1,6 @@
 import { st } from './state.js'
 import { showPage } from './ui.js'
-import { getUserResults, getLeaderboard, getProfilesByUsernames } from './supabase.js'
+import { getUserResults, getLeaderboard, getProfilesByUsernames, deleteResultById, deleteAllUserResults } from './supabase.js'
 
 // ── Статистика ────────────────────────────────────────────
 let _chartScore = null, _chartSection = null
@@ -113,22 +113,41 @@ window.showStatistics = async function() {
   // История тестов
   const sLabel = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность', daily: '🌟 Ежедневный' }
   document.getElementById('testsHistory').innerHTML = data.slice(0, 10).map(r => `
-    <div class="bg-gray-50 rounded-lg p-4">
+    <div class="bg-gray-50 rounded-lg p-4" id="hist-${r.id}">
       <div class="flex justify-between items-start">
         <div>
           <h4 class="font-semibold">${sLabel[r.section] || r.section} — ${r.difficulty==='easy'?'Лёгкий':r.difficulty==='medium'?'Средний':'Сложный'}</h4>
           <p class="text-sm text-gray-500">${new Date(r.created_at).toLocaleString('ru')}</p>
         </div>
-        <div class="text-right">
-          <span class="font-bold ${r.score>=70?'text-green-600':r.score>=50?'text-yellow-600':'text-red-600'}">${r.score}%</span>
-          <p class="text-sm text-gray-500">${r.correct_answers}/${r.total_questions}</p>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <span class="font-bold ${r.score>=70?'text-green-600':r.score>=50?'text-yellow-600':'text-red-600'}">${r.score}%</span>
+            <p class="text-sm text-gray-500">${r.correct_answers}/${r.total_questions}</p>
+          </div>
+          <button onclick="window.deleteTestResult('${r.id}')"
+            style="width:26px;height:26px;border-radius:50%;border:1px solid #e5e7eb;background:transparent;color:#9ca3af;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s"
+            onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'"
+            onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'"
+            title="Удалить">✕</button>
         </div>
       </div>
     </div>`).join('')
 }
 
-window.resetStatistics = function() {
-  alert('Для сброса статистики обратитесь к администратору.')
+window.deleteTestResult = async function(id) {
+  if (!st.currentUser) return
+  const { error } = await deleteResultById(id, st.currentUser.id)
+  if (!error) {
+    const el = document.getElementById('hist-' + id)
+    if (el) el.remove()
+  }
+}
+
+window.resetStatistics = async function() {
+  if (!st.currentUser) return
+  if (!confirm('Удалить всю историю тестов?')) return
+  const { error } = await deleteAllUserResults(st.currentUser.id)
+  if (!error) window.showStatistics()
 }
 
 window.toggleTheory = function(id) {
