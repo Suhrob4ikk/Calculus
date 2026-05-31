@@ -1432,7 +1432,7 @@ html:not(.dark) .ch-content-area .pcell.hi {
 /* Мобильный ≤640px: mob-nav sticky ~46px (back-bar фиксирован отдельно) */
 @media (max-width: 640px) {
   .prob-back-btn { top: 46px; }
-  body.has-back-bar .prob-back-btn { top: 90px; } /* 44px back-bar + 46px mob-nav */
+  body.has-back-bar .prob-back-btn { display: none !important; }
 }
 
 /* ── Адаптив ── */
