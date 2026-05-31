@@ -1595,6 +1595,49 @@ html:not(.dark) .open-answer-hint code {
 }
 
 /* ══════════════════════════════════════════════════════════
+   ТЕОРИЯ — БОКОВАЯ ПАНЕЛЬ ГЛАВ — СВЕТЛАЯ ТЕМА
+   ══════════════════════════════════════════════════════════ */
+body.light-theme .prob-sidebar {
+  background: #f8fafc !important;
+  border-right-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .prob-sidebar-group {
+  color: #94a3b8 !important;
+}
+body.light-theme .prob-ch-btn {
+  color: #334155 !important;
+}
+body.light-theme .prob-ch-btn:hover {
+  background: rgba(2,132,199,0.08) !important;
+  color: #0284c7 !important;
+}
+body.light-theme .prob-ch-btn.active {
+  background: rgba(2,132,199,0.12) !important;
+  color: #0284c7 !important;
+}
+body.light-theme .prob-ch-num {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+}
+body.light-theme .prob-ch-btn.active .prob-ch-num {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+body.light-theme .prob-mob-nav {
+  background: #f1f5f9 !important;
+  border-bottom-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .prob-mob-chip {
+  color: #475569 !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+body.light-theme .prob-mob-chip.active {
+  background: rgba(2,132,199,0.12) !important;
+  color: #0284c7 !important;
+  border-color: rgba(2,132,199,0.3) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
    ДУЭЛЬ-МОДАЛ — СВЕТЛАЯ ТЕМА
    ══════════════════════════════════════════════════════════ */
 body.light-theme .duel-panel {
