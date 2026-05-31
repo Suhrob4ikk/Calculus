@@ -6,7 +6,7 @@ import { VAPID_PUBLIC_KEY, urlBase64ToUint8Array } from './utils.js'
 export async function registerSW() {
   if (!('serviceWorker' in navigator)) return
   try {
-    const reg = await navigator.serviceWorker.register('/Calculus/sw.js', { scope: '/Calculus/' })
+    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
     console.log('SW registered:', reg.scope)
     window._swReg = reg
   } catch (e) {

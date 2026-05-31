@@ -1,19 +1,20 @@
-const CACHE = 'calculus-v4'
+const CACHE = 'mathcore-v1'
 const ASSETS = [
-  '/Calculus/',
-  '/Calculus/index.html',
-  '/Calculus/css/style.css',
-  '/Calculus/js/script.js',
-  '/Calculus/js/supabase.js',
-  '/Calculus/js/mathjax-config.js',
-  '/Calculus/js/integrals-questions.js',
-  '/Calculus/js/derivatives-questions.js',
-  '/Calculus/js/series-questions.js',
-  '/Calculus/js/limits-questions.js',
-  '/Calculus/js/ode-questions.js',
-  '/Calculus/manifest.json',
-  '/Calculus/icons/icon.svg',
-  '/Calculus/icons/badge.svg',
+  '/',
+  '/index.html',
+  '/css/style.css',
+  '/js/script.js',
+  '/js/supabase.js',
+  '/js/mathjax-config.js',
+  '/js/integrals-questions.js',
+  '/js/derivatives-questions.js',
+  '/js/series-questions.js',
+  '/js/limits-questions.js',
+  '/js/ode-questions.js',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/badge.svg',
 ]
 
 // ── Установка: кэшируем все статические ресурсы ────────────
@@ -41,11 +42,9 @@ self.addEventListener('fetch', e => {
   if (e.request.url.includes('supabase.co')) return
 
   const url = e.request.url
-  // For JS and CSS always try network first so code updates are instant
   const isCode = url.endsWith('.js') || url.endsWith('.css')
 
   if (isCode) {
-    // Network-first: fetch fresh, update cache, fall back to cache if offline
     e.respondWith(
       fetch(e.request).then(res => {
         if (res && res.status === 200 && res.type === 'basic') {
@@ -56,7 +55,6 @@ self.addEventListener('fetch', e => {
       }).catch(() => caches.match(e.request))
     )
   } else {
-    // Cache-first for HTML, images, fonts
     e.respondWith(
       caches.match(e.request).then(cached => {
         const network = fetch(e.request).then(res => {
@@ -74,14 +72,14 @@ self.addEventListener('fetch', e => {
 
 // ── Push-уведомление ─────────────────────────────────────
 self.addEventListener('push', e => {
-  let payload = { title: 'Математический анализ', body: 'Не забудь позаниматься сегодня! 📚', url: '/Calculus/' }
+  let payload = { title: 'MathCore', body: 'Не забудь позаниматься сегодня! 📚', url: '/' }
   try { if (e.data) payload = { ...payload, ...e.data.json() } } catch {}
 
   e.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: '/Calculus/icons/icon.svg',
-      badge: '/Calculus/icons/badge.svg',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/badge.svg',
       data: { url: payload.url },
       vibrate: [100, 50, 100],
       requireInteraction: false,
@@ -98,20 +96,18 @@ self.addEventListener('notificationclick', e => {
   e.notification.close()
   if (e.action === 'dismiss') return
 
-  const target = e.notification.data?.url || '/Calculus/'
+  const target = e.notification.data?.url || '/'
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {
-        if (c.url.includes('/Calculus/') && 'focus' in c) return c.focus()
+        if ('focus' in c) return c.focus()
       }
       return clients.openWindow(target)
     })
   )
 })
 
-// ── Синхронизация в фоне (при восстановлении сети) ───────
+// ── Синхронизация в фоне ────────────────────────────────
 self.addEventListener('sync', e => {
-  if (e.tag === 'sync-results') {
-    // Здесь можно добавить логику синхронизации офлайн-результатов
-  }
+  if (e.tag === 'sync-results') {}
 })
