@@ -15,7 +15,7 @@ const easyLimitsQuestions = [
   { question: "Найдите $\\lim_{x \\to 1} \\frac{x^2-1}{x-1}$", options: ["$0$","$1$","$2$","$\\infty$"], correct: 2, open: ['2'] },
   { question: "Найдите $\\lim_{x \\to 0} \\sin(x)/x$", options: ["$0$","$\\infty$","$\\pi$","$1$"], correct: 3, open: ['1'] },
   { question: "Найдите $\\lim_{x \\to 2} \\frac{x^2-4}{x-2}$", options: ["$0$","$2$","$4$","$\\infty$"], correct: 2, open: ['4'] },
-  { question: "Найдите $\\lim_{x \\to \\infty} \\frac{n}{n+1}$", options: ["$0$","$1$","$2$","$\\infty$"], correct: 1, open: ['1'] },
+  { question: "Найдите $\\lim_{n \\to \\infty} \\frac{n}{n+1}$", options: ["$0$","$1$","$2$","$\\infty$"], correct: 1, open: ['1'] },
   { question: "Найдите $\\lim_{x \\to 0^+} \\ln x$", options: ["$0$","$1$","$-\\infty$","$+\\infty$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 5} (2x - 3)$", options: ["$5$","$7$","$10$","$12$"], correct: 1, open: ['7'] },
   { question: "Найдите $\\lim_{x \\to 1} \\frac{x-1}{x^2-1}$", options: ["$0$","$\\frac{1}{2}$","$1$","$\\infty$"], correct: 1, open: ['1/2','0.5','0,5'] },
