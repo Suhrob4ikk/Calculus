@@ -575,23 +575,7 @@ window.finishTest = async function () {
     return
   }
 
-  // ── Обычный тест ───────────────────────────────────────
-  if (st.currentUser && !st.isStudyMode) {
-    const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
-    try {
-      await saveResult({
-        userId: st.currentUser.id,
-        username,
-        section: st.currentSection,
-        difficulty: st.currentDifficulty,
-        score: percentage,
-        correctAnswers: correct,
-        totalQuestions: st.currentTest.length
-      })
-    } catch (e) {
-      console.warn('saveResult failed:', e)
-    }
-  }
+  // ── Обычный тест — сразу показываем результаты, сохраняем в фоне ──
   if (st.currentSection === 'daily') {
     const uid = st.currentUser?.id || 'guest'
     localStorage.setItem(`dailyChallengeDate_${uid}`, getDailyDate())
@@ -608,6 +592,22 @@ window.finishTest = async function () {
 
   window._finishInProgress = false
   if (!st.isStudyMode) clearTestState()
+
+  // Сохраняем в фоне — НЕ блокируем UI (таймаут 5 сек)
+  if (st.currentUser && !st.isStudyMode) {
+    const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
+    const savePromise = saveResult({
+      userId: st.currentUser.id,
+      username,
+      section: st.currentSection,
+      difficulty: st.currentDifficulty,
+      score: percentage,
+      correctAnswers: correct,
+      totalQuestions: st.currentTest.length
+    })
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+    Promise.race([savePromise, timeout]).catch(e => console.warn('saveResult:', e))
+  }
   st.isStudyMode = false
   // testMode is NOT reset here so restartTest preserves the mode
   showPage('resultsPage')
