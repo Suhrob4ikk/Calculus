@@ -37,7 +37,8 @@ window.handleLogin = async function() {
   if (error) { errEl.textContent = 'Неверный email или пароль'; return }
   st.currentUser = data.user
   // Сохраняем email в профиль (для уже существующих пользователей)
-  supabase.from('profiles').update({ email }).eq('id', data.user.id)
+  const username = data.user.user_metadata?.username || data.user.email.split('@')[0]
+  supabase.from('profiles').upsert({ id: data.user.id, username, email }, { onConflict: 'id' })
   updateUserUI()
   showPage('homePage')
 }
