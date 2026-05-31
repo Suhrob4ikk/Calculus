@@ -2,6 +2,23 @@ import { st } from './state.js'
 import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns } from './ui.js'
 import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getUserRankData, getDuelHistory } from './supabase.js'
 
+// ── Аватар в сайдбаре (загружается при старте) ────────────
+export async function loadSidebarAvatar() {
+  if (!st.currentUser) return
+  const url = await getAvatarUrl(st.currentUser.id)
+  const sbImg    = document.getElementById('sbAvatarImg')
+  const sbLetter = document.getElementById('sbAvatarLetter')
+  if (!sbImg) return
+  if (url) {
+    sbImg.src = url
+    sbImg.style.display = 'block'
+    if (sbLetter) sbLetter.style.display = 'none'
+  } else {
+    sbImg.style.display = 'none'
+    if (sbLetter) sbLetter.style.display = ''
+  }
+}
+
 // ── Уровни пользователя ───────────────────────────────────
 export function getUserLevel(total, avg) {
   if (total >= 20 && avg >= 85) return { name: 'Эксперт',      icon: '🏆', color: '#f59e0b', next: null,                                        progress: 100 }

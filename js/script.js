@@ -12,7 +12,7 @@ import { updateLastSeen } from './supabase.js'
 
 // Подключаем все модули, которые регистрируют window.* функции
 import './daily.js'
-import './profile.js'
+import { loadSidebarAvatar } from './profile.js'
 import './stats.js'
 import './duel.js'
 import './search.js'
@@ -51,6 +51,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
           updateUserUI()
+          loadSidebarAvatar()
           // После успешного входа запускаем канал инвайтов
           initInvitesChannel()
         })
@@ -178,6 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupSessionGuard(st.currentUser.id)
         showPage('homePage')
         updateUserUI()
+        loadSidebarAvatar()
         renderStreakBadge()
         // Запускаем канал инвайтов после восстановления сессии
         initInvitesChannel()

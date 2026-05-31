@@ -46,11 +46,13 @@ async function syncDailyFromDB() {
   const today = getDailyDate()
   if (localStorage.getItem(dailyKey('Date')) === today) return  // уже в кэше
   if (!st.currentUser) return                                    // не залогинен
-  const data = await getTodayDailyResult(st.currentUser.id, today)
-  if (data) {
-    localStorage.setItem(dailyKey('Date'), today)
-    localStorage.setItem(dailyKey('Score'), data.score)
-  }
+  try {
+    const data = await getTodayDailyResult(st.currentUser.id, today)
+    if (data) {
+      localStorage.setItem(dailyKey('Date'), today)
+      localStorage.setItem(dailyKey('Score'), data.score)
+    }
+  } catch (_) {}
 }
 
 window.startDailyChallenge = async function() {
