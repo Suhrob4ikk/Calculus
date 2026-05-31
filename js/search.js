@@ -73,6 +73,19 @@ window.handleSearch = async function() {
 window.viewProfile = async function(username) {
   window._viewProfileFrom = sessionStorage.getItem('lastPage') || 'searchProfilesPage'
   showPage('viewProfilePage')
+
+  // Обновляем десктопную кнопку "Назад" в зависимости от откуда пришли
+  const backBtn = document.querySelector('#viewProfilePage .page-back-btn')
+  if (backBtn) {
+    if (window._viewProfileFrom === 'leaderboardPage') {
+      backBtn.textContent = '← Назад к рейтингу'
+      backBtn.onclick = () => window.showLeaderboard()
+    } else {
+      backBtn.textContent = '← Назад к поиску'
+      backBtn.onclick = () => window.showSearchProfiles()
+    }
+  }
+
   document.getElementById('viewProfileContent').innerHTML = '<p class="text-gray-400 text-center py-8">Загрузка...</p>'
 
   const { profile, results } = await getProfileByUsername(username)

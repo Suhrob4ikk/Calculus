@@ -391,6 +391,11 @@ export function displayQuestion() {
 
   document.getElementById('currentQuestion').textContent = st.currentQuestionIndex + 1
   document.getElementById('progressBar').style.width = ((st.currentQuestionIndex + 1) / st.currentTest.length * 100) + '%'
+  const answeredNum = st.userAnswers.filter(a => a !== null).length
+  const acEl = document.getElementById('answeredCount')
+  const atEl = document.getElementById('answeredTotal')
+  if (acEl) { acEl.textContent = answeredNum; acEl.style.color = answeredNum === st.currentTest.length ? '#10b981' : '' }
+  if (atEl)   atEl.textContent = st.currentTest.length
   document.getElementById('prevBtn').disabled = st.currentQuestionIndex === 0
   const isLast = st.currentQuestionIndex === st.currentTest.length - 1
   document.getElementById('nextBtn').style.display = isLast ? 'none' : 'inline-block'
@@ -479,7 +484,26 @@ async function _saveDailyAndExit(correct, percentage) {
 // ── Завершение теста ──────────────────────────────────────
 window.finishTest = async function () {
   if (window._finishInProgress) return
-  autoSaveOpenAnswer()  // сохранить ответ на текущий вопрос если не был отправлен
+  autoSaveOpenAnswer()
+
+  // Проверяем пропущенные вопросы
+  const unanswered = st.userAnswers
+    .map((a, i) => a === null ? i + 1 : null)
+    .filter(n => n !== null)
+
+  if (unanswered.length > 0) {
+    const shown = unanswered.slice(0, 10).join(', ') + (unanswered.length > 10 ? '...' : '')
+    const msg = unanswered.length === 1
+      ? `Вопрос ${shown} не имеет ответа. Завершить всё равно?`
+      : `${unanswered.length} вопросов без ответа: №${shown}.\n\nЗавершить тест? (пропущенные засчитаются как неверные)`
+    if (!confirm(msg)) {
+      // Переходим к первому пропущенному вопросу
+      st.currentQuestionIndex = unanswered[0] - 1
+      displayQuestion()
+      return
+    }
+  }
+
   window._finishInProgress = true
   const finishBtn = document.getElementById('finishBtn')
   if (finishBtn) { finishBtn.disabled = true; finishBtn.textContent = 'Сохраняем...' }
