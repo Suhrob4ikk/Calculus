@@ -1000,8 +1000,8 @@
         <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
       </div>
       <div id="loginForm">
-        <input id="loginEmail" type="email" placeholder="Email" class="auth-input"
-          oninput="document.getElementById('loginError').textContent=''">
+        <input id="loginEmail" type="text" placeholder="Email или имя пользователя" class="auth-input"
+          oninput="document.getElementById('loginError').textContent=''" autocomplete="username">
         <input id="loginPassword" type="password" placeholder="Пароль" class="auth-input"
           oninput="document.getElementById('loginError').textContent=''">
         <p id="loginError" class="text-red-500 text-sm mb-3 min-h-[20px]"></p>

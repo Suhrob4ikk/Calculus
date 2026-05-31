@@ -13,12 +13,22 @@ export async function signUp(email, password, username) {
     password,
     options: {
       data: { username },
-      // Явно указываем куда редиректить после подтверждения почты,
-      // иначе Supabase использует Site URL (suhrob4ikk.github.io без /Calculus/) → 404
-      emailRedirectTo: 'https://suhrob4ikk.github.io/Calculus/'
+      emailRedirectTo: 'https://mathcore-app.netlify.app/'
     }
   })
+  if (!error && data.user) {
+    await supabase.from('profiles').upsert({ id: data.user.id, username, email }, { onConflict: 'id' })
+  }
   return { data, error }
+}
+
+export async function getEmailByUsername(username) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('email')
+    .ilike('username', username)
+    .single()
+  return data?.email || null
 }
 
 export async function signIn(email, password) {

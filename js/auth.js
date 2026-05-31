@@ -1,6 +1,6 @@
 import { st } from './state.js'
 import { showPage, updateUserUI } from './ui.js'
-import { supabase, signUp, signIn, signOut, resetPassword, updatePassword } from './supabase.js'
+import { supabase, signUp, signIn, signOut, resetPassword, updatePassword, getEmailByUsername } from './supabase.js'
 
 // ── Авторизация ───────────────────────────────────────────
 window.showAuthTab = function(tab) {
@@ -13,17 +13,31 @@ window.showAuthTab = function(tab) {
 }
 
 window.handleLogin = async function() {
-  const email    = document.getElementById('loginEmail').value.trim()
+  const input    = document.getElementById('loginEmail').value.trim()
   const password = document.getElementById('loginPassword').value
   const errEl    = document.getElementById('loginError')
   errEl.textContent = ''
-  if (!email || !password) { errEl.textContent = 'Заполните все поля'; return }
+  if (!input || !password) { errEl.textContent = 'Заполните все поля'; return }
   const btn = document.getElementById('loginBtn')
   btn.textContent = 'Входим...'; btn.disabled = true
+
+  let email = input
+  if (!input.includes('@')) {
+    const found = await getEmailByUsername(input)
+    if (!found) {
+      errEl.textContent = 'Пользователь не найден'
+      btn.textContent = 'Войти'; btn.disabled = false
+      return
+    }
+    email = found
+  }
+
   const { data, error } = await signIn(email, password)
   btn.textContent = 'Войти'; btn.disabled = false
   if (error) { errEl.textContent = 'Неверный email или пароль'; return }
   st.currentUser = data.user
+  // Сохраняем email в профиль (для уже существующих пользователей)
+  supabase.from('profiles').update({ email }).eq('id', data.user.id)
   updateUserUI()
   showPage('homePage')
 }
