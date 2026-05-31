@@ -13,14 +13,21 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MathCore">
   <link rel="apple-touch-icon" href="icons/icon.svg">
+  <!-- Preconnect для ускорения DNS/TCP к внешним CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://xahjwhoywxgudsefqowd.supabase.co">
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script defer src="https://unpkg.com/lucide@latest"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .math-bg {
@@ -2083,17 +2090,17 @@
     </button>
   </nav>
 
-  <script src="js/integrals-questions.js"></script>
-  <script src="js/derivatives-questions.js"></script>
-  <script src="js/open-questions.js"></script>
-  <script src="js/series-questions.js"></script>
-  <script src="js/limits-questions.js"></script>
-  <script src="js/ode-questions.js"></script>
-  <script src="js/probability-questions.js"></script>
-  <script src="js/prob-chapters.js"></script>
-  <script src="js/prob-theory.js"></script>
-  <script src="js/calculus-chapters.js"></script>
-  <script src="js/section-theory.js"></script>
+  <script defer src="js/integrals-questions.js"></script>
+  <script defer src="js/derivatives-questions.js"></script>
+  <script defer src="js/open-questions.js"></script>
+  <script defer src="js/series-questions.js"></script>
+  <script defer src="js/limits-questions.js"></script>
+  <script defer src="js/ode-questions.js"></script>
+  <script defer src="js/probability-questions.js"></script>
+  <script defer src="js/prob-chapters.js"></script>
+  <script defer src="js/prob-theory.js"></script>
+  <script defer src="js/calculus-chapters.js"></script>
+  <script defer src="js/section-theory.js"></script>
   <script>
     function togglePtsInfo() {
       const box = document.getElementById('ptsInfoBox')
