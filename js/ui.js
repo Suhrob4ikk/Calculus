@@ -44,7 +44,7 @@ export function showPage(pageId) {
     try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
 
-  const noNavPages = ['authPage', 'updatePasswordPage']
+  const noNavPages = ['authPage', 'updatePasswordPage', 'testPage']
   const showNav = !noNavPages.includes(pageId)
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')

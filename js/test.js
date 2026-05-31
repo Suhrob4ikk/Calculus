@@ -416,7 +416,28 @@ window.previousQuestion = function () {
   autoSaveOpenAnswer()
   if (st.currentQuestionIndex > 0) { st.currentQuestionIndex--; displayQuestion() }
 }
-window.exitTest = function () {
+window.exitTest = async function () {
+  // Ежедневка: выход = сохранение результата, продолжить нельзя
+  if (st.currentSection === 'daily') {
+    const answered = st.userAnswers.filter(a => a !== null).length
+    if (answered === 0) {
+      if (confirm('Выйти из ежедневного вызова? Попытка будет засчитана как 0%.')) {
+        _saveDailyAndExit(0, 0)
+      }
+      return
+    }
+    const correct = st.userAnswers.reduce((sum, ans, i) => {
+      if (ans === null) return sum
+      const q = st.currentTest[i]
+      return sum + (ans === (q.correct !== undefined ? q.correct : q.answerIndex) ? 1 : 0)
+    }, 0)
+    const percentage = Math.round(correct / st.currentTest.length * 100)
+    if (confirm(`Выйти? Результат будет сохранён: ${correct}/${st.currentTest.length} (${percentage}%). Переиграть нельзя.`)) {
+      _saveDailyAndExit(correct, percentage)
+    }
+    return
+  }
+
   if (confirm('Выйти? Прогресс будет потерян.')) {
     clearTestState()
     st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0
@@ -428,6 +449,31 @@ window.exitTest = function () {
     }
     window.showHome()
   }
+}
+
+async function _saveDailyAndExit(correct, percentage) {
+  stopTimer()
+  clearTestState()
+  const uid = st.currentUser?.id || 'guest'
+  localStorage.setItem(`dailyChallengeDate_${uid}`, getDailyDate())
+  localStorage.setItem(`dailyChallengeScore_${uid}`, percentage)
+  if (st.currentUser) {
+    const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
+    try {
+      await saveResult({
+        userId: st.currentUser.id,
+        username,
+        section: 'daily',
+        difficulty: 'medium',
+        score: percentage,
+        correctAnswers: correct,
+        totalQuestions: st.currentTest.length
+      })
+    } catch (e) { console.warn('daily saveResult failed:', e) }
+  }
+  st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0
+  window.showHome()
+  window.updateDailyChallengeCard?.()
 }
 
 // ── Завершение теста ──────────────────────────────────────

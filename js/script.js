@@ -184,9 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Запускаем канал инвайтов после восстановления сессии
         initInvitesChannel()
         window.updateDailyChallengeCard?.()
-        if (localStorage.getItem('testState')) {
-          showContinueTestBanner()
-        }
       } else {
         showPage('authPage')
       }
