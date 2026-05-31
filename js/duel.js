@@ -249,8 +249,7 @@ window.createDuel = async function() {
 
   // Отправляем инвайт, если указан username
   if (window._duelInvitedUsername) {
-    // Validate username: non-empty, alphanumeric, 3-16 chars
-    const isValid = /^[a-zA-Z][a-zA-Z0-9_]{2,15}$/.test(window._duelInvitedUsername);
+    const isValid = /^[a-zA-Zа-яА-ЯёЁ0-9_][a-zA-Zа-яА-ЯёЁ0-9_]{1,30}$/.test(window._duelInvitedUsername);
     if (!isValid) {
       _duelSetStatus('duelCreateStatus', '❌ Некорректный ник приглашённого');
     } else {
