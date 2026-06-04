@@ -292,7 +292,7 @@ const hardLimitsQuestions = [
   { question: "Найдите $\\lim_{x \\to 0} \\frac{e^{x^2} - e^{\\sin^2 x}}{x^4}$", options: ["$-\\frac{1}{3}$","$0$","$\\frac{1}{3}$","$\\frac{1}{2}$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 0} (1 + \\arcsin x^2)^{1/(1-\\cos x)}$", options: ["$1$","$e$","$e^2$","$\\infty$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 0} \\frac{(x+1)\\ln(x+1) - x}{x^2}$", options: ["$0$","$\\frac{1}{2}$","$1$","$2$"], correct: 1 },
-  { question: "Найдите $\\lim_{x \\to 0} \\frac{\\cos x - e^{-x^2/2}}{x^4}$", options: ["$-\\frac{1}{12}$","$0$","$\\frac{1}{12}$","$\\frac{1}{6}$"], correct: 2 },
+  { question: "Найдите $\\lim_{x \\to 0} \\frac{\\cos x - e^{-x^2/2}}{x^4}$", options: ["$-\\frac{1}{12}$","$0$","$\\frac{1}{12}$","$\\frac{1}{6}$"], correct: 0 },
   { question: "Найдите $\\lim_{x \\to 0} \\frac{(\\sin x)^{\\sin x} - x^x}{x^3 \\ln x}$", options: ["$-\\frac{1}{6}$","$0$","$\\frac{1}{6}$","$\\frac{1}{3}$"], correct: 0 },
   { question: "Найдите $\\lim_{x \\to \\infty} x \\left( \\pi - 2\\arcsin\\frac{x}{\\sqrt{x^2+1}} \\right)$", options: ["$0$","$1$","$2$","$4$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 0} \\frac{\\tan(\\sin x) - \\sin(\\tan x)}{x^7}$", options: ["$-\\frac{1}{30}$","$-\\frac{1}{15}$","$\\frac{1}{30}$","$\\frac{1}{15}$"], correct: 2 },
