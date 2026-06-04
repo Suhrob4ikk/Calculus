@@ -157,6 +157,7 @@ window._startExam = function(formatKey) {
     startedAt: new Date(),
   })
 
+  document.body.classList.add('exam-active')
   renderExamActive()
   startExamTimer()
 }
@@ -344,6 +345,7 @@ window._finishExamConfirm = function() {
 window._exitExamConfirm = function() {
   if (confirm('Выйти из экзамена? Прогресс будет потерян.')) {
     stopExamTimer()
+    document.body.classList.remove('exam-active')
     Object.assign(examSt, {
       questions: [], answers: [], current: 0,
       timeLeft: 0, timer: null, format: null, startedAt: null,
@@ -356,6 +358,7 @@ window._exitExamConfirm = function() {
 // ── Подсчёт результатов и показ сертификата ───────────────
 async function finishExam(autoSubmit) {
   stopExamTimer()
+  document.body.classList.remove('exam-active')
 
   let correct = 0
   const results = examSt.questions.map((q, i) => {

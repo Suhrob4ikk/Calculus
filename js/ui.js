@@ -58,9 +58,10 @@ export function showPage(pageId) {
 
   // Подсветка активной вкладки — нижняя навигация
   const bnMap = {
-    profilePage: 'bnProfile', homePage: 'bnHome',
-    statisticsPage: 'bnStats', leaderboardPage: 'bnLeader',
-    searchProfilesPage: 'bnPeople'
+    profilePage:    'bnProfile',
+    homePage:       'bnHome',
+    statisticsPage: 'bnStats',
+    leaderboardPage:'bnLeader',
   }
   document.querySelectorAll('#bottomNav button').forEach(b => b.classList.remove('bn-active'))
   const active = bnMap[pageId]
@@ -122,9 +123,11 @@ export function showPage(pageId) {
   const noSidebarPages = [
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage', 'examPage'
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
+    // examPage намеренно НЕ здесь — сайдбар видим, но кнопки заблокированы через .exam-active
   ]
-  const showSidebar = showNav && !noSidebarPages.includes(pageId) && window.innerWidth >= 900
+  // Сайдбар показываем независимо от showNav (examPage: нет нижней навигации, но сайдбар есть)
+  const showSidebar = !noSidebarPages.includes(pageId) && window.innerWidth >= 900
   document.body.classList.toggle('no-sidebar', !showSidebar)
 
   // Боковая панель: видимость + активная кнопка
@@ -194,7 +197,7 @@ window.addEventListener('resize', () => {
   ]
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)
   const w = window.innerWidth
-  const showSidebar = isNavPage && !noSidebarPages.includes(lastPage) && w >= 900
+  const showSidebar = !noSidebarPages.includes(lastPage) && lastPage && w >= 900
   sidebar.style.display = showSidebar ? 'flex' : 'none'
   document.body.classList.toggle('no-sidebar', !showSidebar)
   if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 900) ? '' : 'none'

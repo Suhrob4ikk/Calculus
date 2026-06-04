@@ -2182,19 +2182,42 @@
     <button onclick="showHome()" id="bnHome">
       <i data-lucide="home"></i><span>Главная</span>
     </button>
-    <button onclick="showDuelPage()" id="bnDuel">
-      <i data-lucide="swords"></i><span>Дуэль</span>
-    </button>
     <button onclick="showStatistics()" id="bnStats">
       <i data-lucide="bar-chart-2"></i><span>Стат.</span>
     </button>
     <button onclick="showLeaderboard()" id="bnLeader">
       <i data-lucide="trophy"></i><span>Рейтинг</span>
     </button>
-    <button onclick="showSearchProfiles()" id="bnPeople">
-      <i data-lucide="users"></i><span>Люди</span>
+    <button onclick="openMoreSheet()" id="bnMore">
+      <i data-lucide="more-horizontal"></i><span>Ещё</span>
     </button>
   </nav>
+
+  <!-- ── Шторка «Ещё» ── -->
+  <div id="moreSheetOverlay" onclick="closeMoreSheet()"
+       style="display:none;position:fixed;inset:0;z-index:9899;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px)"></div>
+  <div id="moreSheet"
+       style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9900;
+              background:var(--bg-card);border-radius:20px 20px 0 0;
+              padding:0.75rem 1rem 2rem;box-shadow:0 -8px 40px rgba(0,0,0,0.4);
+              transition:transform 0.25s ease">
+    <div style="width:40px;height:4px;background:rgba(148,163,184,0.25);
+                border-radius:2px;margin:0 auto 1.25rem"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;text-align:center">
+      <button class="more-sheet-btn" onclick="showDuelPage();closeMoreSheet()">
+        <i data-lucide="swords"></i><span>Дуэль</span>
+      </button>
+      <button class="more-sheet-btn" onclick="showExamPage();closeMoreSheet()">
+        <i data-lucide="graduation-cap"></i><span>Экзамен</span>
+      </button>
+      <button class="more-sheet-btn" onclick="showSearchProfiles();closeMoreSheet()">
+        <i data-lucide="users"></i><span>Люди</span>
+      </button>
+      <button class="more-sheet-btn" onclick="showMistakesPage();closeMoreSheet()">
+        <i data-lucide="target"></i><span>Ошибки</span>
+      </button>
+    </div>
+  </div>
 
   <script defer src="js/integrals-questions.js"></script>
   <script defer src="js/derivatives-questions.js"></script>
@@ -2209,6 +2232,15 @@
   <script defer src="js/calculus-chapters.js"></script>
   <script defer src="js/section-theory.js"></script>
   <script>
+    function openMoreSheet() {
+      document.getElementById('moreSheet').style.display = 'block'
+      document.getElementById('moreSheetOverlay').style.display = 'block'
+      if (typeof lucide !== 'undefined') lucide.createIcons()
+    }
+    function closeMoreSheet() {
+      document.getElementById('moreSheet').style.display = 'none'
+      document.getElementById('moreSheetOverlay').style.display = 'none'
+    }
     function togglePtsInfo() {
       const box = document.getElementById('ptsInfoBox')
       if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none'

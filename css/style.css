@@ -344,6 +344,44 @@ input[type="password"], select {
 .dark  #examPage button { color: #dff0ff !important; }
 html:not(.dark) #examPage button { color: #1f2937 !important; }
 
+/* ── Сайдбар заблокирован во время экзамена ── */
+body.exam-active #desktopSidebar .sb-item {
+  pointer-events: none;
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+body.exam-active #desktopSidebar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+/* ── Шторка «Ещё» ── */
+.more-sheet-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-sub);
+  transition: background 0.15s, color 0.15s;
+}
+.more-sheet-btn svg { width: 24px; height: 24px; }
+.more-sheet-btn:hover,
+.more-sheet-btn:active {
+  background: rgba(99,102,241,0.12);
+  color: #818cf8;
+}
+
 /* ── Мобильная адаптация ─────────────────────────────────── */
 @media (max-width: 640px) {
   .flex.justify-between { flex-direction: column; gap: 1rem; }
