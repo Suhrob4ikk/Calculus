@@ -108,7 +108,7 @@ function renderExamSetup() {
   const container = document.getElementById('examPage')
   if (!container) return
   container.innerHTML = `
-    <div class="page-content" style="max-width:960px;margin:0 auto;padding:2.5rem 1.5rem">
+    <div class="page-content" style="padding:2.5rem clamp(1rem, 3vw, 2.5rem)">
       <h1 style="font-size:2.4rem;font-weight:800;margin-bottom:0.6rem;text-align:center">
         🎓 Режим экзамена
       </h1>
@@ -204,7 +204,7 @@ function renderExamActive() {
   const diffColor = { easy: '#10b981', medium: '#f59e0b', hard: '#ef4444' }[q.difficulty] || '#94a3b8'
 
   container.innerHTML = `
-    <div style="max-width:960px;margin:0 auto;padding:1.5rem">
+    <div style="padding:1.5rem clamp(1rem, 3vw, 2.5rem)">
       <!-- Шапка экзамена -->
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;
                   flex-wrap:wrap;margin-bottom:1rem">
@@ -215,9 +215,14 @@ function renderExamActive() {
           </span>
         </div>
         <span id="examTimer" style="font-size:1.1rem;font-weight:600">⏱️ …</span>
-        <button onclick="window._finishExamConfirm()"
-          style="padding:6px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
-                 background:#3b82f6;color:white;font-size:0.85rem">Завершить</button>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <button onclick="window._exitExamConfirm()"
+            style="padding:6px 14px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);cursor:pointer;font-weight:600;
+                   background:rgba(239,68,68,0.1);color:#f87171;font-size:0.85rem">✕ Выйти</button>
+          <button onclick="window._finishExamConfirm()"
+            style="padding:6px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
+                   background:#3b82f6;color:white;font-size:0.85rem">Завершить</button>
+        </div>
       </div>
 
       <!-- Прогресс-бар -->
@@ -335,6 +340,19 @@ window._finishExamConfirm = function() {
   if (confirm(msg)) finishExam(false)
 }
 
+// ── Выход из экзамена (потеря прогресса) ─────────────────
+window._exitExamConfirm = function() {
+  if (confirm('Выйти из экзамена? Прогресс будет потерян.')) {
+    stopExamTimer()
+    Object.assign(examSt, {
+      questions: [], answers: [], current: 0,
+      timeLeft: 0, timer: null, format: null, startedAt: null,
+    })
+    showPage('examPage')
+    window.showExamPage()
+  }
+}
+
 // ── Подсчёт результатов и показ сертификата ───────────────
 async function finishExam(autoSubmit) {
   stopExamTimer()
@@ -395,7 +413,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
   const fmtLabel = FORMATS[examSt.format]?.label || ''
 
   container.innerHTML = `
-    <div class="page-content" style="max-width:960px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="page-content" style="padding:2rem clamp(1rem, 3vw, 2.5rem)">
       ${autoSubmit ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.4);
         border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:1.5rem;text-align:center;
         color:#fca5a5;font-weight:600">⏱️ Время вышло — ответы поданы автоматически</div>` : ''}

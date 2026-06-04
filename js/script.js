@@ -56,6 +56,19 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           loadSidebarAvatar()
           // После успешного входа запускаем канал инвайтов
           initInvitesChannel()
+          // Если пришли по ссылке-приглашению дуэли — открываем страницу дуэли
+          if (window._pendingDuelCode) {
+            const code = window._pendingDuelCode
+            window._pendingDuelCode = null
+            setTimeout(() => {
+              window.showDuelPage?.()
+              setTimeout(() => {
+                window.showDuelTab?.('join')
+                const ji = document.getElementById('duelJoinInput')
+                if (ji) ji.value = code
+              }, 100)
+            }, 300)
+          }
         })
       } else {
         // Обновление токена — guard уже активен, просто переподпишемся
@@ -123,6 +136,13 @@ function initInvitesChannel() {
 document.addEventListener('DOMContentLoaded', async () => {
   registerSW()
 
+  // Автоматически открываем дуэль если в URL есть ?duel=CODE
+  const duelCode = new URLSearchParams(window.location.search).get('duel')
+  if (duelCode) {
+    history.replaceState(null, '', window.location.pathname)
+    window._pendingDuelCode = duelCode.toUpperCase()
+  }
+
   // Инициализируем Lucide SVG-иконки (заменяет <i data-lucide="..."> → <svg>)
   /* global lucide */
   if (typeof lucide !== 'undefined') lucide.createIcons()
@@ -179,13 +199,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         st.currentUser = session.user
         updateLastSeen(st.currentUser.id)
         setupSessionGuard(st.currentUser.id)
-        showPage('homePage')
-        updateUserUI()
-        loadSidebarAvatar()
         renderStreakBadge()
         // Запускаем канал инвайтов после восстановления сессии
         initInvitesChannel()
         window.updateDailyChallengeCard?.()
+        // Если пришли по ссылке-приглашению дуэли — открываем страницу дуэли
+        updateUserUI()
+        loadSidebarAvatar()
+        if (window._pendingDuelCode) {
+          const code = window._pendingDuelCode
+          window._pendingDuelCode = null
+          window.showDuelPage?.()
+          setTimeout(() => {
+            window.showDuelTab?.('join')
+            const ji = document.getElementById('duelJoinInput')
+            if (ji) ji.value = code
+          }, 100)
+        } else {
+          showPage('homePage')
+        }
       } else {
         showPage('authPage')
       }
