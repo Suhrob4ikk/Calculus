@@ -1,28 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
   <defs>
-    <radialGradient id="bg" cx="40%" cy="35%" r="70%">
-      <stop offset="0%"   stop-color="#1e3a5f"/>
-      <stop offset="100%" stop-color="#020609"/>
+    <radialGradient id="bg" cx="38%" cy="32%" r="75%">
+      <stop offset="0%"   stop-color="#111827"/>
+      <stop offset="100%" stop-color="#020509"/>
     </radialGradient>
-    <linearGradient id="stroke" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#bae6fd"/>
-      <stop offset="100%" stop-color="#38bdf8"/>
+    <linearGradient id="mGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#2563eb"/>
     </linearGradient>
   </defs>
 
-  <!-- Фон -->
   <rect width="96" height="96" rx="22" fill="url(#bg)"/>
 
-  <!-- Знак ∫ -->
-  <path d="M 57,12
-           C 69,9 79,17 73,27
-           C 67,36 54,33 50,41
-           L 47,48
-           L 44,55
-           C 40,63 27,61 23,70
-           C 18,78 25,85 39,84"
-        fill="none"
-        stroke="url(#stroke)"
-        stroke-width="5"
-        stroke-linecap="round"/>
+  <!-- M (упрощённый вариант для малых размеров) -->
+  <line x1="18" y1="20" x2="18" y2="76" stroke="url(#mGrad)" stroke-width="12" stroke-linecap="butt"/>
+  <line x1="78" y1="20" x2="78" y2="76" stroke="url(#mGrad)" stroke-width="12" stroke-linecap="butt"/>
+  <polyline points="18,20 48,52 78,20"
+            fill="none" stroke="url(#mGrad)" stroke-width="10"
+            stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="6"/>
+
+  <!-- Золотая черта -->
+  <line x1="14" y1="79" x2="82" y2="79" stroke="#f59e0b" stroke-width="2.5"
+        stroke-linecap="round" opacity="0.8"/>
 </svg>
