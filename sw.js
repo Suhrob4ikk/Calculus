@@ -1,4 +1,4 @@
-const CACHE = 'mathcore-v2'
+const CACHE = 'mathcore-v3'
 const ASSETS = [
   '/',
   '/index.html',
@@ -12,6 +12,7 @@ const ASSETS = [
   '/js/limits-questions.js',
   '/js/ode-questions.js',
   '/js/probability-questions.js',
+  '/js/linalg-questions.js',
   '/js/prob-chapters.js',
   '/js/calculus-chapters.js',
   '/manifest.json',

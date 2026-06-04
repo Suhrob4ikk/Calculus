@@ -159,7 +159,7 @@ if (questions.length === 0) {
   document.getElementById(sectionEl).classList.add('hidden')
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = st.currentTest.length
-  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность' }[section] || section
+  const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность', linalg: 'Линейная алгебра' }[section] || section
   const diffName = difficulty === 'easy' ? 'Лёгкий' : difficulty === 'medium' ? 'Средний' : 'Сложный'
   const modeName = st.testMode === 'open' ? ' · Открытый' : ''
   document.getElementById('testTitle').textContent = `${st.isStudyMode ? 'Изучение' : 'Тест'}: ${sectionName}${modeName}`
