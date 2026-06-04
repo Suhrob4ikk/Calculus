@@ -1741,3 +1741,33 @@ body.light-theme .duel-panel [style*="color:#64748b"] {
     font-size: 5rem !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   СВЕТЛАЯ ТЕМА — модальные окна и динамические компоненты
+   ══════════════════════════════════════════════════════════ */
+html:not(.dark) .modal-inner-panel {
+  background: #ffffff !important;
+  box-shadow: 0 25px 60px rgba(99,102,241,0.12) !important;
+}
+html:not(.dark) .modal-title {
+  color: #0f172a !important;
+}
+html:not(.dark) .duel-tabs-bar {
+  background: #f1f5f9 !important;
+}
+html:not(.dark) .duel-code-display {
+  color: #6d28d9 !important;
+  background: #faf5ff !important;
+  border-color: rgba(139,92,246,0.3) !important;
+}
+html:not(.dark) .duel-invite-banner {
+  background: rgba(255,255,255,0.97) !important;
+  box-shadow: 0 10px 25px rgba(99,102,241,0.18) !important;
+}
+html:not(.dark) .duel-lobby-msg {
+  color: #0f172a !important;
+}
+html:not(.dark) .duel-score-card-normal {
+  background: rgba(241,245,249,0.9) !important;
+  border-color: rgba(148,163,184,0.5) !important;
+}

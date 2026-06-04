@@ -130,13 +130,17 @@ window.showDailyLeaderboard = async function() {
   const unique = data.filter(r => { if (seen.has(r.username)) return false; seen.add(r.username); return true })
   const medals = ['🥇','🥈','🥉']
   const myName = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0]
+  const isDark = document.documentElement.classList.contains('dark')
+  const rowBg     = isDark ? 'rgba(30,41,59,0.7)' : 'rgba(241,245,249,0.9)'
+  const textMain  = isDark ? '#e2e8f0' : '#1e293b'
+  const myText    = isDark ? '#93c5fd' : '#1d4ed8'
   if (list) list.innerHTML = unique.map((r, i) => `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:6px;
       ${r.username === myName
         ? 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35)'
-        : 'background:rgba(30,41,59,0.7)'}">
+        : `background:${rowBg}`}">
       <span style="font-size:1.25rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="color:#64748b;font-size:0.9rem">${i+1}</span>`}</span>
-      <span style="flex:1;font-weight:${r.username===myName?700:500};color:${r.username===myName?'#93c5fd':'#e2e8f0'}">${r.username}</span>
+      <span style="flex:1;font-weight:${r.username===myName?700:500};color:${r.username===myName?myText:textMain}">${r.username}</span>
       <span style="font-weight:700;font-size:1rem;color:${r.score>=70?'#10b981':'#f59e0b'}">${r.score}%</span>
       <span style="color:#64748b;font-size:0.8rem">${r.correct_answers}/${r.total_questions}</span>
     </div>`).join('')

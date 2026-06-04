@@ -548,10 +548,11 @@ function _showDuelResults() {
   else                                          { emoji = '🤝'; title = 'Ничья!' }
   emojiEl.textContent = emoji
   titleEl.textContent = title
+  const _dark = document.documentElement.classList.contains('dark')
   const card = (name, score, highlight, timedOut = false) => `
-    <div style="flex:1;min-width:120px;padding:1rem;border-radius:14px;
-      background:${highlight ? 'rgba(139,92,246,0.2)' : 'rgba(15,23,42,0.8)'};
-      border:1.5px solid ${highlight ? 'rgba(139,92,246,0.5)' : 'rgba(51,65,85,0.5)'}">
+    <div class="${!highlight ? 'duel-score-card-normal' : ''}" style="flex:1;min-width:120px;padding:1rem;border-radius:14px;
+      background:${highlight ? 'rgba(139,92,246,0.2)' : (_dark ? 'rgba(15,23,42,0.8)' : 'rgba(241,245,249,0.9)')};
+      border:1.5px solid ${highlight ? 'rgba(139,92,246,0.5)' : (_dark ? 'rgba(51,65,85,0.5)' : 'rgba(148,163,184,0.5)')}">
       <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:4px">${name}</div>
       <div style="font-size:2rem;font-weight:700;color:${timedOut?'#64748b':score>=70?'#10b981':'#f59e0b'}">${timedOut ? '—' : score + '%'}</div>
       ${timedOut ? '<div style="font-size:0.75rem;color:#64748b">отключился</div>' : ''}

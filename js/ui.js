@@ -310,18 +310,21 @@ export function showXPToast(gained, total) {
   const lvl = getXPLevel(total)
   const toast = document.createElement('div')
   toast.id = 'xpToast'
+  const _toastDark = document.documentElement.classList.contains('dark')
+  const _toastBg   = _toastDark ? 'rgba(15,23,42,0.97)' : 'rgba(255,255,255,0.97)'
+  const _toastSub  = _toastDark ? '#94a3b8' : '#64748b'
   toast.style.cssText = `
     position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%) translateY(16px);
-    z-index:10001;background:rgba(15,23,42,0.97);border:1px solid ${lvl.color}55;
+    z-index:10001;background:${_toastBg};border:1px solid ${lvl.color}55;
     border-radius:14px;padding:11px 20px;display:flex;align-items:center;gap:12px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.45);backdrop-filter:blur(12px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);backdrop-filter:blur(12px);
     font-size:0.9rem;opacity:0;transition:transform 0.3s,opacity 0.3s;pointer-events:none
   `
   toast.innerHTML = `
     <span style="font-size:1.5rem">${lvl.icon}</span>
     <div>
       <div style="font-weight:700;color:${lvl.color}">+${gained} XP</div>
-      <div style="color:#94a3b8;font-size:0.75rem">${lvl.name} · ${total} XP всего</div>
+      <div style="color:${_toastSub};font-size:0.75rem">${lvl.name} · ${total} XP всего</div>
     </div>`
   document.body.appendChild(toast)
   requestAnimationFrame(() => {
@@ -426,12 +429,15 @@ export function showContinueTestBanner() {
   document.getElementById('continueTestBanner')?.remove()
   const banner = document.createElement('div')
   banner.id = 'continueTestBanner'
+  const _bannerDark = document.documentElement.classList.contains('dark')
+  const _bannerBg   = _bannerDark ? 'rgba(30,41,59,0.96)' : 'rgba(255,255,255,0.97)'
+  const _bannerText = _bannerDark ? '#f1f5f9' : '#1e293b'
   banner.style.cssText = `
     position:fixed;top:1rem;left:50%;transform:translateX(-50%);
-    z-index:10000;background:rgba(30,41,59,0.96);color:#f1f5f9;
+    z-index:10000;background:${_bannerBg};color:${_bannerText};
     border:1px solid rgba(59,130,246,0.4);border-radius:1rem;
     padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;
-    box-shadow:0 8px 32px rgba(0,0,0,0.4);backdrop-filter:blur(12px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);backdrop-filter:blur(12px);
     font-size:0.9rem;max-width:90vw;
   `
   banner.innerHTML = `
