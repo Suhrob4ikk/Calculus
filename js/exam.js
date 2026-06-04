@@ -205,7 +205,7 @@ function renderExamActive() {
   const diffColor = { easy: '#10b981', medium: '#f59e0b', hard: '#ef4444' }[q.difficulty] || '#94a3b8'
 
   container.innerHTML = `
-    <div style="padding:1.5rem clamp(1rem, 3vw, 2.5rem)">
+    <div class="page-content" style="padding:1.5rem clamp(1rem, 3vw, 2.5rem)">
       <!-- Шапка экзамена -->
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;
                   flex-wrap:wrap;margin-bottom:1rem">
