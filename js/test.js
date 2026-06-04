@@ -2,6 +2,7 @@ import { st } from './state.js'
 import { showPage, playSound, XP_TABLE, addXP, showXPToast, launchConfetti } from './ui.js'
 import { saveResult } from './supabase.js'
 import { getDailyDate } from './utils.js'
+import { QUESTIONS, OPEN_QUESTIONS } from './questions.js'
 
 // ── Таймер ────────────────────────────────────────────────
 export function startTimer() {
@@ -82,12 +83,12 @@ export function restoreTestState() {
   }
 }
 
-// Регистрируем как window callbacks для других модулей
-window._startTimer = startTimer
-window._stopTimer = stopTimer
-window._displayQuestion = displayQuestion
-window._clearTestState = clearTestState
-window._restoreTestState = restoreTestState
+// Регистрируем в st для других модулей (избегаем циклических импортов)
+st.startTimer = startTimer
+st.stopTimer = stopTimer
+st.displayQuestion = displayQuestion
+st.clearTestState = clearTestState
+st.restoreTestState = restoreTestState
 
 // ── Запуск теста ──────────────────────────────────────────
 export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
@@ -172,56 +173,40 @@ if (questions.length === 0) {
 
 window.startIntegralsTest = function (d, study = false) {
   st.isStudyMode = study; st.testMode = 'closed'
-  /* global easyIntegralsQuestions, mediumIntegralsQuestions, hardIntegralsQuestions */
-  const pool = d === 'easy' ? easyIntegralsQuestions : d === 'medium' ? mediumIntegralsQuestions : hardIntegralsQuestions
-  startTest('integrals', d, pool, 'integralsCount', 'integralsSection')
+  startTest('integrals', d, QUESTIONS.integrals[d], 'integralsCount', 'integralsSection')
 }
 window.startLimitsTest = function (d, study = false) {
   st.isStudyMode = study
   const openBtn = document.getElementById('limitsOpenBtn')
   st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
-  /* global easyLimitsQuestions, mediumLimitsQuestions, hardLimitsQuestions */
-  const pool = d === 'easy' ? easyLimitsQuestions : d === 'medium' ? mediumLimitsQuestions : hardLimitsQuestions
-  startTest('limits', d, pool, 'limitsCount', 'limitsSection')
+  startTest('limits', d, QUESTIONS.limits[d], 'limitsCount', 'limitsSection')
 }
 window.startDerivativesTest = function (d, study = false) {
   st.isStudyMode = study
   const openBtn = document.getElementById('derivOpenBtn')
   st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
-  /* global easyDerivativesQuestions, mediumDerivativesQuestions, hardDerivativesQuestions */
-  /* global easyDerivativesOpenQuestions, mediumDerivativesOpenQuestions, hardDerivativesOpenQuestions */
-  const pool = st.testMode === 'open'
-    ? (d === 'easy' ? easyDerivativesOpenQuestions : d === 'medium' ? mediumDerivativesOpenQuestions : hardDerivativesOpenQuestions)
-    : (d === 'easy' ? easyDerivativesQuestions : d === 'medium' ? mediumDerivativesQuestions : hardDerivativesQuestions)
+  const pool = st.testMode === 'open' ? OPEN_QUESTIONS.derivatives[d] : QUESTIONS.derivatives[d]
   startTest('derivatives', d, pool, 'derivativesCount', 'derivativesSection')
 }
 window.startSeriesTest = function (d, study = false) {
   st.isStudyMode = study; st.testMode = 'closed'
-  /* global easySeriesQuestions, mediumSeriesQuestions, hardSeriesQuestions */
-  const pool = d === 'easy' ? easySeriesQuestions : d === 'medium' ? mediumSeriesQuestions : hardSeriesQuestions
-  startTest('series', d, pool, 'seriesCount', 'seriesSection')
+  startTest('series', d, QUESTIONS.series[d], 'seriesCount', 'seriesSection')
 }
 window.startODETest = function (d, study = false) {
   st.isStudyMode = study
   const openBtn = document.getElementById('odeOpenBtn')
   st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
-  /* global easyODEQuestions, mediumODEQuestions, hardODEQuestions */
-  const pool = d === 'easy' ? easyODEQuestions : d === 'medium' ? mediumODEQuestions : hardODEQuestions
-  startTest('ode', d, pool, 'odeCount', 'odeSection')
+  startTest('ode', d, QUESTIONS.ode[d], 'odeCount', 'odeSection')
 }
 window.startProbabilityTest = function (d, study = false) {
   st.isStudyMode = study
   const openBtn = document.getElementById('probOpenBtn')
   st.testMode = (openBtn && openBtn.classList.contains('active')) ? 'open' : 'closed'
-  /* global easyProbabilityQuestions, mediumProbabilityQuestions, hardProbabilityQuestions */
-  const pool = d === 'easy' ? easyProbabilityQuestions : d === 'medium' ? mediumProbabilityQuestions : hardProbabilityQuestions
-  startTest('probability', d, pool, 'probabilityCount', 'probabilitySection')
+  startTest('probability', d, QUESTIONS.probability[d], 'probabilityCount', 'probabilitySection')
 }
 window.startLinalgTest = function (d, study = false) {
   st.isStudyMode = study; st.testMode = 'closed'
-  /* global easyLinalgQuestions, mediumLinalgQuestions, hardLinalgQuestions */
-  const pool = d === 'easy' ? easyLinalgQuestions : d === 'medium' ? mediumLinalgQuestions : hardLinalgQuestions
-  startTest('linalg', d, pool, 'linalgCount', 'linalgSection')
+  startTest('linalg', d, QUESTIONS.linalg[d], 'linalgCount', 'linalgSection')
 }
 window.restartTest = function () {
   if (st.currentSection === 'daily') { window.showHome(); return }
@@ -455,9 +440,9 @@ window.exitTest = async function () {
     st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0
     stopTimer()
     if (st.currentSection === 'duel') {
-      if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
-      if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
-      window._duelMyScore = null; window._duelOpponentScore = null
+      if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
+      if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
+      st.duel.myScore = null; st.duel.opponentScore = null
     }
     window.showHome()
   }
@@ -490,7 +475,7 @@ async function _saveDailyAndExit(correct, percentage) {
 
 // ── Завершение теста ──────────────────────────────────────
 window.finishTest = async function () {
-  if (window._finishInProgress) return
+  if (st.finishInProgress) return
   autoSaveOpenAnswer()
 
   // Проверяем пропущенные вопросы
@@ -511,7 +496,7 @@ window.finishTest = async function () {
     }
   }
 
-  window._finishInProgress = true
+  st.finishInProgress = true
   const finishBtn = document.getElementById('finishBtn')
   if (finishBtn) { finishBtn.disabled = true; finishBtn.textContent = 'Сохраняем...' }
   stopTimer()
@@ -538,16 +523,16 @@ window.finishTest = async function () {
   // ── Дуэль ──────────────────────────────────────────────
   if (st.currentSection === 'duel') {
     // Set phase to finished so no late event can restart the test
-    if (window._duelPhase !== undefined) window._duelPhase = 'finished'
-    window._duelMyScore = percentage
-    window._broadcastDuelScore?.(percentage)
+    if (st.duel.phase !== undefined) st.duel.phase = 'finished'
+    st.duel.myScore = percentage
+    st.duel.broadcastScore?.(percentage)
     if (st.currentUser) {
       try {
         await saveResult({
           userId: st.currentUser.id,
-          username: window._duelMyName,
+          username: st.duel.myName,
           section: 'duel',
-          difficulty: window._duelCode,
+          difficulty: st.duel.code,
           score: percentage,
           correctAnswers: correct,
           totalQuestions: st.currentTest.length
@@ -556,7 +541,7 @@ window.finishTest = async function () {
         console.warn('Duel saveResult failed:', e)
       }
     }
-    const xpGained = correct * (XP_TABLE[window._duelDiff] || 20)
+    const xpGained = correct * (XP_TABLE[st.duel.diff] || 20)
     const newXP = addXP(xpGained)
     setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
     clearTestState()
@@ -569,16 +554,16 @@ window.finishTest = async function () {
     document.getElementById('detailedResults').innerHTML =
       `<p style="color:#94a3b8;text-align:center;padding:1rem">Ожидаем результата соперника…</p>`
     // Cancel any existing opponent timeout before setting a new one
-    if (window._duelOpponentTimeout) { clearTimeout(window._duelOpponentTimeout); window._duelOpponentTimeout = null }
+    if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
     const _duelWaitMs = Math.max((st.timeRemaining + 30) * 1000, 15000)
-    window._duelOpponentTimeout = setTimeout(() => {
-      if (window._duelOpponentScore === null) {
-        window._duelOpponentScore = -1
-        window._showDuelResults?.()
+    st.duel.opponentTimeout = setTimeout(() => {
+      if (st.duel.opponentScore === null) {
+        st.duel.opponentScore = -1
+        st.duel.showResults?.()
       }
     }, _duelWaitMs)
-    window._finishInProgress = false   // Bug 5 fix: reset only after all sync work
-    window._checkDuelComplete?.()
+    st.finishInProgress = false   // Bug 5 fix: reset only after all sync work
+    st.duel.checkComplete?.()
     return
   }
 
@@ -597,12 +582,12 @@ window.finishTest = async function () {
     setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
   }
 
-  window._finishInProgress = false
+  st.finishInProgress = false
   if (!st.isStudyMode) clearTestState()
 
   // Сохраняем ошибки в фоне (только для обычных тестов, не экзамен)
   if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
-    window._saveMistakesFromResults?.(
+    st.saveMistakesFromResults?.(
       results, st.currentTest, st.currentSection, st.currentDifficulty, st.currentUser.id
     )
   }

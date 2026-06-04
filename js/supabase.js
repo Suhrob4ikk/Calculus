@@ -1,5 +1,6 @@
 // ── Подключение к Supabase ────────────────────────────────
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+import { withTimeout } from './utils.js'
 
 const SUPABASE_URL = 'https://xahjwhoywxgudsefqowd.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_l-Ync04W2cC3hcveYjL0rA_tG0iSvsv'
@@ -23,12 +24,14 @@ export async function signUp(email, password, username) {
 }
 
 export async function getEmailByUsername(username) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('email')
-    .ilike('username', username)
-    .single()
-  return data?.email || null
+  try {
+    const { data } = await withTimeout(
+      supabase.from('profiles').select('email').ilike('username', username).single()
+    )
+    return data?.email || null
+  } catch {
+    return null
+  }
 }
 
 export async function signIn(email, password) {
@@ -42,28 +45,24 @@ export async function signOut() {
 }
 
 export async function getUser() {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  try {
+    const { data: { user } } = await withTimeout(supabase.auth.getUser())
+    return user
+  } catch {
+    return null
+  }
 }
 
 // ── Результаты ────────────────────────────────────────────
 export async function saveResult({ userId, username, section, difficulty, score, correctAnswers, totalQuestions }) {
-  const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('save_timeout')), 8000)
-  )
   try {
-    const { error } = await Promise.race([
+    const { error } = await withTimeout(
       supabase.from('test_results').insert({
-        user_id: userId,
-        username,
-        section,
-        difficulty,
-        score,
-        correct_answers: correctAnswers,
-        total_questions: totalQuestions
+        user_id: userId, username, section, difficulty, score,
+        correct_answers: correctAnswers, total_questions: totalQuestions
       }),
-      timeout
-    ])
+      8000
+    )
     return { error }
   } catch (e) {
     console.warn('saveResult error:', e.message)
@@ -72,13 +71,18 @@ export async function saveResult({ userId, username, section, difficulty, score,
 }
 
 export async function getUserResults(userId) {
-  const { data, error } = await supabase
-    .from('test_results')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(200)
-  return { data, error }
+  try {
+    const { data, error } = await withTimeout(
+      supabase.from('test_results').select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(200)
+    )
+    return { data: data ?? null, error }
+  } catch (e) {
+    console.warn('getUserResults error:', e.message)
+    return { data: null, error: e }
+  }
 }
 
 export async function deleteResultById(id, userId) {
@@ -99,46 +103,68 @@ export async function deleteAllUserResults(userId) {
 }
 
 export async function getLeaderboard(section = null, difficulty = null) {
-  let query = supabase
-    .from('test_results')
-    .select('username, section, difficulty, score, correct_answers, total_questions, created_at')
-    .order('score', { ascending: false })
-    .limit(1000)
-
-  if (section) query = query.eq('section', section)
-  if (difficulty) query = query.eq('difficulty', difficulty)
-
-  const { data, error } = await query
-  return { data, error }
+  try {
+    let query = supabase
+      .from('test_results')
+      .select('username, section, difficulty, score, correct_answers, total_questions, created_at')
+      .order('score', { ascending: false })
+      .limit(1000)
+    if (section) query = query.eq('section', section)
+    if (difficulty) query = query.eq('difficulty', difficulty)
+    const { data, error } = await withTimeout(query)
+    return { data: data ?? null, error }
+  } catch (e) {
+    console.warn('getLeaderboard error:', e.message)
+    return { data: null, error: e }
+  }
 }
 
 // ── Аватар ────────────────────────────────────────────────
 export async function uploadAvatar(userId, file) {
   const ext = file.name.split('.').pop()
   const path = `${userId}/avatar.${ext}`
-  const { error } = await supabase.storage
-    .from('avatars')
-    .upload(path, file, { upsert: true })
-  if (error) return { error }
-  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-  // Save url to profile
-  await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', userId)
-  return { url: data.publicUrl, error: null }
+  try {
+    const { error } = await withTimeout(
+      supabase.storage.from('avatars').upload(path, file, { upsert: true }),
+      15000
+    )
+    if (error) return { error }
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+    await withTimeout(
+      supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', userId)
+    )
+    return { url: data.publicUrl, error: null }
+  } catch (e) {
+    console.warn('uploadAvatar error:', e.message)
+    return { error: e }
+  }
 }
 
 export async function getAvatarUrl(userId) {
-  const { data } = await supabase.from('profiles').select('avatar_url').eq('id', userId).single()
-  return data?.avatar_url || null
+  try {
+    const { data } = await withTimeout(
+      supabase.from('profiles').select('avatar_url').eq('id', userId).single()
+    )
+    return data?.avatar_url || null
+  } catch {
+    return null
+  }
 }
 
 // ── Поиск профилей ────────────────────────────────────────
 export async function searchProfiles(query) {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, username, avatar_url, created_at')
-    .ilike('username', query ? `${query}%` : '%')
-    .limit(20)
-  return { data, error }
+  try {
+    const { data, error } = await withTimeout(
+      supabase.from('profiles')
+        .select('id, username, avatar_url, created_at')
+        .ilike('username', query ? `${query}%` : '%')
+        .limit(20)
+    )
+    return { data: data ?? null, error }
+  } catch (e) {
+    console.warn('searchProfiles error:', e.message)
+    return { data: null, error: e }
+  }
 }
 
 export async function resetPassword(email) {
@@ -205,31 +231,36 @@ export async function getDailyLeaderboard(date) {
 
 // ── Обновление времени последнего визита ──────────────────
 export async function updateLastSeen(userId) {
-  // Колонка last_seen_at добавляется SQL-миграцией (см. PROJECT_MAP.md)
-  await supabase.from('profiles')
+  supabase.from('profiles')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', userId)
+    .then(() => {})
+    .catch(() => {})
 }
 
 // ── Ранг пользователя в лидерборде ───────────────────────
 export async function getUserRankData(username) {
-  const { data, error } = await supabase
-    .from('test_results')
-    .select('username, score')
-    .not('section', 'eq', 'duel')
-    .limit(2000)
-  if (error || !data) return { rank: null, total: null, error }
-  const avgByUser = {}
-  data.forEach(r => {
-    if (!avgByUser[r.username]) avgByUser[r.username] = { sum: 0, count: 0 }
-    avgByUser[r.username].sum += r.score
-    avgByUser[r.username].count++
-  })
-  const rankings = Object.entries(avgByUser)
-    .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
-    .sort((a, b) => b.avg - a.avg)
-  const rank = rankings.findIndex(r => r.name === username) + 1
-  return { rank: rank || null, total: rankings.length, rankings, error: null }
+  try {
+    const { data, error } = await withTimeout(
+      supabase.from('test_results').select('username, score')
+        .not('section', 'eq', 'duel').limit(2000)
+    )
+    if (error || !data) return { rank: null, total: null, error }
+    const avgByUser = {}
+    data.forEach(r => {
+      if (!avgByUser[r.username]) avgByUser[r.username] = { sum: 0, count: 0 }
+      avgByUser[r.username].sum += r.score
+      avgByUser[r.username].count++
+    })
+    const rankings = Object.entries(avgByUser)
+      .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
+      .sort((a, b) => b.avg - a.avg)
+    const rank = rankings.findIndex(r => r.name === username) + 1
+    return { rank: rank || null, total: rankings.length, rankings, error: null }
+  } catch (e) {
+    console.warn('getUserRankData error:', e.message)
+    return { rank: null, total: null, error: e }
+  }
 }
 
 // ── Профили нескольких пользователей по именам ────────────
@@ -243,30 +274,38 @@ export async function getProfilesByUsernames(usernames) {
 }
 
 export async function getProfileByUsername(username) {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id, username, avatar_url, created_at, last_seen_at')
-    .eq('username', username)
-    .single()
-  if (!profile) return { profile: null, results: [] }
-  const { data: results } = await supabase
-    .from('test_results')
-    .select('*')
-    .eq('user_id', profile.id)
-    .order('created_at', { ascending: false })
-  return { profile, results: results || [] }
+  try {
+    const { data: profile } = await withTimeout(
+      supabase.from('profiles')
+        .select('id, username, avatar_url, created_at, last_seen_at')
+        .eq('username', username).single()
+    )
+    if (!profile) return { profile: null, results: [] }
+    const { data: results } = await withTimeout(
+      supabase.from('test_results').select('*')
+        .eq('user_id', profile.id).order('created_at', { ascending: false })
+    )
+    return { profile, results: results || [] }
+  } catch (e) {
+    console.warn('getProfileByUsername error:', e.message)
+    return { profile: null, results: [] }
+  }
 }
 
 // ── История дуэлей ────────────────────────────────────────
 export async function getDuelHistory(userId) {
-  // Fetch user's duel records (difficulty field stores the duel code)
-  const { data: mine, error } = await supabase
-    .from('test_results')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('section', 'duel')
-    .order('created_at', { ascending: false })
-    .limit(20)
+  let mine, error
+  try {
+    const res = await withTimeout(
+      supabase.from('test_results').select('*')
+        .eq('user_id', userId).eq('section', 'duel')
+        .order('created_at', { ascending: false }).limit(20)
+    )
+    mine = res.data; error = res.error
+  } catch (e) {
+    console.warn('getDuelHistory error:', e.message)
+    return { data: [], error: e }
+  }
 
   if (!mine || mine.length === 0) return { data: [], error }
 

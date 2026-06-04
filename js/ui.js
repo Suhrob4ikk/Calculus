@@ -85,7 +85,7 @@ export function showPage(pageId) {
     leaderboardPage:    { label: '← Главная',   fn: 'showHome()' },
     profilePage:        { label: '← Главная',   fn: 'showHome()' },
     searchProfilesPage: { label: '← Главная',   fn: 'showHome()' },
-    viewProfilePage:    window._viewProfileFrom === 'leaderboardPage'
+    viewProfilePage:    st.viewProfileFrom === 'leaderboardPage'
       ? { label: '← Рейтинг', fn: 'showLeaderboard()' }
       : { label: '← Поиск',   fn: 'showSearchProfiles()' },
     examPage:           { label: '← Главная',   fn: 'showHome()' },
@@ -121,6 +121,7 @@ export function showPage(pageId) {
 
   // Страницы с фокусом на контенте — боковая панель скрыта
   const noSidebarPages = [
+    'authPage', 'updatePasswordPage',
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
     'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
@@ -151,7 +152,7 @@ export function showPage(pageId) {
     statisticsPage:     'sbStats',
     leaderboardPage:    'sbLeader',
     searchProfilesPage: 'sbPeople',
-    viewProfilePage:    window._viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
+    viewProfilePage:    st.viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
     examPage:           'sbExam',
     mistakesPage:       'sbMistakes',
     duelPage:           'sbDuel',
@@ -191,6 +192,7 @@ window.addEventListener('resize', () => {
   const lastPage   = sessionStorage.getItem('lastPage')
   const noNavPages = ['authPage', 'updatePasswordPage']
   const noSidebarPages = [
+    'authPage', 'updatePasswordPage',
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
     'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
@@ -349,18 +351,6 @@ export function showXPToast(gained, total) {
     setTimeout(() => toast.remove(), 350)
   }, 3200)
 }
-export function renderXPBadge() {
-  const xp  = getXP()
-  const lvl = getXPLevel(xp)
-  const el  = document.getElementById('xpBadge')
-  if (!el) return
-  el.style.display     = 'flex'
-  el.style.color       = lvl.color
-  el.style.borderColor = lvl.color + '55'
-  el.style.background  = lvl.color + '18'
-  el.innerHTML = `${lvl.icon} <span style="font-weight:700">${xp}</span><span style="font-size:0.72rem;opacity:0.75"> XP</span>`
-}
-
 // ── Streak (серия дней) ──────────────────────────────────
 export function updateStreak() {
   const today     = new Date().toDateString()
@@ -466,17 +456,17 @@ export function showContinueTestBanner() {
 }
 window.resumeTestFromBanner = function() {
   document.getElementById('continueTestBanner')?.remove()
-  if (window._restoreTestState?.()) {
+  if (st.restoreTestState?.()) {
     showPage('testPage')
-    window._startTimer?.()
-    window._displayQuestion?.()
+    st.startTimer?.()
+    st.displayQuestion?.()
   } else {
-    window._clearTestState?.()
+    st.clearTestState?.()
   }
 }
 window.dismissContinueTestBanner = function() {
   document.getElementById('continueTestBanner')?.remove()
-  window._clearTestState?.()
+  st.clearTestState?.()
 }
 
 // Expose showPage globally so non-module scripts (prob-theory.js etc.) can use it

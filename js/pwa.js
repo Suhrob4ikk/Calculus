@@ -8,7 +8,7 @@ export async function registerSW() {
   try {
     const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
     console.log('SW registered:', reg.scope)
-    window._swReg = reg
+    st.swReg = reg
   } catch (e) {
     console.warn('SW registration failed:', e)
   }
@@ -45,7 +45,7 @@ async function subscribePush() {
   const perm = await Notification.requestPermission()
   if (perm !== 'granted') return null
   try {
-    const reg = window._swReg || await navigator.serviceWorker.ready
+    const reg = st.swReg || await navigator.serviceWorker.ready
     const existing = await reg.pushManager.getSubscription()
     if (existing) return existing
     const sub = await reg.pushManager.subscribe({

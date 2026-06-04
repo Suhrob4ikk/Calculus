@@ -3,6 +3,9 @@ import { showPage, renderStreakBadge } from './ui.js'
 import { getDailyLeaderboard, getTodayDailyResult } from './supabase.js'
 import { getDailyDate, hashCode, mulberry32 } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
+import { QUESTIONS } from './questions.js'
+
+let _dailyCountdownInterval = null
 
 // Ключ localStorage привязан к пользователю — разные аккаунты не мешают друг другу
 function dailyKey(suffix) {
@@ -12,20 +15,10 @@ function dailyKey(suffix) {
 
 function getDailyQuestions() {
   const rng = mulberry32(hashCode(getDailyDate()))
-  /* global easyIntegralsQuestions, mediumIntegralsQuestions, easyDerivativesQuestions,
-            mediumDerivativesQuestions, easySeriesQuestions, mediumSeriesQuestions,
-            easyLimitsQuestions, mediumLimitsQuestions, easyODEQuestions, mediumODEQuestions,
-            easyProbabilityQuestions, mediumProbabilityQuestions,
-            easyLinalgQuestions, mediumLinalgQuestions */
-  const all = [
-    ...easyIntegralsQuestions,    ...mediumIntegralsQuestions,
-    ...easyDerivativesQuestions,  ...mediumDerivativesQuestions,
-    ...easySeriesQuestions,       ...mediumSeriesQuestions,
-    ...easyLimitsQuestions,       ...mediumLimitsQuestions,
-    ...easyODEQuestions,          ...mediumODEQuestions,
-    ...easyProbabilityQuestions,  ...mediumProbabilityQuestions,
-    ...easyLinalgQuestions,       ...mediumLinalgQuestions
-  ].flat().filter(q => q && q.options && q.options.length === 4)
+  const all = Object.values(QUESTIONS)
+    .flatMap(s => [s.easy, s.medium])
+    .flat()
+    .filter(q => q && q.options && q.options.length === 4)
 
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -96,7 +89,7 @@ export async function updateDailyChallengeCard() {
     btn.style.background = 'linear-gradient(135deg,#10b981,#059669)'
     if (card) card.onclick = window.showDailyLeaderboard
     if (countdown) {
-      if (window._dailyCountdownInterval) clearInterval(window._dailyCountdownInterval)
+      if (_dailyCountdownInterval) clearInterval(_dailyCountdownInterval)
       const tick = () => {
         const now = new Date(); const tomorrow = new Date(now)
         tomorrow.setDate(tomorrow.getDate() + 1); tomorrow.setHours(0,0,0,0)
@@ -106,7 +99,7 @@ export async function updateDailyChallengeCard() {
         const s = Math.floor((diff % 60000) / 1000)
         countdown.textContent = `Следующий через ${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
       }
-      tick(); window._dailyCountdownInterval = setInterval(tick, 1000)
+      tick(); _dailyCountdownInterval = setInterval(tick, 1000)
     }
   } else {
     btn.textContent = 'Начать'; btn.style.background = ''

@@ -1,5 +1,5 @@
 // ── ОДУ (Лёгкий уровень) — прямое интегрирование, y'=ky, простые разделяющиеся ──
-const easyODEQuestions = [
+export const easyODEQuestions = [
   // Прямое интегрирование y' = f(x)
   { question: "Задача Коши: \\(y' = 2x,\\; y(0)=1 \\implies y(2)=?\\)",
     options: ["\\(5\\)", "\\(3\\)", "\\(4\\)", "\\(9\\)"], correct: 0, open: ['5'] },
@@ -143,7 +143,7 @@ const easyODEQuestions = [
     options: ["\\(5/9\\)", "\\(15\\)", "\\(1\\)", "\\(5/3\\)"], correct: 3, open: ['5/3'] },
 ];
 
-const mediumODEQuestions = [
+export const mediumODEQuestions = [
   { question: "Найдите решение задачи Коши: \\((x/\\sin y + 2)\\,dx + \\frac{(x^2+1)\\cos y}{\\cos 2y - 1}\\,dy = 0,\\; y(1)=\\pi/2 \\implies x(\\pi/6)=?\\)", options: ["\\(1 + \\sqrt{2}\\)", "\\(1\\)", "\\(0\\)", "\\(2\\)"], correct: 0 },
   { question: "Найдите решение задачи Коши: \\((x^2 + y^2 + x)\\,dx + y\\,dy = 0,\\; y(0)=1 \\implies x(1)=?\\)", options: ["\\(0\\)", "\\(1\\)", "\\(-1\\)", "\\(2\\)"], correct: 0 },
   { question: "Найдите решение задачи Коши: \\((x^2 + y^2 + y)\\,dx - x\\,dy = 0,\\; y(1)=0 \\implies y(0)=?\\)", options: ["\\(0\\)", "\\(1\\)", "\\(-1\\)", "\\(2\\)"], correct: 0 },
@@ -196,7 +196,7 @@ const mediumODEQuestions = [
   { question: "Найдите решение задачи Коши: \\(y'' = e^y,\\; y(0)=0,\\; y'(0)=\\sqrt{2} \\implies y(1)=?\\)", options: ["\\(-2\\ln(1 - 1/\\sqrt{2})\\)", "\\(0\\)", "\\(1\\)", "\\(\\ln 2\\)"], correct: 0 }
 ];
 
-const hardODEQuestions = [
+export const hardODEQuestions = [
   { question: "Найдите решение задачи Коши: \\(y'' - x y'' + y'''^3 = 0,\\; y(0)=0,\\; y'(0)=0,\\; y''(0)=0 \\implies y(1)=?\\)", options: ["\\(0\\)", "\\(1\\)", "\\(-1\\)", "\\(2\\)"], correct: 0 },
   { question: "Найдите решение задачи Коши: \\(2y'(y'' + 2) = x y''^2,\\; y(0)=0,\\; y'(0)=0 \\implies y(1)=?\\)", options: ["\\(0\\)", "\\(1\\)", "\\(-1\\)", "\\(2\\)"], correct: 0 },
   { question: "Найдите решение задачи Коши: \\(y'^4 - y^3 y'' = 1,\\; y(0)=1,\\; y'(0)=0 \\implies y(1)=?\\)", options: ["\\(1/\\sqrt{5}\\)", "\\(0\\)", "\\(-1\\)", "\\(2\\)"], correct: 0 },

@@ -1,7 +1,7 @@
 // Вопросы для раздела "Ряды и последовательности"
 
 // Легкие вопросы
-const easySeriesQuestions = [
+export const easySeriesQuestions = [
     {
         question:
             "Чему равен предел последовательности $a_n = \\frac{n+1}{n}$ при $n \\to \\infty$?",
@@ -383,7 +383,7 @@ const easySeriesQuestions = [
 ];
 
 // Средние вопросы
-const mediumSeriesQuestions = [
+export const mediumSeriesQuestions = [
     {
         question: "Сходится ли ряд $\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$?",
         options: [
@@ -778,7 +778,7 @@ const mediumSeriesQuestions = [
 ];
 
 // Сложные вопросы
-const hardSeriesQuestions = [
+export const hardSeriesQuestions = [
     // Ваши оригинальные 5 вопросов
     {
         question: "Сходится ли ряд $\\sum_{n=1}^{\\infty} \\frac{\\sin(n)}{n^2}$?",

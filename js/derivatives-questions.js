@@ -1,4 +1,4 @@
-const easyDerivativesQuestions = [
+export const easyDerivativesQuestions = [
     {
         question: "Найдите производную функции $f(x) = x^2$",
         options: [
@@ -296,7 +296,7 @@ const easyDerivativesQuestions = [
     { question: "Найдите производную $f(x) = e^{-x^2}$", options: ["$-2xe^{-x^2}$","$e^{-x^2}$","$-e^{-x^2}$","$2xe^{-x^2}$"], correct: 0 },
 ];
 // Средние вопросы
-const mediumDerivativesQuestions = [
+export const mediumDerivativesQuestions = [
     {
         question: "f(x) = \\(x^2 \\cdot \\sin(x)\\). Найдите f'(x)",
         options: [
@@ -850,7 +850,7 @@ const mediumDerivativesQuestions = [
 ];
 
 // Сложные вопросы
-const hardDerivativesQuestions = [
+export const hardDerivativesQuestions = [
     {
         question: "Найдите производную функции $f(x) = e^{\\sin(x^2)}$",
         options: [

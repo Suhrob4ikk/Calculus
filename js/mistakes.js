@@ -35,7 +35,7 @@ function hashQuestion(text) {
 // section    — раздел ('integrals', 'exam' и т.д.)
 // difficulty — сложность
 // userId     — id пользователя
-window._saveMistakesFromResults = async function(results, questions, section, difficulty, userId) {
+st.saveMistakesFromResults = async function(results, questions, section, difficulty, userId) {
   if (!userId || !results || results.length === 0) return
 
   for (let i = 0; i < results.length; i++) {
@@ -292,8 +292,8 @@ window._startMistakePractice = async function(subject) {
     st.isStudyMode      = false
     st.timeRemaining    = shuffled.length * 90 // 90 сек/вопрос
     showPage('testPage')
-    window._startTimer?.()
-    window._displayQuestion?.()
+    st.startTimer?.()
+    st.displayQuestion?.()
   } else {
     alert('Механизм теста недоступен. Пожалуйста, обновите страницу.')
   }

@@ -54,7 +54,7 @@ export function computeBadges(data, sections) {
 
 // ── Навигация главной ─────────────────────────────────────
 window.showHome = function() {
-  window._stopTimer?.()
+  st.stopTimer?.()
   showPage('homePage')
   renderStreakBadge()
   window.updateDailyChallengeCard?.()

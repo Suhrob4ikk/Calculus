@@ -5,6 +5,7 @@
 import { st } from './state.js'
 import { showPage, launchConfetti, playSound } from './ui.js'
 import { saveResult } from './supabase.js'
+import { QUESTIONS } from './questions.js'
 
 // ── Состояние экзамена ────────────────────────────────────
 const examSt = {
@@ -47,15 +48,9 @@ function normalizeQ(q, subject, difficulty) {
   }
 }
 
-// ── Получение вопросов из глобальных массивов ─────────────
+// ── Получение вопросов из модуля QUESTIONS ────────────────
 function getSubjectPool(subject, difficulty) {
-  // Строим имя глобального массива, например: easyIntegralsQuestions
-  const subjCap = subject.charAt(0).toUpperCase() + subject.slice(1)
-  const diffCap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
-  const key = `${difficulty}${subjCap}Questions`
-  const arr = window[key] || []
-  // probability/linalg уже нормализованы (формат B через адаптер),
-  // остальные — формат A; normalizeQ обрабатывает оба варианта.
+  const arr = QUESTIONS[subject]?.[difficulty] || []
   return arr.map(q => normalizeQ(q, subject, difficulty))
 }
 
@@ -395,7 +390,7 @@ async function finishExam(autoSubmit) {
 
   // Сохраняем ошибки в фоне
   if (st.currentUser) {
-    window._saveMistakesFromResults?.(
+    st.saveMistakesFromResults?.(
       results, examSt.questions, 'exam', examSt.format, st.currentUser.id
     )
   }

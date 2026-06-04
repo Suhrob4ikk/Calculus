@@ -3,12 +3,11 @@
 // onAuthStateChange, DOMContentLoaded, beforeunload, realtime подписки.
 
 import { st } from './state.js'
-import { supabase } from './supabase.js'
+import { supabase, updateLastSeen } from './supabase.js'
 import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner } from './ui.js'
 import { registerSW } from './pwa.js'
 import { setupSessionGuard, teardownSessionGuard } from './auth.js'
 import { clearTestState, saveTestState } from './test.js'
-import { updateLastSeen } from './supabase.js'
 
 // Подключаем все модули, которые регистрируют window.* функции
 import './daily.js'
@@ -54,12 +53,13 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           showPage('homePage')
           updateUserUI()
           loadSidebarAvatar()
+          if (localStorage.getItem('testState')) showContinueTestBanner()
           // После успешного входа запускаем канал инвайтов
           initInvitesChannel()
           // Если пришли по ссылке-приглашению дуэли — открываем страницу дуэли
-          if (window._pendingDuelCode) {
-            const code = window._pendingDuelCode
-            window._pendingDuelCode = null
+          if (st.pendingDuelCode) {
+            const code = st.pendingDuelCode
+            st.pendingDuelCode = null
             setTimeout(() => {
               window.showDuelPage?.()
               setTimeout(() => {
@@ -81,8 +81,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     st.currentUser = null
     clearTestState()
     showPage('authPage')
-    if (window._kickedOut) {
-      window._kickedOut = false
+    if (st.kickedOut) {
+      st.kickedOut = false
       setTimeout(() => {
         const errEl = document.getElementById('loginError')
         if (errEl) errEl.textContent = '⚠️ Аккаунт уже используется на другом устройстве.'
@@ -93,21 +93,21 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // ── Канал инвайтов дуэлей (глобальный) ─────────────────
 function initInvitesChannel() {
-  if (window._duelInvitesChannel) return
+  if (st.duel.invitesChannel) return
   const username = st.currentUser?.user_metadata?.username
   if (!username) {
     setTimeout(initInvitesChannel, 1000)
     return
   }
-  window._duelInvitesChannel = supabase.channel('duel-invites')
-  window._duelInvitesChannel
+  st.duel.invitesChannel = supabase.channel('duel-invites')
+  st.duel.invitesChannel
     .on('broadcast', { event: 'invite' }, ({ payload }) => {
       const myName = username.toLowerCase()
       if (payload.invitedUsername && payload.invitedUsername !== myName) return
       window.showDuelInviteBanner(payload)
     })
     .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
-      if (payload.code === window._duelCode && window._duelRole === 'host') {
+      if (payload.code === st.duel.code && st.duel.role === 'host') {
         window._duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
         setTimeout(function() {
           if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
@@ -117,16 +117,16 @@ function initInvitesChannel() {
       }
     })
     .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
-      if (payload.code === window._duelCode && window._duelRole === 'host') {
+      if (payload.code === st.duel.code && st.duel.role === 'host') {
         window._duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
       }
     })
     .subscribe(function(status) {
       if (status === 'SUBSCRIBED') {
-        window._duelInvitesChannelReady = true
+        st.duel.invitesChannelReady = true
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-        window._duelInvitesChannel = null
-        window._duelInvitesChannelReady = false
+        st.duel.invitesChannel = null
+        st.duel.invitesChannelReady = false
         setTimeout(initInvitesChannel, 2000)
       }
     })
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const duelCode = new URLSearchParams(window.location.search).get('duel')
   if (duelCode) {
     history.replaceState(null, '', window.location.pathname)
-    window._pendingDuelCode = duelCode.toUpperCase()
+    st.pendingDuelCode = duelCode.toUpperCase()
   }
 
   // Инициализируем Lucide SVG-иконки (заменяет <i data-lucide="..."> → <svg>)
@@ -206,9 +206,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Если пришли по ссылке-приглашению дуэли — открываем страницу дуэли
         updateUserUI()
         loadSidebarAvatar()
-        if (window._pendingDuelCode) {
-          const code = window._pendingDuelCode
-          window._pendingDuelCode = null
+        if (st.pendingDuelCode) {
+          const code = st.pendingDuelCode
+          st.pendingDuelCode = null
           window.showDuelPage?.()
           setTimeout(() => {
             window.showDuelTab?.('join')
@@ -217,6 +217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }, 100)
         } else {
           showPage('homePage')
+          if (localStorage.getItem('testState')) showContinueTestBanner()
         }
       } else {
         showPage('authPage')

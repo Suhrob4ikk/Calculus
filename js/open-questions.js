@@ -4,7 +4,7 @@
 ═══════════════════════════════════════════════════════════ */
 
 /* ── Лёгкий уровень (25 вопросов) ── */
-const easyDerivativesOpenQuestions = [
+export const easyDerivativesOpenQuestions = [
   { question: "Вычислите значение производной $f(x) = x^2$ в точке $x_0 = 3$.",
     options: ["$2$","$6$","$9$","$3$"], correct: 1, open: ['6'] },
   { question: "Вычислите значение производной $f(x) = x^3$ в точке $x_0 = 2$.",
@@ -60,7 +60,7 @@ const easyDerivativesOpenQuestions = [
 ];
 
 /* ── Средний уровень (25 вопросов) ── */
-const mediumDerivativesOpenQuestions = [
+export const mediumDerivativesOpenQuestions = [
   { question: "Найдите $f'(0)$, если $f(x) = \\sin(2x)$.",
     options: ["$2$","$1$","$0$","$4$"], correct: 0, open: ['2'] },
   { question: "Найдите $f'(1)$, если $f(x) = (x^2+1)^2$.",
@@ -116,7 +116,7 @@ const mediumDerivativesOpenQuestions = [
 ];
 
 /* ── Сложный уровень (25 вопросов) ── */
-const hardDerivativesOpenQuestions = [
+export const hardDerivativesOpenQuestions = [
   { question: "Найдите $f''(0)$, если $f(x) = \\ln(1+x)$.",
     options: ["$1$","$0$","$-1$","$2$"], correct: 2, open: ['-1'] },
   { question: "Найдите $f''(0)$, если $f(x) = e^{x^2}$.",

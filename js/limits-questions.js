@@ -1,7 +1,7 @@
 // ── ПРЕДЕЛЫ И НЕПРЕРЫВНОСТЬ ──────────────────────────────
 
 // Лёгкий уровень — 50 вопросов
-const easyLimitsQuestions = [
+export const easyLimitsQuestions = [
   { question: "Найдите $\\lim_{x \\to 2} (3x + 1)$", options: ["$5$","$6$","$7$","$8$"], correct: 2, open: ['7'] },
   { question: "Найдите $\\lim_{x \\to 0} 5$", options: ["$0$","$1$","$5$","$\\infty$"], correct: 2, open: ['5'] },
   { question: "Найдите $\\lim_{x \\to 3} x^2$", options: ["$6$","$8$","$9$","$12$"], correct: 2, open: ['9'] },
@@ -101,7 +101,7 @@ const easyLimitsQuestions = [
 ];
 
 // Средний уровень — 50 вопросов
-const mediumLimitsQuestions = [
+export const mediumLimitsQuestions = [
   { question: "Найдите $\\lim_{x \\to 0} \\frac{\\sin 5x}{\\sin 3x}$", options: ["$\\frac{3}{5}$","$1$","$\\frac{5}{3}$","$0$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to \\infty} \\left(\\frac{x+1}{x-1}\\right)^x$", options: ["$1$","$e$","$e^2$","$\\infty$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 0} \\frac{e^x - e^{-x}}{2x}$", options: ["$0$","$\\frac{1}{2}$","$1$","$\\infty$"], correct: 2 },
@@ -202,7 +202,7 @@ const mediumLimitsQuestions = [
 ];
 
 // Сложный уровень — 50 вопросов
-const hardLimitsQuestions = [
+export const hardLimitsQuestions = [
   { question: "Найдите $\\lim_{x \\to 0} \\frac{x - \\sin x}{x^2 \\tan x}$", options: ["$0$","$\\frac{1}{6}$","$\\frac{1}{3}$","$1$"], correct: 1 },
   { question: "Найдите $\\lim_{x \\to 0} \\frac{\\tan x - x}{x - \\sin x}$", options: ["$\\frac{1}{2}$","$1$","$2$","$\\infty$"], correct: 2 },
   { question: "Найдите $\\lim_{x \\to 0} \\left(\\frac{1}{\\sin^2 x} - \\frac{1}{x^2}\\right)$", options: ["$-\\frac{1}{3}$","$0$","$\\frac{1}{3}$","$\\infty$"], correct: 2 },

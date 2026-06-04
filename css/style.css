@@ -752,11 +752,11 @@ html:not(.dark) #desktopSidebar {
 
 .sb-nav {
   flex: 1;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 0.75rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .sb-item {
@@ -764,7 +764,7 @@ html:not(.dark) #desktopSidebar {
   align-items: center;
   gap: 0.75rem;
   width: 100%;
-  padding: 0.65rem 0.875rem;
+  padding: 0.8rem 0.875rem;
   border-radius: 10px;
   border: none;
   background: transparent;

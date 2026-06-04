@@ -1,6 +1,6 @@
 // ── Интегралы ─────────────────────────────────────────────
 
-const easyIntegralsQuestions = [
+export const easyIntegralsQuestions = [
   {
     question: "Вычислите интеграл $\\int (2x+3)^5 dx$",
     options: [
@@ -695,7 +695,7 @@ const easyIntegralsQuestions = [
   },
 ];
 // ── Интегралы (Средний уровень) ──────────────────────────
-const mediumIntegralsQuestions = [
+export const mediumIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int x \\cdot \\sqrt{x + 1}  dx\\)",
     options: [
@@ -1929,7 +1929,7 @@ const mediumIntegralsQuestions = [
 ];
 
 // ── Интегралы (Сложный уровень) ──────────────────────────
-const hardIntegralsQuestions = [
+export const hardIntegralsQuestions = [
   {
     question: "Вычислите \\(\\int x e^x  dx\\)",
     options: [

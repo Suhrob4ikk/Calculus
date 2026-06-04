@@ -1,6 +1,7 @@
 import re
+from pathlib import Path
 
-html_path = "c:/Users/Suhrob/Documents/site/Calculus/Calculus/index.html"
+html_path = Path(__file__).parent / "index.html"
 with open(html_path, 'r', encoding='utf-8') as f:
     html = f.read()
 

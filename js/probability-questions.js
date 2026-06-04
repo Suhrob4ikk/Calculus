@@ -567,7 +567,7 @@ o:['0,3944','0,8944','0,6056','0,5'],a:1,open:['0,8944']}
 
 };
 
-// ── Calculus-format adapter ──────────────────────────────
-window.easyProbabilityQuestions   = _PROB_QUESTIONS_RAW.easy.map(function(q){return{question:q.q,options:q.o,correct:q.a,open:q.open||null}})
-window.mediumProbabilityQuestions = _PROB_QUESTIONS_RAW.medium.map(function(q){return{question:q.q,options:q.o,correct:q.a,open:q.open||null}})
-window.hardProbabilityQuestions   = _PROB_QUESTIONS_RAW.hard.map(function(q){return{question:q.q,options:q.o,correct:q.a,open:q.open||null}})
+const _adapt = q => ({ question: q.q, options: q.o, correct: q.a, open: q.open || null })
+export const easyProbabilityQuestions   = _PROB_QUESTIONS_RAW.easy.map(_adapt)
+export const mediumProbabilityQuestions = _PROB_QUESTIONS_RAW.medium.map(_adapt)
+export const hardProbabilityQuestions   = _PROB_QUESTIONS_RAW.hard.map(_adapt)

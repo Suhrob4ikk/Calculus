@@ -1,11 +1,34 @@
-const CACHE = 'mathcore-v5'
+const CACHE = 'mathcore-v6'
 const ASSETS = [
   '/',
   '/index.html',
   '/css/style.css',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/badge.svg',
+  // Основные модули
   '/js/script.js',
+  '/js/state.js',
+  '/js/utils.js',
   '/js/supabase.js',
+  '/js/ui.js',
+  '/js/auth.js',
+  '/js/test.js',
+  '/js/daily.js',
+  '/js/duel.js',
+  '/js/profile.js',
+  '/js/stats.js',
+  '/js/search.js',
+  '/js/theory.js',
+  '/js/section-theory.js',
+  '/js/exam.js',
+  '/js/mistakes.js',
+  '/js/pwa.js',
   '/js/mathjax-config.js',
+  // Банки вопросов
+  '/js/questions.js',
+  '/js/open-questions.js',
   '/js/integrals-questions.js',
   '/js/derivatives-questions.js',
   '/js/series-questions.js',
@@ -13,14 +36,11 @@ const ASSETS = [
   '/js/ode-questions.js',
   '/js/probability-questions.js',
   '/js/linalg-questions.js',
-  '/js/prob-chapters.js',
+  // Теория
   '/js/calculus-chapters.js',
-  '/js/exam.js',
-  '/js/mistakes.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/badge.svg',
+  '/js/prob-chapters.js',
+  '/js/prob-theory.js',
+  // CDN (кэшируем при первом обращении через fetch)
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest',
   'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js',
@@ -138,7 +158,3 @@ self.addEventListener('notificationclick', e => {
   )
 })
 
-// ── Синхронизация в фоне ────────────────────────────────
-self.addEventListener('sync', e => {
-  if (e.tag === 'sync-results') {}
-})

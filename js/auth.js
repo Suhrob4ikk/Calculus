@@ -36,9 +36,8 @@ window.handleLogin = async function() {
   btn.textContent = 'Войти'; btn.disabled = false
   if (error) { errEl.textContent = 'Неверный email или пароль'; return }
   st.currentUser = data.user
-  // Сохраняем email в профиль (для уже существующих пользователей)
   const username = data.user.user_metadata?.username || data.user.email.split('@')[0]
-  supabase.from('profiles').upsert({ id: data.user.id, username, email }, { onConflict: 'id' })
+  supabase.from('profiles').upsert({ id: data.user.id, username, email }, { onConflict: 'id' }).then(() => {}).catch(() => {})
   updateUserUI()
   showPage('homePage')
 }
@@ -161,7 +160,7 @@ let _mySessionId = null
 function _blockNewLogin() {
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
   _sessionGuardUserId = null; _mySessionId = null
-  window._kickedOut = true
+  st.kickedOut = true
   supabase.auth.signOut()
 }
 
