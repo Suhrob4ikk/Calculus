@@ -44,7 +44,7 @@ export function showPage(pageId) {
     try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
 
-  const noNavPages = ['authPage', 'updatePasswordPage', 'testPage']
+  const noNavPages = ['authPage', 'updatePasswordPage', 'testPage', 'examPage']
   const showNav = !noNavPages.includes(pageId)
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')
@@ -122,7 +122,7 @@ export function showPage(pageId) {
   const noSidebarPages = [
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage', 'examPage'
   ]
   const showSidebar = showNav && !noSidebarPages.includes(pageId) && window.innerWidth >= 900
   document.body.classList.toggle('no-sidebar', !showSidebar)
