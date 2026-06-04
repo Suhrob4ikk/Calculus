@@ -1,4 +1,4 @@
-const CACHE = 'mathcore-v4'
+const CACHE = 'mathcore-v5'
 const ASSETS = [
   '/',
   '/index.html',
@@ -15,6 +15,8 @@ const ASSETS = [
   '/js/linalg-questions.js',
   '/js/prob-chapters.js',
   '/js/calculus-chapters.js',
+  '/js/exam.js',
+  '/js/mistakes.js',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

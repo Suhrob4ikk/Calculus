@@ -305,3 +305,65 @@ export async function getDuelHistory(userId) {
     error
   }
 }
+
+// ── Ошибки пользователя ───────────────────────────────────
+
+// Сохранить ошибку (или обновить счётчик при повторной)
+export async function saveMistake({ userId, questionHash, questionData, subject, difficulty }) {
+  // Сначала проверяем — есть ли такая ошибка
+  const { data: existing } = await supabase
+    .from('user_mistakes')
+    .select('id, mistake_count')
+    .eq('user_id', userId)
+    .eq('question_hash', questionHash)
+    .maybeSingle()
+
+  if (existing) {
+    // Обновляем счётчик и дату
+    const { error } = await supabase
+      .from('user_mistakes')
+      .update({
+        mistake_count: (existing.mistake_count || 1) + 1,
+        corrected:     false,
+        updated_at:    new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+    return { error }
+  } else {
+    // Вставляем новую запись
+    const { error } = await supabase
+      .from('user_mistakes')
+      .insert({
+        user_id:       userId,
+        question_hash: questionHash,
+        question_data: questionData,
+        subject,
+        difficulty,
+        mistake_count: 1,
+        corrected:     false,
+      })
+    return { error }
+  }
+}
+
+// Отметить ошибку как исправленную (правильный ответ)
+export async function markMistakeCorrect({ userId, questionHash }) {
+  const { error } = await supabase
+    .from('user_mistakes')
+    .update({ corrected: true, updated_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .eq('question_hash', questionHash)
+  return { error }
+}
+
+// Загрузить все активные (неисправленные) ошибки пользователя
+export async function fetchMistakes(userId) {
+  const { data, error } = await supabase
+    .from('user_mistakes')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('corrected', false)
+    .order('updated_at', { ascending: false })
+    .limit(500)
+  return { data, error }
+}

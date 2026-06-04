@@ -32,7 +32,7 @@ export function showPage(pageId) {
                  'seriesSection','limitsSection','odeSection','probabilitySection','linalgSection',
                  'probabilityTheoryPage','sectionTheoryPage','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
-                 'theoryPage']
+                 'theoryPage','examPage','mistakesPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) { el.classList.add('hidden'); el.style.display = 'none' }
@@ -87,6 +87,8 @@ export function showPage(pageId) {
     viewProfilePage:    window._viewProfileFrom === 'leaderboardPage'
       ? { label: '← Рейтинг', fn: 'showLeaderboard()' }
       : { label: '← Поиск',   fn: 'showSearchProfiles()' },
+    examPage:           { label: '← Главная',   fn: 'showHome()' },
+    mistakesPage:       { label: '← Главная',   fn: 'showHome()' },
   }
   const mbb   = document.getElementById('mobileBackBar')
   const mbbtn = document.getElementById('mobileBackBtn')
@@ -108,7 +110,8 @@ export function showPage(pageId) {
   // Подсветка активной кнопки — десктоп-шапка
   const dhMap = {
     homePage: 'dhHome', statisticsPage: 'dhStats',
-    leaderboardPage: 'dhLeader', searchProfilesPage: 'dhPeople'
+    leaderboardPage: 'dhLeader', searchProfilesPage: 'dhPeople',
+    examPage: 'dhExam', mistakesPage: 'dhMistakes'
   }
   document.querySelectorAll('#desktopNav .dh-nav-btn').forEach(b => b.classList.remove('dh-active'))
   const dhActive = dhMap[pageId]
@@ -145,6 +148,8 @@ export function showPage(pageId) {
     leaderboardPage:    'sbLeader',
     searchProfilesPage: 'sbPeople',
     viewProfilePage:    window._viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
+    examPage:           'sbExam',
+    mistakesPage:       'sbMistakes',
   }
   document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
   const sbActive = sbMap[pageId]

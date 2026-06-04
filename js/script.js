@@ -17,6 +17,8 @@ import './stats.js'
 import './duel.js'
 import './search.js'
 import './theory.js'
+import './exam.js'
+import './mistakes.js'
 
 // ── Применяем тему сразу (до DOMContentLoaded) ───────────
 ;(function() {

@@ -932,6 +932,10 @@
           Рейтинг</button>
         <button id="dhPeople" onclick="showSearchProfiles()" class="dh-nav-btn"><i data-lucide="users"></i>
           Люди</button>
+        <button id="dhExam" onclick="showExamPage()" class="dh-nav-btn"><i data-lucide="graduation-cap"></i>
+          Экзамен</button>
+        <button id="dhMistakes" onclick="showMistakesPage()" class="dh-nav-btn"><i data-lucide="target"></i>
+          Ошибки</button>
       </nav>
       <div class="dh-right">
         <button onclick="showProfile()" class="dh-user-btn">
@@ -959,6 +963,8 @@
     <button class="nav-menu-item" onclick="showLeaderboard();closeNavMenu()"><i
         data-lucide="trophy"></i>Рейтинг</button>
     <button class="nav-menu-item" onclick="showSearchProfiles();closeNavMenu()"><i data-lucide="users"></i>Люди</button>
+    <button class="nav-menu-item" onclick="showExamPage();closeNavMenu()"><i data-lucide="graduation-cap"></i>Экзамен</button>
+    <button class="nav-menu-item" onclick="showMistakesPage();closeNavMenu()"><i data-lucide="target"></i>Ошибки</button>
   </div>
 
   <!-- ── МОБИЛЬНАЯ ШАПКА (кнопка «Назад») ── -->
@@ -979,6 +985,10 @@
           data-lucide="trophy"></i><span>Рейтинг</span></button>
       <button id="sbPeople" onclick="showSearchProfiles()" class="sb-item"><i
           data-lucide="users"></i><span>Люди</span></button>
+      <button id="sbExam" onclick="showExamPage()" class="sb-item"><i
+          data-lucide="graduation-cap"></i><span>Экзамен</span></button>
+      <button id="sbMistakes" onclick="showMistakesPage()" class="sb-item"><i
+          data-lucide="target"></i><span>Ошибки</span></button>
     </nav>
     <div class="sb-bottom">
       <div class="sb-user" onclick="showProfile()">
@@ -2401,6 +2411,33 @@
         style="flex:1; padding:9px 18px; border-radius:8px; border:1px solid rgba(100,116,139,0.4); background:transparent; color:#94a3b8; cursor:pointer; font-weight:600; transition:background 0.2s;">Отказать</button>
     </div>
   </div>
+
+  <!-- ── СТРАНИЦА ЭКЗАМЕНА ── -->
+  <div id="examPage" class="hidden" style="display:none"></div>
+
+  <!-- ── СТРАНИЦА ОШИБОК ── -->
+  <div id="mistakesPage" class="hidden" style="display:none"></div>
+
+  <!-- ── CSS ДЛЯ ПЕЧАТИ СЕРТИФИКАТА ── -->
+  <style>
+    @media print {
+      /* Скрываем всё кроме сертификата */
+      body > *:not(#examPage) { display: none !important; }
+      #examPage { display: block !important; }
+      #examPage > div > *:not(.certificate-card) { display: none !important; }
+      .certificate-card {
+        position: fixed !important;
+        inset: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: 2px solid currentColor !important;
+        padding: 3rem !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+  </style>
 </body>
 
 </html>
