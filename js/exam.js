@@ -19,9 +19,9 @@ const examSt = {
 
 // ── Форматы экзамена ──────────────────────────────────────
 const FORMATS = {
-  quick:    { label: 'Быстрый',     count: 15, minutes: 20 },
-  standard: { label: 'Стандартный', count: 25, minutes: 35 },
-  full:     { label: 'Полный',      count: 40, minutes: 60 },
+  quick:    { label: 'Быстрый',     count: 10, minutes: 15 },
+  standard: { label: 'Стандартный', count: 20, minutes: 30 },
+  full:     { label: 'Полный',      count: 30, minutes: 45 },
 }
 
 // ── Разделы и их лейблы ───────────────────────────────────
@@ -108,32 +108,28 @@ function renderExamSetup() {
   const container = document.getElementById('examPage')
   if (!container) return
   container.innerHTML = `
-    <div class="page-content" style="max-width:680px;margin:0 auto;padding:2rem 1rem">
-      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;text-align:center">
+    <div class="page-content" style="max-width:960px;margin:0 auto;padding:2.5rem 1.5rem">
+      <h1 style="font-size:2.4rem;font-weight:800;margin-bottom:0.6rem;text-align:center">
         🎓 Режим экзамена
       </h1>
-      <p style="color:var(--text-sub);text-align:center;margin-bottom:2rem;font-size:0.95rem">
+      <p style="color:var(--text-sub);text-align:center;margin-bottom:2.5rem;font-size:1rem;max-width:560px;margin-left:auto;margin-right:auto">
         Вопросы из всех разделов. Строгий таймер — ответы подаются автоматически при истечении времени.
       </p>
-      <div style="display:grid;gap:1rem;margin-bottom:2rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:2rem">
         ${Object.entries(FORMATS).map(([key, f]) => `
           <div onclick="window._startExam('${key}')"
-            style="background:var(--bg-card);border:1px solid rgba(99,102,241,0.3);border-radius:16px;
-                   padding:1.5rem;cursor:pointer;transition:all 0.2s;display:flex;
-                   justify-content:space-between;align-items:center;gap:1rem"
-            onmouseenter="this.style.borderColor='rgba(99,102,241,0.7)';this.style.transform='translateY(-2px)'"
-            onmouseleave="this.style.borderColor='rgba(99,102,241,0.3)';this.style.transform='translateY(0)'">
-            <div>
-              <div style="font-size:1.2rem;font-weight:700;margin-bottom:0.25rem">${f.label}</div>
-              <div style="color:var(--text-sub);font-size:0.9rem">${f.count} вопросов · ${f.minutes} минут</div>
-            </div>
-            <div style="font-size:2rem">
-              ${{ quick: '⚡', standard: '📝', full: '🏆' }[key]}
-            </div>
+            style="background:var(--bg-card);border:1px solid rgba(99,102,241,0.3);border-radius:20px;
+                   padding:2rem 1.75rem;cursor:pointer;transition:all 0.2s;display:flex;
+                   flex-direction:column;gap:0.75rem"
+            onmouseenter="this.style.borderColor='rgba(99,102,241,0.7)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(99,102,241,0.15)'"
+            onmouseleave="this.style.borderColor='rgba(99,102,241,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;line-height:1">${{ quick: '⚡', standard: '📝', full: '🏆' }[key]}</div>
+            <div style="font-size:1.35rem;font-weight:700">${f.label}</div>
+            <div style="color:var(--text-sub);font-size:0.95rem">${f.count} вопросов · ${f.minutes} минут</div>
           </div>
         `).join('')}
       </div>
-      <button onclick="showHome()" style="width:100%;padding:0.8rem;border-radius:12px;
+      <button onclick="showHome()" style="width:100%;padding:0.9rem;border-radius:14px;
         border:1px solid rgba(100,116,139,0.4);background:transparent;color:var(--text-sub);
         cursor:pointer;font-size:0.95rem">← Назад</button>
     </div>
@@ -208,7 +204,7 @@ function renderExamActive() {
   const diffColor = { easy: '#10b981', medium: '#f59e0b', hard: '#ef4444' }[q.difficulty] || '#94a3b8'
 
   container.innerHTML = `
-    <div style="max-width:760px;margin:0 auto;padding:1rem">
+    <div style="max-width:960px;margin:0 auto;padding:1.5rem">
       <!-- Шапка экзамена -->
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;
                   flex-wrap:wrap;margin-bottom:1rem">
@@ -243,22 +239,22 @@ function renderExamActive() {
       </div>
 
       <!-- Вопрос -->
-      <div style="background:var(--bg-card);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;
-                  border:1px solid rgba(99,102,241,0.2);font-size:1.05rem;line-height:1.6">
+      <div style="background:var(--bg-card);border-radius:18px;padding:1.75rem 2rem;margin-bottom:1.5rem;
+                  border:1px solid rgba(99,102,241,0.2);font-size:1.1rem;line-height:1.7">
         ${q.question}
       </div>
 
       <!-- Варианты ответа -->
-      <div style="display:grid;gap:0.75rem;margin-bottom:1.5rem">
+      <div style="display:grid;gap:0.85rem;margin-bottom:1.75rem">
         ${q.options.map((opt, i) => {
           const selected = examSt.answers[n] === i
           return `<button onclick="window._selectExamAnswer(${i})"
-            style="text-align:left;padding:0.9rem 1.2rem;border-radius:12px;cursor:pointer;
-                   font-size:0.95rem;line-height:1.5;transition:all 0.15s;
+            style="text-align:left;padding:1.1rem 1.5rem;border-radius:14px;cursor:pointer;
+                   font-size:1rem;line-height:1.5;transition:all 0.15s;
                    background:${selected ? 'rgba(99,102,241,0.2)' : 'var(--bg-card)'};
                    border:${selected ? '2px solid #6366f1' : '1px solid rgba(100,116,139,0.25)'};
                    color:${selected ? '#a5b4fc' : 'var(--text-main)'}">
-              <span style="font-weight:700;margin-right:0.6rem;color:${selected ? '#818cf8' : 'var(--text-sub)'}">
+              <span style="font-weight:700;margin-right:0.75rem;color:${selected ? '#818cf8' : 'var(--text-sub)'}">
                 ${String.fromCharCode(65 + i)}.
               </span>${opt}
           </button>`
@@ -399,7 +395,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
   const fmtLabel = FORMATS[examSt.format]?.label || ''
 
   container.innerHTML = `
-    <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem">
+    <div class="page-content" style="max-width:960px;margin:0 auto;padding:2rem 1.5rem">
       ${autoSubmit ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.4);
         border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:1.5rem;text-align:center;
         color:#fca5a5;font-weight:600">⏱️ Время вышло — ответы поданы автоматически</div>` : ''}
