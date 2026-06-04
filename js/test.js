@@ -600,6 +600,13 @@ window.finishTest = async function () {
   window._finishInProgress = false
   if (!st.isStudyMode) clearTestState()
 
+  // Сохраняем ошибки в фоне (только для обычных тестов, не экзамен)
+  if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
+    window._saveMistakesFromResults?.(
+      results, st.currentTest, st.currentSection, st.currentDifficulty, st.currentUser.id
+    )
+  }
+
   // Сохраняем в фоне — НЕ блокируем UI (таймаут 5 сек)
   if (st.currentUser && !st.isStudyMode) {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
