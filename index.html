@@ -925,7 +925,7 @@
       <div class="dh-logo">∫ Матанализ</div>
       <nav class="dh-links">
         <button id="dhHome" onclick="showHome()" class="dh-nav-btn"><i data-lucide="home"></i> Главная</button>
-        <button id="dhDuel" onclick="showDuelModal()" class="dh-nav-btn"><i data-lucide="swords"></i> Дуэль</button>
+        <button id="dhDuel" onclick="showDuelPage()" class="dh-nav-btn"><i data-lucide="swords"></i> Дуэль</button>
         <button id="dhStats" onclick="showStatistics()" class="dh-nav-btn"><i data-lucide="bar-chart-2"></i>
           Статистика</button>
         <button id="dhLeader" onclick="showLeaderboard()" class="dh-nav-btn"><i data-lucide="trophy"></i>
@@ -955,7 +955,7 @@
   <button id="menuBtn" onclick="toggleNavMenu()" title="Меню"><i data-lucide="menu"></i></button>
   <div id="navMenu" style="display:none">
     <button class="nav-menu-item" onclick="showHome();closeNavMenu()"><i data-lucide="home"></i>Главная</button>
-    <button class="nav-menu-item" onclick="showDuelModal();closeNavMenu()"><i data-lucide="swords"></i>Дуэль</button>
+    <button class="nav-menu-item" onclick="showDuelPage();closeNavMenu()"><i data-lucide="swords"></i>Дуэль</button>
     <div class="nav-menu-divider"></div>
     <button class="nav-menu-item" onclick="showProfile();closeNavMenu()"><i data-lucide="user"></i>Профиль</button>
     <button class="nav-menu-item" onclick="showStatistics();closeNavMenu()"><i
@@ -977,7 +977,7 @@
     <div class="sb-logo">∫ Матанализ</div>
     <nav class="sb-nav">
       <button id="sbHome" onclick="showHome()" class="sb-item"><i data-lucide="home"></i><span>Главная</span></button>
-      <button id="sbDuel" onclick="showDuelModal()" class="sb-item"><i
+      <button id="sbDuel" onclick="showDuelPage()" class="sb-item"><i
           data-lucide="swords"></i><span>Дуэль</span></button>
       <button id="sbStats" onclick="showStatistics()" class="sb-item"><i
           data-lucide="bar-chart-2"></i><span>Статистика</span></button>
@@ -2182,7 +2182,7 @@
     <button onclick="showHome()" id="bnHome">
       <i data-lucide="home"></i><span>Главная</span>
     </button>
-    <button onclick="showDuelModal()" id="bnDuel">
+    <button onclick="showDuelPage()" id="bnDuel">
       <i data-lucide="swords"></i><span>Дуэль</span>
     </button>
     <button onclick="showStatistics()" id="bnStats">
@@ -2255,6 +2255,11 @@
       </div>
       <div id="dailyLeaderboardList"></div>
     </div>
+  </div>
+
+  <!-- ── Страница: Дуэль ── -->
+  <div id="duelPage" style="display:none">
+    <!-- контент будет вставлен из JS -->
   </div>
 
   <!-- ── Модал: Дуэль ── -->

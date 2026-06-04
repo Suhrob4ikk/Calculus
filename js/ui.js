@@ -32,7 +32,7 @@ export function showPage(pageId) {
                  'seriesSection','limitsSection','odeSection','probabilitySection','linalgSection',
                  'probabilityTheoryPage','sectionTheoryPage','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
-                 'theoryPage','examPage','mistakesPage']
+                 'theoryPage','examPage','mistakesPage','duelPage']
   pages.forEach(p => {
     const el = document.getElementById(p)
     if (el) { el.classList.add('hidden'); el.style.display = 'none' }
@@ -89,6 +89,7 @@ export function showPage(pageId) {
       : { label: '← Поиск',   fn: 'showSearchProfiles()' },
     examPage:           { label: '← Главная',   fn: 'showHome()' },
     mistakesPage:       { label: '← Главная',   fn: 'showHome()' },
+    duelPage:           { label: '← Главная',   fn: 'showHome()' },
   }
   const mbb   = document.getElementById('mobileBackBar')
   const mbbtn = document.getElementById('mobileBackBtn')
@@ -150,6 +151,7 @@ export function showPage(pageId) {
     viewProfilePage:    window._viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
     examPage:           'sbExam',
     mistakesPage:       'sbMistakes',
+    duelPage:           'sbDuel',
   }
   document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
   const sbActive = sbMap[pageId]

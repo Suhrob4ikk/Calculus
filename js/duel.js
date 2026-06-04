@@ -205,6 +205,8 @@ window.createDuel = async function() {
   window._duelRole   = 'host'
   window._duelMyName = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
   document.getElementById('duelCodeDisplay').textContent = window._duelCode
+  const shareWrap = document.getElementById('duelShareBtnWrap')
+  if (shareWrap) shareWrap.style.display = 'block'
   _duelSetStatus('duelCreateStatus', window._duelInvitedUsername
     ? `⏳ Ожидаем ${invited}…`
     : '⏳ Ожидаем соперника…')
@@ -347,7 +349,11 @@ function _beginDuelCountdown() {
     else {
       clearInterval(iv)
       window._duelCountdownInterval = null
-      document.getElementById('duelModal').style.display = 'none'
+      // Скрываем как модал, так и страницу дуэли (если открыта)
+      const duelModal = document.getElementById('duelModal')
+      if (duelModal) duelModal.style.display = 'none'
+      const duelPageEl = document.getElementById('duelPage')
+      if (duelPageEl) { duelPageEl.style.display = 'none'; duelPageEl.classList.add('hidden') }
       _beginDuelTest()
     }
   }, 1000)
@@ -564,3 +570,165 @@ function _showDuelResults() {
   modal.style.display = 'flex'
 }
 window._showDuelResults = _showDuelResults
+
+// ── Поделиться приглашением ───────────────────────────────
+window._shareDuelInvite = function(code) {
+  const url  = `https://mathcore-app.vercel.app/?duel=${code}`
+  const text = `Вызываю тебя на дуэль по математике! Код: ${code}\n${url}`
+  if (navigator.share) {
+    navigator.share({ title: 'MathCore Дуэль', text, url }).catch(() => {})
+  } else {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('Ссылка скопирована!'))
+      .catch(() => prompt('Скопируй ссылку:', url))
+  }
+}
+
+// ── Дуэль как страница ────────────────────────────────────
+// Рендерит UI дуэли прямо в #duelPage (без модального окна).
+// Все game-функции (joinDuel, createDuel, _beginDuelCountdown и т.д.)
+// продолжают работать через те же document.getElementById — они найдут
+// элементы в #duelPage, т.к. он будет виден.
+window.showDuelPage = function() {
+  // Сбрасываем состояние
+  window._duelPhase = 'idle'
+  window._duelMyScore = null; window._duelOpponentScore = null
+  window._duelCode = ''; window._duelRole = ''
+  if (window._duelCountdownInterval) { clearInterval(window._duelCountdownInterval); window._duelCountdownInterval = null }
+  if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
+
+  const container = document.getElementById('duelPage')
+  if (!container) return
+
+  container.innerHTML = `
+    <div style="padding:2rem clamp(1rem,3vw,2.5rem);max-width:600px;margin:0 auto">
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem">⚔️ Дуэль 1v1</h1>
+      <p style="color:var(--text-sub);margin-bottom:1.5rem;font-size:0.95rem">
+        Соревнуйся с другом в реальном времени. Одинаковые вопросы — кто ответит точнее?
+      </p>
+
+      <!-- Вкладки -->
+      <div id="duelTabsBar" style="display:flex;gap:6px;background:rgba(15,23,42,0.5);border-radius:10px;padding:4px;margin-bottom:1.2rem">
+        <button id="duelTabCreate" onclick="showDuelTab('create')"
+          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:rgba(139,92,246,0.8);color:white">
+          Создать
+        </button>
+        <button id="duelTabJoin" onclick="showDuelTab('join')"
+          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:#94a3b8">
+          Войти
+        </button>
+      </div>
+
+      <!-- Вкладка «Создать» -->
+      <div id="duelCreatePanel">
+        <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">
+          Поделись кодом с другом — он введёт его во вкладке «Войти».
+        </p>
+        <div style="text-align:center;margin-bottom:1rem">
+          <div id="duelCodeDisplay"
+            style="font-family:monospace;font-size:2.2rem;font-weight:700;letter-spacing:0.2em;
+                   color:#c4b5fd;background:rgba(15,23,42,0.6);border:2px dashed rgba(139,92,246,0.5);
+                   border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer"
+            onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</div>
+          <p style="color:var(--text-sub);font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
+          <div id="duelShareBtnWrap" style="margin-top:0.5rem;display:none">
+            <button onclick="window._shareDuelInvite(window._duelCode)"
+              style="padding:6px 18px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);
+                     background:rgba(139,92,246,0.12);color:#c4b5fd;cursor:pointer;font-size:0.9rem;font-weight:600">
+              📤 Пригласить
+            </button>
+          </div>
+        </div>
+
+        <!-- Раздел -->
+        <div style="margin-bottom:10px">
+          <div style="color:var(--text-sub);font-size:0.78rem;margin-bottom:5px">Раздел</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
+            <button class="duel-pick-btn active" data-sect="mixed"       onclick="setDuelSection('mixed')">Все</button>
+            <button class="duel-pick-btn" data-sect="integrals"          onclick="setDuelSection('integrals')">∫ Интегралы</button>
+            <button class="duel-pick-btn" data-sect="derivatives"        onclick="setDuelSection('derivatives')">f' Производные</button>
+            <button class="duel-pick-btn" data-sect="series"             onclick="setDuelSection('series')">∑ Ряды</button>
+            <button class="duel-pick-btn" data-sect="limits"             onclick="setDuelSection('limits')">lim Пределы</button>
+            <button class="duel-pick-btn" data-sect="ode"                onclick="setDuelSection('ode')">y' Дифф. уравнения</button>
+            <button class="duel-pick-btn" data-sect="probability"        onclick="setDuelSection('probability')">P Вероятность</button>
+            <button class="duel-pick-btn" data-sect="linalg"             onclick="setDuelSection('linalg')">Ax Линейная алгебра</button>
+          </div>
+        </div>
+
+        <!-- Уровень -->
+        <div style="margin-bottom:14px">
+          <div style="color:var(--text-sub);font-size:0.78rem;margin-bottom:5px">Уровень</div>
+          <div style="display:flex;gap:5px" id="duelDiffPicker">
+            <button class="duel-pick-btn" data-diff="easy"   onclick="setDuelDiff('easy')">Лёгкий</button>
+            <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
+            <button class="duel-pick-btn" data-diff="hard"   onclick="setDuelDiff('hard')">Сложный</button>
+          </div>
+        </div>
+
+        <div id="duelCreateStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">
+          Нажми кнопку чтобы создать дуэль
+        </div>
+        <input id="inviteUsernameInput" type="text" placeholder="Имя пользователя (опционально)"
+          style="width:100%;padding:8px 12px;border-radius:10px;
+                 border:1.5px solid rgba(139,92,246,0.3);
+                 background:rgba(15,23,42,0.5);color:var(--text-main);font-size:0.9rem;
+                 outline:none;margin-bottom:8px;box-sizing:border-box"
+          onblur="validateInviteUsername()">
+        <p id="inviteError" style="color:#f87171;font-size:0.75rem;margin-top:4px;display:none"></p>
+        <button onclick="createDuel()" id="duelCreateBtn"
+          style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+                 font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
+                 box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+          ⚔️ Создать дуэль
+        </button>
+      </div>
+
+      <!-- Вкладка «Войти» -->
+      <div id="duelJoinPanel" style="display:none">
+        <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
+        <input id="duelJoinInput" type="text" maxlength="6" placeholder="ABCD12"
+          style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(139,92,246,0.4);
+                 background:rgba(15,23,42,0.5);color:var(--text-main);font-size:1.5rem;font-family:monospace;
+                 letter-spacing:0.15em;text-align:center;text-transform:uppercase;
+                 margin-bottom:1rem;outline:none;box-sizing:border-box"
+          oninput="this.value=this.value.toUpperCase()">
+        <div id="duelJoinStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem"></div>
+        <button onclick="joinDuel()"
+          style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+                 font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
+                 box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+          Подключиться
+        </button>
+      </div>
+
+      <!-- Лобби (ожидание / обратный отсчёт) -->
+      <div id="duelLobby" style="display:none;text-align:center;padding:2rem 0">
+        <div style="width:44px;height:44px;border-radius:50%;border:3px solid rgba(139,92,246,0.2);
+                    border-top-color:#c4b5fd;animation:spin 0.9s linear infinite;margin:0 auto 0.75rem"></div>
+        <div id="duelLobbyMsg" style="color:var(--text-main);font-weight:600;font-size:1rem;margin-bottom:0.5rem">
+          Ожидаем соперника…
+        </div>
+        <div id="duelLobbyPlayers" style="color:var(--text-sub);font-size:0.85rem;margin-bottom:1.2rem"></div>
+        <div id="duelStartCountdown"
+          style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
+      </div>
+
+      <button onclick="showHome()" style="margin-top:1.5rem;width:100%;padding:0.9rem;border-radius:14px;
+        border:1px solid rgba(100,116,139,0.4);background:transparent;color:var(--text-sub);
+        cursor:pointer;font-size:0.95rem">← Назад</button>
+    </div>
+  `
+
+  showPage('duelPage')
+  _refreshDuelPickers()
+  window.showDuelTab('create')
+}
+
+// Алиас: showDuelModal → showDuelPage (сохраняем обратную совместимость)
+window.showDuelModal = window.showDuelPage
+
+// closeDuelModal теперь возвращает на главную
+window.closeDuelModal = function() {
+  if (window._duelChannel) { window._duelChannel.unsubscribe(); window._duelChannel = null }
+  showHome()
+}
