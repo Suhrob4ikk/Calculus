@@ -650,11 +650,11 @@ window.finishTest = async function () {
 }
 
 window.shareResult = function (correct, total, percentage) {
-  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', daily: 'Ежедневный вызов' }
+  const sectionNames = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Теория вероятностей', linalg: 'Линейная алгебра', daily: 'Ежедневный вызов' }
   const section = sectionNames[st.currentSection] || st.currentSection
   const diff = st.currentDifficulty === 'easy' ? 'Лёгкий' : st.currentDifficulty === 'medium' ? 'Средний' : 'Сложный'
   const emoji = percentage === 100 ? '🏆' : percentage >= 90 ? '🌟' : percentage >= 70 ? '✅' : percentage >= 50 ? '📚' : '💪'
-  const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://suhrob4ikk.github.io/Calculus`
+  const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://mathcore-app.vercel.app`
   const btn = document.getElementById('shareBtn')
   const orig = btn.textContent
   const onCopied = () => {

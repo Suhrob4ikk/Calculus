@@ -13,9 +13,9 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=electron&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
-![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-🌐 **[Открыть сайт](https://mathcore-app.netlify.app)**
+🌐 **[Открыть сайт](https://mathcore-app.vercel.app)**
 
 </div>
 
@@ -33,7 +33,7 @@
 
 | Платформа | Способ |
 |---|---|
-| 🌐 Браузер (любое устройство) | [mathcore-app.netlify.app](https://mathcore-app.netlify.app) |
+| 🌐 Браузер (любое устройство) | [mathcore-app.netlify.app](https://mathcore-app.vercel.app) |
 | 🖥 Windows | `npm run build` → установить `dist/MathCore Setup 1.0.0.exe` |
 | 📱 Android | Скачать APK с PWABuilder или установить через браузер |
 | 🍎 iPhone / iPad | Safari → Поделиться → На экран Домой |
@@ -70,7 +70,7 @@
 ## 🚀 Как запустить
 
 ### Веб (рекомендуется)
-Просто открой [mathcore-app.netlify.app](https://mathcore-app.netlify.app)
+Просто открой [mathcore-app.netlify.app](https://mathcore-app.vercel.app)
 
 ### Локально / десктоп
 ```bash

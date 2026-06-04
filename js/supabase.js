@@ -13,7 +13,7 @@ export async function signUp(email, password, username) {
     password,
     options: {
       data: { username },
-      emailRedirectTo: 'https://mathcore-app.netlify.app/'
+      emailRedirectTo: 'https://mathcore-app.vercel.app/'
     }
   })
   if (!error && data.user) {
