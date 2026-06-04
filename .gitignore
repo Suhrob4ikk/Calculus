@@ -5,3 +5,26 @@ node_modules/
 Thumbs.db
 GUIDE.md
 dist/
+
+# Local Netlify folder
+.netlify
+
+.vercel
+
+# Android signing — никогда не коммитить
+*.keystore
+*.jks
+
+# Android build artifacts
+*.apk
+*.aab
+*.idsig
+
+# Generated files
+Readme.html
+
+# IDE
+.idea/
+
+# Claude Code
+.claude/
