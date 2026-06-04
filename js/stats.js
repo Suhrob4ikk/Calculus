@@ -9,7 +9,15 @@ window.showStatistics = async function() {
   showPage('statisticsPage')
   if (!st.currentUser) return
 
-  const { data: allData } = await getUserResults(st.currentUser.id)
+  let allData = null
+  try {
+    const result = await getUserResults(st.currentUser.id)
+    if (result.error) throw result.error
+    allData = result.data
+  } catch (_) {
+    document.getElementById('testsHistory').innerHTML = '<p class="text-red-400 text-center py-4">Ошибка загрузки. Проверьте соединение.</p>'
+    return
+  }
   const data = (allData || []).filter(r => r.section !== 'duel')
   if (!data || data.length === 0) {
     document.getElementById('testsHistory').innerHTML = '<p class="text-gray-500 text-center py-4">История пуста</p>'
@@ -187,7 +195,15 @@ window.showLeaderboard = async function() {
   const sectionFilter = document.getElementById('lbSection')?.value   || null
   const diffFilter    = document.getElementById('lbDifficulty')?.value || null
 
-  const { data } = await getLeaderboard(sectionFilter, diffFilter)
+  let data = null
+  try {
+    const result = await getLeaderboard(sectionFilter, diffFilter)
+    if (result.error) throw result.error
+    data = result.data
+  } catch (_) {
+    container.innerHTML = '<p class="text-center py-8 text-red-400">Ошибка загрузки. Проверьте соединение.</p>'
+    return
+  }
   if (!data || data.length === 0) {
     container.innerHTML = '<p class="text-center py-8" style="color:var(--text-muted)">Пока нет результатов</p>'
     return

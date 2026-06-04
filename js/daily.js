@@ -121,7 +121,15 @@ window.showDailyLeaderboard = async function() {
   const list = document.getElementById('dailyLeaderboardList')
   if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#94a3b8">Загрузка...</p>'
   const today = getDailyDate()
-  const { data } = await getDailyLeaderboard(today)
+  let data = null
+  try {
+    const result = await getDailyLeaderboard(today)
+    if (result.error) throw result.error
+    data = result.data
+  } catch (_) {
+    if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#f87171">Ошибка загрузки. Проверьте соединение.</p>'
+    return
+  }
   if (!data || data.length === 0) {
     if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#94a3b8">Пока никто не прошёл сегодняшний вызов</p>'
     return

@@ -178,10 +178,24 @@ export function setupSessionGuard(userId, onApproved = null) {
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
   let _firstSync = true
   _sessionChannel = supabase.channel(`user-active:${userId}`)
+
+  // Fallback: if presence.sync never fires within 8s, approve anyway
+  let _guardTimeout = null
+  if (onApproved) {
+    _guardTimeout = setTimeout(() => {
+      if (_firstSync) {
+        _firstSync = false
+        _sessionChannel?.track({ session_id: _mySessionId, joined_at: Date.now() }).catch(() => {})
+        onApproved()
+      }
+    }, 8000)
+  }
+
   _sessionChannel
     .on('presence', { event: 'sync' }, async () => {
       if (!_firstSync) return
       _firstSync = false
+      if (_guardTimeout) { clearTimeout(_guardTimeout); _guardTimeout = null }
       const state = _sessionChannel.presenceState()
       const others = Object.values(state).flat().filter(p => p.session_id !== _mySessionId)
       if (others.length > 0) {
