@@ -217,6 +217,12 @@ window.startProbabilityTest = function (d, study = false) {
   const pool = d === 'easy' ? easyProbabilityQuestions : d === 'medium' ? mediumProbabilityQuestions : hardProbabilityQuestions
   startTest('probability', d, pool, 'probabilityCount', 'probabilitySection')
 }
+window.startLinalgTest = function (d, study = false) {
+  st.isStudyMode = study; st.testMode = 'closed'
+  /* global easyLinalgQuestions, mediumLinalgQuestions, hardLinalgQuestions */
+  const pool = d === 'easy' ? easyLinalgQuestions : d === 'medium' ? mediumLinalgQuestions : hardLinalgQuestions
+  startTest('linalg', d, pool, 'linalgCount', 'linalgSection')
+}
 window.restartTest = function () {
   if (st.currentSection === 'daily') { window.showHome(); return }
   if (st.currentSection === 'duel') { window.showDuelModal(); return }
@@ -225,7 +231,8 @@ window.restartTest = function () {
       : st.currentSection === 'series' ? window.startSeriesTest
         : st.currentSection === 'derivatives' ? window.startDerivativesTest
           : st.currentSection === 'probability' ? window.startProbabilityTest
-            : window.startIntegralsTest
+            : st.currentSection === 'linalg' ? window.startLinalgTest
+              : window.startIntegralsTest
   fn(st.currentDifficulty)
 }
 

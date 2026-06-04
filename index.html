@@ -1170,6 +1170,19 @@
             Начать тест
           </button>
         </div>
+
+        <!-- Линейная алгебра -->
+        <div class="glass-panel rounded-3xl p-8 border border-indigo-500/20
+                  shadow-[0_0_30px_rgba(99,102,241,0.08)] card-hover cursor-pointer
+                  flex flex-col items-center text-center" onclick="showSection('linalg')">
+          <div class="text-6xl mb-5 text-indigo-400" style="font-family:'Playfair Display',serif">Ax</div>
+          <h2 class="text-2xl font-bold text-slate-100 mb-3">Линейная алгебра</h2>
+          <p class="text-slate-400 text-sm mb-6 flex-1">Матрицы, определители, системы уравнений, собственные значения</p>
+          <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl
+                       font-semibold transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+            Начать тест
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1675,6 +1688,81 @@
     </div>
   </div>
 
+  <!-- ── РАЗДЕЛ ЛИНЕЙНАЯ АЛГЕБРА ── -->
+  <div id="linalgSection" class="page-content hidden" style="display:none">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto fade-in">
+        <button onclick="showHome()" class="page-back-btn mb-6 text-indigo-400 hover:text-indigo-300 flex items-center">←
+          Назад к разделам</button>
+        <div class="section-panel">
+          <h2 class="section-heading">Линейная алгебра</h2>
+          <div class="theory-entry-card" onclick="showTheory('linalg')" style="border-left:3px solid #6366f1">
+            <div class="theory-entry-left">
+              <span style="font-size:1.4rem;font-weight:700;line-height:1;color:#6366f1">Ax</span>
+              <div>
+                <div class="theory-entry-title">Теория — 8 шагов</div>
+                <div class="theory-entry-sub">Матрицы, определители, системы и собственные значения</div>
+              </div>
+            </div>
+            <span class="theory-entry-arrow">→</span>
+          </div>
+          <div class="mb-6">
+            <label for="linalgCount" class="section-count-label">Количество вопросов:</label>
+            <select id="linalgCount" class="ml-2 border rounded-lg px-2 py-1">
+              <option value="10">10 вопросов</option>
+              <option value="15" selected>15 вопросов</option>
+              <option value="20">20 вопросов</option>
+              <option value="25">25 вопросов</option>
+            </select>
+          </div>
+          <div class="diff-grid">
+            <div class="diff-card diff-easy" onclick="startLinalgTest('easy')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-easy">Лёгкий</span>
+                  <span class="diff-pts">×1 балл</span>
+                </div>
+                <div class="diff-sub">Базовые операции с матрицами</div>
+              </div>
+              <button class="diff-btn diff-btn-easy" onclick="event.stopPropagation();startLinalgTest('easy')">Начать →</button>
+            </div>
+            <div class="diff-card diff-medium" onclick="startLinalgTest('medium')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-medium">Средний</span>
+                  <span class="diff-pts">×2 балла</span>
+                </div>
+                <div class="diff-sub">Определители, системы, обратные матрицы</div>
+              </div>
+              <button class="diff-btn diff-btn-medium" onclick="event.stopPropagation();startLinalgTest('medium')">Начать →</button>
+            </div>
+            <div class="diff-card diff-hard" onclick="startLinalgTest('hard')">
+              <div class="diff-tier-bar"></div>
+              <div class="diff-content">
+                <div class="diff-header">
+                  <span class="diff-label diff-label-hard">Сложный</span>
+                  <span class="diff-pts">×3 балла</span>
+                </div>
+                <div class="diff-sub">Собственные значения, диагонализация</div>
+              </div>
+              <button class="diff-btn diff-btn-hard" onclick="event.stopPropagation();startLinalgTest('hard')">Начать →</button>
+            </div>
+          </div>
+          <div class="study-mode-wrap">
+            <div class="study-mode-label">Режим изучения — без таймера, результат не сохраняется</div>
+            <div class="study-mode-btns">
+              <button onclick="startLinalgTest('easy', true)" class="study-btn study-btn-easy">Лёгкий</button>
+              <button onclick="startLinalgTest('medium', true)" class="study-btn study-btn-medium">Средний</button>
+              <button onclick="startLinalgTest('hard', true)" class="study-btn study-btn-hard">Сложный</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── ТЕОРИЯ ВЕРОЯТНОСТЕЙ — БРАУЗЕР ГЛАВ ── -->
   <div id="probabilityTheoryPage" class="page-content hidden" style="display:none">
     <div class="prob-theory-layout">
@@ -1840,6 +1928,13 @@
               </div>
               <div class="progress-bar">
                 <div id="probabilityProgressBar" class="progress-fill" style="width:0%;background:#38bdf8"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span>Линейная алгебра</span><span id="linalgProgress">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div id="linalgProgressBar" class="progress-fill" style="width:0%;background:#6366f1"></div>
               </div>
             </div>
           </div>
@@ -2098,6 +2193,7 @@
   <script defer src="js/limits-questions.js"></script>
   <script defer src="js/ode-questions.js"></script>
   <script defer src="js/probability-questions.js"></script>
+  <script defer src="js/linalg-questions.js"></script>
   <script defer src="js/prob-chapters.js"></script>
   <script defer src="js/prob-theory.js"></script>
   <script defer src="js/calculus-chapters.js"></script>
@@ -2200,6 +2296,7 @@
             <button class="duel-pick-btn" data-sect="ode" onclick="setDuelSection('ode')">y' Дифф. уравнения</button>
             <button class="duel-pick-btn" data-sect="probability" onclick="setDuelSection('probability')">P
               Вероятность</button>
+            <button class="duel-pick-btn" data-sect="linalg" onclick="setDuelSection('linalg')">Ax Линейная алгебра</button>
           </div>
         </div>
         <!-- Уровень -->

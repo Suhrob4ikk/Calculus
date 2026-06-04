@@ -15,14 +15,16 @@ function getDailyQuestions() {
   /* global easyIntegralsQuestions, mediumIntegralsQuestions, easyDerivativesQuestions,
             mediumDerivativesQuestions, easySeriesQuestions, mediumSeriesQuestions,
             easyLimitsQuestions, mediumLimitsQuestions, easyODEQuestions, mediumODEQuestions,
-            easyProbabilityQuestions, mediumProbabilityQuestions */
+            easyProbabilityQuestions, mediumProbabilityQuestions,
+            easyLinalgQuestions, mediumLinalgQuestions */
   const all = [
     ...easyIntegralsQuestions,    ...mediumIntegralsQuestions,
     ...easyDerivativesQuestions,  ...mediumDerivativesQuestions,
     ...easySeriesQuestions,       ...mediumSeriesQuestions,
     ...easyLimitsQuestions,       ...mediumLimitsQuestions,
     ...easyODEQuestions,          ...mediumODEQuestions,
-    ...easyProbabilityQuestions,  ...mediumProbabilityQuestions
+    ...easyProbabilityQuestions,  ...mediumProbabilityQuestions,
+    ...easyLinalgQuestions,       ...mediumLinalgQuestions
   ].flat().filter(q => q && q.options && q.options.length === 4)
 
   for (let i = all.length - 1; i > 0; i--) {

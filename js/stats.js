@@ -35,7 +35,7 @@ window.showStatistics = async function() {
   document.getElementById('averageScore').textContent  = avg + '%'
 
   // Прогресс-бары по разделам
-  const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability']
+  const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
   sections.forEach(sec => {
     const sd  = data.filter(r => r.section === sec)
     const sav = sd.length ? Math.round(sd.reduce((s, r) => s + r.score, 0) / sd.length) : 0
@@ -180,8 +180,8 @@ function formatLastSeen(iso) {
 }
 
 const DIFF_POINTS   = { easy: 1, medium: 2, hard: 3 }
-const SECTION_ICONS  = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim', ode: "y'", probability: 'P' }
-const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6', ode: '#f97316', probability: '#38bdf8' }
+const SECTION_ICONS  = { integrals: '∫', derivatives: "f'(x)", series: '∑', limits: 'lim', ode: "y'", probability: 'P', linalg: 'Ax' }
+const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6', ode: '#f97316', probability: '#38bdf8', linalg: '#6366f1' }
 
 function calcRatingPoints(row) {
   return (row.correct_answers || 0) * (DIFF_POINTS[row.difficulty] || 1)

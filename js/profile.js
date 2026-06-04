@@ -68,7 +68,8 @@ window.showSection = function(section) {
     series:      'seriesSection',
     limits:      'limitsSection',
     ode:         'odeSection',
-    probability: 'probabilitySection'
+    probability: 'probabilitySection',
+    linalg:      'linalgSection'
   }
   showPage(map[section])
 }
@@ -241,11 +242,11 @@ window.showProfile = async function() {
     return
   }
 
-  const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability']
+  const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
   const { badges, total, best, avg } = computeBadges(data, sections)
   const level = getUserLevel(total, avg)
 
-  const sectionLabels = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Теор. вероятностей' }
+  const sectionLabels = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Теор. вероятностей', linalg: 'Линейная алгебра' }
   const bestResults = sections.map(sec => {
     const secData = data.filter(r => r.section === sec)
     if (!secData.length) return null

@@ -29,8 +29,8 @@ export function showPage(pageId) {
   if (ls) ls.remove()
 
   const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','limitsSection','odeSection','probabilitySection','probabilityTheoryPage',
-                 'sectionTheoryPage','testPage','resultsPage','statisticsPage',
+                 'seriesSection','limitsSection','odeSection','probabilitySection','linalgSection',
+                 'probabilityTheoryPage','sectionTheoryPage','testPage','resultsPage','statisticsPage',
                  'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
                  'theoryPage']
   pages.forEach(p => {
@@ -74,6 +74,7 @@ export function showPage(pageId) {
     limitsSection:      { label: '← Разделы',   fn: 'showHome()' },
     odeSection:         { label: '← Разделы',   fn: 'showHome()' },
     probabilitySection:   { label: '← Разделы', fn: 'showHome()' },
+    linalgSection:        { label: '← Разделы', fn: 'showHome()' },
     probabilityTheoryPage:{ label: '← Раздел',  fn: 'window.backFromProbTheory()' },
     sectionTheoryPage:    { label: '← Раздел',  fn: 'window.backFromSectionTheory()' },
     theoryPage:         { label: '← К разделу', fn: 'backFromTheory()' },
@@ -116,7 +117,7 @@ export function showPage(pageId) {
   // Страницы с фокусом на контенте — боковая панель скрыта
   const noSidebarPages = [
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
-    'odeSection', 'probabilitySection', 'probabilityTheoryPage',
+    'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
     'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
   ]
   const showSidebar = showNav && !noSidebarPages.includes(pageId) && window.innerWidth >= 900
@@ -135,6 +136,7 @@ export function showPage(pageId) {
     seriesSection:      'sbHome',
     limitsSection:      'sbHome',
     odeSection:         'sbHome',
+    linalgSection:      'sbHome',
     theoryPage:         'sbHome',
     sectionTheoryPage:  'sbHome',
     testPage:           'sbHome',
@@ -180,7 +182,7 @@ window.addEventListener('resize', () => {
   const noNavPages = ['authPage', 'updatePasswordPage']
   const noSidebarPages = [
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
-    'odeSection', 'probabilitySection', 'probabilityTheoryPage',
+    'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
     'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
   ]
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)

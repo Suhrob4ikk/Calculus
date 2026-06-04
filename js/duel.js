@@ -57,13 +57,14 @@ function getDuelQuestions(code, section = 'mixed', difficulty = 'medium') {
     limits:      { easy: easyLimitsQuestions,        medium: mediumLimitsQuestions,        hard: hardLimitsQuestions        },
     ode:         { easy: easyODEQuestions,           medium: mediumODEQuestions,           hard: hardODEQuestions           },
     probability: { easy: easyProbabilityQuestions,   medium: mediumProbabilityQuestions,   hard: hardProbabilityQuestions   },
+    linalg:      { easy: easyLinalgQuestions,        medium: mediumLinalgQuestions,        hard: hardLinalgQuestions        },
   }
   const seed = hashCode(code + '_duel_' + section + '_' + difficulty)
   const rng  = mulberry32(seed)
   let pool
 
   if (section === 'mixed') {
-    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability']
+    const sects = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
     const selected = []
     for (const s of sects) {
       const sPool = (poolsBySection[s]?.[difficulty] || []).flat().filter(q => q && q.options && q.options.length === 4)
