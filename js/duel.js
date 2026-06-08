@@ -229,7 +229,9 @@ window.createDuel = async function() {
         payload: {
           invitedUsername: st.duel.invitedUsername,
           code: st.duel.code,
-          inviterName: st.duel.myName
+          inviterName: st.duel.myName,
+          section: st.duel.section,
+          difficulty: st.duel.diff
         }
       });
     }
@@ -438,6 +440,8 @@ window.acceptDuelInvite = function() {
     }
   })
 
+  if (payload.section)    st.duel.section = payload.section
+  if (payload.difficulty) st.duel.diff    = payload.difficulty
   st.duel.pendingInvite = null
   window.joinDuelByCode(payload.code)
 }
