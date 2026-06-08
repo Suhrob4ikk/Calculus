@@ -49,6 +49,7 @@ window.handleRegister = async function() {
   const errEl    = document.getElementById('registerError')
   errEl.textContent = ''
   if (!username || !email || !password) { errEl.textContent = 'Заполните все поля'; return }
+  if (!/^[a-zA-Z0-9_а-яА-ЯёЁ]{3,20}$/.test(username)) { errEl.textContent = 'Имя: 3–20 символов, только буквы, цифры и _'; return }
   if (password.length < 8) { errEl.textContent = 'Пароль минимум 8 символов'; return }
   if (!/\d/.test(password)) { errEl.textContent = 'Пароль должен содержать хотя бы одну цифру'; return }
   if (!/[a-zA-Z]/.test(password)) { errEl.textContent = 'Пароль должен содержать хотя бы одну букву'; return }

@@ -8,7 +8,15 @@ const SUPABASE_KEY = 'sb_publishable_l-Ync04W2cC3hcveYjL0rA_tG0iSvsv'
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 // ── Авторизация ───────────────────────────────────────────
+export async function checkUsernameAvailable(username) {
+  const { data } = await supabase.from('profiles').select('id').ilike('username', username).maybeSingle()
+  return !data
+}
+
 export async function signUp(email, password, username) {
+  const taken = !(await checkUsernameAvailable(username))
+  if (taken) return { data: null, error: { message: 'Это имя пользователя уже занято' } }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -26,9 +34,9 @@ export async function signUp(email, password, username) {
 export async function getEmailByUsername(username) {
   try {
     const { data } = await withTimeout(
-      supabase.from('profiles').select('email').ilike('username', username).single()
+      supabase.rpc('get_email_by_username', { p_username: username })
     )
-    return data?.email || null
+    return data || null
   } catch {
     return null
   }
