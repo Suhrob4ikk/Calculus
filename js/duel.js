@@ -353,7 +353,7 @@ function _beginDuelTest() {
     if (el) el.style.display = 'none'
   })
   document.getElementById('totalQuestions').textContent = questions.length
-  const sectNames = { mixed: 'Все разделы', integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения' }
+  const sectNames = { mixed: 'Все разделы', integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность', linalg: 'Линейная алгебра' }
   const diffName  = st.duel.diff === 'easy' ? 'Лёгкий' : st.duel.diff === 'hard' ? 'Сложный' : 'Средний'
   document.getElementById('testTitle').textContent       = `Дуэль: ${sectNames[st.duel.section] || 'Смешанный'}`
   document.getElementById('difficultyLabel').textContent = `Уровень: ${diffName} · Дуэль 1v1`

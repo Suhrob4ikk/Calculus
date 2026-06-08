@@ -107,6 +107,7 @@ export async function getLeaderboard(section = null, difficulty = null) {
     let query = supabase
       .from('test_results')
       .select('username, section, difficulty, score, correct_answers, total_questions, created_at')
+      .not('section', 'ilike', 'duel%')
       .order('score', { ascending: false })
       .limit(1000)
     if (section) query = query.eq('section', section)
@@ -121,8 +122,7 @@ export async function getLeaderboard(section = null, difficulty = null) {
 
 // ── Аватар ────────────────────────────────────────────────
 export async function uploadAvatar(userId, file) {
-  const ext = file.name.split('.').pop()
-  const path = `${userId}/avatar.${ext}`
+  const path = `${userId}.jpg`
   try {
     const { error } = await withTimeout(
       supabase.storage.from('avatars').upload(path, file, { upsert: true }),
@@ -242,19 +242,20 @@ export async function updateLastSeen(userId) {
 export async function getUserRankData(username) {
   try {
     const { data, error } = await withTimeout(
-      supabase.from('test_results').select('username, score')
-        .not('section', 'eq', 'duel').limit(2000)
+      supabase.from('test_results').select('username, score, correct_answers, difficulty')
+        .not('section', 'ilike', 'duel%').limit(2000)
     )
     if (error || !data) return { rank: null, total: null, error }
-    const avgByUser = {}
+    const DIFF_XP = { easy: 10, medium: 20, hard: 30 }
+    const xpByUser = {}
     data.forEach(r => {
-      if (!avgByUser[r.username]) avgByUser[r.username] = { sum: 0, count: 0 }
-      avgByUser[r.username].sum += r.score
-      avgByUser[r.username].count++
+      const pts = (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 10)
+        + (r.score === 100 ? 25 : 0)
+      xpByUser[r.username] = (xpByUser[r.username] || 0) + pts
     })
-    const rankings = Object.entries(avgByUser)
-      .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
-      .sort((a, b) => b.avg - a.avg)
+    const rankings = Object.entries(xpByUser)
+      .map(([name, xp]) => ({ name, xp }))
+      .sort((a, b) => b.xp - a.xp)
     const rank = rankings.findIndex(r => r.name === username) + 1
     return { rank: rank || null, total: rankings.length, rankings, error: null }
   } catch (e) {
@@ -298,7 +299,7 @@ export async function getDuelHistory(userId) {
   try {
     const res = await withTimeout(
       supabase.from('test_results').select('*')
-        .eq('user_id', userId).eq('section', 'duel')
+        .eq('user_id', userId).ilike('section', 'duel:%')
         .order('created_at', { ascending: false }).limit(20)
     )
     mine = res.data; error = res.error
@@ -309,22 +310,22 @@ export async function getDuelHistory(userId) {
 
   if (!mine || mine.length === 0) return { data: [], error }
 
-  // Fetch opponent records sharing the same duel codes in one query
-  const codes = mine.map(d => d.difficulty)
+  // Fetch opponent records sharing the same duel section (which encodes the unique code)
+  const duelSections = mine.map(d => d.section)
   const { data: theirs } = await supabase
     .from('test_results')
-    .select('username, score, correct_answers, total_questions, difficulty')
-    .eq('section', 'duel')
-    .in('difficulty', codes)
+    .select('username, score, correct_answers, total_questions, section, difficulty')
+    .ilike('section', 'duel:%')
+    .in('section', duelSections)
     .neq('user_id', userId)
 
   const oppMap = {}
-  theirs?.forEach(d => { oppMap[d.difficulty] = d })
+  theirs?.forEach(d => { oppMap[d.section] = d })
 
   // Auto-delete orphaned records (no opponent) older than 1 hour — fire-and-forget
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
   const orphanIds = mine
-    .filter(d => !oppMap[d.difficulty] && d.created_at < oneHourAgo)
+    .filter(d => !oppMap[d.section] && d.created_at < oneHourAgo)
     .map(d => d.id)
   if (orphanIds.length > 0) {
     supabase.from('test_results').delete().in('id', orphanIds).then(() => {})
@@ -333,9 +334,9 @@ export async function getDuelHistory(userId) {
   // Only return completed duels (opponent found) — skip "Ожидание" entries
   return {
     data: mine
-      .filter(d => oppMap[d.difficulty])
+      .filter(d => oppMap[d.section])
       .map(d => {
-        const opp = oppMap[d.difficulty]
+        const opp = oppMap[d.section]
         const result = d.score > opp.score ? 'win'
           : d.score < opp.score ? 'loss'
           : 'draw'

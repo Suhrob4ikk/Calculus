@@ -150,10 +150,7 @@ window.showProfile = async function() {
     if (avatarDeleteBtn) avatarDeleteBtn.onclick = async () => {
       if (!st.currentUser) return
       if (!confirm('Удалить фото профиля?')) return
-      const { data: files } = await supabase.storage.from('avatars').list(st.currentUser.id)
-      if (files && files.length > 0) {
-        await supabase.storage.from('avatars').remove(files.map(f => `${st.currentUser.id}/${f.name}`))
-      }
+      await supabase.storage.from('avatars').remove([`${st.currentUser.id}.jpg`])
       await supabase.from('profiles').update({ avatar_url: null }).eq('id', st.currentUser.id)
       const img    = document.getElementById('profileAvatarImg')
       const letter = document.getElementById('profileAvatar')
@@ -229,7 +226,7 @@ window.showProfile = async function() {
   const profileContent     = document.getElementById('profileContent')
   if (!profileContent) return
 
-  const data = (allData || []).filter(r => r.section !== 'duel')
+  const data = (allData || []).filter(r => !r.section?.startsWith('duel'))
 
   if (!data || data.length === 0) {
     profileContent.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Пройдите тесты чтобы увидеть статистику!</p><div id="duelHistoryBlock"></div>'
@@ -270,13 +267,13 @@ window.showProfile = async function() {
             ${rankings.slice(0, 3).map((r, i) => `
               <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
                 <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
-                <span class="text-blue-400 font-semibold">${r.avg}%</span>
+                <span class="text-blue-400 font-semibold">${r.xp} XP</span>
               </div>`).join('')}
             ${myRank > 3 ? `
               <div class="text-center text-slate-500 text-xs">...</div>
               <div class="flex justify-between items-center p-2 rounded-lg font-bold" style="background:rgba(59,130,246,0.12)">
                 <span class="text-slate-200">#${myRank} ${username}</span>
-                <span class="text-blue-400 font-semibold">${avg}%</span>
+                <span class="text-blue-400 font-semibold">${rankings.find(r => r.name === username)?.xp || 0} XP</span>
               </div>` : ''}
           </div>
         </div>`
@@ -314,6 +311,7 @@ window.showProfile = async function() {
     </div>
 
     <button id="installAppBtnProfile" onclick="installApp()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(139,92,246,0.2));border:1px solid rgba(59,130,246,0.35);color:#93c5fd;padding:8px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-top:1rem;"><i data-lucide="download" style="width:14px;height:14px"></i> Установить приложение</button>
+    <a href="mathcore.apk" download style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.2));border:1px solid rgba(34,197,94,0.35);color:#86efac;padding:8px 14px;border-radius:9999px;font-size:0.85rem;font-weight:600;margin-top:0.75rem;text-decoration:none"><i data-lucide="smartphone" style="width:14px;height:14px"></i> Скачать APK для Android</a>
 
     <h3 class="text-lg font-bold text-slate-200 mb-3">Статистика</h3>
     <div class="grid grid-cols-3 gap-3 mb-4">
@@ -348,6 +346,8 @@ window.showProfile = async function() {
     </div>
     <div id="duelHistoryBlock"></div>
   `
+
+  if (window.lucide) window.lucide.createIcons({ el: profileContent })
 
   // История дуэлей — подгружаем отдельно
   const block = document.getElementById('duelHistoryBlock')

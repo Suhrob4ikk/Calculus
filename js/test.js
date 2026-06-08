@@ -158,6 +158,10 @@ if (questions.length === 0) {
   st.userAnswers = new Array(st.currentTest.length).fill(null)
   st.testStartTime = Date.now()
   document.getElementById(sectionEl).classList.add('hidden')
+  // Reset finish button state from any previous test
+  st.finishInProgress = false
+  const _fb = document.getElementById('finishBtn')
+  if (_fb) { _fb.disabled = false; _fb.innerHTML = '<i data-lucide="check-circle-2"></i> Завершить тест' }
   showPage('testPage')
   document.getElementById('totalQuestions').textContent = st.currentTest.length
   const sectionName = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Вероятность', linalg: 'Линейная алгебра' }[section] || section
@@ -243,9 +247,9 @@ window.selectAnswer = function (answerIndex) {
 
 // ── Открытый ответ ────────────────────────────────────────
 function normalizeAnswer(s) {
-  return String(s).trim().toLowerCase()
-    .replace(/\s+/g, '')
-    .replace(/,/g, '.')
+  let r = String(s).trim().toLowerCase().replace(/\s+/g, '').replace(/,/g, '.')
+  if (r.includes('.')) r = r.replace(/0+$/, '').replace(/\.$/, '')
+  return r
 }
 function checkOpenCorrect(userInput, openAnswers) {
   if (!openAnswers || openAnswers.length === 0) return false
@@ -526,20 +530,17 @@ window.finishTest = async function () {
     if (st.duel.phase !== undefined) st.duel.phase = 'finished'
     st.duel.myScore = percentage
     st.duel.broadcastScore?.(percentage)
+    // Fire-and-forget — do NOT await, otherwise the UI freezes for the network round-trip
     if (st.currentUser) {
-      try {
-        await saveResult({
-          userId: st.currentUser.id,
-          username: st.duel.myName,
-          section: 'duel',
-          difficulty: st.duel.code,
-          score: percentage,
-          correctAnswers: correct,
-          totalQuestions: st.currentTest.length
-        })
-      } catch (e) {
-        console.warn('Duel saveResult failed:', e)
-      }
+      saveResult({
+        userId: st.currentUser.id,
+        username: st.duel.myName,
+        section: 'duel:' + st.duel.code,
+        difficulty: st.duel.diff,
+        score: percentage,
+        correctAnswers: correct,
+        totalQuestions: st.currentTest.length
+      }).catch(e => console.warn('Duel saveResult failed:', e))
     }
     const xpGained = correct * (XP_TABLE[st.duel.diff] || 20)
     const newXP = addXP(xpGained)

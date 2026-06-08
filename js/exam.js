@@ -3,7 +3,7 @@
 // сертификат с оценкой по результату.
 
 import { st } from './state.js'
-import { showPage, launchConfetti, playSound } from './ui.js'
+import { showPage, launchConfetti, playSound, addXP, showXPToast } from './ui.js'
 import { saveResult } from './supabase.js'
 import { QUESTIONS } from './questions.js'
 
@@ -393,6 +393,14 @@ async function finishExam(autoSubmit) {
     st.saveMistakesFromResults?.(
       results, examSt.questions, 'exam', examSt.format, st.currentUser.id
     )
+  }
+
+  // XP за экзамен
+  if (st.currentUser) {
+    const examXpTable = { quick: 20, standard: 20, full: 30 }
+    const xpGained = correct * (examXpTable[examSt.format] || 20) + (pct === 100 ? 25 : 0)
+    const newXP = addXP(xpGained)
+    setTimeout(() => showXPToast(xpGained, newXP), 700)
   }
 
   // Спецэффекты
