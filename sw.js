@@ -70,6 +70,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
   if (e.request.url.includes('supabase.co')) return
+  if (e.request.url.endsWith('.apk')) return
 
   const url = e.request.url
   const isCDN = url.includes('cdn.tailwindcss.com') || url.includes('unpkg.com') ||
