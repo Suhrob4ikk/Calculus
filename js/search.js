@@ -1,7 +1,7 @@
 import { st } from './state.js'
-import { showPage } from './ui.js'
+import { showPage, getXPLevel } from './ui.js'
 import { searchProfiles, getProfileByUsername } from './supabase.js'
-import { getUserLevel, computeBadges } from './profile.js'
+import { computeBadges } from './profile.js'
 
 function formatLastSeenVP(iso) {
   if (!iso) return null
@@ -99,7 +99,12 @@ window.viewProfile = async function(username) {
   const total = data.length
   const best  = total ? Math.max(...data.map(r => r.score)) : 0
   const avg   = total ? Math.round(data.reduce((s,r) => s+r.score, 0) / total) : 0
-  const level = getUserLevel(total, avg)
+  // Вычисляем XP из результатов, затем определяем уровень через единую систему (= Android)
+  const totalXp = data.reduce((sum, r) => {
+    const mult = r.difficulty === 'easy' ? 10 : r.difficulty === 'hard' ? 30 : 20
+    return sum + (r.correct_answers || 0) * mult + (r.score === 100 ? 25 : 0)
+  }, 0)
+  const level = getXPLevel(totalXp)
 
   // Используем computeBadges (как в собственном профиле) для единообразия
   const { badges } = computeBadges(data, ['integrals','derivatives','series','limits','ode'])
