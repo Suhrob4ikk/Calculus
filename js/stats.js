@@ -210,29 +210,49 @@ window.showLeaderboard = async function() {
     return
   }
 
-  // Лучшая попытка на каждую комбинацию секция+сложность по пользователю
-  const userMap = {}
-  data.forEach(r => {
-    const name = r.username || 'Аноним'
-    if (!userMap[name]) userMap[name] = {}
-    const key  = `${r.section}_${r.difficulty}`
-    const pts  = calcRatingPoints(r)
-    const prev = userMap[name][key]
-    if (!prev || pts > calcRatingPoints(prev) || (pts === calcRatingPoints(prev) && (r.score || 0) > (prev.score || 0))) {
-      userMap[name][key] = r
-    }
-  })
+  const rankings = []
 
-  const rankings = Object.entries(userMap).map(([username, comboMap]) => {
-    const combos    = Object.values(comboMap)
-    const totalPts  = combos.reduce((s, r) => s + calcRatingPoints(r), 0)
-    const totalCorr = combos.reduce((s, r) => s + (r.correct_answers || 0), 0)
-    const bestPct   = Math.max(...combos.map(r => r.score || 0))
-    const sections  = [...new Set(combos.map(r => r.section))]
-    const maxDiff   = combos.some(r => r.difficulty === 'hard')   ? 'hard'
-                    : combos.some(r => r.difficulty === 'medium') ? 'medium' : 'easy'
-    return { username, totalPts, totalCorr, bestPct, sections, maxDiff, combos: combos.length }
-  }).sort((a, b) =>
+  if (!sectionFilter && !diffFilter) {
+    // Глобальный рейтинг: суммируем все тесты
+    const userMap = {}
+    data.forEach(r => {
+      const name = r.username || 'Аноним'
+      if (!userMap[name]) userMap[name] = []
+      userMap[name].push(r)
+    })
+
+    Object.entries(userMap).forEach(([username, entries]) => {
+      const totalPts = entries.reduce((s, r) => s + calcRatingPoints(r) + (r.section === 'daily' ? 50 : 0), 0)
+      const totalCorr = entries.reduce((s, r) => s + (r.correct_answers || 0), 0)
+      const bestPct = Math.max(...entries.map(r => r.score || 0))
+      const sections = [...new Set(entries.map(r => r.section))]
+      const maxDiff = entries.some(r => r.difficulty === 'hard') ? 'hard'
+                    : entries.some(r => r.difficulty === 'medium') ? 'medium' : 'easy'
+      rankings.push({ username, totalPts, totalCorr, bestPct, sections, maxDiff, totalTests: entries.length })
+    })
+  } else {
+    // Рейтинг по разделу: лучшая попытка пользователя
+    const userMap = {}
+    data.forEach(r => {
+      const name = r.username || 'Аноним'
+      const pts = calcRatingPoints(r)
+      const prev = userMap[name]
+      if (!prev || pts > calcRatingPoints(prev) || (pts === calcRatingPoints(prev) && (r.score || 0) > (prev.score || 0))) {
+        userMap[name] = r
+      }
+    })
+
+    Object.entries(userMap).forEach(([username, bestRow]) => {
+      const totalPts = calcRatingPoints(bestRow)
+      const totalCorr = bestRow.correct_answers || 0
+      const bestPct = bestRow.score || 0
+      const sections = [bestRow.section]
+      const maxDiff = bestRow.difficulty
+      rankings.push({ username, totalPts, totalCorr, bestPct, sections, maxDiff, totalTests: 1 })
+    })
+  }
+
+  rankings.sort((a, b) =>
     b.totalPts  - a.totalPts  ||
     b.totalCorr - a.totalCorr ||
     b.bestPct   - a.bestPct
@@ -281,7 +301,7 @@ window.showLeaderboard = async function() {
         </div>
         <div style="margin-top:2px;display:flex;flex-wrap:wrap;gap:3px">${sectionBadges}</div>
         <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          <span>${r.combos} комбо · ${r.totalCorr} отв.</span>
+          <span>${r.totalTests} тестов · ${r.totalCorr} отв.</span>
           ${lastSeen ? `<span style="opacity:0.8">${lastSeen}</span>` : ''}
         </div>
       </div>

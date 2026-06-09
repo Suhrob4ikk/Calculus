@@ -250,7 +250,7 @@ export async function updateLastSeen(userId) {
 export async function getUserRankData(username) {
   try {
     const { data, error } = await withTimeout(
-      supabase.from('test_results').select('username, score, correct_answers, difficulty')
+      supabase.from('test_results').select('username, score, correct_answers, difficulty, section')
         .not('section', 'ilike', 'duel%').limit(2000)
     )
     if (error || !data) return { rank: null, total: null, error }
@@ -259,6 +259,7 @@ export async function getUserRankData(username) {
     data.forEach(r => {
       const pts = (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 10)
         + (r.score === 100 ? 25 : 0)
+        + (r.section === 'daily' ? 50 : 0)
       xpByUser[r.username] = (xpByUser[r.username] || 0) + pts
     })
     const rankings = Object.entries(xpByUser)
