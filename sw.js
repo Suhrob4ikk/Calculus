@@ -1,5 +1,19 @@
-const CACHE = 'mathcore-v6'
-const ASSETS = [
+// ── [РЕК-9] Service Worker v7 ──────────────────────────────────────────────
+// Стратегии кэширования:
+//   navigate   → network-first + offline fallback на /index.html из кэша
+//   CDN        → cache-first   (лазурное кэширование при первом обращении)
+//   JS / CSS   → network-first + cache fallback (всегда свежий код)
+//   остальное  → stale-while-revalidate (кэш сразу, сеть обновляет фоново)
+//   supabase   → bypass (API не кэшируем никогда)
+//
+// ВАЖНО: CDN-URL больше НЕ передаются в c.addAll() при установке.
+// Если хотя бы один URL вернёт ошибку — вся установка SW падала (v6 баг).
+// Теперь SHELL содержит только same-origin файлы; CDN кэшируется лениво.
+
+const CACHE = 'mathcore-v7'
+
+// Только same-origin статика — install гарантированно успешен
+const SHELL = [
   '/',
   '/index.html',
   '/css/style.css',
@@ -40,89 +54,127 @@ const ASSETS = [
   '/js/calculus-chapters.js',
   '/js/prob-chapters.js',
   '/js/prob-theory.js',
-  // CDN (кэшируем при первом обращении через fetch)
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/lucide@latest',
-  'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap',
 ]
 
-// ── Установка: кэшируем все статические ресурсы ────────────
+// ── Установка: кэшируем только same-origin SHELL ────────────────────────────
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => c.addAll(ASSETS))
+      .then(c => c.addAll(SHELL))
       .then(() => self.skipWaiting())
   )
 })
 
-// ── Активация: удаляем старые кэши ────────────────────────
+// ── Активация: удаляем старые кэши ──────────────────────────────────────────
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
       .then(() => self.clients.claim())
   )
 })
 
-// ── Fetch: JS/CSS — сначала сеть (всегда свежий код),
-//           остальное — сначала кэш (быстрее) ───────────────
+// ── Fetch ────────────────────────────────────────────────────────────────────
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
-  if (e.request.url.includes('supabase.co')) return
-  if (e.request.url.endsWith('.apk')) return
+  if (e.request.url.includes('supabase.co')) return   // API — всегда сеть
+  if (e.request.url.endsWith('.apk')) return           // APK — без кэша
 
   const url = e.request.url
-  const isCDN = url.includes('cdn.tailwindcss.com') || url.includes('unpkg.com') ||
-                url.includes('cdn.jsdelivr.net') || url.includes('fonts.googleapis.com') ||
-                url.includes('fonts.gstatic.com')
 
-  // CDN ресурсы — cache-first (меняются редко)
+  // 1. Навигация (page load) — network-first, при офлайне отдаём /index.html
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+          return res
+        })
+        .catch(() =>
+          caches.match(e.request)
+            .then(hit => hit || caches.match('/'))
+            .then(hit => hit || caches.match('/index.html'))
+        )
+    )
+    return
+  }
+
+  // 2. CDN-ресурсы — cache-first, лениво кэшируем при первом обращении.
+  //    Включает MathJax, KaTeX, Chart.js, Tailwind, Lucide, Google Fonts.
+  const isCDN = (
+    url.includes('cdn.tailwindcss.com') ||
+    url.includes('unpkg.com') ||
+    url.includes('cdn.jsdelivr.net') ||
+    url.includes('cdn.mathjax.org') ||
+    url.includes('cdnjs.cloudflare.com') ||
+    url.includes('fonts.googleapis.com') ||
+    url.includes('fonts.gstatic.com')
+  )
   if (isCDN) {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached
-        return fetch(e.request).then(res => {
-          if (res && res.status === 200) {
-            const clone = res.clone()
-            caches.open(CACHE).then(c => c.put(e.request, clone))
-          }
-          return res
-        })
+        return fetch(e.request)
+          .then(res => {
+            if (res && res.status === 200) {
+              caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+            }
+            return res
+          })
+          .catch(() =>
+            // Офлайн и не закэшировано — вернём пустой ответ вместо сетевой ошибки.
+            // Формулы не отобразятся, но приложение не упадёт.
+            new Response('', { status: 503, statusText: 'Offline – CDN not cached' })
+          )
       })
     )
     return
   }
 
-  const isCode = url.endsWith('.js') || url.endsWith('.css')
-
-  if (isCode) {
+  // 3. Same-origin JS / CSS — network-first (всегда свежий код), кэш как запасной
+  if (url.endsWith('.js') || url.endsWith('.css')) {
     e.respondWith(
-      fetch(e.request).then(res => {
-        if (res && res.status === 200 && res.type === 'basic') {
-          const resClone = res.clone()
-          caches.open(CACHE).then(c => c.put(e.request, resClone))
-        }
-        return res
-      }).catch(() => caches.match(e.request))
-    )
-  } else {
-    e.respondWith(
-      caches.match(e.request).then(cached => {
-        const network = fetch(e.request).then(res => {
+      fetch(e.request)
+        .then(res => {
           if (res && res.status === 200 && res.type === 'basic') {
-            const resClone = res.clone()
-            caches.open(CACHE).then(c => c.put(e.request, resClone))
+            caches.open(CACHE).then(c => c.put(e.request, res.clone()))
           }
           return res
         })
-        return cached || network
-      })
+        .catch(() => caches.match(e.request))
     )
+    return
   }
+
+  // 4. Всё остальное (иконки, изображения, прочее) — stale-while-revalidate:
+  //    сразу возвращаем кэш, в фоне обновляем. Если кэша нет — ждём сети.
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) {
+        // Фоновое обновление кэша (не блокирует ответ)
+        fetch(e.request)
+          .then(res => {
+            if (res && res.status === 200 && res.type === 'basic') {
+              caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+            }
+          })
+          .catch(() => {})
+        return cached
+      }
+      // Ничего в кэше — идём в сеть
+      return fetch(e.request).then(res => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+        }
+        return res
+      })
+    })
+  )
 })
 
-// ── Push-уведомление ─────────────────────────────────────
+// ── Push-уведомление ─────────────────────────────────────────────────────────
 self.addEventListener('push', e => {
   let payload = { title: 'MathCore', body: 'Не забудь позаниматься сегодня! 📚', url: '/' }
   try { if (e.data) payload = { ...payload, ...e.data.json() } } catch {}
@@ -143,7 +195,7 @@ self.addEventListener('push', e => {
   )
 })
 
-// ── Клик по уведомлению ──────────────────────────────────
+// ── Клик по уведомлению ──────────────────────────────────────────────────────
 self.addEventListener('notificationclick', e => {
   e.notification.close()
   if (e.action === 'dismiss') return
@@ -158,4 +210,3 @@ self.addEventListener('notificationclick', e => {
     })
   )
 })
-

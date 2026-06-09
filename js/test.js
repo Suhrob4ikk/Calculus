@@ -1,8 +1,28 @@
 import { st } from './state.js'
 import { showPage, playSound, XP_TABLE, addXP, showXPToast, launchConfetti } from './ui.js'
-import { saveResult } from './supabase.js'
+import { submitTestResult } from './supabase.js'
 import { getDailyDate } from './utils.js'
 import { QUESTIONS, OPEN_QUESTIONS } from './questions.js'
+
+// ── [КРИТ-2] Build answers array for Edge Function ────────
+// Sends option TEXT (not index) so the server can validate independently
+// of how options were shuffled on the client.
+function buildAnswers(questions, userAnswers, testMode = '') {
+  return questions.map((q, i) => {
+    const raw = userAnswers[i]
+    let selected = ''
+    if (raw !== null && raw !== undefined) {
+      // testMode==='open' means the whole test uses text answers (matches st.testMode);
+      // q.type==='open' handles per-question type from JSON pool
+      if (testMode === 'open' || q.type === 'open') {
+        selected = String(raw)
+      } else {
+        selected = q.options?.[raw] ?? ''
+      }
+    }
+    return { questionText: q.question, selected }
+  })
+}
 
 // ── Таймер ────────────────────────────────────────────────
 export function startTimer() {
@@ -461,16 +481,14 @@ async function _saveDailyAndExit(correct, percentage) {
   if (st.currentUser) {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
     try {
-      await saveResult({
-        userId: st.currentUser.id,
-        username,
-        section: 'daily',
+      await submitTestResult({
+        answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+        section:    'daily',
         difficulty: 'medium',
-        score: percentage,
-        correctAnswers: correct,
-        totalQuestions: st.currentTest.length
+        username,
+        dailyDate:  getDailyDate()
       })
-    } catch (e) { console.warn('daily saveResult failed:', e) }
+    } catch (e) { console.warn('daily submitTestResult failed:', e) }
   }
   st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0
   window.showHome()
@@ -532,15 +550,15 @@ window.finishTest = async function () {
     st.duel.broadcastScore?.(percentage)
     // Fire-and-forget — do NOT await, otherwise the UI freezes for the network round-trip
     if (st.currentUser) {
-      saveResult({
-        userId: st.currentUser.id,
-        username: st.duel.myName,
-        section: 'duel:' + st.duel.code,
-        difficulty: st.duel.diff,
-        score: percentage,
-        correctAnswers: correct,
-        totalQuestions: st.currentTest.length
-      }).catch(e => console.warn('Duel saveResult failed:', e))
+      // Fire-and-forget — server validates answers and writes to DB
+      submitTestResult({
+        answers:        buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+        section:        'duel:' + st.duel.code,
+        difficulty:     st.duel.diff,
+        username:       st.duel.myName,
+        duelSection:    st.duel.section,
+        duelDifficulty: st.duel.diff
+      }).catch(e => console.warn('Duel submitTestResult failed:', e))
     }
     const xpGained = correct * (XP_TABLE[st.duel.diff] || 20)
     const newXP = addXP(xpGained)
@@ -594,19 +612,17 @@ window.finishTest = async function () {
   }
 
   // Сохраняем в фоне — НЕ блокируем UI (таймаут 5 сек)
-  if (st.currentUser && !st.isStudyMode) {
+  // Exam section is handled separately by exam.js and skipped here.
+  if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
-    const savePromise = saveResult({
-      userId: st.currentUser.id,
-      username,
-      section: st.currentSection,
+    const savePromise = submitTestResult({
+      answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+      section:    st.currentSection,
       difficulty: st.currentDifficulty,
-      score: percentage,
-      correctAnswers: correct,
-      totalQuestions: st.currentTest.length
+      username
     })
     const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
-    Promise.race([savePromise, timeout]).catch(e => console.warn('saveResult:', e))
+    Promise.race([savePromise, timeout]).catch(e => console.warn('submitTestResult:', e))
   }
   st.isStudyMode = false
   // testMode is NOT reset here so restartTest preserves the mode

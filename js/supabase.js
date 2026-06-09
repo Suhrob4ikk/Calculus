@@ -78,6 +78,50 @@ export async function saveResult({ userId, username, section, difficulty, score,
   }
 }
 
+/**
+ * [КРИТ-2] Validates answers server-side via Edge Function and writes to test_results.
+ * The server computes correct_answers and score from the canonical question pool —
+ * preventing any client-side score manipulation.
+ *
+ * @param answers    Array of {questionText, selected} — option TEXT, not index
+ * @param section    DB section value ("limits", "daily", "duel:CODE", …)
+ * @param difficulty "easy" | "medium" | "hard"
+ * @param username   Supabase profile username
+ * @param dailyDate  "YYYY-MM-DD" — required when section === "daily"
+ * @param duelSection   Original duel subject ("mixed", "limits", …) — required for duels
+ * @param duelDifficulty Duel difficulty — required for duels
+ * @returns { correctAnswers, totalQuestions, score, xpGained } from server
+ */
+export async function submitTestResult({
+  answers, section, difficulty, username,
+  dailyDate = null, duelSection = null, duelDifficulty = null
+}) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
+  if (!token) throw new Error('Not authenticated')
+
+  const body = { answers, section, difficulty, username }
+  if (dailyDate)     body.dailyDate     = dailyDate
+  if (duelSection)   body.duelSection   = duelSection
+  if (duelDifficulty) body.duelDifficulty = duelDifficulty
+
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/submit-test`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+      'apikey':        SUPABASE_KEY,
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `Edge Function error HTTP ${res.status}`)
+  }
+  return res.json()  // { correctAnswers, totalQuestions, score, xpGained }
+}
+
 export async function getUserResults(userId) {
   try {
     const { data, error } = await withTimeout(
@@ -117,7 +161,7 @@ export async function getLeaderboard(section = null, difficulty = null) {
       .select('username, section, difficulty, score, correct_answers, total_questions, created_at')
       .not('section', 'ilike', 'duel%')
       .order('score', { ascending: false })
-      .limit(1000)
+      .limit(2000)
     if (section) query = query.eq('section', section)
     if (difficulty) query = query.eq('difficulty', difficulty)
     const { data, error } = await withTimeout(query)
@@ -233,7 +277,7 @@ export async function getDailyLeaderboard(date) {
     .lt('created_at', endUTC)
     .order('score', { ascending: false })
     .order('created_at', { ascending: true })
-    .limit(50)
+    .limit(100)
   return { data, error }
 }
 
@@ -257,7 +301,7 @@ export async function getUserRankData(username) {
     const DIFF_XP = { easy: 10, medium: 20, hard: 30 }
     const xpByUser = {}
     data.forEach(r => {
-      const pts = (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 10)
+      const pts = (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 20)
         + (r.score === 100 ? 25 : 0)
         + (r.section === 'daily' ? 50 : 0)
       xpByUser[r.username] = (xpByUser[r.username] || 0) + pts
@@ -299,6 +343,30 @@ export async function getProfileByUsername(username) {
   } catch (e) {
     console.warn('getProfileByUsername error:', e.message)
     return { profile: null, results: [] }
+  }
+}
+
+// ── XP пользователя (для синхронизации из БД) ────────────
+// Считает суммарный XP пользователя по всем его результатам (кроме дуэлей).
+// Используется ui.js::syncXpFromDB при каждом входе.
+export async function getUserXpTotal(userId) {
+  try {
+    const { data } = await withTimeout(
+      supabase.from('test_results')
+        .select('score, correct_answers, difficulty, section')
+        .eq('user_id', userId)
+        .not('section', 'ilike', 'duel%')
+        .limit(2000)
+    )
+    if (!data) return 0
+    const DIFF_XP = { easy: 10, medium: 20, hard: 30 }
+    return data.reduce((sum, r) =>
+      sum
+      + (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 20)
+      + (r.score === 100 ? 25 : 0)
+      + (r.section === 'daily' ? 50 : 0), 0)
+  } catch {
+    return 0
   }
 }
 

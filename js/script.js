@@ -4,7 +4,8 @@
 
 import { st } from './state.js'
 import { supabase, updateLastSeen } from './supabase.js'
-import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner } from './ui.js'
+import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner, syncXpFromDB } from './ui.js'
+import { escapeHtml } from './utils.js'
 import { registerSW } from './pwa.js'
 import { setupSessionGuard, teardownSessionGuard } from './auth.js'
 import { clearTestState, saveTestState } from './test.js'
@@ -52,6 +53,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
           updateUserUI()
+          syncXpFromDB(st.currentUser.id)
           loadSidebarAvatar()
           if (localStorage.getItem('testState')) showContinueTestBanner()
           // После успешного входа запускаем канал инвайтов
@@ -108,7 +110,7 @@ function initInvitesChannel() {
     })
     .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
       if (payload.code === st.duel.code && st.duel.role === 'host') {
-        window._duelSetStatus('duelCreateStatus', '❌ ' + payload.declinedBy + ' отказался от дуэли')
+        window._duelSetStatus('duelCreateStatus', '❌ ' + escapeHtml(payload.declinedBy) + ' отказался от дуэли')
         setTimeout(function() {
           if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
             window._duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
@@ -118,7 +120,7 @@ function initInvitesChannel() {
     })
     .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
       if (payload.code === st.duel.code && st.duel.role === 'host') {
-        window._duelSetStatus('duelCreateStatus', '✅ ' + payload.acceptedBy + ' принял приглашение! Ожидаем входа…')
+        window._duelSetStatus('duelCreateStatus', '✅ ' + escapeHtml(payload.acceptedBy) + ' принял приглашение! Ожидаем входа…')
       }
     })
     .subscribe(function(status) {
@@ -200,6 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateLastSeen(st.currentUser.id)
         setupSessionGuard(st.currentUser.id)
         renderStreakBadge()
+        syncXpFromDB(st.currentUser.id)
         // Запускаем канал инвайтов после восстановления сессии
         initInvitesChannel()
         window.updateDailyChallengeCard?.()

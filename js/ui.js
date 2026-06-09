@@ -1,4 +1,5 @@
 import { st } from './state.js'
+import { getUserXpTotal } from './supabase.js'
 
 // ── Тема ─────────────────────────────────────────────────
 export function applyTheme(dark) {
@@ -307,6 +308,17 @@ export function addXP(amount) {
   const xp = getXP() + amount
   localStorage.setItem('totalXP', String(xp))
   return xp
+}
+
+// Синхронизирует XP из Supabase в localStorage при входе/восстановлении сессии.
+// Устраняет расхождение между платформами (БАГ-5): после sync getXP() вернёт актуальное значение.
+export async function syncXpFromDB(userId) {
+  try {
+    const total = await getUserXpTotal(userId)
+    if (total > 0) localStorage.setItem('totalXP', String(total))
+  } catch (e) {
+    console.warn('syncXpFromDB:', e)
+  }
 }
 export function getXPLevel(xp) {
   const levels = [

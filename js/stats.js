@@ -1,6 +1,7 @@
 import { st } from './state.js'
 import { showPage } from './ui.js'
 import { getUserResults, getLeaderboard, getProfilesByUsernames, deleteResultById, deleteAllUserResults } from './supabase.js'
+import { escapeHtml } from './utils.js'
 
 // ── Статистика ────────────────────────────────────────────
 let _chartScore = null, _chartSection = null
@@ -184,7 +185,7 @@ const SECTION_ICONS  = { integrals: '∫', derivatives: "f'(x)", series: '∑', 
 const SECTION_COLORS = { integrals: '#3b82f6', derivatives: '#10b981', series: '#f43f5e', limits: '#8b5cf6', ode: '#f97316', probability: '#38bdf8', linalg: '#6366f1' }
 
 function calcRatingPoints(row) {
-  return (row.correct_answers || 0) * (DIFF_POINTS[row.difficulty] || 10)
+  return (row.correct_answers || 0) * (DIFF_POINTS[row.difficulty] || 20)
     + (row.score === 100 ? 25 : 0)
 }
 
@@ -275,9 +276,10 @@ window.showLeaderboard = async function() {
     const prof = profMap[r.username] || {}
 
     // Аватарка: фото или инициал
+    const avatarBorder = i===0?'rgba(234,179,8,0.5)':i===1?'rgba(148,163,184,0.4)':i===2?'rgba(249,115,22,0.4)':'var(--border)'
     const avatarHtml = prof.avatar_url
-      ? `<img src="${prof.avatar_url}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid ${i===0?'rgba(234,179,8,0.5)':i===1?'rgba(148,163,184,0.4)':i===2?'rgba(249,115,22,0.4)':'var(--border)'}">`
-      : `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:1rem;flex-shrink:0;border:2px solid ${i===0?'rgba(234,179,8,0.5)':i===1?'rgba(148,163,184,0.4)':i===2?'rgba(249,115,22,0.4)':'var(--border)'}">${r.username[0]?.toUpperCase() || '?'}</div>`
+      ? `<img src="${escapeHtml(prof.avatar_url)}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid ${avatarBorder}">`
+      : `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:1rem;flex-shrink:0;border:2px solid ${avatarBorder}">${escapeHtml(r.username[0]?.toUpperCase() || '?')}</div>`
 
     const lastSeen = formatLastSeen(prof.last_seen_at)
 
@@ -291,12 +293,12 @@ window.showLeaderboard = async function() {
       : ''
     const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
     return `
-    <div onclick="viewProfile('${r.username}')" style="${rowStyle};border-radius:0.875rem;padding:0.75rem 0.875rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.625rem;cursor:pointer">
+    <div data-username="${escapeHtml(r.username)}" onclick="viewProfile(this.dataset.username)" style="${rowStyle};border-radius:0.875rem;padding:0.75rem 0.875rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.625rem;cursor:pointer">
       <span style="font-size:1.5rem;width:1.75rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.85rem;color:var(--text-muted)">${i+1}</span>`}</span>
       ${avatarHtml}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-          ${r.username}${crown}
+          ${escapeHtml(r.username)}${crown}
           <span style="font-size:0.7rem;font-weight:500;color:var(--text-muted);margin-left:2px">${diffLabel[r.maxDiff]}</span>
         </div>
         <div style="margin-top:2px;display:flex;flex-wrap:wrap;gap:3px">${sectionBadges}</div>

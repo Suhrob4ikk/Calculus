@@ -1,6 +1,17 @@
 // ── Утилиты ────────────────────────────────────────────────
 export const VAPID_PUBLIC_KEY = 'BK4YExjUo4WGl1ClfiIIFHn9TMnAfL2dmrVF-lU3kW-qbvR6FVSXBcSaDvEOenGeBFh7CyC2wo-oaGR0JBVbwiE'
 
+// Экранирует спецсимволы HTML для безопасной вставки в innerHTML.
+// Использовать везде, где данные пользователя (username и т.п.) попадают в HTML-шаблоны.
+export function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export function urlBase64ToUint8Array(b64) {
   const pad = '='.repeat((4 - b64.length % 4) % 4)
   const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'))

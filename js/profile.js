@@ -1,5 +1,5 @@
 import { st } from './state.js'
-import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns } from './ui.js'
+import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns, getXPLevel, getXP } from './ui.js'
 import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getUserRankData, getDuelHistory } from './supabase.js'
 
 // ── Аватар в сайдбаре (загружается при старте) ────────────
@@ -19,14 +19,8 @@ export async function loadSidebarAvatar() {
   }
 }
 
-// ── Уровни пользователя ───────────────────────────────────
-export function getUserLevel(total, avg) {
-  if (total >= 20 && avg >= 85) return { name: 'Эксперт',      icon: '🏆', color: '#f59e0b', next: null,                                        progress: 100 }
-  if (total >= 10 && avg >= 75) return { name: 'Продвинутый',  icon: '🔥', color: '#3b82f6', next: 'Эксперт (20 тестов, ср. 85%)',             progress: Math.min(100, Math.round((total/20)*100)) }
-  if (total >= 5  && avg >= 60) return { name: 'Практик',      icon: '📚', color: '#10b981', next: 'Продвинутый (10 тестов, ср. 75%)',         progress: Math.min(100, Math.round((total/10)*100)) }
-  if (total >= 1)               return { name: 'Студент',      icon: '🎓', color: '#8b5cf6', next: 'Практик (5 тестов, ср. 60%)',              progress: Math.min(100, Math.round((total/5)*100))  }
-  return                               { name: 'Новичок',      icon: '⭐', color: '#6b7280', next: 'Студент (1 тест)',                          progress: 0 }
-}
+// getUserLevel удалена — используется getXPLevel из ui.js (единая система, совместима с Android).
+// Если где-то ещё импортируется getUserLevel, замените на getXPLevel(getXP()) из ui.js.
 
 // ── Достижения ────────────────────────────────────────────
 export function computeBadges(data, sections) {
@@ -241,7 +235,16 @@ window.showProfile = async function() {
 
   const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
   const { badges, total, best, avg } = computeBadges(data, sections)
-  const level = getUserLevel(total, avg)
+  // [БАГ-6] Единая XP-система уровней — совпадает с Android и шапкой сайта.
+  const xp  = getXP()
+  const lvl = getXPLevel(xp)
+  const level = {
+    ...lvl,
+    next: lvl.nextAt != null ? `${lvl.nextAt} XP` : null,
+    progress: lvl.nextAt != null
+      ? Math.min(100, Math.round((xp - lvl.min) / (lvl.nextAt - lvl.min) * 100))
+      : 100
+  }
 
   const sectionLabels = { integrals: 'Интегралы', derivatives: 'Производные', series: 'Ряды', limits: 'Пределы', ode: 'Дифф. уравнения', probability: 'Теор. вероятностей', linalg: 'Линейная алгебра' }
   const bestResults = sections.map(sec => {

@@ -1,7 +1,7 @@
 import { st } from './state.js'
 import { showPage, renderStreakBadge } from './ui.js'
-import { getDailyLeaderboard, getTodayDailyResult } from './supabase.js'
-import { getDailyDate, hashCode, mulberry32 } from './utils.js'
+import { getDailyLeaderboard, getTodayDailyResult, getProfilesByUsernames } from './supabase.js'
+import { getDailyDate, hashCode, mulberry32, escapeHtml } from './utils.js'
 import { startTimer, displayQuestion, clearTestState } from './test.js'
 import { QUESTIONS } from './questions.js'
 
@@ -129,22 +129,45 @@ window.showDailyLeaderboard = async function() {
     if (list) list.innerHTML = '<p style="text-align:center;padding:1rem;color:#94a3b8">Пока никто не прошёл сегодняшний вызов</p>'
     return
   }
-  const seen = new Set()
-  const unique = data.filter(r => { if (seen.has(r.username)) return false; seen.add(r.username); return true })
+
+  // Дедупликация: явно берём лучший score на пользователя (аналог Android DailyLeaderboardDialog)
+  const userBest = {}
+  data.forEach(r => {
+    if (!userBest[r.username] || r.score > userBest[r.username].score) {
+      userBest[r.username] = r
+    }
+  })
+  const unique = Object.values(userBest).sort((a, b) =>
+    b.score - a.score || a.created_at.localeCompare(b.created_at)
+  )
+
+  // Загружаем аватары одним запросом (аналогично stats.js и Android)
+  const profiles = await getProfilesByUsernames(unique.map(r => r.username))
+  const profMap = {}
+  profiles.forEach(p => { profMap[p.username] = p })
+
   const medals = ['🥇','🥈','🥉']
   const myName = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0]
   const isDark = document.documentElement.classList.contains('dark')
   const rowBg     = isDark ? 'rgba(30,41,59,0.7)' : 'rgba(241,245,249,0.9)'
   const textMain  = isDark ? '#e2e8f0' : '#1e293b'
   const myText    = isDark ? '#93c5fd' : '#1d4ed8'
-  if (list) list.innerHTML = unique.map((r, i) => `
+  if (list) list.innerHTML = unique.map((r, i) => {
+    const prof = profMap[r.username] || {}
+    const isMe = r.username === myName
+    const avatarHtml = prof.avatar_url
+      ? `<img src="${escapeHtml(prof.avatar_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+      : `<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:0.75rem;flex-shrink:0">${escapeHtml(r.username[0]?.toUpperCase() || '?')}</div>`
+    return `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:6px;
-      ${r.username === myName
+      ${isMe
         ? 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35)'
         : `background:${rowBg}`}">
       <span style="font-size:1.25rem;width:2rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="color:#64748b;font-size:0.9rem">${i+1}</span>`}</span>
-      <span style="flex:1;font-weight:${r.username===myName?700:500};color:${r.username===myName?myText:textMain}">${r.username}</span>
+      ${avatarHtml}
+      <span style="flex:1;font-weight:${isMe?700:500};color:${isMe?myText:textMain}">${escapeHtml(r.username)}</span>
       <span style="font-weight:700;font-size:1rem;color:${r.score>=70?'#10b981':'#f59e0b'}">${r.score}%</span>
       <span style="color:#64748b;font-size:0.8rem">${r.correct_answers}/${r.total_questions}</span>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
