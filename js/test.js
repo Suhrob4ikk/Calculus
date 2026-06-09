@@ -614,32 +614,38 @@ window.finishTest = async function () {
   if (percentage === 100) { setTimeout(launchConfetti, 400); playSound('perfect') }
   else playSound('finish')
 
-  const scoreDisplay = document.getElementById('scoreDisplay')
-  scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
-  scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
+  // Defer DOM population to the next event-loop tick so the browser can paint
+  // the page transition before doing heavy innerHTML + MathJax work.
+  // This eliminates the "Сохраняем..." freeze: the results page appears
+  // immediately and content fills in a frame later.
+  setTimeout(() => {
+    const scoreDisplay = document.getElementById('scoreDisplay')
+    scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
+    scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
 
-  const username = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0] || 'Студент'
-  const comments = { 100: 'Феноменально! Все баллы!', 90: 'Отлично!', 70: 'Хорошо! Можно ещё лучше.', 50: 'Неплохо, но есть над чем поработать.', 0: 'Не отчаивайся, попробуй ещё раз!' }
-  const comment = Object.entries(comments).reverse().find(([k]) => percentage >= +k)?.[1] || comments[0]
-  document.getElementById('scoreText').textContent = `${username}, ${comment}`
+    const username = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0] || 'Студент'
+    const comments = { 100: 'Феноменально! Все баллы!', 90: 'Отлично!', 70: 'Хорошо! Можно ещё лучше.', 50: 'Неплохо, но есть над чем поработать.', 0: 'Не отчаивайся, попробуй ещё раз!' }
+    const comment = Object.entries(comments).reverse().find(([k]) => percentage >= +k)?.[1] || comments[0]
+    document.getElementById('scoreText').textContent = `${username}, ${comment}`
 
-  const detailedResults = document.getElementById('detailedResults')
-  detailedResults.innerHTML = `
-    <h3 class="text-lg font-semibold mb-4" style="color:var(--text-main)">Детальные результаты:</h3>
-    <div class="max-h-64 overflow-y-auto space-y-2">
-      ${results.map((r, i) => `
-        <div class="${r.isCorrect ? 'result-card-correct' : 'result-card-wrong'}">
-          <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
-          <div class="text-sm mb-1 math-content">${r.question}</div>
-          <div class="text-xs">Ваш: ${r.userAnswer}<br>Правильный: ${r.correctAnswer}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
-        </div>`).join('')}
-    </div>`
+    const detailedResults = document.getElementById('detailedResults')
+    detailedResults.innerHTML = `
+      <h3 class="text-lg font-semibold mb-4" style="color:var(--text-main)">Детальные результаты:</h3>
+      <div class="max-h-64 overflow-y-auto space-y-2">
+        ${results.map((r, i) => `
+          <div class="${r.isCorrect ? 'result-card-correct' : 'result-card-wrong'}">
+            <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
+            <div class="text-sm mb-1 math-content">${r.question}</div>
+            <div class="text-xs">Ваш: ${r.userAnswer}<br>Правильный: ${r.correctAnswer}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
+          </div>`).join('')}
+      </div>`
 
-  const shareBtn = document.getElementById('shareBtn')
-  if (shareBtn) shareBtn.onclick = () => window.shareResult(correct, st.currentTest.length, percentage)
-  if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
-  // Обновляем карточку ежедневного вызова если нужно
-  window.updateDailyChallengeCard?.()
+    const shareBtn = document.getElementById('shareBtn')
+    if (shareBtn) shareBtn.onclick = () => window.shareResult(correct, st.currentTest.length, percentage)
+    if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
+    // Обновляем карточку ежедневного вызова если нужно
+    window.updateDailyChallengeCard?.()
+  }, 0)
 }
 
 window.shareResult = function (correct, total, percentage) {
