@@ -10,7 +10,7 @@
 // Если хотя бы один URL вернёт ошибку — вся установка SW падала (v6 баг).
 // Теперь SHELL содержит только same-origin файлы; CDN кэшируется лениво.
 
-const CACHE = 'mathcore-v7'
+const CACHE = 'mathcore-v8'
 
 // Только same-origin статика — install гарантированно успешен
 const SHELL = [
@@ -89,7 +89,10 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+          if (res.ok) {
+            const toCache = res.clone()
+            caches.open(CACHE).then(c => c.put(e.request, toCache))
+          }
           return res
         })
         .catch(() =>
@@ -119,7 +122,8 @@ self.addEventListener('fetch', e => {
         return fetch(e.request)
           .then(res => {
             if (res && res.status === 200) {
-              caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+              const toCache = res.clone()
+              caches.open(CACHE).then(c => c.put(e.request, toCache))
             }
             return res
           })
@@ -139,7 +143,8 @@ self.addEventListener('fetch', e => {
       fetch(e.request)
         .then(res => {
           if (res && res.status === 200 && res.type === 'basic') {
-            caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+            const toCache = res.clone()
+            caches.open(CACHE).then(c => c.put(e.request, toCache))
           }
           return res
         })
@@ -166,7 +171,8 @@ self.addEventListener('fetch', e => {
       // Ничего в кэше — идём в сеть
       return fetch(e.request).then(res => {
         if (res && res.status === 200 && res.type === 'basic') {
-          caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+          const toCache = res.clone()
+          caches.open(CACHE).then(c => c.put(e.request, toCache))
         }
         return res
       })
