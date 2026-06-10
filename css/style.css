@@ -23,6 +23,7 @@
   --glass-border: rgba(148, 163, 184, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --math-color: rgba(255, 255, 255, 0.05);
+  --nav-btn-bg: rgba(255, 255, 255, 0.92);
 }
 
 /* Тёмная тема — Deep Ocean */
@@ -48,6 +49,7 @@
   --glass-bg-dark: rgba(7, 21, 37, 0.82);
   --glass-border: rgba(56, 189, 248, 0.13);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55);
+  --nav-btn-bg: rgba(3, 8, 15, 0.88);
 }
 
 /* ── Базовые стили ───────────────────────────────────────── */
@@ -404,7 +406,8 @@ body.exam-active #desktopSidebar::after {
   z-index: 1002;
   display: none;
   align-items: stretch;
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   background: rgba(3, 8, 15, 0.97);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -866,7 +869,7 @@ html:not(.dark) .sb-logout-btn {
 /* ══════════════════════════════════════════════════════════
    ДЕСКТОП-ЛЭЙАУТ (≥900px)
    ══════════════════════════════════════════════════════════ */
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   /* Sidebar — display управляется JS; CSS только скрывает верхнюю шапку */
   #desktopNav { display: none !important; }
 
@@ -928,7 +931,7 @@ html:not(.dark) .sb-logout-btn {
    БЕЗ БОКОВОЙ ПАНЕЛИ — разделы / тест / теория
    Контент занимает полную ширину, увеличенный масштаб
    ══════════════════════════════════════════════════════════ */
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   /* Убираем отступ под боковую панель */
   body.no-sidebar .page-content {
     padding-left: 0 !important;
@@ -1489,13 +1492,13 @@ html:not(.dark) .ch-content-area .pcell.hi {
   /* На мобильных убираем отступ от Calculus sidebar */
   #probabilityTheoryPage.page-content { padding-left: 0 !important; }
 }
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   .prob-ch-content { padding: 2.5rem 3rem 5rem; }
   #probabilityTheoryPage .prob-theory-layout { padding-top: 0; }
 }
 
 /* Десктоп-расширение для probabilityTheoryPage и sectionTheoryPage */
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   #probabilityTheoryPage.page-content,
   #sectionTheoryPage.page-content {
     padding-top: 1rem !important;
@@ -1640,41 +1643,41 @@ html:not(.dark) .open-answer-hint code {
 /* ══════════════════════════════════════════════════════════
    ТЕОРИЯ — БОКОВАЯ ПАНЕЛЬ ГЛАВ — СВЕТЛАЯ ТЕМА
    ══════════════════════════════════════════════════════════ */
-body.light-theme .prob-sidebar {
+html:not(.dark) .prob-sidebar {
   background: #f8fafc !important;
   border-right-color: rgba(0,0,0,0.08) !important;
 }
-body.light-theme .prob-sidebar-group {
+html:not(.dark) .prob-sidebar-group {
   color: #94a3b8 !important;
 }
-body.light-theme .prob-ch-btn {
+html:not(.dark) .prob-ch-btn {
   color: #334155 !important;
 }
-body.light-theme .prob-ch-btn:hover {
+html:not(.dark) .prob-ch-btn:hover {
   background: rgba(2,132,199,0.08) !important;
   color: #0284c7 !important;
 }
-body.light-theme .prob-ch-btn.active {
+html:not(.dark) .prob-ch-btn.active {
   background: rgba(2,132,199,0.12) !important;
   color: #0284c7 !important;
 }
-body.light-theme .prob-ch-num {
+html:not(.dark) .prob-ch-num {
   background: #e2e8f0 !important;
   color: #475569 !important;
 }
-body.light-theme .prob-ch-btn.active .prob-ch-num {
+html:not(.dark) .prob-ch-btn.active .prob-ch-num {
   background: #0284c7 !important;
   color: #ffffff !important;
 }
-body.light-theme .prob-mob-nav {
+html:not(.dark) .prob-mob-nav {
   background: #f1f5f9 !important;
   border-bottom-color: rgba(0,0,0,0.08) !important;
 }
-body.light-theme .prob-mob-chip {
+html:not(.dark) .prob-mob-chip {
   color: #475569 !important;
   border-color: rgba(0,0,0,0.12) !important;
 }
-body.light-theme .prob-mob-chip.active {
+html:not(.dark) .prob-mob-chip.active {
   background: rgba(2,132,199,0.12) !important;
   color: #0284c7 !important;
   border-color: rgba(2,132,199,0.3) !important;
@@ -1683,83 +1686,83 @@ body.light-theme .prob-mob-chip.active {
 /* ══════════════════════════════════════════════════════════
    ДУЭЛЬ-МОДАЛ — СВЕТЛАЯ ТЕМА
    ══════════════════════════════════════════════════════════ */
-body.light-theme .duel-panel {
+html:not(.dark) .duel-panel {
   background: #ffffff !important;
   border-color: rgba(139, 92, 246, 0.45) !important;
   box-shadow: 0 20px 50px rgba(109, 40, 217, 0.14) !important;
 }
-body.light-theme .duel-panel h2 {
+html:not(.dark) .duel-panel h2 {
   color: #1e293b !important;
 }
-body.light-theme .duel-panel p,
-body.light-theme .duel-panel [style*="color:#94a3b8"],
-body.light-theme .duel-panel [style*="color:#64748b"] {
+html:not(.dark) .duel-panel p,
+html:not(.dark) .duel-panel [style*="color:#94a3b8"],
+html:not(.dark) .duel-panel [style*="color:#64748b"] {
   color: #64748b !important;
 }
-body.light-theme .duel-panel [style*="color:#f1f5f9"],
-body.light-theme .duel-panel [style*="color:#e2e8f0"] {
+html:not(.dark) .duel-panel [style*="color:#f1f5f9"],
+html:not(.dark) .duel-panel [style*="color:#e2e8f0"] {
   color: #1e293b !important;
 }
-body.light-theme #duelTabsBar {
+html:not(.dark) #duelTabsBar {
   background: #f1f5f9 !important;
 }
-body.light-theme #duelTabJoin[style*="color:#94a3b8"] {
+html:not(.dark) #duelTabJoin[style*="color:#94a3b8"] {
   color: #64748b !important;
 }
-body.light-theme #duelCodeDisplay {
+html:not(.dark) #duelCodeDisplay {
   background: #f8fafc !important;
   border-color: rgba(139, 92, 246, 0.4) !important;
   color: #6d28d9 !important;
 }
-body.light-theme #inviteUsernameInput,
-body.light-theme #duelJoinInput {
+html:not(.dark) #inviteUsernameInput,
+html:not(.dark) #duelJoinInput {
   background: #f8fafc !important;
   color: #1e293b !important;
   border-color: rgba(139, 92, 246, 0.35) !important;
 }
-body.light-theme #inviteUsernameInput::placeholder,
-body.light-theme #duelJoinInput::placeholder {
+html:not(.dark) #inviteUsernameInput::placeholder,
+html:not(.dark) #duelJoinInput::placeholder {
   color: #94a3b8 !important;
 }
-body.light-theme .duel-panel #duelCreateStatus,
-body.light-theme .duel-panel #duelJoinStatus {
+html:not(.dark) .duel-panel #duelCreateStatus,
+html:not(.dark) .duel-panel #duelJoinStatus {
   color: #64748b !important;
 }
-body.light-theme .duel-panel #duelLobbyMsg {
+html:not(.dark) .duel-panel #duelLobbyMsg {
   color: #1e293b !important;
 }
-body.light-theme .duel-panel #duelLobbyPlayers {
+html:not(.dark) .duel-panel #duelLobbyPlayers {
   color: #64748b !important;
 }
-body.light-theme .duel-panel #duelStartCountdown {
+html:not(.dark) .duel-panel #duelStartCountdown {
   color: #7c3aed !important;
 }
-body.light-theme #duelResultsTitle {
+html:not(.dark) #duelResultsTitle {
   color: #1e293b !important;
 }
 /* duel-pick-btn в светлой теме */
-body.light-theme .duel-pick-btn {
+html:not(.dark) .duel-pick-btn {
   color: #4f46e5 !important;
   border-color: rgba(99, 102, 241, 0.3) !important;
 }
-body.light-theme .duel-pick-btn:hover {
+html:not(.dark) .duel-pick-btn:hover {
   background: rgba(99, 102, 241, 0.1) !important;
   color: #4338ca !important;
 }
-body.light-theme .duel-pick-btn.active {
+html:not(.dark) .duel-pick-btn.active {
   background: rgba(99, 102, 241, 0.15) !important;
   border-color: #6366f1 !important;
   color: #4338ca !important;
 }
 /* Раздел/Уровень лейблы */
-body.light-theme .duel-panel [style*="color:#64748b"] {
+html:not(.dark) .duel-panel [style*="color:#64748b"] {
   color: #64748b !important;
 }
 
 /* ══════════════════════════════════════════════════════════
    НО-САЙДБАР: КРУПНЕЕ ШРИФТ И PADDING ДЛЯ БОЛЬШИХ ЭКРАНОВ
    ══════════════════════════════════════════════════════════ */
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   body.no-sidebar .section-panel {
     padding: 2.5rem 3rem;
   }

@@ -3,24 +3,17 @@ import { getUserXpTotal } from './supabase.js'
 
 // ── Тема ─────────────────────────────────────────────────
 export function applyTheme(dark) {
-  const body = document.body
   const html = document.documentElement
   if (dark) {
     html.classList.add('dark')
-    body.classList.remove('light-theme')
-    body.classList.add('dark-theme')
   } else {
     html.classList.remove('dark')
-    body.classList.remove('dark-theme')
-    body.classList.add('light-theme')
   }
 }
 
 window.toggleTheme = function() {
   const isDark = document.documentElement.classList.toggle('dark')
   localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  document.body.classList.toggle('dark-theme', isDark)
-  document.body.classList.toggle('light-theme', !isDark)
   syncSettingsBtns()
 }
 
@@ -29,14 +22,9 @@ export function showPage(pageId) {
   const ls = document.getElementById('loadingScreen')
   if (ls) ls.remove()
 
-  const pages = ['authPage','homePage','integralsSection','derivativesSection',
-                 'seriesSection','limitsSection','odeSection','probabilitySection','linalgSection',
-                 'probabilityTheoryPage','sectionTheoryPage','testPage','resultsPage','statisticsPage',
-                 'leaderboardPage','profilePage','searchProfilesPage','viewProfilePage','updatePasswordPage',
-                 'theoryPage','examPage','mistakesPage','duelPage']
-  pages.forEach(p => {
-    const el = document.getElementById(p)
-    if (el) { el.classList.add('hidden'); el.style.display = 'none' }
+  document.querySelectorAll('[id$="Page"],[id$="Section"]').forEach(el => {
+    el.classList.add('hidden')
+    el.style.display = 'none'
   })
   const target = document.getElementById(pageId)
   if (target) {
@@ -50,10 +38,10 @@ export function showPage(pageId) {
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')
   const desktopNav = document.getElementById('desktopNav')
-  const isDesktop = window.innerWidth >= 900
+  const isDesktop = window.innerWidth >= 768
   if (bottomNav)  bottomNav.style.display  = showNav ? 'flex' : 'none'
   if (menuBtn)    menuBtn.style.display    = showNav ? '' : 'none'
-  // Верхняя шапка — только на планшете (641–899px), на десктопе её заменяет sidebar
+  // Верхняя шапка — только на планшете (641–767px), на десктопе её заменяет sidebar
   if (desktopNav) desktopNav.style.display = (showNav && !isDesktop) ? '' : 'none'
   if (!showNav) window.closeNavMenu?.()
 

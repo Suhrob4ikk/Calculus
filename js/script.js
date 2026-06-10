@@ -20,6 +20,8 @@ import './theory.js'
 import './exam.js'
 import './mistakes.js'
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
 // ── Применяем тему сразу (до DOMContentLoaded) ───────────
 ;(function() {
   const saved      = localStorage.getItem('theme')
@@ -49,7 +51,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         const loginBtn = document.getElementById('loginBtn')
         if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '⏳ Проверяем…' }
         updateLastSeen(st.currentUser.id)
-        setupSessionGuard(st.currentUser.id, () => {
+        setupSessionGuard(st.currentUser.id, async () => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
           updateUserUI()
@@ -62,14 +64,12 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           if (st.pendingDuelCode) {
             const code = st.pendingDuelCode
             st.pendingDuelCode = null
-            setTimeout(() => {
-              window.showDuelPage?.()
-              setTimeout(() => {
-                window.showDuelTab?.('join')
-                const ji = document.getElementById('duelJoinInput')
-                if (ji) ji.value = code
-              }, 100)
-            }, 300)
+            await sleep(300)
+            window.showDuelPage?.()
+            await sleep(100)
+            window.showDuelTab?.('join')
+            const ji = document.getElementById('duelJoinInput')
+            if (ji) ji.value = code
           }
         })
       } else {
@@ -213,11 +213,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           const code = st.pendingDuelCode
           st.pendingDuelCode = null
           window.showDuelPage?.()
-          setTimeout(() => {
-            window.showDuelTab?.('join')
-            const ji = document.getElementById('duelJoinInput')
-            if (ji) ji.value = code
-          }, 100)
+          await sleep(100)
+          window.showDuelTab?.('join')
+          const ji = document.getElementById('duelJoinInput')
+          if (ji) ji.value = code
         } else {
           showPage('homePage')
           if (localStorage.getItem('testState')) showContinueTestBanner()

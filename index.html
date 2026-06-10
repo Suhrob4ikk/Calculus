@@ -2,7 +2,7 @@
 <html lang="ru">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>MathCore — Тренажёр по высшей математике</title>
   <!-- PWA -->
@@ -52,26 +52,6 @@
 
     .dark .math-symbol {
       color: rgba(56, 189, 248, 0.06);
-    }
-
-    @keyframes floatSymbol {
-      0% {
-        transform: translateY(110vh) rotate(0deg);
-        opacity: 0;
-      }
-
-      5% {
-        opacity: 1;
-      }
-
-      95% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(-10vh) rotate(360deg);
-        opacity: 0;
-      }
     }
 
     #authPage {
@@ -314,10 +294,6 @@
       color: #6ee7b7;
     }
 
-    body {
-      font-family: 'IBM Plex Sans', sans-serif;
-    }
-
     .hidden {
       display: none !important;
     }
@@ -343,7 +319,7 @@
       top: 1rem;
       left: 1rem;
       z-index: 1003;
-      background: rgba(3, 8, 15, 0.88);
+      background: var(--nav-btn-bg);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(56, 189, 248, 0.15);
       border-radius: 10px;
@@ -425,23 +401,23 @@
       border-color: rgba(56, 189, 248, 0.5);
     }
 
-    body.light-theme #menuBtn {
+    html:not(.dark) #menuBtn {
       background: rgba(255, 255, 255, 0.92);
       border-color: rgba(165, 180, 252, 0.6);
       color: #4f46e5;
     }
 
-    body.light-theme #navMenu {
+    html:not(.dark) #navMenu {
       background: rgba(255, 255, 255, 0.97);
       border-color: rgba(165, 180, 252, 0.5);
       box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
     }
 
-    body.light-theme .nav-menu-item {
+    html:not(.dark) .nav-menu-item {
       color: #4f46e5;
     }
 
-    body.light-theme .nav-menu-item:hover {
+    html:not(.dark) .nav-menu-item:hover {
       background: rgba(99, 102, 241, 0.1);
       color: #2563eb;
     }
@@ -450,104 +426,104 @@
     /* header-avatar moved to sidebar */
 
     /* ── Светлая тема ──────────────────────────────────── */
-    body.light-theme {
+    html:not(.dark) {
       background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%) !important;
     }
 
-    body.light-theme .math-symbol {
+    html:not(.dark) .math-symbol {
       color: rgba(99, 102, 241, 0.10) !important;
     }
 
-    body.light-theme .glass-panel {
+    html:not(.dark) .glass-panel {
       background: rgba(255, 255, 255, 0.88) !important;
       border: 1px solid rgba(165, 180, 252, 0.5) !important;
       box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10), 0 1px 4px rgba(0, 0, 0, 0.05) !important;
     }
 
-    body.light-theme .glass-card {
+    html:not(.dark) .glass-card {
       background: rgba(255, 255, 255, 0.75) !important;
       border: 1px solid rgba(165, 180, 252, 0.3) !important;
     }
 
     /* Текст читаем на светлом фоне */
-    body.light-theme .text-slate-100 {
+    html:not(.dark) .text-slate-100 {
       color: #1e293b !important;
     }
 
-    body.light-theme .text-slate-200 {
+    html:not(.dark) .text-slate-200 {
       color: #1e293b !important;
     }
 
-    body.light-theme .text-slate-300 {
+    html:not(.dark) .text-slate-300 {
       color: #334155 !important;
     }
 
-    body.light-theme .text-slate-400 {
+    html:not(.dark) .text-slate-400 {
       color: #64748b !important;
     }
 
-    body.light-theme h1,
-    body.light-theme h2,
-    body.light-theme h3 {
+    html:not(.dark) h1,
+    html:not(.dark) h2,
+    html:not(.dark) h3 {
       color: #0f172a !important;
     }
 
-    body.light-theme p {
+    html:not(.dark) p {
       color: #475569;
     }
 
-    body.light-theme .stat-value {
+    html:not(.dark) .stat-value {
       color: #2563eb !important;
     }
 
-    body.light-theme .stat-label {
+    html:not(.dark) .stat-label {
       color: #64748b !important;
     }
 
-    body.light-theme .stat-card {
+    html:not(.dark) .stat-card {
       background: rgba(255, 255, 255, 0.7) !important;
       border: 1px solid rgba(165, 180, 252, 0.4) !important;
     }
 
-    body.light-theme .progress-bar {
+    html:not(.dark) .progress-bar {
       background: #c7d2fe !important;
     }
 
-    body.light-theme .option-label {
+    html:not(.dark) .option-label {
       background: rgba(255, 255, 255, 0.9) !important;
       border-color: rgba(165, 180, 252, 0.4) !important;
       color: #1e293b !important;
     }
 
-    body.light-theme .option-text {
+    html:not(.dark) .option-text {
       color: #1e293b !important;
     }
 
-    body.light-theme .option-label.answered-correct {
+    html:not(.dark) .option-label.answered-correct {
       background-color: #ecfdf5 !important;
       border-color: #10b981 !important;
       color: #064e3b !important;
     }
-    body.light-theme .option-label.answered-correct .option-text {
+    html:not(.dark) .option-label.answered-correct .option-text {
       color: #064e3b !important;
     }
-    body.light-theme .option-label.answered-wrong {
+    html:not(.dark) .option-label.answered-wrong {
       background-color: #fef2f2 !important;
       border-color: #ef4444 !important;
       color: #7f1d1d !important;
     }
-    body.light-theme .option-label.answered-wrong .option-text {
+    html:not(.dark) .option-label.answered-wrong .option-text {
       color: #7f1d1d !important;
     }
 
-    body.light-theme input,
-    body.light-theme select {
+    html:not(.dark) input,
+    html:not(.dark) select {
       background: #ffffff !important;
       color: #1e293b !important;
       border-color: #c7d2fe !important;
     }
 
-    body.light-theme .auth-card {
+    html:not(.dark) .auth-card {
       background: rgba(255, 255, 255, 0.96) !important;
     }
 
@@ -718,42 +694,42 @@
       color: #f87171;
     }
 
-    body.light-theme #desktopNav {
+    html:not(.dark) #desktopNav {
       background: rgba(255, 255, 255, 0.97);
       border-bottom-color: rgba(165, 180, 252, 0.5);
       box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
     }
 
-    body.light-theme .dh-nav-btn {
+    html:not(.dark) .dh-nav-btn {
       color: #4f46e5;
     }
 
-    body.light-theme .dh-nav-btn:hover {
+    html:not(.dark) .dh-nav-btn:hover {
       background: rgba(99, 102, 241, 0.1);
       color: #2563eb;
     }
 
-    body.light-theme .dh-nav-btn.dh-active {
+    html:not(.dark) .dh-nav-btn.dh-active {
       background: rgba(99, 102, 241, 0.15);
       color: #2563eb;
     }
 
-    body.light-theme .dh-icon-btn {
+    html:not(.dark) .dh-icon-btn {
       background: rgba(255, 255, 255, 0.8);
       border-color: rgba(165, 180, 252, 0.5);
       color: #4f46e5;
     }
 
-    body.light-theme .dh-user-btn {
+    html:not(.dark) .dh-user-btn {
       background: rgba(255, 255, 255, 0.8);
       border-color: rgba(165, 180, 252, 0.5);
     }
 
-    body.light-theme .dh-username {
+    html:not(.dark) .dh-username {
       color: #1e293b;
     }
 
-    body.light-theme .dh-logout-btn {
+    html:not(.dark) .dh-logout-btn {
       border-color: rgba(220, 38, 38, 0.35);
       background: rgba(220, 38, 38, 0.08);
       color: #dc2626;
@@ -790,12 +766,12 @@
       font-family: inherit;
     }
 
-    body.light-theme #mobileBackBar {
+    html:not(.dark) #mobileBackBar {
       background: rgba(255, 255, 255, 0.97);
       border-bottom-color: rgba(165, 180, 252, 0.5);
     }
 
-    body.light-theme #mobileBackBtn {
+    html:not(.dark) #mobileBackBtn {
       color: #2563eb;
     }
 
