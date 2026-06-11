@@ -13,10 +13,14 @@ function dailyKey(suffix) {
   return `dailyChallenge${suffix}_${uid}`
 }
 
+// Явный порядок разделов — должен совпадать с Android QuestionRepository и Edge Function.
+// Object.values(QUESTIONS) ненадёжен: порядок ключей зависит от определения в questions.js.
+const DAILY_SUBJECT_ORDER = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
+
 function getDailyQuestions() {
   const rng = mulberry32(hashCode(getDailyDate()))
-  const all = Object.values(QUESTIONS)
-    .flatMap(s => [s.easy, s.medium])
+  const all = DAILY_SUBJECT_ORDER
+    .flatMap(s => [QUESTIONS[s]?.easy, QUESTIONS[s]?.medium])
     .flat()
     .filter(q => q && q.options && q.options.length === 4)
 

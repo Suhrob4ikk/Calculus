@@ -244,12 +244,6 @@ window.joinDuel = async function() {
   const code  = input.value.trim().toUpperCase()
   if (code.length < 4) { _duelSetStatus('duelJoinStatus', '❌ Введи код (минимум 4 символа)'); return }
 
-  const myName = st.currentUser.user_metadata?.username?.toLowerCase()
-  if (st.duel.invitedUsername && st.duel.invitedUsername !== myName) {
-    _duelSetStatus('duelJoinStatus', '❌ Эта дуэль только для приглашённого участника')
-    return
-  }
-
   st.duel.code   = code
   st.duel.role   = 'guest'
   st.duel.myName = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]

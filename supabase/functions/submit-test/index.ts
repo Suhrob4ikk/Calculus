@@ -268,6 +268,56 @@ Deno.serve(async (req: Request) => {
     })
   }
 
+  // ── Step 2.5: Rate-limit check (prevents XP farming) ─────────────────────
+  const admin = createClient(SUPABASE_URL, SERVICE_KEY)
+
+  {
+    const oneHourAgo = new Date(Date.now() - 3_600_000).toISOString()
+
+    let rateLimitQuery
+    let rateLimit: number
+
+    if (section === 'daily') {
+      // 1 submission per UTC calendar day
+      const todayStart = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z'
+      rateLimitQuery = admin
+        .from('test_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('section', 'daily')
+        .gte('created_at', todayStart)
+      rateLimit = 1
+    } else if (section.startsWith('duel:')) {
+      // 3 submissions per duel code per hour
+      rateLimitQuery = admin
+        .from('test_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('section', section)
+        .gte('created_at', oneHourAgo)
+      rateLimit = 3
+    } else {
+      // 5 submissions per section+difficulty per hour for regular quizzes
+      rateLimitQuery = admin
+        .from('test_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('section', section)
+        .eq('difficulty', difficulty)
+        .gte('created_at', oneHourAgo)
+      rateLimit = 5
+    }
+
+    const { count, error: countErr } = await rateLimitQuery
+    if (countErr) {
+      console.error('Rate-limit count error:', countErr.message)
+    } else if ((count ?? 0) >= rateLimit) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+        status: 429, headers: CORS
+      })
+    }
+  }
+
   // ── Step 3: Load the canonical question pool ──────────────────────────────
   let pool: Question[]
 
@@ -277,10 +327,17 @@ Deno.serve(async (req: Request) => {
         status: 400, headers: CORS
       })
     }
-    // Allow today ± 1 day (timezone tolerance)
-    const serverToday     = new Date().toISOString().slice(0, 10)
-    const serverYesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
-    if (dailyDate !== serverToday && dailyDate !== serverYesterday) {
+    // Allow today ± 2 days (covers UTC+13/+14 users who are already "tomorrow"
+    // relative to the UTC server, and UTC-12 users who are still "yesterday")
+    const now = Date.now()
+    const validDates = new Set([
+      new Date(now + 2 * 86_400_000).toISOString().slice(0, 10),
+      new Date(now + 1 * 86_400_000).toISOString().slice(0, 10),
+      new Date(now).toISOString().slice(0, 10),
+      new Date(now - 1 * 86_400_000).toISOString().slice(0, 10),
+      new Date(now - 2 * 86_400_000).toISOString().slice(0, 10),
+    ])
+    if (!validDates.has(dailyDate)) {
       return new Response(JSON.stringify({ error: 'Stale daily date' }), {
         status: 400, headers: CORS
       })
@@ -322,7 +379,6 @@ Deno.serve(async (req: Request) => {
     : 0
 
   // ── Step 5: Write to test_results (service role — trusted write) ──────────
-  const admin = createClient(SUPABASE_URL, SERVICE_KEY)
   const { error: insertErr } = await admin.from('test_results').insert({
     user_id:         user.id,
     username,

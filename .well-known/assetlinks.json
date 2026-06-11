@@ -2,9 +2,9 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "app.netlify.mathcore_app.twa",
+    "package_name": "com.mathcore.app",
     "sha256_cert_fingerprints": [
-      "3A:22:11:CA:56:5F:8C:44:2C:08:84:99:93:75:A9:83:2D:3B:43:94:F7:B9:95:9B:AF:E1:3B:E7:28:C9:81:58"
+      "85:55:2A:49:CD:A7:A6:95:48:0F:32:E3:AC:04:51:0A:6B:74:10:D6:F4:7D:DC:61:24:D2:9D:B4:90:72:6E:14"
     ]
   }
 }]

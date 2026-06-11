@@ -443,7 +443,7 @@ window.exitTest = async function () {
     const answered = st.userAnswers.filter(a => a !== null).length
     if (answered === 0) {
       if (confirm('Выйти из ежедневного вызова? Попытка будет засчитана как 0%.')) {
-        _saveDailyAndExit(0, 0)
+        await _saveDailyAndExit(0, 0)
       }
       return
     }
@@ -454,7 +454,7 @@ window.exitTest = async function () {
     }, 0)
     const percentage = Math.round(correct / st.currentTest.length * 100)
     if (confirm(`Выйти? Результат будет сохранён: ${correct}/${st.currentTest.length} (${percentage}%). Переиграть нельзя.`)) {
-      _saveDailyAndExit(correct, percentage)
+      await _saveDailyAndExit(correct, percentage)
     }
     return
   }
@@ -481,13 +481,17 @@ async function _saveDailyAndExit(correct, percentage) {
   if (st.currentUser) {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
     try {
-      await submitTestResult({
+      const result = await submitTestResult({
         answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
         section:    'daily',
         difficulty: 'medium',
         username,
         dailyDate:  getDailyDate()
       })
+      if (result?.xpGained) {
+        const newXP = addXP(result.xpGained)
+        setTimeout(() => { showXPToast(result.xpGained, newXP) }, 700)
+      }
     } catch (e) { console.warn('daily submitTestResult failed:', e) }
   }
   st.currentTest = []; st.userAnswers = []; st.currentQuestionIndex = 0

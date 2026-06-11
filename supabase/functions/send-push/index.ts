@@ -4,11 +4,24 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// ── Web Push (VAPID) ───────────────────────────────────────────────────────
 const VAPID_PUBLIC_KEY  = Deno.env.get('VAPID_PUBLIC_KEY')!
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
 const VAPID_EMAIL       = Deno.env.get('VAPID_EMAIL') ?? 'mailto:admin@example.com'
 
-// Конвертация Base64URL → Uint8Array
+// ── FCM (Android) ─────────────────────────────────────────────────────────
+// Set FCM_SERVICE_ACCOUNT_JSON to the contents of your Firebase service account
+// key JSON (generated in Firebase Console → Project Settings → Service Accounts).
+const FCM_SA_JSON = Deno.env.get('FCM_SERVICE_ACCOUNT_JSON')
+
+interface ServiceAccount {
+  client_email: string
+  private_key: string
+  project_id: string
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+
 function base64UrlToUint8Array(base64: string): Uint8Array {
   const padding = '='.repeat((4 - (base64.length % 4)) % 4)
   const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/')
@@ -16,7 +29,18 @@ function base64UrlToUint8Array(base64: string): Uint8Array {
   return Uint8Array.from(raw, c => c.charCodeAt(0))
 }
 
-// Подпись VAPID для авторизации
+function strToB64url(str: string): string {
+  return btoa(str).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+}
+
+function bytesToB64url(buf: ArrayBuffer): string {
+  let str = ''
+  for (const b of new Uint8Array(buf)) str += String.fromCharCode(b)
+  return btoa(str).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+}
+
+// ── VAPID signing ─────────────────────────────────────────────────────────
+
 async function buildVapidHeaders(endpoint: string): Promise<Record<string, string>> {
   const url = new URL(endpoint)
   const audience = `${url.protocol}//${url.host}`
@@ -43,7 +67,84 @@ async function buildVapidHeaders(endpoint: string): Promise<Record<string, strin
   }
 }
 
-// Тело уведомления (случайный из нескольких вариантов)
+// ── FCM JWT + access token ────────────────────────────────────────────────
+
+async function getFcmAccessToken(sa: ServiceAccount): Promise<string> {
+  const now = Math.floor(Date.now() / 1000)
+  const header  = strToB64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
+  const payload = strToB64url(JSON.stringify({
+    iss: sa.client_email,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+  }))
+
+  const pemKey = sa.private_key
+    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+    .replace(/-----END PRIVATE KEY-----/g, '')
+    .replace(/\s+/g, '')
+  const keyData = Uint8Array.from(atob(pemKey), c => c.charCodeAt(0))
+
+  const key = await crypto.subtle.importKey(
+    'pkcs8', keyData,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false, ['sign']
+  )
+  const sigBytes = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5', key,
+    new TextEncoder().encode(`${header}.${payload}`)
+  )
+  const jwt = `${header}.${payload}.${bytesToB64url(sigBytes)}`
+
+  const resp = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+  })
+  const tokenResp = await resp.json()
+  console.log('OAuth token response:', JSON.stringify({ status: resp.status, has_token: !!tokenResp.access_token, error: tokenResp.error, error_description: tokenResp.error_description }))
+  if (!tokenResp.access_token) throw new Error(`OAuth failed: ${tokenResp.error} — ${tokenResp.error_description}`)
+  return tokenResp.access_token
+}
+
+async function sendFcm(
+  fcmToken: string,
+  msg: { title: string; body: string },
+  accessToken: string,
+  projectId: string,
+): Promise<{ ok: boolean; stale: boolean }> {
+  try {
+    const res = await fetch(
+      `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: {
+            token: fcmToken,
+            notification: { title: msg.title, body: msg.body },
+            data: { url: '/Calculus/' },
+          },
+        }),
+      }
+    )
+    if (res.ok) return { ok: true, stale: false }
+    const body = await res.json().catch(() => ({}))
+    console.error(`FCM send failed [${res.status}]:`, JSON.stringify(body))
+    const errCode: string = body?.error?.details?.[0]?.errorCode ?? ''
+    return { ok: false, stale: errCode === 'UNREGISTERED' }
+  } catch (e) {
+    console.error('FCM send exception:', e)
+    return { ok: false, stale: false }
+  }
+}
+
+// ── Notification content ─────────────────────────────────────────────────
+
 function randomMessage() {
   const messages = [
     { title: '📚 Время математики!',  body: 'Реши несколько задач сегодня — и серия не прервётся!'   },
@@ -55,8 +156,9 @@ function randomMessage() {
   return messages[Math.floor(Math.random() * messages.length)]
 }
 
+// ── Handler ───────────────────────────────────────────────────────────────
+
 Deno.serve(async (req) => {
-  // Позволяем ручной вызов через POST или автоматический через cron
   if (req.method !== 'POST' && req.method !== 'GET') {
     return new Response('Method Not Allowed', { status: 405 })
   }
@@ -68,38 +170,67 @@ Deno.serve(async (req) => {
 
   const { data: subscriptions, error } = await supabase
     .from('push_subscriptions')
-    .select('id, user_id, subscription')
+    .select('id, user_id, subscription, fcm_token, platform')
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
   if (!subscriptions?.length) return new Response(JSON.stringify({ sent: 0 }))
 
   const msg = randomMessage()
+
+  // Split by platform (null/missing → treated as web for backward compat)
+  const webSubs     = subscriptions.filter(r => (r.platform ?? 'web') === 'web' && r.subscription)
+  const androidSubs = subscriptions.filter(r => r.platform === 'android' && r.fcm_token)
+
+  // ── Web Push ───────────────────────────────────────────────────────────
+  let webSent = 0, webFailed = 0
+  const expiredWebIds: string[] = []
+
   const payload = JSON.stringify({ title: msg.title, body: msg.body, url: '/Calculus/' })
 
-  let sent = 0, failed = 0
-  const expired: string[] = []
-
-  await Promise.allSettled(subscriptions.map(async row => {
+  await Promise.allSettled(webSubs.map(async row => {
     const sub = row.subscription as { endpoint: string; keys: { p256dh: string; auth: string } }
     try {
       const headers = await buildVapidHeaders(sub.endpoint)
-      const res = await fetch(sub.endpoint, {
-        method: 'POST',
-        headers,
-        body: payload,
-      })
-      if (res.status === 201 || res.status === 200) { sent++ }
-      else if (res.status === 410 || res.status === 404) { expired.push(row.id); failed++ }
-      else { failed++ }
-    } catch { failed++ }
+      const res = await fetch(sub.endpoint, { method: 'POST', headers, body: payload })
+      if (res.status === 201 || res.status === 200) { webSent++ }
+      else if (res.status === 410 || res.status === 404) { expiredWebIds.push(row.id); webFailed++ }
+      else { webFailed++ }
+    } catch { webFailed++ }
   }))
 
-  // Удаляем просроченные подписки
-  if (expired.length) {
-    await supabase.from('push_subscriptions').delete().in('id', expired)
+  if (expiredWebIds.length) {
+    await supabase.from('push_subscriptions').delete().in('id', expiredWebIds)
   }
 
-  return new Response(JSON.stringify({ sent, failed, expired: expired.length }), {
-    headers: { 'Content-Type': 'application/json' }
-  })
+  // ── FCM (Android) ──────────────────────────────────────────────────────
+  let fcmSent = 0, fcmFailed = 0
+  const staleAndroidIds: string[] = []
+
+  if (FCM_SA_JSON && androidSubs.length > 0) {
+    try {
+      const sa: ServiceAccount = JSON.parse(FCM_SA_JSON)
+      const fcmAccessToken = await getFcmAccessToken(sa)
+
+      await Promise.allSettled(androidSubs.map(async row => {
+        const result = await sendFcm(row.fcm_token, msg, fcmAccessToken, sa.project_id)
+        if (result.ok) { fcmSent++ }
+        else { fcmFailed++; if (result.stale) staleAndroidIds.push(row.id) }
+      }))
+
+      if (staleAndroidIds.length) {
+        await supabase.from('push_subscriptions').delete().in('id', staleAndroidIds)
+      }
+    } catch (e) {
+      console.error('FCM error:', e)
+      fcmFailed += androidSubs.length
+    }
+  }
+
+  return new Response(
+    JSON.stringify({
+      web:     { sent: webSent,  failed: webFailed,  expired: expiredWebIds.length },
+      android: { sent: fcmSent, failed: fcmFailed, stale: staleAndroidIds.length },
+    }),
+    { headers: { 'Content-Type': 'application/json' } }
+  )
 })
