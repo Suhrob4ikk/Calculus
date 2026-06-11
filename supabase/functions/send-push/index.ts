@@ -113,6 +113,7 @@ async function sendFcm(
   msg: { title: string; body: string },
   accessToken: string,
   projectId: string,
+  extraData: Record<string, string> = {},
 ): Promise<{ ok: boolean; stale: boolean }> {
   try {
     const res = await fetch(
@@ -127,7 +128,7 @@ async function sendFcm(
           message: {
             token: fcmToken,
             notification: { title: msg.title, body: msg.body },
-            data: { url: '/Calculus/' },
+            data: { url: '/Calculus/', ...extraData },
           },
         }),
       }
@@ -168,6 +169,61 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
+  // ── Targeted duel invite push ──────────────────────────────────────────
+  // Called by web duel.js when a user invites a specific opponent.
+  // Body: { type: "duel_invite", targetUserId, code, from, section, difficulty }
+  if (req.method === 'POST') {
+    let body: Record<string, string> | null = null
+    try { body = await req.json() } catch { /* not JSON or empty — fall through to broadcast */ }
+
+    if (body?.type === 'duel_invite') {
+      const { targetUserId, code, from, section = '', difficulty = '' } = body
+
+      if (!targetUserId || !code || !from) {
+        return new Response(
+          JSON.stringify({ error: 'targetUserId, code and from are required' }),
+          { status: 400 }
+        )
+      }
+
+      if (!FCM_SA_JSON) {
+        return new Response(JSON.stringify({ error: 'FCM_SERVICE_ACCOUNT_JSON not set' }), { status: 500 })
+      }
+
+      // Look up the target user's Android FCM token
+      const { data: rows } = await supabase
+        .from('push_subscriptions')
+        .select('fcm_token')
+        .eq('user_id', targetUserId)
+        .eq('platform', 'android')
+        .limit(1)
+
+      const fcmToken: string | undefined = rows?.[0]?.fcm_token
+      if (!fcmToken) {
+        // No Android token — user may be on web only, that's fine
+        return new Response(JSON.stringify({ sent: 0, reason: 'no_android_token' }))
+      }
+
+      const sa: ServiceAccount = JSON.parse(FCM_SA_JSON)
+      const accessToken = await getFcmAccessToken(sa)
+      const deepLink = `mathcore://duel?code=${code}&from=${encodeURIComponent(from)}&section=${section}&difficulty=${difficulty}`
+
+      const result = await sendFcm(
+        fcmToken,
+        { title: '⚔️ Вызов на дуэль!', body: `${from} приглашает тебя сыграть` },
+        accessToken,
+        sa.project_id,
+        { type: 'duel_invite', deep_link: deepLink }
+      )
+
+      return new Response(
+        JSON.stringify({ sent: result.ok ? 1 : 0, stale: result.stale }),
+        { headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
+  // ── Broadcast daily reminder (existing logic) ─────────────────────────
   const { data: subscriptions, error } = await supabase
     .from('push_subscriptions')
     .select('id, user_id, subscription, fcm_token, platform')

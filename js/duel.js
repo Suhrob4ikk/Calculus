@@ -132,14 +132,19 @@ window.validateInviteUsername = async function() {
   if (!username) {
     if (errorEl) errorEl.style.display = 'none'
     input.style.borderColor = 'rgba(139,92,246,0.3)'
+    st.duel.invitedUserId = null
     return true
   }
   const { data, error } = await searchProfiles(username)
-  if (error || !data || !data.some(p => p.username && p.username.toLowerCase() === username)) {
+  const match = data?.find(p => p.username && p.username.toLowerCase() === username)
+  if (error || !match) {
     if (errorEl) { errorEl.textContent = 'Пользователь не найден'; errorEl.style.display = 'block' }
     input.style.borderColor = '#f87171'
+    st.duel.invitedUserId = null
     return false
   }
+  // Store the user_id so createDuel() can send a targeted FCM push
+  st.duel.invitedUserId = match.id ?? null
   if (errorEl) errorEl.style.display = 'none'
   input.style.borderColor = '#10b981'
   return true
@@ -223,17 +228,47 @@ window.createDuel = async function() {
     if (!isValid) {
       _duelSetStatus('duelCreateStatus', '❌ Некорректный ник приглашённого');
     } else {
-      st.duel.invitesChannel?.send({
-        type: 'broadcast',
-        event: 'invite',
-        payload: {
-          invitedUsername: st.duel.invitedUsername,
-          code: st.duel.code,
-          inviterName: st.duel.myName,
-          section: st.duel.section,
-          difficulty: st.duel.diff
-        }
-      });
+      // Path A: Realtime broadcast — reaches Android if app is open and WS connected.
+      // Guard with invitesChannelReady: if not yet SUBSCRIBED, send() is a no-op and
+      // the invite would be silently lost.
+      if (st.duel.invitesChannelReady && st.duel.invitesChannel) {
+        st.duel.invitesChannel.send({
+          type: 'broadcast',
+          event: 'invite',
+          payload: {
+            invitedUsername: st.duel.invitedUsername,
+            code: st.duel.code,
+            inviterName: st.duel.myName,
+            section: st.duel.section,
+            difficulty: st.duel.diff
+          }
+        })
+      } else {
+        // Channel not ready yet — retry once after 1.5 s (covers race on first load)
+        const _snap = { username: st.duel.invitedUsername, code: st.duel.code, name: st.duel.myName, section: st.duel.section, diff: st.duel.diff }
+        setTimeout(() => {
+          if (st.duel.invitesChannelReady && st.duel.invitesChannel) {
+            st.duel.invitesChannel.send({
+              type: 'broadcast', event: 'invite',
+              payload: { invitedUsername: _snap.username, code: _snap.code, inviterName: _snap.name, section: _snap.section, difficulty: _snap.diff }
+            })
+          }
+        }, 1500)
+      }
+
+      // Path B: FCM push — reaches Android even if app is closed/backgrounded
+      if (st.duel.invitedUserId) {
+        supabase.functions.invoke('send-push', {
+          body: {
+            type: 'duel_invite',
+            targetUserId: st.duel.invitedUserId,
+            code: st.duel.code,
+            from: st.duel.myName,
+            section: st.duel.section,
+            difficulty: st.duel.diff
+          }
+        }).catch(() => { /* best-effort, don't block the game */ })
+      }
     }
   }
 }
