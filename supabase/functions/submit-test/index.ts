@@ -278,14 +278,15 @@ Deno.serve(async (req: Request) => {
     let rateLimit: number
 
     if (section === 'daily') {
-      // 1 submission per UTC calendar day
-      const todayStart = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z'
+      // 1 submission per local calendar day (dailyDate).
+      // Using daily_date column avoids UTC-vs-local mismatch for UTC+ users
+      // (old behaviour used UTC midnight which blocked UTC+ users at early local hours).
       rateLimitQuery = admin
         .from('test_results')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('section', 'daily')
-        .gte('created_at', todayStart)
+        .eq('daily_date', dailyDate)
       rateLimit = 1
     } else if (section.startsWith('duel:')) {
       // 3 submissions per duel code per hour
@@ -387,6 +388,7 @@ Deno.serve(async (req: Request) => {
     score,
     correct_answers: correctAnswers,
     total_questions: totalQuestions,
+    ...(section === 'daily' && dailyDate ? { daily_date: dailyDate } : {}),
   })
 
   if (insertErr) {

@@ -1817,3 +1817,328 @@ html:not(.dark) .duel-score-card-normal {
   background: rgba(241,245,249,0.9) !important;
   border-color: rgba(148,163,184,0.5) !important;
 }
+
+/* ══════════════════════════════════════════════════════════
+   ANDROID MATERIAL DESIGN ALIGNMENT
+   ══════════════════════════════════════════════════════════ */
+
+/* ── AUTH PAGE: синий градиент (Android AuthScreen) ── */
+#authPage {
+  background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%) !important;
+}
+.auth-card {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 24px !important;
+}
+.auth-card::before { display: none !important; }
+.dark .auth-card {
+  background: #1E293B !important;
+  border: 1px solid rgba(96, 165, 250, 0.15) !important;
+}
+.auth-logo {
+  background: none !important;
+  -webkit-text-fill-color: #2563EB !important;
+  color: #2563EB !important;
+  font-size: 4rem !important;
+}
+.dark .auth-logo { -webkit-text-fill-color: #60A5FA !important; }
+.auth-title {
+  font-family: 'Inter', sans-serif !important;
+  color: #1E293B !important;
+}
+.dark .auth-title { color: #E2E8F0 !important; }
+.auth-btn-primary {
+  background: #2563EB !important;
+  border-radius: 12px !important;
+  height: 50px !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+.auth-btn-primary:hover {
+  background: #1D4ED8 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.auth-tabs-wrap {
+  background: #F1F5F9 !important;
+  border-radius: 12px !important;
+}
+.dark .auth-tabs-wrap { background: #243248 !important; }
+.auth-tab.active {
+  background: #ffffff !important;
+  color: #2563EB !important;
+  font-weight: 700 !important;
+}
+.dark .auth-tab.active {
+  background: #1E293B !important;
+  color: #60A5FA !important;
+}
+
+/* ── ANDROID HOME HEADER ── */
+.android-home-header {
+  background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 100%);
+  padding: 20px 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.android-home-header-left { flex: 1; min-width: 0; }
+.android-greeting {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+  font-family: 'Inter', sans-serif;
+}
+.android-streak-badge {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.android-home-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: white;
+  transition: background 0.2s;
+}
+.android-home-avatar:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* ── DAILY CHALLENGE CARD ── */
+.android-daily-card {
+  margin: 16px 16px 0;
+  background: #FFFBEB;
+  border-radius: 24px;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: opacity 0.15s;
+}
+.android-daily-card:hover { opacity: 0.9; }
+.dark .android-daily-card {
+  background: #2D1B00;
+  border-color: rgba(252, 211, 77, 0.2);
+}
+.android-daily-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.android-daily-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(217, 119, 6, 0.15);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.android-daily-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #92400E;
+  font-family: 'Inter', sans-serif;
+}
+.dark .android-daily-title { color: #FDE68A; }
+.android-daily-sub {
+  font-size: 13px;
+  color: rgba(146, 64, 14, 0.8);
+  margin-top: 2px;
+}
+.dark .android-daily-sub { color: rgba(253, 230, 138, 0.75); }
+.android-daily-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.android-daily-countdown {
+  font-size: 13px;
+  color: #B45309;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+}
+.dark .android-daily-countdown { color: #FCD34D; }
+.android-daily-btn {
+  background: #D97706;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.15s;
+}
+.android-daily-btn:hover { background: #B45309; }
+.android-daily-btn:disabled { background: #9CA3AF; cursor: default; }
+
+/* ── QUICK ACTIONS: Дуэль + Ошибки ── */
+.android-quick-actions {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px 0;
+}
+.android-quick-card {
+  flex: 1;
+  border-radius: 24px;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  transition: opacity 0.15s, transform 0.15s;
+  min-height: 108px;
+}
+.android-quick-card:hover { opacity: 0.88; transform: translateY(-2px); }
+.android-quick-card svg { color: rgba(255, 255, 255, 0.9); display: block; }
+.aqc-title { font-size: 15px; font-weight: 700; color: #ffffff; line-height: 1; }
+.aqc-sub   { font-size: 11px; color: rgba(255, 255, 255, 0.7); line-height: 1; }
+.aqc-duel     { background: #7C3AED; }
+.aqc-mistakes { background: #374151; }
+
+/* ── SECTION LABEL ── */
+.android-section-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E293B;
+  padding: 20px 16px 10px;
+  font-family: 'Inter', sans-serif;
+}
+.dark .android-section-label { color: #E2E8F0; }
+
+/* ── COMPACT 2-COLUMN SUBJECT CARDS ── */
+.android-subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+.android-subject-card {
+  height: 96px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  background: #F1F5F9;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.android-subject-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.dark .android-subject-card { background: #243248; }
+.android-subject-card .subject-emoji {
+  font-size: 26px;
+  line-height: 1;
+  color: #2563EB;
+  font-family: 'Playfair Display', serif;
+}
+.dark .android-subject-card .subject-emoji { color: #60A5FA; }
+.android-subject-card .subject-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748B;
+  text-align: center;
+  padding: 0 8px;
+  line-height: 1.3;
+}
+.dark .android-subject-card .subject-name { color: #94A3B8; }
+
+/* ── HOME FOOTER (PWA/APK links) ── */
+.android-home-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 28px;
+  align-items: center;
+}
+
+/* ── PROFILE AVATAR ── */
+.profile-avatar {
+  background: rgba(255, 255, 255, 0.2) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* ── ANSWER OPTIONS ── */
+.option-label { border-radius: 12px !important; }
+
+/* ── TEST PROGRESS BAR ── */
+#progressBar {
+  background: #10B981 !important;
+  border-radius: 4px !important;
+  height: 7px !important;
+}
+
+/* ── BOTTOM NAV — СВЕТЛАЯ ТЕМА ── */
+html:not(.dark) #bottomNav {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-top: 1px solid #CBD5E1 !important;
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.06) !important;
+}
+html:not(.dark) #bottomNav button { color: #94A3B8 !important; }
+html:not(.dark) #bottomNav button:hover { color: #2563EB !important; background: rgba(37, 99, 235, 0.08) !important; }
+html:not(.dark) #bottomNav button.bn-active { color: #2563EB !important; }
+
+/* ── SIDEBAR — СВЕТЛАЯ ТЕМА ── */
+html:not(.dark) #desktopSidebar {
+  background: #F8FAFC !important;
+  border-right: 1px solid #E2E8F0 !important;
+}
+html:not(.dark) .sb-item { color: #64748B !important; }
+html:not(.dark) .sb-item:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #2563EB !important;
+}
+html:not(.dark) .sb-item.sb-active {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #2563EB !important;
+}
+html:not(.dark) .sb-username { color: #1E293B !important; }
+
+/* ── DESKTOP NAV — СВЕТЛАЯ ТЕМА ── */
+html:not(.dark) #desktopNav {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+html:not(.dark) .dh-nav-btn { color: #64748B !important; }
+html:not(.dark) .dh-nav-btn:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #2563EB !important;
+}
+html:not(.dark) .dh-nav-btn.dh-active {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #2563EB !important;
+}
+html:not(.dark) .dh-username { color: #1E293B !important; }

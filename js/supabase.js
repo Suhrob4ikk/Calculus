@@ -249,6 +249,18 @@ export async function deletePushSubscription(userId) {
 
 // ── Ежедневный вызов ─────────────────────────────────────
 export async function getTodayDailyResult(userId, date) {
+  // Primary: use daily_date column (new rows). Fallback: created_at range (old rows).
+  const { data: byDate } = await supabase
+    .from('test_results')
+    .select('score')
+    .eq('user_id', userId)
+    .eq('section', 'daily')
+    .eq('daily_date', date)
+    .limit(1)
+    .maybeSingle()
+  if (byDate) return byDate
+
+  // Fallback for rows saved before daily_date column was added
   const [y, m, d] = date.split('-').map(Number)
   const startUTC = new Date(y, m - 1, d).toISOString()
   const endUTC   = new Date(y, m - 1, d + 1).toISOString()
@@ -261,14 +273,25 @@ export async function getTodayDailyResult(userId, date) {
     .lt('created_at', endUTC)
     .limit(1)
     .maybeSingle()
-  return data   // { score } или null
+  return data
 }
 
 export async function getDailyLeaderboard(date) {
-  // date: 'YYYY-MM-DD' (local) — переводим в UTC, чтобы покрыть полный локальный день
+  // Primary: use daily_date column (new rows — timezone-safe).
+  const { data: byDate, error: err1 } = await supabase
+    .from('test_results')
+    .select('username, score, correct_answers, total_questions, created_at')
+    .eq('section', 'daily')
+    .eq('daily_date', date)
+    .order('score', { ascending: false })
+    .order('created_at', { ascending: true })
+    .limit(100)
+  if (!err1 && byDate && byDate.length > 0) return { data: byDate, error: null }
+
+  // Fallback: created_at window for rows without daily_date (old submissions)
   const [y, m, d] = date.split('-').map(Number)
-  const startUTC = new Date(y, m - 1, d).toISOString()        // local midnight → UTC
-  const endUTC   = new Date(y, m - 1, d + 1).toISOString()   // next local midnight → UTC
+  const startUTC = new Date(y, m - 1, d).toISOString()
+  const endUTC   = new Date(y, m - 1, d + 1).toISOString()
   const { data, error } = await supabase
     .from('test_results')
     .select('username, score, correct_answers, total_questions, created_at')

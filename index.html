@@ -1023,159 +1023,106 @@
 
   <!-- ── ГЛАВНАЯ ── -->
   <div id="homePage" class="page-content hidden" style="display:none">
-    <div class="container mx-auto px-4 py-8">
-      <!-- Hero -->
-      <div class="text-center mb-10 fade-in">
-        <h1 class="text-4xl md:text-6xl font-bold text-slate-100 mb-4" style="font-family:'Playfair Display',serif">
-          Математический анализ</h1>
-        <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-6">
-          Пределы · Производные · Интегралы · Ряды · Дифференциальные уравнения · Теория вероятностей
-        </p>
-        <div class="flex flex-wrap gap-3 justify-center items-center">
-          <span id="userGreeting"
-            class="text-slate-300 font-medium border border-slate-600 px-4 py-2 rounded-full text-sm"></span>
-          <!-- Серия дней -->
-          <span id="streakBadge"
-            style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(234,179,8,0.2));border:1px solid rgba(239,68,68,0.4);color:#fbbf24;padding:6px 14px;border-radius:9999px;font-size:0.85rem;gap:5px"></span>
-          <!-- Кнопка установки PWA -->
-          <button id="installAppBtn" onclick="installApp()"
-            style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(139,92,246,0.25));border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:6px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600">
-            <i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px"></i> Установить приложение
-          </button>
-          <!-- Кнопка скачивания APK -->
-          <a href="https://github.com/Suhrob4ikk/Calculus/raw/main/mathcore.apk" download="mathcore.apk"
-            style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(34,197,94,0.25),rgba(16,185,129,0.25));border:1px solid rgba(34,197,94,0.4);color:#86efac;padding:6px 14px;border-radius:9999px;font-size:0.85rem;font-weight:600;text-decoration:none">
-            <i data-lucide="smartphone" style="width:14px;height:14px;vertical-align:-2px"></i> Скачать APK
-          </a>
+
+    <!-- Android gradient header -->
+    <div class="android-home-header">
+      <div class="android-home-header-left">
+        <div id="userGreeting" class="android-greeting"></div>
+        <span id="streakBadge" class="android-streak-badge"
+          style="display:none;align-items:center;gap:4px"></span>
+      </div>
+      <button class="android-home-avatar" onclick="showProfile()">
+        <img id="homeAvatarImg" src="" alt=""
+          style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <span id="homeAvatarLetter">👤</span>
+      </button>
+    </div>
+
+    <!-- Daily Challenge -->
+    <div id="dailyChallengeCard" class="android-daily-card" onclick="startDailyChallenge()">
+      <div class="android-daily-body">
+        <div class="android-daily-icon">⭐</div>
+        <div>
+          <div class="android-daily-title">Ежедневный вызов</div>
+          <div class="android-daily-sub">10 вопросов из всех разделов · Одна попытка в день</div>
         </div>
       </div>
-
-      <!-- Daily Challenge -->
-      <div class="max-w-6xl mx-auto mb-6">
-        <div id="dailyChallengeCard"
-          class="glass-panel rounded-3xl p-6 border border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.08)] cursor-pointer card-hover"
-          onclick="startDailyChallenge()">
-          <div class="flex items-center justify-between flex-wrap gap-4">
-            <div class="flex items-center gap-4">
-              <div
-                style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(234,179,8,0.15));border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <polygon
-                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              </div>
-              <div>
-                <h2 class="text-xl font-bold text-slate-100">Ежедневный вызов</h2>
-                <p class="text-slate-400 text-sm">10 вопросов из всех разделов · Одна попытка в день</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <span id="dailyChallengeCountdown" class="text-amber-400 font-mono text-sm"></span>
-              <button id="dailyChallengeBtn" onclick="event.stopPropagation(); startDailyChallenge()"
-                class="bg-amber-600 hover:bg-amber-500 text-white px-6 py-2 rounded-xl font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-                Начать
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cards grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        <!-- Пределы -->
-        <div class="glass-panel rounded-3xl p-8 border border-violet-500/20
-                  shadow-[0_0_30px_rgba(139,92,246,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('limits')">
-          <div class="text-6xl mb-5 text-violet-400" style="font-family:'Playfair Display',serif">lim</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Пределы</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по пределам и непрерывности функций</p>
-          <button class="w-full bg-violet-600 hover:bg-violet-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Производные -->
-        <div class="glass-panel rounded-3xl p-8 border border-emerald-500/20
-                  shadow-[0_0_30px_rgba(16,185,129,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('derivatives')">
-          <div class="text-6xl mb-5 text-emerald-400" style="font-family:'Playfair Display',serif">f'(x)</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Производные</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальному исчислению</p>
-          <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Интегралы -->
-        <div class="glass-panel rounded-3xl p-8 border border-blue-500/20
-                  shadow-[0_0_30px_rgba(59,130,246,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('integrals')">
-          <div class="text-6xl mb-5 text-blue-400" style="font-family:'Playfair Display',serif">∫</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Интегралы</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по интегральному исчислению</p>
-          <button class="w-full bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Ряды -->
-        <div class="glass-panel rounded-3xl p-8 border border-rose-500/20
-                  shadow-[0_0_30px_rgba(225,29,72,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('series')">
-          <div class="text-6xl mb-5 text-rose-400" style="font-family:'Playfair Display',serif">∑</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Ряды и последовательности</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по рядам и последовательностям</p>
-          <button class="w-full bg-rose-600 hover:bg-rose-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(225,29,72,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Дифференциальные уравнения -->
-        <div class="glass-panel rounded-3xl p-8 border border-orange-500/20
-                  shadow-[0_0_30px_rgba(249,115,22,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('ode')">
-          <div class="text-6xl mb-5 text-orange-400" style="font-family:'Playfair Display',serif">y'</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Дифф. уравнения</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по дифференциальным уравнениям</p>
-          <button class="w-full bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Теория вероятностей -->
-        <div class="glass-panel rounded-3xl p-8 border border-sky-500/20
-                  shadow-[0_0_30px_rgba(14,165,233,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('probability')">
-          <div class="text-6xl mb-5 text-sky-400" style="font-family:'Playfair Display',serif">P</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Теория вероятностей</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Тестирование знаний по вероятности, комбинаторике и
-            распределениям</p>
-          <button class="w-full bg-sky-600 hover:bg-sky-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(14,165,233,0.3)]">
-            Начать тест
-          </button>
-        </div>
-
-        <!-- Линейная алгебра -->
-        <div class="glass-panel rounded-3xl p-8 border border-indigo-500/20
-                  shadow-[0_0_30px_rgba(99,102,241,0.08)] card-hover cursor-pointer
-                  flex flex-col items-center text-center" onclick="showSection('linalg')">
-          <div class="text-6xl mb-5 text-indigo-400" style="font-family:'Playfair Display',serif">Ax</div>
-          <h2 class="text-2xl font-bold text-slate-100 mb-3">Линейная алгебра</h2>
-          <p class="text-slate-400 text-sm mb-6 flex-1">Матрицы, определители, системы уравнений, собственные значения</p>
-          <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl
-                       font-semibold transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">
-            Начать тест
-          </button>
-        </div>
+      <div class="android-daily-foot">
+        <span id="dailyChallengeCountdown" class="android-daily-countdown"></span>
+        <button id="dailyChallengeBtn" onclick="event.stopPropagation();startDailyChallenge()"
+          class="android-daily-btn">Начать</button>
       </div>
     </div>
+
+    <!-- Quick actions: Дуэль + Ошибки -->
+    <div class="android-quick-actions">
+      <button class="android-quick-card aqc-duel" onclick="showDuelPage()">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 17.5 9.5 12.5l5-5"/><path d="M9.5 17.5l5-5-5-5"/>
+        </svg>
+        <span class="aqc-title">Дуэль</span>
+        <span class="aqc-sub">1 vs 1 онлайн</span>
+      </button>
+      <button class="android-quick-card aqc-mistakes" onclick="showMistakesPage()">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <circle cx="12" cy="16" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="aqc-title">Ошибки</span>
+        <span class="aqc-sub">Проработать</span>
+      </button>
+    </div>
+
+    <!-- Section heading -->
+    <div class="android-section-label">Выбери раздел</div>
+
+    <!-- Compact 2-column subject grid -->
+    <div class="android-subjects-grid">
+      <button class="android-subject-card" onclick="showSection('limits')">
+        <span class="subject-emoji">lim</span>
+        <span class="subject-name">Пределы</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('derivatives')">
+        <span class="subject-emoji">f'(x)</span>
+        <span class="subject-name">Производные</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('integrals')">
+        <span class="subject-emoji">∫</span>
+        <span class="subject-name">Интегралы</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('series')">
+        <span class="subject-emoji">∑</span>
+        <span class="subject-name">Ряды</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('ode')">
+        <span class="subject-emoji">y'</span>
+        <span class="subject-name">Дифф. уравнения</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('probability')">
+        <span class="subject-emoji">P</span>
+        <span class="subject-name">Вероятность</span>
+      </button>
+      <button class="android-subject-card" onclick="showSection('linalg')">
+        <span class="subject-emoji">Ax</span>
+        <span class="subject-name">Линейная алгебра</span>
+      </button>
+    </div>
+
+    <!-- PWA / APK (web-only, tertiary) -->
+    <div class="android-home-footer">
+      <button id="installAppBtn" onclick="installApp()"
+        style="display:none;align-items:center;gap:6px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#2563EB;padding:6px 14px;border-radius:12px;font-size:0.8rem;cursor:pointer;font-weight:600">
+        <i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px"></i> Установить приложение
+      </button>
+      <a href="https://github.com/Suhrob4ikk/Calculus/raw/main/mathcore.apk" download="mathcore.apk"
+        style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10B981;padding:6px 14px;border-radius:12px;font-size:0.8rem;font-weight:600;text-decoration:none">
+        <i data-lucide="smartphone" style="width:14px;height:14px;vertical-align:-2px"></i> Скачать APK
+      </a>
+    </div>
+
   </div>
 
   <!-- ── РАЗДЕЛЫ ── -->
@@ -2448,6 +2395,41 @@
       }
     }
   </style>
+  <script>
+    /* Sync home-header avatar from sidebar avatar (visual only) */
+    (function () {
+      function syncHomeAvatar() {
+        var sbImg    = document.getElementById('sbAvatarImg');
+        var sbLetter = document.getElementById('sbAvatarLetter');
+        var hImg     = document.getElementById('homeAvatarImg');
+        var hLetter  = document.getElementById('homeAvatarLetter');
+        if (!hImg || !hLetter) return;
+        if (sbImg && sbImg.src && sbImg.style.display !== 'none') {
+          hImg.src = sbImg.src;
+          hImg.style.display = 'block';
+          hLetter.style.display = 'none';
+        } else if (sbLetter && sbLetter.textContent.trim()) {
+          hLetter.textContent = sbLetter.textContent.trim();
+          hImg.style.display = 'none';
+          hLetter.style.display = '';
+        }
+      }
+      function attachObserver() {
+        var sbImg    = document.getElementById('sbAvatarImg');
+        var sbLetter = document.getElementById('sbAvatarLetter');
+        if (!sbImg) return;
+        var obs = new MutationObserver(syncHomeAvatar);
+        obs.observe(sbImg,    { attributes: true });
+        obs.observe(sbLetter, { attributes: true, childList: true, subtree: true });
+        syncHomeAvatar();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachObserver);
+      } else {
+        attachObserver();
+      }
+    })();
+  </script>
 </body>
 
 </html>
