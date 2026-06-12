@@ -623,7 +623,8 @@ window.finishTest = async function () {
       answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
       section:    st.currentSection,
       difficulty: st.currentDifficulty,
-      username
+      username,
+      ...(st.currentSection === 'daily' ? { dailyDate: getDailyDate() } : {}),
     })
     const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
     Promise.race([savePromise, timeout]).catch(e => console.warn('submitTestResult:', e))
