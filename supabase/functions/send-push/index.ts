@@ -177,12 +177,42 @@ Deno.serve(async (req) => {
     try { body = await req.json() } catch { /* not JSON or empty — fall through to broadcast */ }
 
     if (body?.type === 'duel_invite') {
+      // ── Step 1: Verify caller JWT ─────────────────────────────────────────
+      // service-role client can verify any Supabase JWT without a separate anon key
+      const authHeader = req.headers.get('Authorization') ?? ''
+      if (!authHeader.startsWith('Bearer ')) {
+        return new Response(
+          JSON.stringify({ error: 'Authorization required' }),
+          { status: 401 }
+        )
+      }
+      const { data: { user: callerUser }, error: authErr } = await supabase.auth.getUser(
+        authHeader.slice(7)
+      )
+      if (authErr || !callerUser) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+      }
+
       const { targetUserId, code, from, section = '', difficulty = '' } = body
 
       if (!targetUserId || !code || !from) {
         return new Response(
           JSON.stringify({ error: 'targetUserId, code and from are required' }),
           { status: 400 }
+        )
+      }
+
+      // ── Step 2: Verify `from` matches the caller's own username ──────────
+      // Prevents sending invites that claim to come from a different user
+      const { data: callerProfile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', callerUser.id)
+        .single()
+      if (!callerProfile || callerProfile.username !== from) {
+        return new Response(
+          JSON.stringify({ error: 'Forbidden: from must match your username' }),
+          { status: 403 }
         )
       }
 

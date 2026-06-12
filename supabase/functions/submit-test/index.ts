@@ -206,7 +206,10 @@ function isCorrect(q: Question, selected: string): boolean {
 // ── XP formula (mirrors Android XpUtils.kt and web ui.js XP_TABLE) ───────────
 
 function computeXp(correctAnswers: number, difficulty: string, score: number): number {
-  const mult = difficulty === 'easy' ? 10 : difficulty === 'hard' ? 30 : 20
+  // Exam formats: 'full' → 30 (same as hard), 'quick'/'standard' → 20
+  const mult = (difficulty === 'easy') ? 10
+    : (difficulty === 'hard' || difficulty === 'full') ? 30
+    : 20
   return correctAnswers * mult + (score === 100 ? 25 : 0)
 }
 
@@ -297,6 +300,15 @@ Deno.serve(async (req: Request) => {
         .eq('section', section)
         .gte('created_at', oneHourAgo)
       rateLimit = 3
+    } else if (section === 'exam') {
+      // 3 exam submissions per hour across all formats
+      rateLimitQuery = admin
+        .from('test_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('section', 'exam')
+        .gte('created_at', oneHourAgo)
+      rateLimit = 3
     } else {
       // 5 submissions per section+difficulty per hour for regular quizzes
       rateLimitQuery = admin
@@ -350,6 +362,16 @@ Deno.serve(async (req: Request) => {
     const ds      = duelSection   ?? 'mixed'
     const dd      = duelDifficulty ?? difficulty
     pool = await getDuelPool(code, ds, dd)
+
+  } else if (section === 'exam') {
+    // Exam: load all 21 subject×difficulty pools and validate by question text.
+    // Client shuffles freely; server just needs the full bank to look up answers.
+    const ALL_SUBJECTS = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
+    const ALL_DIFFS    = ['easy', 'medium', 'hard']
+    const allPools = await Promise.all(
+      ALL_SUBJECTS.flatMap(s => ALL_DIFFS.map(d => loadPool(s, d)))
+    )
+    pool = allPools.flat()
 
   } else {
     // Regular quiz (section = subject name)

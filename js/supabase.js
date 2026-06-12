@@ -33,10 +33,16 @@ export async function signUp(email, password, username) {
 
 export async function getEmailByUsername(username) {
   try {
-    const { data } = await withTimeout(
-      supabase.rpc('get_email_by_username', { p_username: username })
+    const res = await withTimeout(
+      fetch(`${SUPABASE_URL}/functions/v1/find-email`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body:    JSON.stringify({ username }),
+      })
     )
-    return data || null
+    if (!res.ok) return null
+    const { email } = await res.json()
+    return email || null
   } catch {
     return null
   }

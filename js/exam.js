@@ -4,7 +4,7 @@
 
 import { st } from './state.js'
 import { showPage, launchConfetti, playSound, addXP, showXPToast } from './ui.js'
-import { saveResult } from './supabase.js'
+import { submitTestResult } from './supabase.js'
 import { QUESTIONS } from './questions.js'
 
 // ── Состояние экзамена ────────────────────────────────────
@@ -375,17 +375,18 @@ async function finishExam(autoSubmit) {
     || st.currentUser?.email?.split('@')[0]
     || 'Студент'
 
-  // Сохраняем результат в Supabase в фоне
+  // Сохраняем результат через Edge Function (server-side валидация)
   if (st.currentUser) {
-    saveResult({
-      userId:         st.currentUser.id,
+    const examAnswers = examSt.questions.map((q, i) => ({
+      questionText: q.question,
+      selected:     examSt.answers[i] !== null ? (q.options[examSt.answers[i]] ?? '') : '',
+    }))
+    submitTestResult({
+      answers:    examAnswers,
+      section:    'exam',
+      difficulty: examSt.format,
       username,
-      section:        'exam',
-      difficulty:     examSt.format,
-      score:          pct,
-      correctAnswers: correct,
-      totalQuestions: total,
-    }).catch(e => console.warn('[Exam] saveResult:', e))
+    }).catch(e => console.warn('[Exam] submitTestResult:', e))
   }
 
   // Сохраняем ошибки в фоне
