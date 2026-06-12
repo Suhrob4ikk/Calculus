@@ -266,10 +266,10 @@ export async function getTodayDailyResult(userId, date) {
     .maybeSingle()
   if (byDate) return byDate
 
-  // Fallback for rows saved before daily_date column was added
+  // Fallback for rows saved before daily_date column was added (UTC midnight boundaries)
   const [y, m, d] = date.split('-').map(Number)
-  const startUTC = new Date(y, m - 1, d).toISOString()
-  const endUTC   = new Date(y, m - 1, d + 1).toISOString()
+  const startUTC = new Date(Date.UTC(y, m - 1, d)).toISOString()
+  const endUTC   = new Date(Date.UTC(y, m - 1, d + 1)).toISOString()
   const { data } = await supabase
     .from('test_results')
     .select('score')
@@ -292,12 +292,13 @@ export async function getDailyLeaderboard(date) {
     .order('score', { ascending: false })
     .order('created_at', { ascending: true })
     .limit(100)
+  if (err1) console.warn('[DailyLeaderboard] daily_date query error:', err1.message)
   if (!err1 && byDate && byDate.length > 0) return { data: byDate, error: null }
 
-  // Fallback: created_at window for rows without daily_date (old submissions)
+  // Fallback: created_at window for rows without daily_date (UTC midnight boundaries)
   const [y, m, d] = date.split('-').map(Number)
-  const startUTC = new Date(y, m - 1, d).toISOString()
-  const endUTC   = new Date(y, m - 1, d + 1).toISOString()
+  const startUTC = new Date(Date.UTC(y, m - 1, d)).toISOString()
+  const endUTC   = new Date(Date.UTC(y, m - 1, d + 1)).toISOString()
   const { data, error } = await supabase
     .from('test_results')
     .select('username, score, correct_answers, total_questions, created_at')
@@ -307,6 +308,7 @@ export async function getDailyLeaderboard(date) {
     .order('score', { ascending: false })
     .order('created_at', { ascending: true })
     .limit(100)
+  if (error) console.warn('[DailyLeaderboard] fallback query error:', error.message)
   return { data, error }
 }
 

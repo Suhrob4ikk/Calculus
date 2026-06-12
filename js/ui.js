@@ -113,8 +113,10 @@ export function showPage(pageId) {
     'authPage', 'updatePasswordPage',
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
-    // examPage намеренно НЕ здесь — сайдбар видим, но кнопки заблокированы через .exam-active
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage',
+    'duelPage', 'examPage', 'mistakesPage',
+    'statisticsPage', 'profilePage', 'leaderboardPage',
+    'searchProfilesPage', 'viewProfilePage',
   ]
   // Сайдбар показываем независимо от showNav (examPage: нет нижней навигации, но сайдбар есть)
   const showSidebar = !noSidebarPages.includes(pageId) && window.innerWidth >= 900
@@ -184,7 +186,10 @@ window.addEventListener('resize', () => {
     'authPage', 'updatePasswordPage',
     'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
     'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage'
+    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage',
+    'duelPage', 'examPage', 'mistakesPage',
+    'statisticsPage', 'profilePage', 'leaderboardPage',
+    'searchProfilesPage', 'viewProfilePage',
   ]
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)
   const w = window.innerWidth

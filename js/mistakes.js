@@ -280,21 +280,28 @@ window._startMistakePractice = async function(subject) {
   // Перемешиваем (максимум 20 вопросов за один прогон)
   const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, 20)
 
-  // Запускаем через механизм startTest
-  if (window.startTest) {
-    // Подготавливаем тест вручную через st
-    st.currentTest      = shuffled
-    st.currentSection   = subject || 'mistakes'
-    st.currentDifficulty = 'mixed'
-    st.userAnswers      = new Array(shuffled.length).fill(null)
-    st.currentQuestionIndex = 0
-    st.testMode         = 'choice'
-    st.isStudyMode      = false
-    st.timeRemaining    = shuffled.length * 90 // 90 сек/вопрос
-    showPage('testPage')
-    st.startTimer?.()
-    st.displayQuestion?.()
-  } else {
-    alert('Механизм теста недоступен. Пожалуйста, обновите страницу.')
-  }
+  // Запускаем тест через общий механизм (st.* назначены в test.js)
+  st.clearTestState?.()
+  st.currentTest       = shuffled
+  st.currentSection    = subject || 'mistakes'
+  st.currentDifficulty = 'mixed'
+  st.userAnswers       = new Array(shuffled.length).fill(null)
+  st.currentQuestionIndex = 0
+  st.testMode          = 'closed'
+  st.isStudyMode       = false
+  st.finishInProgress  = false
+  st.timeRemaining     = shuffled.length * 90
+  st.timerInitialTime  = st.timeRemaining
+  st.testStartTime     = Date.now()
+  showPage('testPage')
+  const _tq = document.getElementById('totalQuestions')
+  if (_tq) _tq.textContent = shuffled.length
+  const _tt = document.getElementById('testTitle')
+  if (_tt) _tt.textContent = 'Работа над ошибками'
+  const _dl = document.getElementById('difficultyLabel')
+  if (_dl) _dl.textContent = subject ? `Раздел: ${subject} · Смешанный` : 'Все разделы · Смешанный'
+  const _fb = document.getElementById('finishBtn')
+  if (_fb) { _fb.disabled = false; _fb.innerHTML = '<i data-lucide="check-circle-2"></i> Завершить тест' }
+  st.startTimer?.()
+  st.displayQuestion?.()
 }
