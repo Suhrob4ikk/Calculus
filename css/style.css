@@ -454,6 +454,11 @@ html:not(.dark) #bottomNav button.bn-active { color: #4f46e5; background: rgba(9
 @media (min-width: 641px) {
   #bottomNav { display: none !important; }
 }
+/* На планшете/десктопе быстрые кнопки (Дуэль+Ошибки) скрыты —
+   они уже доступны в шапке или боковом меню */
+@media (min-width: 641px) {
+  .android-quick-actions { display: none !important; }
+}
 
 /* ══════════════════════════════════════════════════════════
    СВЕТЛАЯ ТЕМА — исправление glass-панелей и slate-текста
