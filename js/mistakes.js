@@ -35,7 +35,16 @@ function hashQuestion(text) {
 // section    — раздел ('integrals', 'exam' и т.д.)
 // difficulty — сложность
 // userId     — id пользователя
-st.saveMistakesFromResults = async function(results, questions, section, difficulty, userId) {
+// Pending promise for the last saveMistakesFromResults call (race-condition guard)
+st._mistakesPracticePromise = null
+
+st.saveMistakesFromResults = function(results, questions, section, difficulty, userId) {
+  const promise = _doSaveMistakesFromResults(results, questions, section, difficulty, userId)
+  st._mistakesPracticePromise = promise
+  return promise
+}
+
+async function _doSaveMistakesFromResults(results, questions, section, difficulty, userId) {
   if (!userId || !results || results.length === 0) return
 
   for (let i = 0; i < results.length; i++) {
@@ -75,6 +84,13 @@ window.showMistakesPage = async function() {
   if (!st.currentUser) {
     renderMistakesNotLoggedIn()
     return
+  }
+
+  // Wait for any in-flight mistake-marking to finish before fetching,
+  // so the list reflects answers just submitted in a practice session.
+  if (st._mistakesPracticePromise) {
+    try { await st._mistakesPracticePromise } catch (e) {}
+    st._mistakesPracticePromise = null
   }
 
   const { data, error } = await fetchMistakes(st.currentUser.id)
@@ -242,6 +258,10 @@ function renderMistakesList(mistakes) {
         cursor:pointer;font-size:0.95rem;margin-top:0.5rem">← Главная</button>
     </div>
   `
+
+  if (window.MathJax?.typesetPromise) {
+    MathJax.typesetPromise([container]).catch(e => console.warn('[Mistakes] MathJax:', e))
+  }
 }
 
 // ── Запуск практики ошибок ────────────────────────────────
