@@ -527,6 +527,8 @@ window.finishTest = async function () {
   if (finishBtn) { finishBtn.disabled = true; finishBtn.textContent = 'Сохраняем...' }
   stopTimer()
 
+  try {
+
   let correct = 0
   const results = st.currentTest.map((q, i) => {
     let ok
@@ -667,6 +669,15 @@ window.finishTest = async function () {
     // Обновляем карточку ежедневного вызова если нужно
     window.updateDailyChallengeCard?.()
   }, 0)
+
+  } catch (err) {
+    console.error('[finishTest] Unexpected error, showing results anyway:', err)
+    try { showPage('resultsPage') } catch (_) {}
+  } finally {
+    st.finishInProgress = false
+    const fb = document.getElementById('finishBtn')
+    if (fb) { fb.disabled = false; fb.textContent = 'Завершить тест' }
+  }
 }
 
 window.shareResult = function (correct, total, percentage) {

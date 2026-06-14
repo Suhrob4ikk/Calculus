@@ -39,7 +39,6 @@ export function showPage(pageId) {
   const menuBtn    = document.getElementById('menuBtn')
   const desktopNav = document.getElementById('desktopNav')
   const isDesktop = window.innerWidth >= 768
-  if (bottomNav)  bottomNav.style.display  = showNav ? 'flex' : 'none'
   if (menuBtn)    menuBtn.style.display    = showNav ? '' : 'none'
   // Верхняя шапка — только на планшете (641–767px), на десктопе её заменяет sidebar
   if (desktopNav) desktopNav.style.display = (showNav && !isDesktop) ? '' : 'none'
@@ -127,6 +126,8 @@ export function showPage(pageId) {
   if (desktopSidebar) {
     desktopSidebar.style.display = showSidebar ? 'flex' : 'none'
   }
+  // Bottom nav is for mobile only — hide it when the sidebar is visible
+  if (bottomNav) bottomNav.style.display = (showNav && !showSidebar) ? 'flex' : 'none'
 
   const sbMap = {
     homePage:           'sbHome',
@@ -197,6 +198,8 @@ window.addEventListener('resize', () => {
   sidebar.style.display = showSidebar ? 'flex' : 'none'
   document.body.classList.toggle('no-sidebar', !showSidebar)
   if (topNav)  topNav.style.display  = (isNavPage && w >= 641 && w < 900) ? '' : 'none'
+  const bn = document.getElementById('bottomNav')
+  if (bn) bn.style.display = (isNavPage && !showSidebar) ? 'flex' : 'none'
 })
 
 // ── Навигационное меню (гамбургер) ──────────────────────
