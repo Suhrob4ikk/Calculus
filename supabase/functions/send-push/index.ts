@@ -253,6 +253,13 @@ Deno.serve(async (req) => {
     }
   }
 
+  // ── Broadcast auth: require CRON_SECRET ──────────────────────────────────
+  const CRON_SECRET = Deno.env.get('CRON_SECRET')
+  const cronAuth = (req.headers.get('Authorization') ?? '').replace('Bearer ', '').trim()
+  if (!CRON_SECRET || cronAuth !== CRON_SECRET) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+  }
+
   // ── Broadcast daily reminder (existing logic) ─────────────────────────
   const { data: subscriptions, error } = await supabase
     .from('push_subscriptions')

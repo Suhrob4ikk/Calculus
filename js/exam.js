@@ -6,6 +6,7 @@ import { st } from './state.js'
 import { showPage, launchConfetti, playSound, addXP, showXPToast } from './ui.js'
 import { submitTestResult } from './supabase.js'
 import { QUESTIONS } from './questions.js'
+import { escapeHtml } from './utils.js'
 
 // ── Состояние экзамена ────────────────────────────────────
 const examSt = {
@@ -242,7 +243,7 @@ function renderExamActive() {
       <!-- Вопрос -->
       <div style="background:var(--bg-card);border-radius:18px;padding:1.75rem 2rem;margin-bottom:1.5rem;
                   border:1px solid rgba(99,102,241,0.2);font-size:1.1rem;line-height:1.7">
-        ${q.question}
+        ${escapeHtml(q.question)}
       </div>
 
       <!-- Варианты ответа -->
@@ -257,7 +258,7 @@ function renderExamActive() {
                    color:${selected ? '#a5b4fc' : 'var(--text-main)'}">
               <span style="font-weight:700;margin-right:0.75rem;color:${selected ? '#818cf8' : 'var(--text-sub)'}">
                 ${String.fromCharCode(65 + i)}.
-              </span>${opt}
+              </span>${escapeHtml(opt)}
           </button>`
         }).join('')}
       </div>
@@ -498,11 +499,11 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
                 </span>
               </div>
               <div style="color:var(--text-sub);margin-bottom:0.2rem;line-height:1.4">
-                ${r.question.slice(0, 120)}${r.question.length > 120 ? '…' : ''}
+                ${escapeHtml(r.question.slice(0, 120))}${r.question.length > 120 ? '…' : ''}
               </div>
               ${!r.isCorrect ? `
-                <div style="color:#f87171;font-size:0.78rem">Ваш ответ: ${r.userAnswer}</div>
-                <div style="color:#34d399;font-size:0.78rem">Верно: ${r.correctAnswer}</div>
+                <div style="color:#f87171;font-size:0.78rem">Ваш ответ: ${escapeHtml(r.userAnswer)}</div>
+                <div style="color:#34d399;font-size:0.78rem">Верно: ${escapeHtml(r.correctAnswer)}</div>
               ` : ''}
             </div>
           `).join('')}

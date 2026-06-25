@@ -158,10 +158,19 @@ let _sessionChannel = null
 let _sessionGuardUserId = null
 let _mySessionId = null
 
-function _blockNewLogin() {
+async function _blockNewLogin() {
   if (_sessionChannel) { _sessionChannel.unsubscribe(); _sessionChannel = null }
   _sessionGuardUserId = null; _mySessionId = null
   st.kickedOut = true
+  await signOut()
+  st.currentUser = null
+  updateUserUI()
+  showPage('authPage')
+  const errEl = document.getElementById('loginError')
+  if (errEl) {
+    errEl.style.color = '#f59e0b'
+    errEl.textContent = '⚠️ Вы вышли: обнаружена активная сессия на другом устройстве.'
+  }
   supabase.auth.signOut()
 }
 
@@ -199,7 +208,7 @@ export function setupSessionGuard(userId, onApproved = null) {
       const state = _sessionChannel.presenceState()
       const others = Object.values(state).flat().filter(p => p.session_id !== _mySessionId)
       if (others.length > 0) {
-        _blockNewLogin()
+        await _blockNewLogin()
         return
       }
       await _sessionChannel?.track({ session_id: _mySessionId, joined_at: Date.now() })
