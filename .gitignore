@@ -29,3 +29,6 @@ Readme.html
 
 # Claude Code
 .claude/
+
+# Supabase CLI local state
+supabase/.temp/
