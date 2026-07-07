@@ -1,6 +1,7 @@
 import { st } from './state.js'
 import { showPage, updateUserUI, renderStreakBadge, syncSettingsBtns, getXPLevel, getXP } from './ui.js'
 import { supabase, getUserResults, getAvatarUrl, uploadAvatar, getUserRankData, getDuelHistory } from './supabase.js'
+import { escapeHtml } from './utils.js'
 
 // ── Аватар в сайдбаре (загружается при старте) ────────────
 export async function loadSidebarAvatar() {
@@ -269,13 +270,13 @@ window.showProfile = async function() {
           <div class="space-y-2">
             ${rankings.slice(0, 3).map((r, i) => `
               <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
-                <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${r.name}</span>
+                <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${escapeHtml(r.name)}</span>
                 <span class="text-blue-400 font-semibold">${r.xp} XP</span>
               </div>`).join('')}
             ${myRank > 3 ? `
               <div class="text-center text-slate-500 text-xs">...</div>
               <div class="flex justify-between items-center p-2 rounded-lg font-bold" style="background:rgba(59,130,246,0.12)">
-                <span class="text-slate-200">#${myRank} ${username}</span>
+                <span class="text-slate-200">#${myRank} ${escapeHtml(username)}</span>
                 <span class="text-blue-400 font-semibold">${rankings.find(r => r.name === username)?.xp || 0} XP</span>
               </div>` : ''}
           </div>
@@ -362,7 +363,7 @@ window.showProfile = async function() {
         const rText = d.result==='win'?'Победа':d.result==='draw'?'Ничья':d.result==='loss'?'Поражение':'Ожидание'
         const rClr  = d.result==='win'?'#10b981':d.result==='draw'?'#f59e0b':'#ef4444'
         const opp   = d.opponent
-          ? `vs <b>${d.opponent.username}</b> (${d.opponent.score}%)`
+          ? `vs <b>${escapeHtml(d.opponent.username)}</b> (${d.opponent.score}%)`
           : 'vs <span style="color:var(--text-muted)">???</span>'
         return `
           <div style="display:flex;justify-content:space-between;align-items:center;

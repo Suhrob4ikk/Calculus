@@ -2,6 +2,7 @@ import { st } from './state.js'
 import { showPage, getXPLevel } from './ui.js'
 import { searchProfiles, getProfileByUsername } from './supabase.js'
 import { computeBadges } from './profile.js'
+import { escapeHtml } from './utils.js'
 
 function formatLastSeenVP(iso) {
   if (!iso) return null
@@ -33,7 +34,7 @@ window.showSearchProfiles = async function() {
         if (!q) { renderSearchResults(data); return }
         if (!data || data.length === 0) {
           document.getElementById('searchResults').innerHTML =
-            `<p class="text-gray-400 text-center py-4">Пользователь "${q}" не найден</p>`
+            `<p class="text-gray-400 text-center py-4">Пользователь "${escapeHtml(q)}" не найден</p>`
         } else {
           renderSearchResults(data)
         }
@@ -51,13 +52,13 @@ function renderSearchResults(data) {
   }
   container.innerHTML = data.map(p => `
     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors"
-         onclick="viewProfile('${p.username}')">
+         data-username="${escapeHtml(p.username)}" onclick="viewProfile(this.dataset.username)">
       <div class="flex items-center gap-3">
         ${p.avatar_url
-          ? `<img src="${p.avatar_url}" class="w-10 h-10 rounded-full object-cover">`
-          : `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">${p.username.charAt(0).toUpperCase()}</div>`
+          ? `<img src="${escapeHtml(p.avatar_url)}" class="w-10 h-10 rounded-full object-cover">`
+          : `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">${escapeHtml(p.username.charAt(0).toUpperCase())}</div>`
         }
-        <span class="font-semibold" style="color:var(--text-main)">${p.username}</span>
+        <span class="font-semibold" style="color:var(--text-main)">${escapeHtml(p.username)}</span>
         ${p.username === 'Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px">👑</span>' : ''}
       </div>
       <span class="text-blue-500 text-sm">Посмотреть →</span>

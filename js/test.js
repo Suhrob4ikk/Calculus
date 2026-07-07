@@ -1,7 +1,7 @@
 import { st } from './state.js'
 import { showPage, playSound, XP_TABLE, addXP, showXPToast, launchConfetti } from './ui.js'
 import { submitTestResult } from './supabase.js'
-import { getDailyDate } from './utils.js'
+import { getDailyDate, escapeHtml } from './utils.js'
 import { QUESTIONS, OPEN_QUESTIONS } from './questions.js'
 
 // ── [КРИТ-2] Build answers array for Edge Function ────────
@@ -331,7 +331,7 @@ export function displayQuestion() {
   const questionHeader = `
     <div class="mb-6">
       <h3 class="text-xl font-semibold mb-4 math-container" style="color:var(--text-main)">
-        <div class="math-content">${question.question}</div>
+        <div class="math-content">${escapeHtml(question.question)}</div>
       </h3>
     </div>`
 
@@ -658,8 +658,8 @@ window.finishTest = async function () {
         ${results.map((r, i) => `
           <div class="${r.isCorrect ? 'result-card-correct' : 'result-card-wrong'}">
             <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
-            <div class="text-sm mb-1 math-content">${r.question}</div>
-            <div class="text-xs">Ваш: ${r.userAnswer}<br>Правильный: ${r.correctAnswer}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
+            <div class="text-sm mb-1 math-content">${escapeHtml(r.question)}</div>
+            <div class="text-xs">Ваш: ${escapeHtml(r.userAnswer)}<br>Правильный: ${escapeHtml(r.correctAnswer)}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
           </div>`).join('')}
       </div>`
 
