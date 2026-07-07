@@ -5,6 +5,7 @@ node_modules/
 Thumbs.db
 GUIDE.md
 dist/
+dist_new/
 
 # Local Netlify folder
 .netlify
