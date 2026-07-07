@@ -1,13 +1,13 @@
 # MathCore Web
 
-A Progressive Web App for higher mathematics practice. Covers seven subjects with theory, adaptive quizzes, a real-time duel system, daily challenges, and full cross-platform synchronization with the [MathCore Android](https://github.com/Suhrob4ikk/MathCoreAndroid) application.
+A Progressive Web App for higher mathematics practice. Covers seven subjects with theory, quizzes across three difficulty levels, a real-time duel system, daily challenges, and full cross-platform synchronization with the [MathCore Android](https://github.com/Suhrob4ikk/MathCoreAndroid) application.
 
 [![Supabase](https://img.shields.io/badge/Supabase-2.x-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
 [![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-**Live:** [suhrob4ikk.github.io/Calculus](https://suhrob4ikk.github.io/Calculus)  
+**Live:** [mathcore-app.vercel.app](https://mathcore-app.vercel.app)  
 **Android APK:** [Download](https://github.com/Suhrob4ikk/Calculus/raw/main/mathcore.apk)
 
 ---
@@ -29,7 +29,7 @@ The web client is built with no framework — plain HTML, CSS, and ES module Jav
 | 7 subjects | Integrals, Derivatives, Limits, Series, ODEs, Probability, Linear Algebra |
 | 3 difficulty levels | Easy / Medium / Hard, each with its own question pool |
 | Open-answer questions | Numeric input with smart normalization (`1.0 = 1 = 1,0`) |
-| Theory | 85+ steps per subject with KaTeX-rendered formulas |
+| Theory | 85+ steps per subject with MathJax-rendered formulas |
 | Study mode | Practice without timer or result saving |
 | Exam mode | Timed, randomized questions across all subjects |
 
@@ -69,7 +69,7 @@ Frontend        Vanilla HTML + CSS + ES Modules (no build step)
 Backend         Supabase (PostgreSQL, Auth, Storage, Realtime)
 Auth            Supabase Auth (email/password, JWT)
 Realtime        Supabase Realtime — Phoenix WebSocket protocol
-Math rendering  KaTeX (via CDN)
+Math rendering  MathJax 3 (via CDN)
 Charts          Chart.js
 PWA             Service Worker + Web App Manifest
 ```
