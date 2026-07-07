@@ -1,0 +1,22 @@
+{
+  "name": "mathcore-legacy",
+  "version": "1.0.0",
+  "description": "Archived non-web tooling for MathCore (not part of the web app / deploy)",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "electron": "electron .",
+    "build:win": "electron-builder --win"
+  },
+  "dependencies": {
+    "mathjs": "^15.2.0"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.106.1",
+    "dotenv": "^16.6.1",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1",
+    "nodemailer": "^8.0.8",
+    "web-push": "^3.6.7"
+  }
+}
