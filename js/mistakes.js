@@ -4,7 +4,8 @@
 
 import { st } from './state.js'
 import { showPage } from './ui.js'
-import { saveMistake, markMistakeCorrect, fetchMistakes } from './supabase.js'
+import { saveMistakeBatch, markMistakesCorrectBatch, fetchMistakes } from './supabase.js'
+import { escapeHtml } from './utils.js'
 
 // ── Метки разделов ────────────────────────────────────────
 const SUBJECT_LABELS = {
@@ -47,19 +48,18 @@ st.saveMistakesFromResults = function(results, questions, section, difficulty, u
 async function _doSaveMistakesFromResults(results, questions, section, difficulty, userId) {
   if (!userId || !results || results.length === 0) return
 
+  const wrongItems    = []
+  const correctHashes = []
+
   for (let i = 0; i < results.length; i++) {
     const r = results[i]
     const q = questions[i]
     if (!q) continue
-
-    const questionHash = hashQuestion(r.question || q.question || '')
-
+    const hash = hashQuestion(r.question || q.question || '')
     if (!r.isCorrect) {
-      // Сохраняем или обновляем ошибку
-      await saveMistake({
-        userId,
-        questionHash,
-        questionData: {
+      wrongItems.push({
+        hash,
+        data: {
           question: r.question || q.question,
           options:  q.options || q.o || [],
           correct:  q.correct !== undefined ? q.correct : (q.a !== undefined ? q.a : 0),
@@ -67,13 +67,17 @@ async function _doSaveMistakesFromResults(results, questions, section, difficult
         },
         subject:    q.subject || section,
         difficulty: difficulty || q.difficulty || 'medium',
-      }).catch(e => console.warn('[Mistakes] saveMistake:', e))
+      })
     } else {
-      // Правильно ответили — помечаем как исправленную
-      await markMistakeCorrect({ userId, questionHash })
-        .catch(e => console.warn('[Mistakes] markMistakeCorrect:', e))
+      correctHashes.push(hash)
     }
   }
+
+  // 2 requests total: 1 batch upsert for wrong, 1 batch update for correct
+  await Promise.all([
+    saveMistakeBatch(userId, wrongItems),
+    markMistakesCorrectBatch(userId, correctHashes),
+  ])
 }
 
 // ── Показать страницу ошибок ──────────────────────────────
@@ -138,7 +142,7 @@ function renderMistakesError(msg) {
   if (!container) return
   container.innerHTML = `
     <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem;text-align:center">
-      <div style="color:#f87171;margin-bottom:1rem">Ошибка: ${msg}</div>
+      <div style="color:#f87171;margin-bottom:1rem">Ошибка: ${escapeHtml(msg)}</div>
       <button onclick="window.showMistakesPage()" style="padding:8px 20px;border-radius:10px;
         border:none;background:#6366f1;color:white;cursor:pointer;font-weight:600">
         Повторить загрузку
@@ -237,7 +241,7 @@ function renderMistakesList(mistakes) {
                         ${diffLabel}
                       </span>
                       <span style="font-size:0.85rem;color:var(--text-main);line-height:1.4">
-                        ${qText.slice(0, 100)}${qText.length > 100 ? '…' : ''}
+                        ${escapeHtml(qText.slice(0, 100))}${qText.length > 100 ? '…' : ''}
                       </span>
                     </div>
                   </div>
