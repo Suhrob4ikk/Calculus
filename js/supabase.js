@@ -329,7 +329,7 @@ export async function getUserRankData(username) {
         .not('section', 'ilike', 'duel%').limit(2000)
     )
     if (error || !data) return { rank: null, total: null, error }
-    const DIFF_XP = { easy: 10, medium: 20, hard: 30 }
+    const DIFF_XP = { easy: 10, medium: 20, hard: 30, quick: 20, standard: 20, full: 30 }
     const xpByUser = {}
     data.forEach(r => {
       const pts = (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 20)
@@ -390,7 +390,7 @@ export async function getUserXpTotal(userId) {
         .limit(2000)
     )
     if (!data) return 0
-    const DIFF_XP = { easy: 10, medium: 20, hard: 30 }
+    const DIFF_XP = { easy: 10, medium: 20, hard: 30, quick: 20, standard: 20, full: 30 }
     return data.reduce((sum, r) =>
       sum
       + (r.correct_answers || 0) * (DIFF_XP[r.difficulty] || 20)
@@ -456,52 +456,39 @@ export async function getDuelHistory(userId) {
 
 // ── Ошибки пользователя ───────────────────────────────────
 
-// Сохранить ошибку (или обновить счётчик при повторной)
-export async function saveMistake({ userId, questionHash, questionData, subject, difficulty }) {
-  // Сначала проверяем — есть ли такая ошибка
-  const { data: existing } = await supabase
-    .from('user_mistakes')
-    .select('id, mistake_count')
-    .eq('user_id', userId)
-    .eq('question_hash', questionHash)
-    .maybeSingle()
-
-  if (existing) {
-    // Обновляем счётчик и дату
-    const { error } = await supabase
-      .from('user_mistakes')
-      .update({
-        mistake_count: (existing.mistake_count || 1) + 1,
-        corrected:     false,
-        updated_at:    new Date().toISOString(),
-      })
-      .eq('id', existing.id)
-    return { error }
-  } else {
-    // Вставляем новую запись
-    const { error } = await supabase
-      .from('user_mistakes')
-      .insert({
-        user_id:       userId,
-        question_hash: questionHash,
-        question_data: questionData,
-        subject,
-        difficulty,
-        mistake_count: 1,
-        corrected:     false,
-      })
-    return { error }
+/**
+ * Batch upsert wrong answers via the upsert_mistakes DB RPC (1 request).
+ * items: [{ hash, data, subject, difficulty }]
+ * Replaces the old N+1 saveMistake loop in mistakes.js.
+ */
+export async function saveMistakeBatch(userId, items) {
+  if (!userId || !items.length) return
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
+  if (!token) return
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/upsert_mistakes`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`,
+        'apikey':        SUPABASE_KEY,
+      },
+      body: JSON.stringify({ p_user_id: userId, p_items: items }),
+    })
+  } catch (e) {
+    console.warn('[saveMistakeBatch]', e)
   }
 }
 
-// Отметить ошибку как исправленную (правильный ответ)
-export async function markMistakeCorrect({ userId, questionHash }) {
-  const { error } = await supabase
-    .from('user_mistakes')
+/** Batch mark correctly-answered mistakes as corrected (1 UPDATE request). */
+export async function markMistakesCorrectBatch(userId, questionHashes) {
+  if (!userId || !questionHashes.length) return
+  await supabase.from('user_mistakes')
     .update({ corrected: true, updated_at: new Date().toISOString() })
     .eq('user_id', userId)
-    .eq('question_hash', questionHash)
-  return { error }
+    .in('question_hash', questionHashes)
+    .catch(e => console.warn('[markMistakesCorrectBatch]', e))
 }
 
 // Загрузить все активные (неисправленные) ошибки пользователя
@@ -514,4 +501,25 @@ export async function fetchMistakes(userId) {
     .order('updated_at', { ascending: false })
     .limit(500)
   return { data, error }
+}
+
+// ── Серия дней: чтение и запись ───────────────────────────
+export async function loadStreakFromDB(userId) {
+  try {
+    const { data } = await withTimeout(
+      supabase.from('profiles').select('streak, streak_last_date').eq('id', userId).single()
+    )
+    return { dbStreak: data?.streak ?? 0, dbLastDate: data?.streak_last_date ?? null }
+  } catch {
+    return { dbStreak: 0, dbLastDate: null }
+  }
+}
+
+export async function saveStreakToDB(userId, streak, lastDate) {
+  if (!userId) return
+  supabase.from('profiles')
+    .update({ streak, streak_last_date: lastDate })
+    .eq('id', userId)
+    .then(() => {})
+    .catch(e => console.warn('[saveStreakToDB]', e))
 }
