@@ -66,24 +66,31 @@ function shuffle(arr) {
 }
 
 // ── Сборка вопросов для экзамена ──────────────────────────
+// Поровну по каждому из 7 предметов, все 3 сложности в пуле.
+// Соответствует Android buildExamQuestions после унификации.
 function buildExamQuestions(count) {
-  const subjects   = Object.keys(SUBJECTS)
-  const diffs      = ['easy', 'medium', 'hard']
-  const allQs      = []
+  const subjects = Object.keys(SUBJECTS)  // 7 предметов
+  const diffs    = ['easy', 'medium', 'hard']
+  const perSubj  = Math.floor(count / subjects.length)
+  const extra    = count % subjects.length
+  const result   = []
 
-  for (const subj of subjects) {
-    for (const diff of diffs) {
-      const pool = getSubjectPool(subj, diff)
-      allQs.push(...pool)
-    }
-  }
+  subjects.forEach((subj, i) => {
+    const need = perSubj + (i < extra ? 1 : 0)
+    if (need === 0) return
+    // Только вопросы с вариантами (choiceOnly), перемешиваем все сложности
+    const pool = shuffle(
+      diffs.flatMap(d => getSubjectPool(subj, d).filter(q => q.options.length > 0))
+    )
+    result.push(...pool.slice(0, need))
+  })
 
-  if (allQs.length === 0) {
+  if (result.length === 0) {
     console.warn('[Exam] Банк вопросов пуст — файлы вопросов не загружены?')
     return []
   }
 
-  return shuffle(allQs).slice(0, count)
+  return shuffle(result)
 }
 
 // ── Оценка по процентам ───────────────────────────────────
@@ -451,7 +458,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
         <div style="font-size:1.8rem;font-weight:800;color:${grade.color};
                     font-family:'Playfair Display',serif;margin-bottom:1.5rem;
                     border-bottom:1px solid ${grade.color}33;padding-bottom:1rem">
-          ${username}
+          ${escapeHtml(username)}
         </div>
 
         <!-- Статистика -->
