@@ -4,7 +4,7 @@
 
 import { st } from './state.js'
 import { supabase, updateLastSeen } from './supabase.js'
-import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner, syncXpFromDB } from './ui.js'
+import { applyTheme, showPage, updateUserUI, renderStreakBadge, showContinueTestBanner, syncXpFromDB, syncStreakWithDB } from './ui.js'
 import { escapeHtml } from './utils.js'
 import { registerSW } from './pwa.js'
 import { setupSessionGuard, teardownSessionGuard } from './auth.js'
@@ -56,6 +56,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           showPage('homePage')
           updateUserUI()
           syncXpFromDB(st.currentUser.id)
+          syncStreakWithDB(st.currentUser.id)
           loadSidebarAvatar()
           if (localStorage.getItem('testState')) showContinueTestBanner()
           // После успешного входа запускаем канал инвайтов
@@ -201,7 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         st.currentUser = session.user
         updateLastSeen(st.currentUser.id)
         setupSessionGuard(st.currentUser.id)
-        renderStreakBadge()
+        syncStreakWithDB(st.currentUser.id)
         syncXpFromDB(st.currentUser.id)
         // Запускаем канал инвайтов после восстановления сессии
         initInvitesChannel()

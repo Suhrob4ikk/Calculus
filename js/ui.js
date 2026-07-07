@@ -1,5 +1,6 @@
 import { st } from './state.js'
-import { getUserXpTotal } from './supabase.js'
+import { getUserXpTotal, loadStreakFromDB, saveStreakToDB } from './supabase.js'
+import { escapeHtml, getDailyDate } from './utils.js'
 
 // ── Тема ─────────────────────────────────────────────────
 export function applyTheme(dark) {
@@ -160,7 +161,7 @@ export function updateUserUI() {
   const isCreator = st.currentUser.email === 'davlatovsurob@gmail.com'
   const el = document.getElementById('userGreeting')
   if (el) {
-    el.innerHTML = `👤 ${username}` + (isCreator
+    el.innerHTML = `👤 ${escapeHtml(username)}` + (isCreator
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
       : '')
   }
@@ -360,18 +361,24 @@ export function showXPToast(gained, total) {
   }, 3200)
 }
 // ── Streak (серия дней) ──────────────────────────────────
+function _getYesterdayDate() {
+  const d = new Date()
+  d.setUTCDate(d.getUTCDate() - 1)
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`
+}
+
 export function updateStreak() {
-  const today     = new Date().toDateString()
+  const today     = getDailyDate()
   const lastVisit = localStorage.getItem('lastVisit')
   let streak      = parseInt(localStorage.getItem('streak') || '0', 10)
   if (lastVisit !== today) {
-    const yesterday = new Date(Date.now() - 86400000).toDateString()
-    streak = lastVisit === yesterday ? streak + 1 : 1
+    streak = lastVisit === _getYesterdayDate() ? streak + 1 : 1
     localStorage.setItem('streak', streak)
     localStorage.setItem('lastVisit', today)
   }
   return streak
 }
+
 export function renderStreakBadge() {
   const streak = updateStreak()
   const el = document.getElementById('streakBadge')
@@ -382,6 +389,39 @@ export function renderStreakBadge() {
   } else {
     el.style.display = 'none'
   }
+}
+
+// Reads streak from DB, reconciles with local, writes back to DB.
+// Call on login and session restore — replaces bare renderStreakBadge() for authenticated users.
+export async function syncStreakWithDB(userId) {
+  if (!userId) { renderStreakBadge(); return }
+
+  const today     = getDailyDate()
+  const yesterday = _getYesterdayDate()
+
+  // Local state — already updated for today by updateStreak() on page load
+  const localStreak = parseInt(localStorage.getItem('streak') || '1', 10)
+
+  // DB state
+  const { dbStreak, dbLastDate } = await loadStreakFromDB(userId)
+
+  let finalStreak
+  if (dbLastDate === today) {
+    // Another platform already synced today — take the higher value
+    finalStreak = Math.max(localStreak, dbStreak)
+  } else if (dbLastDate === yesterday) {
+    // DB is from yesterday; today is new, so DB streak needs +1
+    // Local may have already done the +1 via updateStreak(), so take max
+    finalStreak = Math.max(localStreak, dbStreak + 1)
+  } else {
+    // DB is stale (null, or older than yesterday) — local value wins
+    finalStreak = localStreak
+  }
+
+  localStorage.setItem('streak', finalStreak)
+  localStorage.setItem('lastVisit', today)
+  saveStreakToDB(userId, finalStreak, today)
+  renderStreakBadge()
 }
 
 // ── Конфетти ─────────────────────────────────────────────
