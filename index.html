@@ -16,14 +16,15 @@
   <!-- Preconnect для ускорения DNS/TCP к внешним CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.tailwindcss.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="dns-prefetch" href="https://xahjwhoywxgudsefqowd.supabase.co">
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap"
     rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind: статически скомпилирован (css/tailwind.css) вместо browser-JIT CDN.
+       Регенерация: npm run build:css -->
+  <link rel="stylesheet" href="css/tailwind.css">
   <script defer src="https://unpkg.com/lucide@latest"></script>
   <script src="js/mathjax-config.js"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
