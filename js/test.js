@@ -252,17 +252,21 @@ window.selectAnswer = function (answerIndex) {
   st.userAnswers[st.currentQuestionIndex] = answerIndex
   const correct = st.currentTest[st.currentQuestionIndex].correct
   playSound(answerIndex === correct ? 'correct' : 'wrong')
-  document.querySelectorAll('.option-label').forEach((label, i) => {
-    const radio = label.querySelector('input[type="radio"]')
-    if (radio) radio.disabled = true
-    if (i === correct) {
-      label.classList.add('answered-correct')
-    } else if (i === answerIndex && answerIndex !== correct) {
-      label.classList.add('answered-wrong')
-    } else {
-      label.classList.add('answered-locked')
-    }
-  })
+  // Re-render in the answered state: locks options, reveals correct/wrong and
+  // shows the explanation panel if this question has one.
+  displayQuestion()
+}
+
+// ── Панель объяснения ─────────────────────────────────────
+// Показывается после ответа, если у вопроса есть поле explanation.
+// Текст может содержать LaTeX ($...$) — MathJax типсетит контейнер в displayQuestion.
+function explanationBox(q) {
+  if (!q || !q.explanation) return ''
+  return `
+    <div class="explanation-box">
+      <div class="explanation-title"><span>💡</span> Объяснение</div>
+      <div class="explanation-body math-content">${escapeHtml(q.explanation)}</div>
+    </div>`
 }
 
 // ── Открытый ответ ────────────────────────────────────────
@@ -377,7 +381,7 @@ export function displayQuestion() {
           Ответить
         </button>
         ${openResult}
-      </div>`
+      </div>` + (answered ? explanationBox(question) : '')
     if (!answered) {
       setTimeout(() => { const inp = document.getElementById('openAnswerInput'); if (inp) inp.focus() }, 50)
     }
@@ -402,7 +406,7 @@ export function displayQuestion() {
             <span class="option-text">${option}</span>
           </label>`
     }).join('')}
-      </div>`
+      </div>` + (answered ? explanationBox(question) : '')
   }
 
   document.getElementById('currentQuestion').textContent = st.currentQuestionIndex + 1
@@ -544,7 +548,7 @@ window.finishTest = async function () {
     const correctAnswer = st.testMode === 'open'
       ? (q.open ? q.open[0] : q.options[q.correct])
       : q.options[q.correct]
-    return { question: q.question, userAnswer, correctAnswer, isCorrect: ok }
+    return { question: q.question, userAnswer, correctAnswer, isCorrect: ok, explanation: q.explanation }
   })
   const percentage = Math.round(correct / st.currentTest.length * 100)
 
@@ -660,6 +664,7 @@ window.finishTest = async function () {
             <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
             <div class="text-sm mb-1 math-content">${escapeHtml(r.question)}</div>
             <div class="text-xs">Ваш: ${escapeHtml(r.userAnswer)}<br>Правильный: ${escapeHtml(r.correctAnswer)}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
+            ${r.explanation ? `<div class="result-explanation math-content">💡 ${escapeHtml(r.explanation)}</div>` : ''}
           </div>`).join('')}
       </div>`
 

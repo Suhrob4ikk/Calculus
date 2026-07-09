@@ -2145,3 +2145,36 @@ html:not(.dark) .dh-nav-btn.dh-active {
   color: #2563EB !important;
 }
 html:not(.dark) .dh-username { color: #1E293B !important; }
+
+/* ── Панель объяснения (Фаза B: понимание, а не только проверка) ── */
+.explanation-box {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid #38bdf8;
+  border-radius: 12px;
+  background: color-mix(in srgb, #38bdf8 7%, var(--bg-card));
+}
+.explanation-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #38bdf8;
+  margin-bottom: 0.4rem;
+}
+.explanation-body {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-main);
+}
+.result-explanation {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
