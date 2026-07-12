@@ -68,22 +68,6 @@ export async function getUser() {
 }
 
 // ── Результаты ────────────────────────────────────────────
-export async function saveResult({ userId, username, section, difficulty, score, correctAnswers, totalQuestions }) {
-  try {
-    const { error } = await withTimeout(
-      supabase.from('test_results').insert({
-        user_id: userId, username, section, difficulty, score,
-        correct_answers: correctAnswers, total_questions: totalQuestions
-      }),
-      8000
-    )
-    return { error }
-  } catch (e) {
-    console.warn('saveResult error:', e.message)
-    return { error: e }
-  }
-}
-
 /**
  * [КРИТ-2] Validates answers server-side via Edge Function and writes to test_results.
  * The server computes correct_answers and score from the canonical question pool —
