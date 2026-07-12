@@ -2395,3 +2395,73 @@ button, .diff-btn, .test-type-btn, .nav-menu-item, #bottomNav button, .dh-nav-bt
 /* ── Размеры Lucide-иконок, заменивших эмодзи ── */
 .android-daily-icon svg { width: 24px; height: 24px; }
 .test-type-btn svg { width: 15px; height: 15px; vertical-align: -2px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   СИГНАТУРНЫЕ ЭФФЕКТЫ (2026-07) — орбы, shimmer, отклик на ответ.
+   Вдохновлено «живым» ощущением dailyintegral.com.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Аврора теперь фоновая подложка — орбы ведут «жизнь» */
+.dark body::after      { opacity: .5 !important; }
+html:not(.dark) body::after { opacity: .38 !important; }
+
+/* ── Плавающие светящиеся орбы (инъекция из fx.js) ── */
+.fx-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.fx-orb {
+  position: absolute; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 32% 30%, var(--oc, #38bdf8), transparent 70%);
+  filter: blur(64px);
+  opacity: .42;
+  animation: fxOrbDrift 22s var(--ease) infinite alternate;
+  will-change: transform;
+}
+html:not(.dark) .fx-orb { opacity: .26; filter: blur(72px); }
+.fx-orb-1 { --oc: #38bdf8; }
+.fx-orb-2 { --oc: #a855f7; animation-duration: 27s; }
+.fx-orb-3 { --oc: #6366f1; animation-duration: 31s; }
+.fx-orb-4 { --oc: #22d3ee; animation-duration: 20s; }
+.fx-orb-5 { --oc: #8b5cf6; animation-duration: 24s; }
+@keyframes fxOrbDrift {
+  0%   { transform: translate(-50%,-50%) translate(0,0)        scale(1);    }
+  50%  { transform: translate(-50%,-50%) translate(46px,-34px) scale(1.16); }
+  100% { transform: translate(-50%,-50%) translate(-32px,26px) scale(1.06); }
+}
+
+/* ── Shimmer-блик по subject-карточкам (при наведении пробегает свет) ── */
+.android-subject-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: linear-gradient(115deg, transparent 36%, rgba(255,255,255,.20) 50%, transparent 64%);
+  transform: translateX(-130%); transition: transform .8s var(--ease);
+}
+html:not(.dark) .android-subject-card::after { background: linear-gradient(115deg, transparent 36%, rgba(255,255,255,.6) 50%, transparent 64%); }
+.android-subject-card:hover::after { transform: translateX(130%); }
+
+/* ── Shimmer по первичным кнопкам ── */
+.auth-btn-primary, .diff-btn, .android-daily-btn { position: relative; overflow: hidden; }
+.auth-btn-primary::after, .diff-btn::after, .android-daily-btn::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.35) 50%, transparent 62%);
+  transform: translateX(-140%); transition: transform .7s var(--ease);
+}
+.auth-btn-primary:hover::after, .diff-btn:hover::after, .android-daily-btn:hover::after { transform: translateX(140%); }
+
+/* ── Отклик на ответ: правильный «пульсирует», неверный «дрожит» ── */
+.option-label.answered-correct { animation: fxCorrectPop .55s var(--ease); }
+.option-label.answered-wrong   { animation: fxWrongShake .42s ease; }
+@keyframes fxCorrectPop {
+  0% { transform: scale(1); } 30% { transform: scale(1.035); } 100% { transform: scale(1); }
+}
+@keyframes fxWrongShake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); } 40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); } 80% { transform: translateX(2px); }
+}
+.open-answer-result.open-correct { animation: fxCorrectPop .55s var(--ease); }
+.open-answer-result.open-wrong   { animation: fxWrongShake .42s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-orb { animation: none !important; }
+  .android-subject-card::after, .auth-btn-primary::after, .diff-btn::after, .android-daily-btn::after { display: none !important; }
+  .option-label.answered-correct, .option-label.answered-wrong { animation: none !important; }
+}

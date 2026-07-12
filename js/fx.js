@@ -39,3 +39,32 @@
     if (el) spawnRipple(el, e.clientX || null, e.clientY || null);
   }, true);
 })();
+
+// ── Плавающие светящиеся орбы (живой фон) ────────────────
+(function () {
+  'use strict';
+  function init() {
+    if (document.querySelector('.fx-orbs')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'fx-orbs';
+    wrap.setAttribute('aria-hidden', 'true');
+    const orbs = [
+      { x: '12%', y: '20%', s: 360, d: 0 },
+      { x: '84%', y: '14%', s: 300, d: -7 },
+      { x: '72%', y: '82%', s: 400, d: -13 },
+      { x: '22%', y: '76%', s: 260, d: -4 },
+      { x: '50%', y: '44%', s: 300, d: -10 },
+    ];
+    orbs.forEach((o, i) => {
+      const el = document.createElement('span');
+      el.className = 'fx-orb fx-orb-' + (i + 1);
+      el.style.left = o.x; el.style.top = o.y;
+      el.style.width = el.style.height = o.s + 'px';
+      el.style.animationDelay = o.d + 's';
+      wrap.appendChild(el);
+    });
+    document.body.appendChild(wrap);
+  }
+  if (document.body) init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
