@@ -8,6 +8,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = x^3$",
         ],
         correct: 0,
+        explanation: "Степенное правило $(x^n)'=nx^{n-1}$: $(x^2)'=2x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\sin(x)$",
@@ -18,6 +19,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = -\\sin(x)$",
         ],
         correct: 1,
+        explanation: "Табличная производная: $(\\sin x)'=\\cos x$.",
     },
     {
         question: "Найдите производную функции $f(x) = e^x$",
@@ -28,6 +30,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = x$",
         ],
         correct: 1,
+        explanation: "Экспонента — собственная производная: $(e^x)'=e^x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\cos(x)$",
@@ -38,6 +41,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = \\cos(x)$",
         ],
         correct: 2,
+        explanation: "Табличная производная: $(\\cos x)'=-\\sin x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\ln(x)$",
@@ -48,6 +52,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = -\\frac{1}{x^2}$",
         ],
         correct: 0,
+        explanation: "Табличная производная: $(\\ln x)'=\\frac{1}{x}$.",
     },
     {
         question: "Найдите производную функции $f(x) = a$, где $a = const$",
@@ -58,6 +63,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = 1$",
         ],
         correct: 0,
+        explanation: "Производная константы равна нулю.",
     },
     {
         question: "Найдите производную функции $f(x) = x^7$",
@@ -68,6 +74,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = x^6$",
         ],
         correct: 0,
+        explanation: "Степенное правило: $(x^7)'=7x^6$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\sqrt{x}$",
@@ -78,6 +85,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = \\sqrt{x}$",
         ],
         correct: 1,
+        explanation: "$\\sqrt{x}=x^{1/2}$, поэтому $(x^{1/2})'=\\frac{1}{2}x^{-1/2}=\\frac{1}{2\\sqrt{x}}$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\frac{1}{x}$",
@@ -88,6 +96,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = \\frac{1}{x^2}$",
         ],
         correct: 2,
+        explanation: "$\\frac{1}{x}=x^{-1}$, поэтому производная $=-x^{-2}=-\\frac{1}{x^2}$.",
     },
     {
         question: "Найдите производную функции $f(x) = 3x^4 - 2x^3 + 5x - 7$",
@@ -98,6 +107,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = 4x^3 - 3x^2 + 5$",
         ],
         correct: 0,
+        explanation: "Дифференцируем почленно: $12x^3-6x^2+5$ (константа $-7$ обнуляется).",
     },
     {
         question: "Найдите производную функции $f(x) = x \\cdot \\sin(x)$",
@@ -108,6 +118,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = \\sin(x) \\cdot \\cos(x)$",
         ],
         correct: 0,
+        explanation: "Правило произведения $(uv)'=u'v+uv'$: $\\sin x+x\\cos x$.",
     },
     {
         question: "Найдите производную функции $f(x) = e^{2x}$",
@@ -118,6 +129,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = e^{2}$",
         ],
         correct: 0,
+        explanation: "Цепное правило: $(e^{2x})'=e^{2x}\\cdot 2=2e^{2x}$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\sin(3x)$",
@@ -128,6 +140,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = 3\\sin(3x)$",
         ],
         correct: 0,
+        explanation: "Цепное правило: $(\\sin 3x)'=\\cos 3x\\cdot 3=3\\cos 3x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\ln(x^2)$",
@@ -138,6 +151,7 @@ export const easyDerivativesQuestions = [
             "$f'(x) = 2\\ln(x)$",
         ],
         correct: 2,
+        explanation: "$\\ln x^2=2\\ln x$, поэтому производная $=\\frac{2}{x}$.",
     },
     {
         question: "Найдите производную функции $f(x) = (2x + 1)^5$",
@@ -148,152 +162,178 @@ export const easyDerivativesQuestions = [
             "$f'(x) = (2x + 1)^4$",
         ],
         correct: 0,
+        explanation: "Цепное правило: $5(2x+1)^4\\cdot 2=10(2x+1)^4$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^3$",
         options: ["$f'(x) = 3x^2$", "$f'(x) = 3x^3$", "$f'(x) = x^2$", "$f'(x) = 2x^3$"],
-        correct: 0
+        correct: 0,
+        explanation: "Степенное правило: $(x^3)'=3x^2$.",
     },
     {
         question: "Найдите производную функции $f(x) = 5x$",
         options: ["$f'(x) = 5x^2$", "$f'(x) = x$", "$f'(x) = 5$", "$f'(x) = 0$"],
-        correct: 2
+        correct: 2,
+        explanation: "Производная линейной функции равна коэффициенту: $(5x)'=5$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^4$",
         options: ["$f'(x) = 4x^3$", "$f'(x) = x^3$", "$f'(x) = 4x^4$", "$f'(x) = 3x^4$"],
-        correct: 0
+        correct: 0,
+        explanation: "Степенное правило: $(x^4)'=4x^3$.",
     },
     {
         question: "Найдите производную функции $f(x) = 2x^3$",
         options: ["$f'(x) = 2x^2$", "$f'(x) = 6x^2$", "$f'(x) = 3x^2$", "$f'(x) = 6x^3$"],
-        correct: 1
+        correct: 1,
+        explanation: "$(2x^3)'=2\\cdot 3x^2=6x^2$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^5$",
         options: ["$f'(x) = 4x^4$", "$f'(x) = 5x^4$", "$f'(x) = 5x^5$", "$f'(x) = x^4$"],
-        correct: 1
+        correct: 1,
+        explanation: "Степенное правило: $(x^5)'=5x^4$.",
     },
     {
         question: "Найдите производную функции $f(x) = 3x^2 + 5$",
         options: ["$f'(x) = 6x + 5$", "$f'(x) = 3x$", "$f'(x) = 6x$", "$f'(x) = 6x^2$"],
-        correct: 2
+        correct: 2,
+        explanation: "$(3x^2)'=6x$, константа $5$ обнуляется.",
     },
     {
         question: "Найдите производную функции $f(x) = 7$",
         options: ["$f'(x) = 7$", "$f'(x) = 7x$", "$f'(x) = 1$", "$f'(x) = 0$"],
-        correct: 3
+        correct: 3,
+        explanation: "Производная константы равна нулю.",
     },
     {
         question: "Найдите производную функции $f(x) = x$",
         options: ["$f'(x) = 0$", "$f'(x) = x$", "$f'(x) = 1$", "$f'(x) = 2x$"],
-        correct: 2
+        correct: 2,
+        explanation: "$(x)'=1$.",
     },
     {
         question: "Найдите производную функции $f(x) = 4x^2$",
         options: ["$f'(x) = 4x$", "$f'(x) = 8x^2$", "$f'(x) = 8x$", "$f'(x) = 2x$"],
-        correct: 2
+        correct: 2,
+        explanation: "$(4x^2)'=4\\cdot 2x=8x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\tan(x)$",
         options: ["$f'(x) = \\sin(x)$", "$f'(x) = \\sec^2(x)$", "$f'(x) = \\cos(x)$", "$f'(x) = -\\sec^2(x)$"],
-        correct: 1
+        correct: 1,
+        explanation: "Табличная производная: $(\\tan x)'=\\sec^2 x=\\frac{1}{\\cos^2 x}$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^6$",
         options: ["$f'(x) = 5x^5$", "$f'(x) = 6x^5$", "$f'(x) = 6x^6$", "$f'(x) = x^5$"],
-        correct: 1
+        correct: 1,
+        explanation: "Степенное правило: $(x^6)'=6x^5$.",
     },
     {
         question: "Найдите производную функции $f(x) = -x^2$",
         options: ["$f'(x) = 2x$", "$f'(x) = -x$", "$f'(x) = -2x$", "$f'(x) = -2x^2$"],
-        correct: 2
+        correct: 2,
+        explanation: "$(-x^2)'=-2x$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^2 + x$",
         options: ["$f'(x) = x + 1$", "$f'(x) = 2x$", "$f'(x) = 2x + 1$", "$f'(x) = 2x + x$"],
-        correct: 2
+        correct: 2,
+        explanation: "Почленно: $(x^2+x)'=2x+1$.",
     },
     {
         question: "Найдите производную функции $f(x) = 10x$",
         options: ["$f'(x) = 10x^2$", "$f'(x) = 0$", "$f'(x) = x$", "$f'(x) = 10$"],
-        correct: 3
+        correct: 3,
+        explanation: "$(10x)'=10$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\arctan(x)$",
         options: ["$f'(x) = \\frac{1}{1-x^2}$", "$f'(x) = \\frac{1}{1+x^2}$", "$f'(x) = \\frac{1}{\\sqrt{1-x^2}}$", "$f'(x) = \\frac{-1}{1+x^2}$"],
-        correct: 1
+        correct: 1,
+        explanation: "Табличная производная: $(\\arctan x)'=\\frac{1}{1+x^2}$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^{10}$",
         options: ["$f'(x) = 9x^9$", "$f'(x) = 10x^{10}$", "$f'(x) = 10x^9$", "$f'(x) = x^9$"],
-        correct: 2
+        correct: 2,
+        explanation: "Степенное правило: $(x^{10})'=10x^9$.",
     },
     {
         question: "Найдите производную функции $f(x) = 2e^x$",
         options: ["$f'(x) = 2xe^{x-1}$", "$f'(x) = e^x$", "$f'(x) = 2e^x$", "$f'(x) = 2$"],
-        correct: 2
+        correct: 2,
+        explanation: "Константа выносится: $(2e^x)'=2e^x$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\arcsin(x)$",
         options: ["$f'(x) = \\frac{1}{1+x^2}$", "$f'(x) = -\\frac{1}{\\sqrt{1-x^2}}$", "$f'(x) = \\frac{1}{\\sqrt{1+x^2}}$", "$f'(x) = \\frac{1}{\\sqrt{1-x^2}}$"],
-        correct: 3
+        correct: 3,
+        explanation: "Табличная производная: $(\\arcsin x)'=\\frac{1}{\\sqrt{1-x^2}}$.",
     },
     {
         question: "Найдите производную функции $f(x) = 5x^3$",
         options: ["$f'(x) = 15x^3$", "$f'(x) = 5x^2$", "$f'(x) = 15x^2$", "$f'(x) = 3x^2$"],
-        correct: 2
+        correct: 2,
+        explanation: "$(5x^3)'=5\\cdot 3x^2=15x^2$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^2 - 3x + 2$",
         options: ["$f'(x) = 2x - 3$", "$f'(x) = 2x + 3$", "$f'(x) = x - 3$", "$f'(x) = 2x$"],
-        correct: 0
+        correct: 0,
+        explanation: "Почленно: $(x^2-3x+2)'=2x-3$.",
     },
     {
         question: "Найдите производную функции $f(x) = \\frac{1}{x^2}$",
         options: ["$f'(x) = \\frac{2}{x^3}$", "$f'(x) = -\\frac{2}{x^3}$", "$f'(x) = \\frac{1}{x^3}$", "$f'(x) = -\\frac{1}{x^2}$"],
-        correct: 1
+        correct: 1,
+        explanation: "$\\frac{1}{x^2}=x^{-2}$, производная $=-2x^{-3}=-\\frac{2}{x^3}$.",
     },
     {
         question: "Найдите производную функции $f(x) = 3\\sin(x)$",
         options: ["$f'(x) = 3\\sin(x)$", "$f'(x) = -3\\cos(x)$", "$f'(x) = 3\\cos(x)$", "$f'(x) = \\cos(x)$"],
-        correct: 2
+        correct: 2,
+        explanation: "Константа выносится: $(3\\sin x)'=3\\cos x$.",
     },
     {
         question: "Найдите производную функции $f(x) = x^3 + 2x^2$",
         options: ["$f'(x) = 3x^2 + 4x$", "$f'(x) = 3x^2 + 2x$", "$f'(x) = x^2 + 4x$", "$f'(x) = 3x + 4$"],
-        correct: 0
+        correct: 0,
+        explanation: "Почленно: $(x^3+2x^2)'=3x^2+4x$.",
     },
     {
         question: "Найдите производную функции $f(x) = 4\\ln(x)$",
         options: ["$f'(x) = 4x$", "$f'(x) = \\frac{4}{x}$", "$f'(x) = \\frac{1}{4x}$", "$f'(x) = 4\\ln(x)$"],
-        correct: 1
+        correct: 1,
+        explanation: "$(4\\ln x)'=\\frac{4}{x}$.",
     },
     {
         question: "Найдите производную функции $f(x) = -\\cos(x)$",
         options: ["$f'(x) = \\sin(x)$", "$f'(x) = -\\sin(x)$", "$f'(x) = \\cos(x)$", "$f'(x) = -\\cos(x)$"],
-        correct: 0
+        correct: 0,
+        explanation: "$(-\\cos x)'=-(-\\sin x)=\\sin x$.",
     },
-    { question: "Найдите производную $f(x) = 5x^3 - 3x + 2$", options: ["$15x^2 - 3$","$5x^2 - 3x$","$15x^2 + 3$","$5x^3 - 3$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\sin(2x)$", options: ["$2\\cos(2x)$","$\\cos(2x)$","$-2\\cos(2x)$","$2\\sin(2x)$"], correct: 0 },
-    { question: "Найдите производную $f(x) = e^{3x}$", options: ["$3e^{3x}$","$e^{3x}$","$e^x$","$3xe^{3x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = (x+1)^4$", options: ["$4(x+1)^3$","$(x+1)^4$","$4(x+1)^4$","$(x+1)^3$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\ln(3x)$", options: ["$\\dfrac{1}{x}$","$\\dfrac{3}{x}$","$\\dfrac{1}{3x}$","$3\\ln x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\cos\\bigl(\\tfrac{x}{2}\\bigr)$", options: ["$-\\tfrac{1}{2}\\sin\\tfrac{x}{2}$","$-\\sin\\tfrac{x}{2}$","$\\tfrac{1}{2}\\sin\\tfrac{x}{2}$","$-\\tfrac{1}{2}\\cos\\tfrac{x}{2}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\sqrt{x+1}$", options: ["$\\dfrac{1}{2\\sqrt{x+1}}$","$2\\sqrt{x+1}$","$\\dfrac{1}{\\sqrt{x+1}}$","$\\dfrac{\\sqrt{x+1}}{2}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\dfrac{1}{x^2}$", options: ["$-\\dfrac{2}{x^3}$","$\\dfrac{2}{x^3}$","$-\\dfrac{2}{x}$","$\\dfrac{1}{x^3}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x e^x$", options: ["$e^x(x+1)$","$xe^x$","$e^x$","$xe^x+1$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\arctan(x)$", options: ["$\\dfrac{1}{1+x^2}$","$\\dfrac{1}{1-x^2}$","$-\\dfrac{1}{1+x^2}$","$\\dfrac{1}{2(1+x^2)}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x^2\\ln x$", options: ["$2x\\ln x + x$","$x + \\ln x$","$2x\\ln x$","$x\\ln x + x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = e^x\\cos x$", options: ["$e^x(\\cos x - \\sin x)$","$e^x(\\cos x + \\sin x)$","$-e^x\\sin x$","$e^x\\cos x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\tan x$", options: ["$\\dfrac{1}{\\cos^2 x}$","$\\cos^2 x$","$-\\dfrac{1}{\\sin^2 x}$","$\\dfrac{\\sin x}{\\cos^2 x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\arcsin x$", options: ["$\\dfrac{1}{\\sqrt{1-x^2}}$","$-\\dfrac{1}{\\sqrt{1-x^2}}$","$\\dfrac{1}{\\sqrt{1+x^2}}$","$\\dfrac{1}{1-x^2}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\sin^2 x$", options: ["$\\sin 2x$","$2\\sin x$","$\\cos 2x$","$2\\sin x\\cos^2 x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x\\sin x$", options: ["$\\sin x + x\\cos x$","$x\\cos x$","$\\cos x$","$\\sin x - x\\cos x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = (2x-1)^5$", options: ["$10(2x-1)^4$","$5(2x-1)^4$","$2(2x-1)^4$","$10(2x-1)^5$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\ln(x^2+1)$", options: ["$\\dfrac{2x}{x^2+1}$","$\\dfrac{1}{x^2+1}$","$\\dfrac{2}{x^2+1}$","$\\dfrac{x}{x^2+1}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\dfrac{x+1}{x-1}$", options: ["$-\\dfrac{2}{(x-1)^2}$","$\\dfrac{2}{(x-1)^2}$","$\\dfrac{1}{(x-1)^2}$","$-\\dfrac{2}{x-1}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = e^{-x^2}$", options: ["$-2xe^{-x^2}$","$e^{-x^2}$","$-e^{-x^2}$","$2xe^{-x^2}$"], correct: 0 },
+    { question: "Найдите производную $f(x) = 5x^3 - 3x + 2$", options: ["$15x^2 - 3$","$5x^2 - 3x$","$15x^2 + 3$","$5x^3 - 3$"], correct: 0 , explanation: "Почленно: $15x^2-3$, константа обнуляется." },
+    { question: "Найдите производную $f(x) = \\sin(2x)$", options: ["$2\\cos(2x)$","$\\cos(2x)$","$-2\\cos(2x)$","$2\\sin(2x)$"], correct: 0 , explanation: "Цепное правило: $\\cos 2x\\cdot 2=2\\cos 2x$." },
+    { question: "Найдите производную $f(x) = e^{3x}$", options: ["$3e^{3x}$","$e^{3x}$","$e^x$","$3xe^{3x}$"], correct: 0 , explanation: "Цепное правило: $e^{3x}\\cdot 3=3e^{3x}$." },
+    { question: "Найдите производную $f(x) = (x+1)^4$", options: ["$4(x+1)^3$","$(x+1)^4$","$4(x+1)^4$","$(x+1)^3$"], correct: 0 , explanation: "Цепное правило: $4(x+1)^3\\cdot 1=4(x+1)^3$." },
+    { question: "Найдите производную $f(x) = \\ln(3x)$", options: ["$\\dfrac{1}{x}$","$\\dfrac{3}{x}$","$\\dfrac{1}{3x}$","$3\\ln x$"], correct: 0 , explanation: "$(\\ln 3x)'=\\frac{1}{3x}\\cdot 3=\\frac{1}{x}$." },
+    { question: "Найдите производную $f(x) = \\cos\\bigl(\\tfrac{x}{2}\\bigr)$", options: ["$-\\tfrac{1}{2}\\sin\\tfrac{x}{2}$","$-\\sin\\tfrac{x}{2}$","$\\tfrac{1}{2}\\sin\\tfrac{x}{2}$","$-\\tfrac{1}{2}\\cos\\tfrac{x}{2}$"], correct: 0 , explanation: "Цепное правило: $-\\sin\\frac{x}{2}\\cdot\\frac{1}{2}=-\\frac{1}{2}\\sin\\frac{x}{2}$." },
+    { question: "Найдите производную $f(x) = \\sqrt{x+1}$", options: ["$\\dfrac{1}{2\\sqrt{x+1}}$","$2\\sqrt{x+1}$","$\\dfrac{1}{\\sqrt{x+1}}$","$\\dfrac{\\sqrt{x+1}}{2}$"], correct: 0 , explanation: "Цепное правило: $\\frac{1}{2\\sqrt{x+1}}\\cdot 1=\\frac{1}{2\\sqrt{x+1}}$." },
+    { question: "Найдите производную $f(x) = \\dfrac{1}{x^2}$", options: ["$-\\dfrac{2}{x^3}$","$\\dfrac{2}{x^3}$","$-\\dfrac{2}{x}$","$\\dfrac{1}{x^3}$"], correct: 0 , explanation: "$\\frac{1}{x^2}=x^{-2}$, производная $=-\\frac{2}{x^3}$." },
+    { question: "Найдите производную $f(x) = x e^x$", options: ["$e^x(x+1)$","$xe^x$","$e^x$","$xe^x+1$"], correct: 0 , explanation: "Произведение: $1\\cdot e^x+x e^x=e^x(x+1)$." },
+    { question: "Найдите производную $f(x) = \\arctan(x)$", options: ["$\\dfrac{1}{1+x^2}$","$\\dfrac{1}{1-x^2}$","$-\\dfrac{1}{1+x^2}$","$\\dfrac{1}{2(1+x^2)}$"], correct: 0 , explanation: "Табличная производная: $(\\arctan x)'=\\frac{1}{1+x^2}$." },
+    { question: "Найдите производную $f(x) = x^2\\ln x$", options: ["$2x\\ln x + x$","$x + \\ln x$","$2x\\ln x$","$x\\ln x + x$"], correct: 0 , explanation: "Произведение: $2x\\ln x+x^2\\cdot\\frac{1}{x}=2x\\ln x+x$." },
+    { question: "Найдите производную $f(x) = e^x\\cos x$", options: ["$e^x(\\cos x - \\sin x)$","$e^x(\\cos x + \\sin x)$","$-e^x\\sin x$","$e^x\\cos x$"], correct: 0 , explanation: "Произведение: $e^x\\cos x+e^x(-\\sin x)=e^x(\\cos x-\\sin x)$." },
+    { question: "Найдите производную $f(x) = \\tan x$", options: ["$\\dfrac{1}{\\cos^2 x}$","$\\cos^2 x$","$-\\dfrac{1}{\\sin^2 x}$","$\\dfrac{\\sin x}{\\cos^2 x}$"], correct: 0 , explanation: "Табличная производная: $(\\tan x)'=\\frac{1}{\\cos^2 x}$." },
+    { question: "Найдите производную $f(x) = \\arcsin x$", options: ["$\\dfrac{1}{\\sqrt{1-x^2}}$","$-\\dfrac{1}{\\sqrt{1-x^2}}$","$\\dfrac{1}{\\sqrt{1+x^2}}$","$\\dfrac{1}{1-x^2}$"], correct: 0 , explanation: "Табличная производная: $(\\arcsin x)'=\\frac{1}{\\sqrt{1-x^2}}$." },
+    { question: "Найдите производную $f(x) = \\sin^2 x$", options: ["$\\sin 2x$","$2\\sin x$","$\\cos 2x$","$2\\sin x\\cos^2 x$"], correct: 0 , explanation: "Цепное правило: $2\\sin x\\cos x=\\sin 2x$." },
+    { question: "Найдите производную $f(x) = x\\sin x$", options: ["$\\sin x + x\\cos x$","$x\\cos x$","$\\cos x$","$\\sin x - x\\cos x$"], correct: 0 , explanation: "Произведение: $\\sin x+x\\cos x$." },
+    { question: "Найдите производную $f(x) = (2x-1)^5$", options: ["$10(2x-1)^4$","$5(2x-1)^4$","$2(2x-1)^4$","$10(2x-1)^5$"], correct: 0 , explanation: "Цепное правило: $5(2x-1)^4\\cdot 2=10(2x-1)^4$." },
+    { question: "Найдите производную $f(x) = \\ln(x^2+1)$", options: ["$\\dfrac{2x}{x^2+1}$","$\\dfrac{1}{x^2+1}$","$\\dfrac{2}{x^2+1}$","$\\dfrac{x}{x^2+1}$"], correct: 0 , explanation: "Цепное правило: $\\frac{1}{x^2+1}\\cdot 2x=\\frac{2x}{x^2+1}$." },
+    { question: "Найдите производную $f(x) = \\dfrac{x+1}{x-1}$", options: ["$-\\dfrac{2}{(x-1)^2}$","$\\dfrac{2}{(x-1)^2}$","$\\dfrac{1}{(x-1)^2}$","$-\\dfrac{2}{x-1}$"], correct: 0 , explanation: "Частное: $\\frac{(x-1)-(x+1)}{(x-1)^2}=-\\frac{2}{(x-1)^2}$." },
+    { question: "Найдите производную $f(x) = e^{-x^2}$", options: ["$-2xe^{-x^2}$","$e^{-x^2}$","$-e^{-x^2}$","$2xe^{-x^2}$"], correct: 0 , explanation: "Цепное правило: $e^{-x^2}\\cdot(-2x)=-2xe^{-x^2}$." },
 ];
 // Средние вопросы
 export const mediumDerivativesQuestions = [
