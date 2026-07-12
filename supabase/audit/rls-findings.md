@@ -21,9 +21,16 @@
 Итог по главному риску (накрутка баллов): **закрыт**. Запись в `test_results`
 идёт только через `submit-test` под service-role.
 
-## ⚠️ Требует проверки/исправления
+## ✅ РЕШЕНО (2026-07-13)
 
-**У роли `anon` есть привилегия `DELETE` на `test_results` и `push_subscriptions`.**
+`REVOKE DELETE ... FROM anon` выполнен на `test_results` и `push_subscriptions`.
+Перепроверка: `DELETE` из-под anon теперь возвращает `42501 permission denied`
+(было `204`). Регрессий нет — READ (`200`) и защита INSERT/UPDATE (`42501`) прежние.
+
+<details>
+<summary>Исходная находка (для истории)</summary>
+
+**У роли `anon` было право `DELETE` на `test_results` и `push_subscriptions`.**
 Пробы `DELETE ... where id = <несуществующий>` вернули `204` (а не `42501`, как
 INSERT/UPDATE). Значит грант DELETE выдан роли `anon`. Эксплуатируемость зависит
 от USING-политики RLS для DELETE (её из-под anon не прочитать):
@@ -56,3 +63,5 @@ REVOKE DELETE ON public.push_subscriptions FROM anon;
 
 Клиентские `deleteResultById` / `deleteAllUserResults` работают под user-JWT
 (роль `authenticated`), поэтому revoke у `anon` их не сломает.
+
+</details>
