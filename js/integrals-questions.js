@@ -10,6 +10,7 @@ export const easyIntegralsQuestions = [
       "$(2x+3)^6 + C$",
     ],
     correct: 0,
+    explanation: "Линейная замена: $\\int(ax+b)^n dx=\\frac{(ax+b)^{n+1}}{a(n+1)}$; здесь $\\frac{(2x+3)^6}{2\\cdot 6}=\\frac{(2x+3)^6}{12}$.",
   },
   {
     question: "Вычислите интеграл $\\int e^{3x-2} dx$",
@@ -20,6 +21,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{2}e^{3x-2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int e^{ax+b}dx=\\frac{1}{a}e^{ax+b}$; делим на $3$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sin(4x+1) dx$",
@@ -30,6 +32,7 @@ export const easyIntegralsQuestions = [
       "$-\\cos(4x+1) + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\sin(ax+b)dx=-\\frac{1}{a}\\cos(ax+b)$, здесь $a=4$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{5x-2} dx$",
@@ -40,6 +43,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{2}\\ln|5x-2| + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\frac{dx}{ax+b}=\\frac{1}{a}\\ln|ax+b|$, здесь $a=5$.",
   },
   {
     question: "Вычислите интеграл $\\int (3-2x)^4 dx$",
@@ -50,6 +54,7 @@ export const easyIntegralsQuestions = [
       "$(3-2x)^5 + C$",
     ],
     correct: 0,
+    explanation: "Линейная замена с $a=-2$: $\\frac{(3-2x)^5}{-2\\cdot 5}=-\\frac{(3-2x)^5}{10}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\cos(2x-\\pi) dx$",
@@ -60,6 +65,7 @@ export const easyIntegralsQuestions = [
       "$\\sin(2x-\\pi) + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\cos(ax+b)dx=\\frac{1}{a}\\sin(ax+b)$, здесь $a=2$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sqrt{3x+1} dx$",
@@ -70,6 +76,7 @@ export const easyIntegralsQuestions = [
       "$(3x+1)^{3/2} + C$",
     ],
     correct: 0,
+    explanation: "$\\sqrt{3x+1}=(3x+1)^{1/2}$: $\\frac{(3x+1)^{3/2}}{3\\cdot 3/2}=\\frac{2}{9}(3x+1)^{3/2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{3}{\\sqrt{2x+5}} dx$",
@@ -80,6 +87,7 @@ export const easyIntegralsQuestions = [
       "$6\\sqrt{2x+5} + C$",
     ],
     correct: 0,
+    explanation: "$\\int(2x+5)^{-1/2}dx=\\frac{(2x+5)^{1/2}}{2\\cdot 1/2}=\\sqrt{2x+5}$; с коэффициентом $3$.",
   },
   {
     question: "Вычислите интеграл $\\int (4x-7)^{10} dx$",
@@ -90,6 +98,7 @@ export const easyIntegralsQuestions = [
       "$(4x-7)^{11} + C$",
     ],
     correct: 0,
+    explanation: "Линейная замена: $\\frac{(4x-7)^{11}}{4\\cdot 11}=\\frac{(4x-7)^{11}}{44}$.",
   },
   {
     question: "Вычислите интеграл $\\int e^{-x+3} dx$",
@@ -100,6 +109,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{3}e^{-x+3} + C$",
     ],
     correct: 0,
+    explanation: "$\\int e^{ax+b}dx=\\frac{1}{a}e^{ax+b}$ с $a=-1$: $-e^{-x+3}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{2}{(3x-1)^2} dx$",
@@ -110,6 +120,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{6}{(3x-1)^3} + C$",
     ],
     correct: 0,
+    explanation: "$\\int(3x-1)^{-2}dx=\\frac{(3x-1)^{-1}}{3\\cdot(-1)}=-\\frac{1}{3(3x-1)}$; с $2$.",
   },
   {
     question: "Вычислите интеграл $\\int \\tan(2x+1) dx$",
@@ -120,6 +131,7 @@ export const easyIntegralsQuestions = [
       "$\\ln|\\cos(2x+1)| + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\tan u\\,du=-\\ln|\\cos u|$; при $u=2x+1$ делим на $2$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{5}{2-3x} dx$",
@@ -130,6 +142,7 @@ export const easyIntegralsQuestions = [
       "$5\\ln|2-3x| + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\frac{dx}{2-3x}=\\frac{1}{-3}\\ln|2-3x|$; с $5$: $-\\frac{5}{3}\\ln|2-3x|$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sin(-3x+4) dx$",
@@ -140,6 +153,7 @@ export const easyIntegralsQuestions = [
       "$-\\cos(-3x+4) + C$",
     ],
     correct: 0,
+    explanation: "$-\\frac{1}{a}\\cos(ax+b)$ с $a=-3$: $\\frac{1}{3}\\cos(-3x+4)$.",
   },
   {
     question: "Вычислите интеграл $\\int (1-4x)^7 dx$",
@@ -150,6 +164,7 @@ export const easyIntegralsQuestions = [
       "$(1-4x)^8 + C$",
     ],
     correct: 0,
+    explanation: "$a=-4$: $\\frac{(1-4x)^8}{-4\\cdot 8}=-\\frac{(1-4x)^8}{32}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{6x}{\\sqrt{3x^2+2}} dx$",
@@ -160,6 +175,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{2}{3}\\sqrt{3x^2+2} + C$",
     ],
     correct: 0,
+    explanation: "Замена $u=3x^2+2$, $du=6x\\,dx$: $\\int u^{-1/2}du=2\\sqrt{u}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\cos(\\pi x+2) dx$",
@@ -170,6 +186,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{1}{\\pi}\\sin(\\pi x+2) + C$",
     ],
     correct: 0,
+    explanation: "$\\frac{1}{a}\\sin(ax+b)$ с $a=\\pi$: $\\frac{1}{\\pi}\\sin(\\pi x+2)$.",
   },
   {
     question: "Вычислите интеграл $\\int e^{2-5x} dx$",
@@ -180,6 +197,7 @@ export const easyIntegralsQuestions = [
       "$e^{2-5x} + C$",
     ],
     correct: 0,
+    explanation: "$a=-5$: $\\frac{1}{-5}e^{2-5x}=-\\frac{1}{5}e^{2-5x}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{4}{(1-2x)^3} dx$",
@@ -190,6 +208,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{2}{(1-2x)^2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int(1-2x)^{-3}dx=\\frac{(1-2x)^{-2}}{-2\\cdot(-2)}=\\frac{1}{4(1-2x)^2}$; с $4$: $\\frac{1}{(1-2x)^2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{3x^2}{(x^3-4)^2} dx$",
@@ -200,6 +219,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{3}{x^3-4} + C$",
     ],
     correct: 0,
+    explanation: "Замена $u=x^3-4$, $du=3x^2dx$: $\\int u^{-2}du=-\\frac{1}{u}$.",
   },
   {
     question: "Вычислите интеграл $\\int x dx$",
@@ -210,6 +230,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^2}{2} + C$",
     ],
     correct: 3,
+    explanation: "Степенное правило $\\int x^n dx=\\frac{x^{n+1}}{n+1}$: $\\frac{x^2}{2}$.",
   },
   {
     question: "Вычислите интеграл $\\int 2x dx$",
@@ -220,6 +241,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^2}{2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int 2x\\,dx=2\\cdot\\frac{x^2}{2}=x^2$.",
   },
   {
     question: "Вычислите интеграл $\\int 3 dx$",
@@ -230,6 +252,7 @@ export const easyIntegralsQuestions = [
       "$x + C$",
     ],
     correct: 2,
+    explanation: "$\\int a\\,dx=ax$: $3x$.",
   },
   {
     question: "Вычислите интеграл $\\int x^2 dx$",
@@ -240,6 +263,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^3}{3} + C$",
     ],
     correct: 3,
+    explanation: "Степенное правило: $\\frac{x^3}{3}$.",
   },
   {
     question: "Вычислите интеграл $\\int 5x^4 dx$",
@@ -250,6 +274,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^5}{4} + C$",
     ],
     correct: 2,
+    explanation: "$5\\cdot\\frac{x^5}{5}=x^5$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{x} dx$",
@@ -260,6 +285,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{x^2} + C$",
     ],
     correct: 2,
+    explanation: "$\\int\\frac{dx}{x}=\\ln|x|$.",
   },
   {
     question: "Вычислите интеграл $\\int 4x^3 dx$",
@@ -270,6 +296,7 @@ export const easyIntegralsQuestions = [
       "$x^3 + C$",
     ],
     correct: 2,
+    explanation: "$4\\cdot\\frac{x^4}{4}=x^4$.",
   },
   {
     question: "Вычислите интеграл $\\int (2x + 1) dx$",
@@ -280,6 +307,7 @@ export const easyIntegralsQuestions = [
       "$2x + C$",
     ],
     correct: 1,
+    explanation: "Почленно: $x^2+x$.",
   },
   {
     question: "Вычислите интеграл $\\int (3x^2 + 2x) dx$",
@@ -290,11 +318,13 @@ export const easyIntegralsQuestions = [
       "$x^3 + x^2 + C$",
     ],
     correct: 3,
+    explanation: "Почленно: $x^3+x^2$.",
   },
   {
     question: "Вычислите интеграл $\\int 6 dx$",
     options: ["$x^6 + C$", "$3x + C$", "$x + C$", "$6x + C$"],
     correct: 3,
+    explanation: "$\\int 6\\,dx=6x$.",
   },
   {
     question: "Вычислите интеграл $\\int x^3 dx$",
@@ -305,6 +335,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^4}{4} + C$",
     ],
     correct: 3,
+    explanation: "Степенное правило: $\\frac{x^4}{4}$.",
   },
   {
     question: "Вычислите интеграл $\\int 7x^2 dx$",
@@ -315,11 +346,13 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^3}{3} + C$",
     ],
     correct: 0,
+    explanation: "$7\\cdot\\frac{x^3}{3}=\\frac{7x^3}{3}$.",
   },
   {
     question: "Вычислите интеграл $\\int 5 dx$",
     options: ["$x^5 + C$", "$x + C$", "$5x + C$", "$25x + C$"],
     correct: 2,
+    explanation: "$\\int 5\\,dx=5x$.",
   },
   {
     question: "Вычислите интеграл $\\int (x^2 + 2) dx$",
@@ -330,6 +363,7 @@ export const easyIntegralsQuestions = [
       "$x^3 + 2 + C$",
     ],
     correct: 2,
+    explanation: "Почленно: $\\frac{x^3}{3}+2x$.",
   },
   {
     question: "Вычислите интеграл $\\int (3 + x^2) dx$",
@@ -340,6 +374,7 @@ export const easyIntegralsQuestions = [
       "$x^2 + 3x + C$",
     ],
     correct: 0,
+    explanation: "Почленно: $3x+\\frac{x^3}{3}$.",
   },
   // Вложенный массив развёрнут
   {
@@ -351,6 +386,7 @@ export const easyIntegralsQuestions = [
       "$(5x-2)^5 + C$",
     ],
     correct: 0,
+    explanation: "Линейная замена: $\\frac{(5x-2)^5}{5\\cdot 5}=\\frac{(5x-2)^5}{25}$.",
   },
   {
     question: "Вычислите интеграл $\\int e^{4x+1} dx$",
@@ -361,6 +397,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{2}e^{4x+1} + C$",
     ],
     correct: 0,
+    explanation: "$\\frac{1}{a}e^{ax+b}$ с $a=4$: $\\frac{1}{4}e^{4x+1}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\cos(3x-\\pi/2) dx$",
@@ -371,6 +408,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{1}{3}\\sin(3x-\\pi/2) + C$",
     ],
     correct: 0,
+    explanation: "$\\frac{1}{a}\\sin(ax+b)$ с $a=3$: $\\frac{1}{3}\\sin(3x-\\pi/2)$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{7x+3} dx$",
@@ -381,6 +419,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{1}{3}\\ln|7x+3| + C$",
     ],
     correct: 0,
+    explanation: "$\\frac{1}{a}\\ln|ax+b|$ с $a=7$: $\\frac{1}{7}\\ln|7x+3|$.",
   },
   {
     question: "Вычислите интеграл $\\int (1-3x)^6 dx$",
@@ -391,6 +430,7 @@ export const easyIntegralsQuestions = [
       "$(1-3x)^7 + C$",
     ],
     correct: 0,
+    explanation: "$a=-3$: $\\frac{(1-3x)^7}{-3\\cdot 7}=-\\frac{(1-3x)^7}{21}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sqrt{5x-1} dx$",
@@ -401,6 +441,7 @@ export const easyIntegralsQuestions = [
       "$(5x-1)^{3/2} + C$",
     ],
     correct: 0,
+    explanation: "$\\frac{(5x-1)^{3/2}}{5\\cdot 3/2}=\\frac{2}{15}(5x-1)^{3/2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{4}{(2x-1)^3} dx$",
@@ -411,6 +452,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{2}{(2x-1)^2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int(2x-1)^{-3}dx=\\frac{(2x-1)^{-2}}{2\\cdot(-2)}=-\\frac{1}{4(2x-1)^2}$; с $4$: $-\\frac{1}{(2x-1)^2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sin(-2x+5) dx$",
@@ -421,6 +463,7 @@ export const easyIntegralsQuestions = [
       "$-\\cos(-2x+5) + C$",
     ],
     correct: 0,
+    explanation: "$a=-2$: $-\\frac{1}{-2}\\cos(-2x+5)=\\frac{1}{2}\\cos(-2x+5)$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{6x}{\\sqrt{x^2+4}} dx$",
@@ -431,6 +474,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{6}{3}\\sqrt{x^2+4} + C$",
     ],
     correct: 0,
+    explanation: "Замена $u=x^2+4$, $du=2x\\,dx$: $6x\\,dx=3\\,du$, $\\int 3u^{-1/2}du=6\\sqrt{u}$.",
   },
   {
     question: "Вычислите интеграл $\\int e^{-2x} dx$",
@@ -441,6 +485,7 @@ export const easyIntegralsQuestions = [
       "$e^{-2x} + C$",
     ],
     correct: 0,
+    explanation: "$a=-2$: $\\frac{1}{-2}e^{-2x}=-\\frac{1}{2}e^{-2x}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{5}{4-3x} dx$",
@@ -451,6 +496,7 @@ export const easyIntegralsQuestions = [
       "$5\\ln|4-3x| + C$",
     ],
     correct: 0,
+    explanation: "$a=-3$: $\\frac{5}{-3}\\ln|4-3x|=-\\frac{5}{3}\\ln|4-3x|$.",
   },
   {
     question: "Вычислите интеграл $\\int \\tan(5x) dx$",
@@ -461,6 +507,7 @@ export const easyIntegralsQuestions = [
       "$\\ln|\\cos(5x)| + C$",
     ],
     correct: 0,
+    explanation: "$\\int\\tan u\\,du=-\\ln|\\cos u|$; при $u=5x$ делим на $5$.",
   },
   {
     question: "Вычислите интеграл $\\int (3x+2)^9 dx$",
@@ -471,6 +518,7 @@ export const easyIntegralsQuestions = [
       "$(3x+2)^{10} + C$",
     ],
     correct: 0,
+    explanation: "Линейная замена: $\\frac{(3x+2)^{10}}{3\\cdot 10}=\\frac{(3x+2)^{10}}{30}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\cos(\\pi/2 - x) dx$",
@@ -481,6 +529,7 @@ export const easyIntegralsQuestions = [
       "$-\\cos(\\pi/2 - x) + C$",
     ],
     correct: 0,
+    explanation: "$a=-1$: $\\frac{1}{-1}\\sin(\\pi/2-x)=-\\sin(\\pi/2-x)$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{3x^2}{(x^3+1)^4} dx$",
@@ -491,6 +540,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{3}{(x^3+1)^3} + C$",
     ],
     correct: 0,
+    explanation: "Замена $u=x^3+1$, $du=3x^2dx$: $\\int u^{-4}du=-\\frac{1}{3u^3}$.",
   },
   {
     question: "Вычислите интеграл $\\int 8x^3 dx$",
@@ -501,6 +551,7 @@ export const easyIntegralsQuestions = [
       "$x^4 + C$",
     ],
     correct: 0,
+    explanation: "$8\\cdot\\frac{x^4}{4}=2x^4$.",
   },
   {
     question: "Вычислите интеграл $\\int (x^3 + 4x) dx$",
@@ -511,6 +562,7 @@ export const easyIntegralsQuestions = [
       "$3x^2 + 4 + C$",
     ],
     correct: 0,
+    explanation: "Почленно: $\\frac{x^4}{4}+2x^2$.",
   },
   {
     question: "Вычислите интеграл $\\int 10 dx$",
@@ -521,6 +573,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{10x^2}{2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int 10\\,dx=10x$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{x^2} dx$",
@@ -531,6 +584,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{1}{2x^2} + C$",
     ],
     correct: 0,
+    explanation: "$\\int x^{-2}dx=\\frac{x^{-1}}{-1}=-\\frac{1}{x}$.",
   },
   {
     question: "Вычислите интеграл $\\int (2x^2 - 3x + 1) dx$",
@@ -541,6 +595,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^3}{3} - \\frac{x^2}{2} + x + C$",
     ],
     correct: 0,
+    explanation: "Почленно: $\\frac{2x^3}{3}-\\frac{3x^2}{2}+x$.",
   },
   // ── Базовые степенные интегралы (правило степени) ──
   {
@@ -552,6 +607,7 @@ export const easyIntegralsQuestions = [
       "$x^5 + C$",
     ],
     correct: 0,
+    explanation: "Степенное правило: $\\frac{x^5}{5}$.",
   },
   {
     question: "Вычислите интеграл $\\int 5x^3 dx$",
@@ -562,6 +618,7 @@ export const easyIntegralsQuestions = [
       "$5x^4 + C$",
     ],
     correct: 2,
+    explanation: "$5\\cdot\\frac{x^4}{4}=\\frac{5x^4}{4}$.",
   },
   {
     question: "Вычислите интеграл $\\int (x^2 + 2x + 1) dx$",
@@ -572,6 +629,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^3}{3} + x^2 + C$",
     ],
     correct: 2,
+    explanation: "Почленно: $\\frac{x^3}{3}+x^2+x$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{x^3} dx$",
@@ -582,6 +640,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{3}{x^4} + C$",
     ],
     correct: 1,
+    explanation: "$\\int x^{-3}dx=\\frac{x^{-2}}{-2}=-\\frac{1}{2x^2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\sqrt{x} \\, dx$",
@@ -592,6 +651,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{2}{3}x^{3/2} + C$",
     ],
     correct: 3,
+    explanation: "$\\sqrt{x}=x^{1/2}$: $\\frac{x^{3/2}}{3/2}=\\frac{2}{3}x^{3/2}$.",
   },
   {
     question: "Вычислите интеграл $\\int (3x^2 - 4x + 5) dx$",
@@ -602,6 +662,7 @@ export const easyIntegralsQuestions = [
       "$x^3 - 4x^2 + 5x + C$",
     ],
     correct: 1,
+    explanation: "Почленно: $x^3-2x^2+5x$.",
   },
   {
     question: "Вычислите интеграл $\\int x^{-1/2} dx$",
@@ -612,6 +673,7 @@ export const easyIntegralsQuestions = [
       "$-2x^{-3/2} + C$",
     ],
     correct: 2,
+    explanation: "$\\frac{x^{1/2}}{1/2}=2\\sqrt{x}$.",
   },
   {
     question: "Вычислите интеграл $\\int (x^5 + x) dx$",
@@ -622,6 +684,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^6}{5} + x^2 + C$",
     ],
     correct: 0,
+    explanation: "Почленно: $\\frac{x^6}{6}+\\frac{x^2}{2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{2}{x} dx$",
@@ -632,6 +695,7 @@ export const easyIntegralsQuestions = [
       "$2\\ln|x| + C$",
     ],
     correct: 3,
+    explanation: "$2\\int\\frac{dx}{x}=2\\ln|x|$.",
   },
   {
     question: "Вычислите интеграл $\\int x^{2/3} dx$",
@@ -642,6 +706,7 @@ export const easyIntegralsQuestions = [
       "$x^{5/3} + C$",
     ],
     correct: 1,
+    explanation: "$\\frac{x^{5/3}}{5/3}=\\frac{3}{5}x^{5/3}$.",
   },
   {
     question: "Вычислите интеграл $\\int (4x - 3) dx$",
@@ -652,6 +717,7 @@ export const easyIntegralsQuestions = [
       "$4x^2 - 3 + C$",
     ],
     correct: 2,
+    explanation: "Почленно: $2x^2-3x$.",
   },
   {
     question: "Вычислите интеграл $\\int (x^2 - 5) dx$",
@@ -662,6 +728,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^3}{3} - 5 + C$",
     ],
     correct: 0,
+    explanation: "Почленно: $\\frac{x^3}{3}-5x$.",
   },
   {
     question: "Вычислите интеграл $\\int (2x^3 + 3x^2 - x) dx$",
@@ -672,6 +739,7 @@ export const easyIntegralsQuestions = [
       "$\\frac{x^4}{2} + x^3 + \\frac{x^2}{2} + C$",
     ],
     correct: 1,
+    explanation: "Почленно: $\\frac{x^4}{2}+x^3-\\frac{x^2}{2}$.",
   },
   {
     question: "Вычислите интеграл $\\int \\frac{1}{x^4} dx$",
@@ -682,6 +750,7 @@ export const easyIntegralsQuestions = [
       "$-\\frac{1}{3x^3} + C$",
     ],
     correct: 3,
+    explanation: "$\\int x^{-4}dx=\\frac{x^{-3}}{-3}=-\\frac{1}{3x^3}$.",
   },
   {
     question: "Вычислите интеграл $\\int (7x^6 + 1) dx$",
@@ -692,6 +761,7 @@ export const easyIntegralsQuestions = [
       "$x^6 + x + C$",
     ],
     correct: 1,
+    explanation: "Почленно: $x^7+x$.",
   },
 ];
 // ── Интегралы (Средний уровень) ──────────────────────────
