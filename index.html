@@ -1042,7 +1042,7 @@
     <!-- Daily Challenge -->
     <div id="dailyChallengeCard" class="android-daily-card" onclick="startDailyChallenge()">
       <div class="android-daily-body">
-        <div class="android-daily-icon">⭐</div>
+        <div class="android-daily-icon"><i data-lucide="sparkles"></i></div>
         <div>
           <div class="android-daily-title">Ежедневный вызов</div>
           <div class="android-daily-sub">10 вопросов из всех разделов · Одна попытка в день</div>
@@ -1148,7 +1148,7 @@
           <a class="theory-entry-card" href="references/integrals_reference.pdf" target="_blank"
              style="border-left:3px solid #64748b;text-decoration:none;display:flex;cursor:pointer">
             <div class="theory-entry-left">
-              <span style="font-size:1.4rem;line-height:1">📄</span>
+              <span style="font-size:1.4rem;line-height:1"><i data-lucide="file-text"></i></span>
               <div>
                 <div class="theory-entry-title">Справочник — PDF</div>
                 <div class="theory-entry-sub">Таблица интегралов для распечатки</div>
@@ -1236,7 +1236,7 @@
           <a class="theory-entry-card" href="references/derivatives_reference.pdf" target="_blank"
              style="border-left:3px solid #64748b;text-decoration:none;display:flex;cursor:pointer">
             <div class="theory-entry-left">
-              <span style="font-size:1.4rem;line-height:1">📄</span>
+              <span style="font-size:1.4rem;line-height:1"><i data-lucide="file-text"></i></span>
               <div>
                 <div class="theory-entry-title">Справочник — PDF</div>
                 <div class="theory-entry-sub">Таблица производных для распечатки</div>
@@ -1248,8 +1248,8 @@
             <div class="test-type-label">Тип теста:</div>
             <div class="test-type-btns">
               <button id="derivClosedBtn" class="test-type-btn active"
-                onclick="window.setDerivativesTestMode('closed')">🔘 Закрытый</button>
-              <button id="derivOpenBtn" class="test-type-btn" onclick="window.setDerivativesTestMode('open')">✏️
+                onclick="window.setDerivativesTestMode('closed')"><i data-lucide="circle-dot"></i> Закрытый</button>
+              <button id="derivOpenBtn" class="test-type-btn" onclick="window.setDerivativesTestMode('open')"><i data-lucide="pencil"></i>
                 Открытый</button>
             </div>
           </div>
@@ -1412,7 +1412,7 @@
           <a class="theory-entry-card" href="references/limits_reference.pdf" target="_blank"
              style="border-left:3px solid #64748b;text-decoration:none;display:flex;cursor:pointer">
             <div class="theory-entry-left">
-              <span style="font-size:1.4rem;line-height:1">📄</span>
+              <span style="font-size:1.4rem;line-height:1"><i data-lucide="file-text"></i></span>
               <div>
                 <div class="theory-entry-title">Справочник — PDF</div>
                 <div class="theory-entry-sub">Таблица пределов для распечатки</div>
@@ -1423,9 +1423,9 @@
           <div class="test-type-selector mb-4">
             <div class="test-type-label">Тип теста:</div>
             <div class="test-type-btns">
-              <button id="limitsClosedBtn" class="test-type-btn active" onclick="window.setLimitsTestMode('closed')">🔘
+              <button id="limitsClosedBtn" class="test-type-btn active" onclick="window.setLimitsTestMode('closed')"><i data-lucide="circle-dot"></i>
                 Закрытый</button>
-              <button id="limitsOpenBtn" class="test-type-btn" onclick="window.setLimitsTestMode('open')">✏️
+              <button id="limitsOpenBtn" class="test-type-btn" onclick="window.setLimitsTestMode('open')"><i data-lucide="pencil"></i>
                 Открытый</button>
             </div>
           </div>
@@ -1510,9 +1510,9 @@
           <div class="test-type-selector mb-4">
             <div class="test-type-label">Тип теста:</div>
             <div class="test-type-btns">
-              <button id="odeClosedBtn" class="test-type-btn active" onclick="window.setODETestMode('closed')">🔘
+              <button id="odeClosedBtn" class="test-type-btn active" onclick="window.setODETestMode('closed')"><i data-lucide="circle-dot"></i>
                 Закрытый</button>
-              <button id="odeOpenBtn" class="test-type-btn" onclick="window.setODETestMode('open')">✏️ Открытый</button>
+              <button id="odeOpenBtn" class="test-type-btn" onclick="window.setODETestMode('open')"><i data-lucide="pencil"></i> Открытый</button>
             </div>
           </div>
           <div class="mb-6">
@@ -1595,9 +1595,9 @@
           <div class="test-type-selector mb-4">
             <div class="test-type-label">Тип теста:</div>
             <div class="test-type-btns">
-              <button id="probClosedBtn" class="test-type-btn active" onclick="window.setProbTestMode('closed')">🔘
+              <button id="probClosedBtn" class="test-type-btn active" onclick="window.setProbTestMode('closed')"><i data-lucide="circle-dot"></i>
                 Закрытый</button>
-              <button id="probOpenBtn" class="test-type-btn" onclick="window.setProbTestMode('open')">✏️
+              <button id="probOpenBtn" class="test-type-btn" onclick="window.setProbTestMode('open')"><i data-lucide="pencil"></i>
                 Открытый</button>
             </div>
           </div>
@@ -2060,7 +2060,7 @@
           <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Пользователи</h2>
           <p class="text-gray-500 text-center text-sm mb-6">Начните вводить — список обновится автоматически</p>
           <div class="relative mb-4">
-            <input id="searchInputField" type="text" placeholder="🔍  Поиск по имени..." class="auth-input mb-0 w-full"
+            <input id="searchInputField" type="text" placeholder="Поиск по имени..." class="auth-input mb-0 w-full"
               autocomplete="off">
             <div id="searchSuggestions"
               class="absolute left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 mt-1 overflow-hidden"
@@ -2185,6 +2185,7 @@
   <script defer src="js/prob-theory.js"></script>
   <script defer src="js/calculus-chapters.js"></script>
   <script defer src="js/section-theory.js"></script>
+  <script defer src="js/fx.js"></script>
   <script>
     function openMoreSheet() {
       document.getElementById('moreSheet').style.display = 'block'

@@ -264,7 +264,7 @@ function explanationBox(q) {
   if (!q || !q.explanation) return ''
   return `
     <div class="explanation-box">
-      <div class="explanation-title"><span>💡</span> Объяснение</div>
+      <div class="explanation-title"><i data-lucide="lightbulb"></i> Объяснение</div>
       <div class="explanation-body math-content">${escapeHtml(q.explanation)}</div>
     </div>`
 }
@@ -359,7 +359,7 @@ export function displayQuestion() {
             style="font-size:0.76rem;background:transparent;border:1.5px solid var(--text-muted);color:var(--text-muted);padding:2px 10px;border-radius:20px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;transition:border-color 0.2s,color 0.2s"
             onmouseover="this.style.borderColor='#38bdf8';this.style.color='#38bdf8'"
             onmouseout="this.style.borderColor='var(--text-muted)';this.style.color='var(--text-muted)'">
-            💡 Формат <span class="hint-arrow">▼</span>
+            <i data-lucide="lightbulb"></i> Формат <span class="hint-arrow">▼</span>
           </button>
         </div>
         <div class="open-answer-hint" style="display:none">
@@ -420,6 +420,7 @@ export function displayQuestion() {
   const isLast = st.currentQuestionIndex === st.currentTest.length - 1
   document.getElementById('nextBtn').style.display = isLast ? 'none' : 'inline-block'
   document.getElementById('finishBtn').style.display = isLast ? 'inline-block' : 'none'
+  if (window.lucide) window.lucide.createIcons()
   if (window.MathJax) MathJax.typesetPromise([container]).catch(console.error)
 }
 
@@ -664,12 +665,13 @@ window.finishTest = async function () {
             <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
             <div class="text-sm mb-1 math-content">${escapeHtml(r.question)}</div>
             <div class="text-xs">Ваш: ${escapeHtml(r.userAnswer)}<br>Правильный: ${escapeHtml(r.correctAnswer)}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
-            ${r.explanation ? `<div class="result-explanation math-content">💡 ${escapeHtml(r.explanation)}</div>` : ''}
+            ${r.explanation ? `<div class="result-explanation math-content"><i data-lucide="lightbulb"></i> ${escapeHtml(r.explanation)}</div>` : ''}
           </div>`).join('')}
       </div>`
 
     const shareBtn = document.getElementById('shareBtn')
     if (shareBtn) shareBtn.onclick = () => window.shareResult(correct, st.currentTest.length, percentage)
+    if (window.lucide) window.lucide.createIcons()
     if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
     // Обновляем карточку ежедневного вызова если нужно
     window.updateDailyChallengeCard?.()

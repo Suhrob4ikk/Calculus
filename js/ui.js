@@ -31,6 +31,22 @@ export function showPage(pageId) {
   if (target) {
     target.classList.remove('hidden')
     target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
+    // Анимация входа — у каждой вкладки свой «живой» эффект.
+    // reflow (offsetWidth) сбрасывает animation, чтобы она перезапускалась при каждом переходе.
+    const FX = {
+      homePage: 'fx-zoom', duelPage: 'fx-duel', profilePage: 'fx-flip',
+      statisticsPage: 'fx-rise', leaderboardPage: 'fx-rise', mistakesPage: 'fx-shake-in',
+      searchProfilesPage: 'fx-swipe', viewProfilePage: 'fx-swipe',
+      theoryPage: 'fx-swipe', sectionTheoryPage: 'fx-swipe', probabilityTheoryPage: 'fx-swipe',
+      resultsPage: 'fx-pop', examPage: 'fx-zoom', testPage: 'fx-slide',
+      integralsSection: 'fx-slide', derivativesSection: 'fx-slide', limitsSection: 'fx-slide',
+      seriesSection: 'fx-slide', odeSection: 'fx-slide', probabilitySection: 'fx-slide',
+      linalgSection: 'fx-slide',
+    }
+    const variant = FX[pageId] || 'fx-fade'
+    target.classList.remove('page-enter', ...Object.values(FX), 'fx-fade')
+    void target.offsetWidth
+    target.classList.add('page-enter', variant)
     try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
   }
 
