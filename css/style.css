@@ -2178,3 +2178,147 @@ html:not(.dark) .dh-username { color: #1E293B !important; }
   line-height: 1.5;
   color: var(--text-muted);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ВИЗУАЛЬНАЯ МОДЕРНИЗАЦИЯ (2026-07) — только CSS, DOM/JS не меняются.
+   Аврора-фон · стеклянные карточки · градиентные акценты · микроанимации.
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --accent-grad: linear-gradient(135deg, #38bdf8 0%, #6366f1 55%, #a855f7 100%);
+  --ease: cubic-bezier(.34,.12,.2,1);
+}
+
+/* ── Аврора-фон (обе темы) ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 18% 22%, rgba(56,189,248,.20), transparent 60%),
+    radial-gradient(34% 40% at 82% 16%, rgba(168,85,247,.16), transparent 60%),
+    radial-gradient(46% 46% at 72% 88%, rgba(99,102,241,.17), transparent 62%);
+  filter: blur(30px);
+  animation: auroraDrift 26s var(--ease) infinite alternate;
+}
+html:not(.dark) body::after { opacity: .7; }
+.dark body::after { opacity: .95; }
+@keyframes auroraDrift {
+  0%   { transform: translate3d(-3%,-2%,0) scale(1);    }
+  50%  { transform: translate3d(4%,3%,0)   scale(1.12); }
+  100% { transform: translate3d(2%,-3%,0)  scale(1.05); }
+}
+html:not(.dark) body { background: linear-gradient(180deg,#eef6ff 0%,#f4f0ff 100%); }
+
+/* ── Subject-карточки: стекло, акцент по разделу, подъём + свечение ── */
+.android-subject-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(255,255,255,.92), rgba(241,245,249,.72)) !important;
+  border: 1px solid rgba(148,163,184,.20) !important;
+  box-shadow: 0 2px 10px rgba(15,23,42,.06) !important;
+  transition: transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s var(--ease) !important;
+}
+.dark .android-subject-card {
+  background: linear-gradient(160deg, rgba(23,42,66,.92), rgba(11,25,43,.86)) !important;
+  border: 1px solid rgba(56,189,248,.14) !important;
+  box-shadow: 0 2px 14px rgba(0,0,0,.35) !important;
+}
+.android-subject-card::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--c1,#38bdf8), var(--c2,#6366f1));
+  opacity: 0; transition: opacity .28s var(--ease);
+}
+.android-subject-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: var(--c2,#6366f1) !important;
+  box-shadow: 0 18px 36px -12px color-mix(in srgb, var(--c2,#6366f1) 55%, transparent) !important;
+}
+.android-subject-card:hover::before { opacity: 1; }
+.android-subject-card:active { transform: translateY(-2px) !important; }
+.android-subject-card .subject-emoji {
+  background: linear-gradient(135deg, var(--c1,#38bdf8), var(--c2,#6366f1));
+  -webkit-background-clip: text; background-clip: text; color: transparent !important;
+  transition: transform .28s var(--ease);
+}
+.android-subject-card:hover .subject-emoji { transform: scale(1.14); }
+.android-subjects-grid .android-subject-card:nth-child(1){--c1:#38bdf8;--c2:#0284c7}
+.android-subjects-grid .android-subject-card:nth-child(2){--c1:#a78bfa;--c2:#7c3aed}
+.android-subjects-grid .android-subject-card:nth-child(3){--c1:#34d399;--c2:#059669}
+.android-subjects-grid .android-subject-card:nth-child(4){--c1:#fbbf24;--c2:#d97706}
+.android-subjects-grid .android-subject-card:nth-child(5){--c1:#f472b6;--c2:#db2777}
+.android-subjects-grid .android-subject-card:nth-child(6){--c1:#60a5fa;--c2:#2563eb}
+.android-subjects-grid .android-subject-card:nth-child(7){--c1:#2dd4bf;--c2:#0d9488}
+
+/* ── Quick-карточки + daily: подъём/свечение вместо тусклого opacity ── */
+.android-quick-card, .android-daily-card {
+  transition: transform .26s var(--ease), box-shadow .26s var(--ease), filter .26s var(--ease) !important;
+}
+.android-quick-card:hover { opacity: 1 !important; transform: translateY(-4px) !important; filter: brightness(1.07); box-shadow: 0 16px 30px -12px rgba(0,0,0,.45); }
+.android-daily-card:hover { opacity: 1 !important; transform: translateY(-3px); box-shadow: 0 18px 34px -14px rgba(217,119,6,.5); }
+.aqc-duel     { background: linear-gradient(135deg,#8b5cf6,#6d28d9) !important; box-shadow: 0 10px 24px -10px rgba(124,58,237,.6); }
+.aqc-mistakes { background: linear-gradient(135deg,#475569,#1f2937) !important; box-shadow: 0 10px 24px -12px rgba(0,0,0,.5); }
+
+/* ── Auth-карточка: градиентный ореол + появление ── */
+.auth-card { position: relative; animation: cardRise .6s var(--ease) both; }
+.auth-card::after {
+  content: ''; position: absolute; inset: -2px; border-radius: 26px; z-index: -1;
+  background: var(--accent-grad); opacity: .38; filter: blur(24px);
+}
+@keyframes cardRise { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* ── Варианты ответа: мягкий сдвиг при наведении (до ответа) ── */
+.option-label:not(.answered-correct):not(.answered-wrong):not(.answered-locked) {
+  transition: transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.option-label:not(.answered-correct):not(.answered-wrong):not(.answered-locked):hover {
+  transform: translateX(4px);
+}
+
+/* ── Первичные кнопки: градиент + свечение + подъём ── */
+button.bg-blue-600, button.bg-blue-500, .android-daily-btn:not(:disabled) {
+  background-image: var(--accent-grad) !important;
+  box-shadow: 0 10px 24px -10px rgba(56,189,248,.55);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s var(--ease) !important;
+}
+button.bg-blue-600:hover, button.bg-blue-500:hover, .android-daily-btn:not(:disabled):hover {
+  transform: translateY(-2px); filter: brightness(1.06);
+}
+
+/* ── Кастомный скроллбар ── */
+* { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,.45) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(#38bdf8,#6366f1); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(#0ea5e9,#4f46e5); background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Плавное появление страниц ── */
+.page-content { animation: pageFade .42s var(--ease) both; }
+@keyframes pageFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ── Доступность: уважаем reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+/* ── Primary auth-кнопки + карточки сложности (переопределяют !important-базу) ── */
+.auth-btn-primary {
+  background-image: var(--accent-grad) !important;
+  background-color: transparent !important;
+  box-shadow: 0 10px 26px -10px rgba(56,189,248,.6) !important;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s var(--ease) !important;
+}
+.auth-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  filter: brightness(1.06) !important;
+  box-shadow: 0 14px 30px -10px rgba(99,102,241,.7) !important;
+}
+.diff-card {
+  transition: transform .24s var(--ease), box-shadow .24s var(--ease), border-color .24s var(--ease) !important;
+}
+.diff-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 34px -14px rgba(56,189,248,.35) !important;
+}
