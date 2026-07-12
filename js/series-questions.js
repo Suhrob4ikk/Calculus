@@ -7,6 +7,7 @@ export const easySeriesQuestions = [
             "Чему равен предел последовательности $a_n = \\frac{n+1}{n}$ при $n \\to \\infty$?",
         options: ["$1$", "$0$", "$\\infty$", "$2$"],
         correct: 0,
+        explanation: "Делим на $n$: $\\frac{n+1}{n}=1+\\frac{1}{n}\\to 1$.",
     },
     {
         question: "Что такое монотонная последовательность?",
@@ -17,11 +18,13 @@ export const easySeriesQuestions = [
             "Знакопеременная",
         ],
         correct: 0,
+        explanation: "Монотонная последовательность сохраняет направление: всюду неубывающая либо всюду невозрастающая.",
     },
     {
         question: "Какой член ряда называется общим?",
         options: ["$a_n$", "$S_n$", "$\\lim a_n$", "$\\sum a_n$"],
         correct: 0,
+        explanation: "Общий член ряда — формула $n$-го слагаемого $a_n$.",
     },
     {
         question: "Что такое $S_n$ для ряда $\\sum a_n$?",
@@ -32,6 +35,7 @@ export const easySeriesQuestions = [
             "Сумма ряда",
         ],
         correct: 0,
+        explanation: "$S_n=a_1+\\dots+a_n$ — сумма первых $n$ членов (частичная сумма).",
     },
     {
         question: "Если $a_n \\to 0$, то ряд $\\sum a_n$...",
@@ -42,6 +46,7 @@ export const easySeriesQuestions = [
             "Сходится к нулю",
         ],
         correct: 2,
+        explanation: "Условие $a_n\\to 0$ необходимо, но не достаточно (гармонический ряд расходится, хотя $a_n\\to 0$).",
     },
     {
         question: "Что означает расходимость ряда?",
@@ -52,16 +57,19 @@ export const easySeriesQuestions = [
             "Ряд имеет бесконечную сумму",
         ],
         correct: 0,
+        explanation: "Ряд расходится, если последовательность частичных сумм $S_n$ не имеет конечного предела.",
     },
     {
         question: "Геометрический ряд $\\sum r^n$ сходится при...",
         options: ["$r > 1$", "$r = 1$", "$r \\geq 0$", "$|r| < 1$"],
         correct: 3,
+        explanation: "Геометрический ряд $\\sum r^n$ сходится тогда и только тогда, когда $|r|<1$.",
     },
     {
         question: "Чему равна сумма $\\sum_{n=0}^{\\infty} \\frac{1}{2^n}$?",
         options: ["$1$", "$\\infty$", "$2$", "$\\frac{1}{2}$"],
         correct: 2,
+        explanation: "Геом. ряд с $r=\\frac{1}{2}$: сумма $\\frac{1}{1-r}=\\frac{1}{1-1/2}=2$.",
     },
     {
         question: "Если ряд сходится, то его общий член...",
@@ -72,6 +80,7 @@ export const easySeriesQuestions = [
             "Стремится к нулю",
         ],
         correct: 3,
+        explanation: "Необходимое условие сходимости: общий член $a_n\\to 0$.",
     },
     {
         question: "Последовательность $a_n = \\frac{(-1)^n}{n}$...",
@@ -82,6 +91,7 @@ export const easySeriesQuestions = [
             "Сходится к -1",
         ],
         correct: 2,
+        explanation: "$|a_n|=\\frac{1}{n}\\to 0$, поэтому $a_n\\to 0$.",
     },
     {
         question: "Что такое числовой ряд?",
@@ -92,6 +102,7 @@ export const easySeriesQuestions = [
             "Функция от n",
         ],
         correct: 0,
+        explanation: "Числовой ряд — сумма бесконечной последовательности слагаемых $\\sum a_n$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} 1$...",
@@ -102,6 +113,7 @@ export const easySeriesQuestions = [
             "Сходится к e",
         ],
         correct: 1,
+        explanation: "Общий член $a_n=1\\not\\to 0$, значит ряд расходится.",
     },
     {
         question: "Если $a_n \\to L$, то $\\sum (a_n - L)$...",
@@ -112,6 +124,7 @@ export const easySeriesQuestions = [
             "Может расходиться",
         ],
         correct: 3,
+        explanation: "$a_n-L\\to 0$ — условие необходимое, но не достаточное; ряд может расходиться.",
     },
     {
         question: "Последовательность $a_n = n$...",
@@ -122,6 +135,7 @@ export const easySeriesQuestions = [
             "Расходится",
         ],
         correct: 3,
+        explanation: "$a_n=n\\to\\infty$: предел бесконечен, последовательность расходится.",
     },
     {
         question: "Что такое ограниченная последовательность?",
@@ -132,6 +146,7 @@ export const easySeriesQuestions = [
             "$a_n > 0$",
         ],
         correct: 1,
+        explanation: "Ограниченная: существует число $M$ такое, что $|a_n|<M$ для всех $n$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{1}{n}$ называется...",
@@ -142,6 +157,7 @@ export const easySeriesQuestions = [
             "Знакоположительным",
         ],
         correct: 2,
+        explanation: "$\\sum\\frac{1}{n}$ называется гармоническим рядом.",
     },
     {
         question:
@@ -153,6 +169,7 @@ export const easySeriesQuestions = [
             "Может вести себя по-разному",
         ],
         correct: 2,
+        explanation: "Признак сравнения: если мажоранта $\\sum b_n$ сходится, то $\\sum a_n$ сходится абсолютно.",
     },
     {
         question: "Что такое сходящаяся последовательность?",
@@ -163,17 +180,20 @@ export const easySeriesQuestions = [
             "Имеющая конечный предел",
         ],
         correct: 3,
+        explanation: "Сходящаяся последовательность — та, что имеет конечный предел.",
     },
     {
         question: "Предел $\\lim_{n \\to \\infty} \\frac{1}{n^2}$ равен...",
         options: ["$1$", "$0$", "$\\infty$", "$-\\infty$"],
         correct: 1,
+        explanation: "Знаменатель растёт: $\\frac{1}{n^2}\\to 0$.",
     },
     {
         question:
             "Ряд $\\sum_{n=1}^{\\infty} \\frac{1}{n^p}$ сходится при...",
         options: ["$p < 1$", "$p > 1$", "$p = 1$", "$p \\geq 0$"],
         correct: 1,
+        explanation: "Обобщённый гармонический ряд $\\sum\\frac{1}{n^p}$ сходится при $p>1$.",
     },
     {
         question: "Что такое знакоположительный ряд?",
@@ -184,6 +204,7 @@ export const easySeriesQuestions = [
             "Все $a_n \\geq 0$",
         ],
         correct: 3,
+        explanation: "Знакоположительный ряд — все члены $a_n\\geq 0$.",
     },
     {
         question: "Если $a_n \\geq 0$ и ряд $\\sum a_n$ сходится, то...",
@@ -194,12 +215,14 @@ export const easySeriesQuestions = [
             "$a_n = 0$",
         ],
         correct: 2,
+        explanation: "У знакоположительного сходящегося ряда частичные суммы $S_n$ ограничены.",
     },
     {
         question:
             "Последовательность $a_n = \\frac{n^2}{n^2+1}$ сходится к...",
         options: ["$0$", "$\\infty$", "$-1$", "$1$"],
         correct: 3,
+        explanation: "Делим на $n^2$: $\\frac{n^2}{n^2+1}=\\frac{1}{1+1/n^2}\\to 1$.",
     },
     {
         question: "Что необходимо для сходимости ряда?",
@@ -210,6 +233,7 @@ export const easySeriesQuestions = [
             "$a_n > 0$",
         ],
         correct: 1,
+        explanation: "Необходимое условие сходимости ряда: $a_n\\to 0$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{1}{n}$...",
@@ -220,6 +244,7 @@ export const easySeriesQuestions = [
             "Является геометрическим",
         ],
         correct: 2,
+        explanation: "Гармонический ряд $\\sum\\frac{1}{n}$ расходится (хотя $a_n\\to 0$).",
     },
     {
         question: "Если $r = -0.5$, то геометрический ряд...",
@@ -230,12 +255,14 @@ export const easySeriesQuestions = [
             "Сходится",
         ],
         correct: 3,
+        explanation: "$|r|=0{,}5<1$, поэтому геометрический ряд сходится.",
     },
     {
         question:
             "Предел $\\lim_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^n$ равен...",
         options: ["$1$", "$0$", "$\\infty$", "$e$"],
         correct: 3,
+        explanation: "Второй замечательный предел: $\\lim_{n\\to\\infty}\\left(1+\\frac{1}{n}\\right)^n=e$.",
     },
     {
         question: "Что такое бесконечно малая последовательность?",
@@ -246,6 +273,7 @@ export const easySeriesQuestions = [
             "Сходящаяся к нулю",
         ],
         correct: 3,
+        explanation: "Бесконечно малая последовательность — та, что стремится к нулю.",
     },
     {
         question:
@@ -257,17 +285,20 @@ export const easySeriesQuestions = [
             "Сходится условно",
         ],
         correct: 1,
+        explanation: "Признак сравнения (для неотрицательных членов): мажорируемый сходящимся рядом $\\sum a_n$ сходится.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} (-1)^n$...",
         options: ["Сходится", "Сходится к 0", "Расходится", "Сходится к 1"],
         correct: 2,
+        explanation: "Общий член $(-1)^n$ не стремится к нулю, поэтому ряд расходится.",
     },
     {
         question:
             "Чему равен предел последовательности $a_n = \\frac{1}{n}$ при $n \\to \\infty$?",
         options: ["$0$", "$1$", "$\\infty$", "$-\\infty$"],
         correct: 0,
+        explanation: "При $n\\to\\infty$ дробь $\\frac{1}{n}\\to 0$.",
     },
     {
         question: "Какой из следующих рядов является гармоническим?",
@@ -278,6 +309,7 @@ export const easySeriesQuestions = [
             "$\\sum_{n=1}^{\\infty} n$",
         ],
         correct: 0,
+        explanation: "Гармонический ряд — это $\\sum_{n=1}^{\\infty}\\frac{1}{n}$.",
     },
     {
         question: "Что означает сходимость ряда?",
@@ -288,6 +320,7 @@ export const easySeriesQuestions = [
             "Все члены ряда положительны",
         ],
         correct: 1,
+        explanation: "Ряд сходится, если последовательность частичных сумм $S_n$ имеет конечный предел.",
     },
     {
         question: "Какая из этих последовательностей сходится?",
@@ -298,87 +331,104 @@ export const easySeriesQuestions = [
             "$a_n = 2^n$",
         ],
         correct: 1,
+        explanation: "$\\frac{n}{n+1}\\to 1$ — имеет конечный предел, значит последовательность сходится.",
     },
     {
         question:
             "Чему равна сумма геометрической прогрессии $1 + \\frac{1}{2} + \\frac{1}{4} + \\frac{1}{8} + \\ldots$?",
         options: ["$2$", "$1$", "$\\infty$", "$\\frac{1}{2}$"],
         correct: 0,
+        explanation: "Геом. прогрессия с $r=\\frac{1}{2}$: сумма $\\frac{1}{1-1/2}=2$.",
     },
     {
         question: "Чему равна сумма ряда $\\sum_{n=1}^{\\infty} \\frac{1}{3^n}$?",
         options: ["$\\frac{1}{2}$", "$\\frac{1}{3}$", "$1$", "$3$"],
-        correct: 0
+        correct: 0,
+        explanation: "Геом. ряд с $n=1$: $\\frac{1/3}{1-1/3}=\\frac{1}{2}$.",
     },
     {
         question: "Последовательность $a_n = \\frac{2n+1}{n}$ при $n \\to \\infty$ стремится к...",
         options: ["$0$", "$1$", "$2$", "$\\infty$"],
-        correct: 2
+        correct: 2,
+        explanation: "$\\frac{2n+1}{n}=2+\\frac{1}{n}\\to 2$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{1}{n^3}$...",
         options: ["Расходится", "Сходится", "Сходится к 0", "Является гармоническим"],
-        correct: 1
+        correct: 1,
+        explanation: "Обобщённый гармонический ряд с $p=3>1$ — сходится.",
     },
     {
         question: "Что такое необходимое условие сходимости ряда $\\sum a_n$?",
         options: ["$a_n > 0$", "$a_n \\to 0$", "$S_n \\to \\infty$", "$a_n = const$"],
-        correct: 1
+        correct: 1,
+        explanation: "Необходимое условие сходимости: $a_n\\to 0$.",
     },
     {
         question: "Последовательность $a_n = \\frac{3n}{n+1}$ сходится к...",
         options: ["$1$", "$0$", "$\\infty$", "$3$"],
-        correct: 3
+        correct: 3,
+        explanation: "$\\frac{3n}{n+1}\\to 3$ (отношение старших степеней).",
     },
     {
         question: "Геометрический ряд $\\sum_{n=0}^{\\infty} \\left(\\frac{1}{3}\\right)^n$ равен...",
         options: ["$\\frac{1}{2}$", "$\\frac{3}{2}$", "$3$", "$\\frac{2}{3}$"],
-        correct: 1
+        correct: 1,
+        explanation: "Геом. ряд с $r=\\frac{1}{3}$ от $n=0$: $\\frac{1}{1-1/3}=\\frac{3}{2}$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{(-1)^n}{n^2}$ сходится...",
         options: ["Расходится", "Условно", "Абсолютно", "К нулю"],
-        correct: 2
+        correct: 2,
+        explanation: "$\\sum\\frac{1}{n^2}$ сходится ($p=2>1$), поэтому ряд сходится абсолютно.",
     },
     {
         question: "Предел $\\lim_{n \\to \\infty} \\frac{3n^2+1}{n^2-2}$ равен...",
         options: ["$0$", "$1$", "$3$", "$\\infty$"],
-        correct: 2
+        correct: 2,
+        explanation: "Отношение коэффициентов при $n^2$: $\\frac{3}{1}=3$.",
     },
     {
         question: "Если $\\sum a_n$ сходится, то $\\sum 2a_n$...",
         options: ["Расходится", "Сходится", "Равен нулю", "Неизвестно"],
-        correct: 1
+        correct: 1,
+        explanation: "Умножение на константу сохраняет сходимость: $\\sum 2a_n=2\\sum a_n$.",
     },
     {
         question: "Последовательность $a_n = (-1)^n$...",
         options: ["Сходится к 1", "Сходится к -1", "Сходится к 0", "Расходится"],
-        correct: 3
+        correct: 3,
+        explanation: "Значения чередуются $-1,1,-1,\\dots$ — конечного предела нет, расходится.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{1}{2^n + 1}$...",
         options: ["Расходится", "Сходится", "Является гармоническим", "Его сумма равна $+\\infty$"],
-        correct: 1
+        correct: 1,
+        explanation: "Сравнение: $\\frac{1}{2^n+1}<\\frac{1}{2^n}$, а $\\sum\\frac{1}{2^n}$ сходится.",
     },
     {
         question: "Предел $\\lim_{n \\to \\infty} \\frac{n^2+3n}{2n^2}$ равен...",
         options: ["$0$", "$\\frac{1}{2}$", "$1$", "$\\infty$"],
-        correct: 1
+        correct: 1,
+        explanation: "Старшие степени: $\\frac{n^2+3n}{2n^2}\\to\\frac{1}{2}$.",
     },
     {
         question: "Что такое частичная сумма $S_3$ ряда $1 + \\frac{1}{2} + \\frac{1}{4} + ...$?",
         options: ["$\\frac{7}{4}$", "$2$", "$\\frac{3}{4}$", "$\\frac{1}{4}$"],
-        correct: 0
+        correct: 0,
+        explanation: "$S_3=1+\\frac{1}{2}+\\frac{1}{4}=\\frac{7}{4}$.",
     },
     {
         question: "Ряд $\\sum_{n=1}^{\\infty} \\frac{n}{n^2+1}$...",
         options: ["Сходится", "Расходится", "Сходится к 1", "Является знакочередующимся"],
-        correct: 1
+        correct: 1,
+        explanation: "$\\frac{n}{n^2+1}\\sim\\frac{1}{n}$ — сравнение с гармоническим, ряд расходится.",
     },
     {
         question: "Если $a_n = \\frac{1}{n(n+1)}$, то $\\sum_{n=1}^{\\infty} a_n$ равна...",
         options: ["$\\frac{1}{2}$", "$\\infty$", "$0$", "$1$"],
-        correct: 3
+        correct: 3,
+        explanation: "Телескоп: $\\frac{1}{n(n+1)}=\\frac{1}{n}-\\frac{1}{n+1}$, сумма $=1$.",
     },
 ];
 
