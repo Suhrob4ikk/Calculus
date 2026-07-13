@@ -2522,3 +2522,42 @@ html:not(.dark) .android-subject-card {
 html:not(.dark) .bg-white {
   box-shadow: 0 8px 30px -12px rgba(99,102,241,.18) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   РЕДИЗАЙН — карточки разделов (hover-подсказка) + переходы вкладок
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Subject-карточка: при наведении раскрывается «Начать →» ── */
+.android-subject-card { height: 108px; }
+.android-subject-card .subject-name { transition: transform .3s var(--ease); }
+.subject-hint {
+  font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  line-height: 1.2; color: var(--c2, #6366f1);
+  max-height: 0; opacity: 0; transform: translateY(5px); margin-top: 0;
+  overflow: hidden;
+  transition: max-height .3s var(--ease), opacity .3s var(--ease),
+              transform .3s var(--ease), margin-top .3s var(--ease);
+}
+.android-subject-card:hover .subject-hint { max-height: 16px; opacity: 1; transform: none; margin-top: 4px; }
+.android-subject-card:hover .subject-name { transform: translateY(-2px); }
+
+/* ── Сайдбар: анимированный индикатор активной вкладки ── */
+.sb-item { position: relative; }
+.sb-item::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  width: 3px; height: 0; border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #38bdf8, #6366f1);
+  transform: translateY(-50%);
+  transition: height .3s var(--ease);
+}
+.sb-item.sb-active::before { height: 62%; }
+.sb-item svg { transition: transform .3s var(--ease); }
+.sb-item.sb-active svg { transform: scale(1.15); }
+.sb-item:hover { transform: translateX(3px); }
+
+/* ── Нижняя навигация (мобайл): активная иконка «подпрыгивает» ── */
+#bottomNav button svg { transition: transform .3s var(--ease); }
+#bottomNav button.bn-active svg { transform: translateY(-3px) scale(1.12); }
+
+/* ── Пружинистое появление страниц (переходы вкладок) ── */
+.page-enter { animation-timing-function: cubic-bezier(.2,.85,.25,1) !important; }
