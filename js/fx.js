@@ -75,13 +75,16 @@
 (function () {
   'use strict';
   if (!('MutationObserver' in window)) return;
-  let pending = false;
-  function render() { pending = false; if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} } }
+  let timer = null;
+  // setTimeout (не requestAnimationFrame): rAF не срабатывает в фоновой/скрытой
+  // вкладке, из-за чего иконки, вставленные в фоне, оставались пустыми <i>.
+  function render() { timer = null; if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} } }
   const obs = new MutationObserver((muts) => {
     for (const m of muts) {
       for (const n of m.addedNodes) {
         if (n.nodeType === 1 && (n.matches?.('[data-lucide]') || n.querySelector?.('[data-lucide]'))) {
-          if (!pending) { pending = true; requestAnimationFrame(render); }
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(render, 30);
           return;
         }
       }

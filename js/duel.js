@@ -180,8 +180,8 @@ window.createDuel = async function() {
   const shareWrap = document.getElementById('duelShareBtnWrap')
   if (shareWrap) shareWrap.style.display = 'block'
   _duelSetStatus('duelCreateStatus', st.duel.invitedUsername
-    ? `⏳ Ожидаем ${invited}…`
-    : '⏳ Ожидаем соперника…')
+    ? `<i data-lucide="hourglass" class="e-ic"></i> Ожидаем ${invited}…`
+    : '<i data-lucide="hourglass" class="e-ic"></i> Ожидаем соперника…')
 
   if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
   st.duel.channel = supabase.channel('duel:' + st.duel.code, { config: { broadcast: { self: false } } })
@@ -282,7 +282,7 @@ window.joinDuel = async function() {
   st.duel.code   = code
   st.duel.role   = 'guest'
   st.duel.myName = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
-  _duelSetStatus('duelJoinStatus', '⏳ Подключаемся…')
+  _duelSetStatus('duelJoinStatus', '<i data-lucide="hourglass" class="e-ic"></i> Подключаемся…')
 
   if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
   st.duel.channel = supabase.channel('duel:' + st.duel.code, { config: { broadcast: { self: false } } })
@@ -317,6 +317,17 @@ window.joinDuel = async function() {
         document.getElementById('duelTabsBar').style.display    = 'none'
         document.getElementById('duelLobby').style.display      = ''
         document.getElementById('duelLobbyMsg').textContent     = 'Подключился! Ожидаем старта…'
+        // D1: не зависаем в лобби навсегда — если host не пришлёт start за 12с,
+        // возвращаем к вводу кода с понятной ошибкой.
+        if (st.duel.lobbyTimeout) clearTimeout(st.duel.lobbyTimeout)
+        st.duel.lobbyTimeout = setTimeout(() => {
+          st.duel.lobbyTimeout = null
+          if (st.duel.phase !== 'idle') return   // старт уже пришёл
+          document.getElementById('duelLobby').style.display   = 'none'
+          document.getElementById('duelTabsBar').style.display = ''
+          window.showDuelTab('join')
+          _duelSetStatus('duelJoinStatus', '<i data-lucide="x-circle" class="e-ic"></i> Соперник не ответил. Проверь код и попробуй снова.')
+        }, 12000)
       }
     })
 }
@@ -331,6 +342,7 @@ function _beginDuelCountdown() {
   // Re-entry guard: only start countdown from idle phase
   if (st.duel.phase !== 'idle') return
   st.duel.phase = 'countdown'
+  if (st.duel.lobbyTimeout) { clearTimeout(st.duel.lobbyTimeout); st.duel.lobbyTimeout = null }
   if (st.duel.countdownInterval) { clearInterval(st.duel.countdownInterval); st.duel.countdownInterval = null }
   document.getElementById('duelCreatePanel').style.display = 'none'
   document.getElementById('duelJoinPanel').style.display   = 'none'
@@ -371,6 +383,7 @@ function _beginDuelTest() {
   st.isStudyMode       = false
   st.duel.myScore  = null
   st.duel.opponentScore = null
+  st.duel.resultsShown = false   // D3: новый раунд — можно снова показать результаты
   const timePerQ = st.duel.section === 'ode'
     ? (st.duel.diff === 'easy' ? 60 : st.duel.diff === 'hard' ? 120 : 90)
     : (st.duel.diff === 'easy' ? 30 : st.duel.diff === 'hard' ? 90  : 60)
@@ -530,6 +543,8 @@ function _onRematchStart(payload) {
 }
 
 function _showDuelResults() {
+  if (st.duel.resultsShown) return   // D3: защита от повторного показа (дубль score / гонка)
+  st.duel.resultsShown = true
   if (st.duel.opponentTimeout) {
     clearTimeout(st.duel.opponentTimeout)
     st.duel.opponentTimeout = null
@@ -548,6 +563,9 @@ function _showDuelResults() {
   if (rematchBanner) rematchBanner.style.display = 'none'
   const opponentTimedOut = st.duel.opponentScore === -1
   const opponentScore    = opponentTimedOut ? 0 : st.duel.opponentScore
+  // D2: соперник отключился — канал дуэли мёртв, реванш невозможен; прячем кнопку,
+  // остаётся «На главную».
+  if (rematchBtn) rematchBtn.style.display = opponentTimedOut ? 'none' : ''
   let emoji, title
   if (opponentTimedOut)                         { emoji = '<i data-lucide="trophy" class="e-ic"></i>'; title = 'Соперник отключился — ты победил!' }
   else if (st.duel.myScore > opponentScore) { emoji = '<i data-lucide="trophy" class="e-ic"></i>'; title = 'Ты победил!' }
@@ -595,6 +613,8 @@ window.showDuelPage = function() {
   st.duel.phase = 'idle'
   st.duel.myScore = null; st.duel.opponentScore = null
   st.duel.code = ''; st.duel.role = ''
+  st.duel.resultsShown = false
+  if (st.duel.lobbyTimeout) { clearTimeout(st.duel.lobbyTimeout); st.duel.lobbyTimeout = null }
   if (st.duel.countdownInterval) { clearInterval(st.duel.countdownInterval); st.duel.countdownInterval = null }
   if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
 

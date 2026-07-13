@@ -59,6 +59,8 @@ export const st = {
     startHandled: false,
     countdownInterval: null,
     opponentTimeout: null,
+    lobbyTimeout: null,     // D1: гость ждёт start; фолбэк если broadcast потерялся
+    resultsShown: false,    // D3: защита от повторного показа результатов дуэли
     // Коллбэки из duel.js для test.js
     broadcastScore: null,
     checkComplete: null,
