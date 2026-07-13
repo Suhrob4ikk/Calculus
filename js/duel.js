@@ -199,7 +199,9 @@ window.createDuel = async function() {
       _duelSetStatus('duelCreateStatus', `<i data-lucide="check-circle-2" class="e-ic"></i> ${escapeHtml(st.duel.opponentName)} подключился! Начинаем…`)
       st.duel.channel.send({
         type: 'broadcast', event: 'start',
-        payload: { code: st.duel.code, section: st.duel.section, difficulty: st.duel.diff }
+        // D4: адресуем старт принятому гостю по имени — если на код успели войти
+        // двое, «лишний» гость увидит, что старт не для него, и не начнёт игру.
+        payload: { code: st.duel.code, section: st.duel.section, difficulty: st.duel.diff, guestName: payload.name }
       })
       if (st.duel.startHandled) return
       st.duel.startHandled = true
@@ -220,7 +222,14 @@ window.createDuel = async function() {
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = 'Соперник отказался'; btn.disabled = true }
     })
-    .subscribe()
+    .subscribe(status => {
+      // D5: не оставляем кнопку залипшей на «Создаём…», если канал не поднялся
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        const b = document.getElementById('duelCreateBtn')
+        if (b) { b.disabled = false; b.innerHTML = '<i data-lucide="swords" class="e-ic"></i> Создать дуэль' }
+        _duelSetStatus('duelCreateStatus', '<i data-lucide="x-circle" class="e-ic"></i> Ошибка соединения. Попробуй ещё раз.')
+      }
+    })
 
   // Отправляем инвайт, если указан username
   if (st.duel.invitedUsername) {
@@ -290,6 +299,9 @@ window.joinDuel = async function() {
   st.duel.channel
     .on('broadcast', { event: 'start' }, ({ payload }) => {
       if (st.duel.phase !== 'idle') return
+      // D4: старт адресован конкретному гостю — если это не мы, ждём дальше
+      // (нас вернёт из лобби фолбэк D1, если хост так и не начнёт с нами).
+      if (payload?.guestName && payload.guestName !== st.duel.myName) return
       if (payload?.section)    st.duel.section = payload.section
       if (payload?.difficulty) st.duel.diff    = payload.difficulty
       _beginDuelCountdown()
