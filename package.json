@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "npx serve . -p 3000",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "build:css": "npx -y tailwindcss@3 -c ./tailwind.config.js -i ./css/tailwind.src.css -o ./css/tailwind.css --minify"
   }
 }
