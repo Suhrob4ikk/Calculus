@@ -12,10 +12,30 @@ export function applyTheme(dark) {
   }
 }
 
-window.toggleTheme = function() {
-  const isDark = document.documentElement.classList.toggle('dark')
-  localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  syncSettingsBtns()
+window.toggleTheme = function(ev) {
+  const apply = () => {
+    const isDark = document.documentElement.classList.toggle('dark')
+    localStorage.setItem('theme', isDark ? 'dark' : 'light')
+    syncSettingsBtns()
+  }
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  // Круговой reveal новой темы из точки клика (View Transitions API).
+  if (!document.startViewTransition || reduce) { apply(); return }
+  let x = ev?.clientX, y = ev?.clientY
+  if (x == null) {
+    const b = document.getElementById('settingsThemeBtn') || document.activeElement
+    const r = b?.getBoundingClientRect?.()
+    x = r ? r.left + r.width / 2 : window.innerWidth - 40
+    y = r ? r.top + r.height / 2 : 40
+  }
+  const end = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+  const vt = document.startViewTransition(apply)
+  vt.ready.then(() => {
+    document.documentElement.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+      { duration: 520, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)' }
+    )
+  })
 }
 
 // ── Навигация между страницами ────────────────────────────
