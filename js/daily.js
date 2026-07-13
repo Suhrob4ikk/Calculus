@@ -63,6 +63,8 @@ window.startDailyChallenge = async function() {
   }
   clearTestState()
   st.isStudyMode       = false
+  st.testMode          = 'closed'   // ежедневка всегда с вариантами; иначе унаследует
+                                    // 'open' от прошлого теста → текстовый ввод → 0/10
   st.currentSection    = 'daily'
   st.currentDifficulty = 'medium'
   st.currentTest       = getDailyQuestions()

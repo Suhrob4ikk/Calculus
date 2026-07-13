@@ -393,6 +393,7 @@ function _beginDuelTest() {
   st.currentQuestionIndex = 0
   st.userAnswers       = new Array(questions.length).fill(null)
   st.isStudyMode       = false
+  st.testMode          = 'closed'   // дуэль всегда с вариантами (не наследуем 'open')
   st.duel.myScore  = null
   st.duel.opponentScore = null
   st.duel.resultsShown = false   // D3: новый раунд — можно снова показать результаты
