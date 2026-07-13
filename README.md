@@ -7,8 +7,7 @@ A Progressive Web App for higher mathematics practice. Covers seven subjects wit
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-**Live:** [mathcore-app.vercel.app](https://mathcore-app.vercel.app)  
-**Android APK:** [Download](https://github.com/Suhrob4ikk/Calculus/raw/main/mathcore.apk)
+**Live:** [mathcore-app.vercel.app](https://mathcore-app.vercel.app)
 
 ---
 

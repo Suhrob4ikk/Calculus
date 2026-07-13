@@ -315,7 +315,6 @@ window.showProfile = async function() {
     </div>
 
     <button id="installAppBtnProfile" onclick="installApp()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(139,92,246,0.2));border:1px solid rgba(59,130,246,0.35);color:#93c5fd;padding:8px 14px;border-radius:9999px;font-size:0.85rem;cursor:pointer;font-weight:600;margin-top:1rem;"><i data-lucide="download" style="width:14px;height:14px"></i> Установить приложение</button>
-    <a href="https://github.com/Suhrob4ikk/Calculus/raw/main/mathcore.apk" download="mathcore.apk" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(16,185,129,0.2));border:1px solid rgba(34,197,94,0.35);color:#86efac;padding:8px 14px;border-radius:9999px;font-size:0.85rem;font-weight:600;margin-top:0.75rem;text-decoration:none"><i data-lucide="smartphone" style="width:14px;height:14px"></i> Скачать APK для Android</a>
 
     <h3 class="text-lg font-bold text-slate-200 mb-3">Статистика</h3>
     <div class="grid grid-cols-3 gap-3 mb-4">

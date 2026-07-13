@@ -17,13 +17,6 @@
   ],
   "headers": [
     {
-      "source": "/mathcore.apk",
-      "headers": [
-        { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
-        { "key": "Content-Disposition", "value": "attachment; filename=\"mathcore.apk\"" }
-      ]
-    },
-    {
       "source": "/sw.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" },
