@@ -36,7 +36,8 @@
 
   document.addEventListener('click', (e) => {
     const el = e.target.closest(SEL);
-    if (el) spawnRipple(el, e.clientX || null, e.clientY || null);
+    // Орбы на главной имеют свой круглый эффект — прямоугольный ripple там лишний.
+    if (el && !el.closest('.subjects-orbit')) spawnRipple(el, e.clientX || null, e.clientY || null);
   }, true);
 })();
 
