@@ -29,21 +29,21 @@ export function computeBadges(data, sections) {
   const best  = total ? Math.max(...data.map(r => r.score)) : 0
   const avg   = total ? Math.round(data.reduce((s, r) => s + r.score, 0) / total) : 0
   const badges = []
-  if (total >= 1)   badges.push({ icon: '🎯', text: 'Первый тест',    cls: 'badge-silver' })
-  if (total >= 5)   badges.push({ icon: '📚', text: '5 тестов',       cls: 'badge-silver' })
-  if (total >= 10)  badges.push({ icon: '🔥', text: '10 тестов',      cls: 'badge-gold'   })
-  if (total >= 20)  badges.push({ icon: '💎', text: '20 тестов',      cls: 'badge-gold'   })
-  if (best === 100) badges.push({ icon: '🏆', text: 'Идеальный балл', cls: 'badge-gold'   })
-  if (best >= 90)   badges.push({ icon: '⭐', text: 'Отличник',       cls: 'badge-gold'   })
-  if (avg >= 70)    badges.push({ icon: '✅', text: 'Стабильный',     cls: 'badge-green'  })
+  if (total >= 1)   badges.push({ icon: '<i data-lucide="target" class="e-ic"></i>', text: 'Первый тест',    cls: 'badge-silver' })
+  if (total >= 5)   badges.push({ icon: '<i data-lucide="book-open" class="e-ic"></i>', text: '5 тестов',       cls: 'badge-silver' })
+  if (total >= 10)  badges.push({ icon: '<i data-lucide="flame" class="e-ic"></i>', text: '10 тестов',      cls: 'badge-gold'   })
+  if (total >= 20)  badges.push({ icon: '<i data-lucide="gem" class="e-ic"></i>', text: '20 тестов',      cls: 'badge-gold'   })
+  if (best === 100) badges.push({ icon: '<i data-lucide="trophy" class="e-ic"></i>', text: 'Идеальный балл', cls: 'badge-gold'   })
+  if (best >= 90)   badges.push({ icon: '<i data-lucide="star" class="e-ic"></i>', text: 'Отличник',       cls: 'badge-gold'   })
+  if (avg >= 70)    badges.push({ icon: '<i data-lucide="check-circle-2" class="e-ic"></i>', text: 'Стабильный',     cls: 'badge-green'  })
   const covered = sections.filter(s => data.some(r => r.section === s))
-  if (covered.length >= 4) badges.push({ icon: '🌟', text: 'Всесторонний', cls: 'badge-green' })
+  if (covered.length >= 4) badges.push({ icon: '<i data-lucide="sparkles" class="e-ic"></i>', text: 'Всесторонний', cls: 'badge-green' })
   let maxStreak = 0, cur = 0
   data.slice().reverse().forEach(r => {
     if (r.score >= 70) { cur++; maxStreak = Math.max(maxStreak, cur) } else cur = 0
   })
-  if (maxStreak >= 3) badges.push({ icon: '🔆', text: `Серия ${maxStreak} побед`, cls: 'badge-gold' })
-  if (maxStreak >= 5) badges.push({ icon: '⚡', text: 'Горячая серия',            cls: 'badge-gold' })
+  if (maxStreak >= 3) badges.push({ icon: '<i data-lucide="flame" class="e-ic"></i>', text: `Серия ${maxStreak} побед`, cls: 'badge-gold' })
+  if (maxStreak >= 5) badges.push({ icon: '<i data-lucide="zap" class="e-ic"></i>', text: 'Горячая серия',            cls: 'badge-gold' })
   return { badges, total, best, avg }
 }
 
@@ -129,8 +129,8 @@ window.showProfile = async function() {
       reg.pushManager.getSubscription().then(sub => {
         const btn = document.getElementById('pushToggleBtn')
         if (!btn) return
-        if (sub) { btn.textContent = '🔕 Отключить уведомления'; btn.classList.add('active-push') }
-        else     { btn.textContent = '🔔 Включить уведомления';  btn.classList.remove('active-push') }
+        if (sub) { btn.innerHTML = '<i data-lucide="bell-off" class="e-ic"></i> Отключить уведомления'; btn.classList.add('active-push') }
+        else     { btn.innerHTML = '<i data-lucide="bell" class="e-ic"></i> Включить уведомления';  btn.classList.remove('active-push') }
       })
     })
   }
@@ -202,7 +202,7 @@ window.showProfile = async function() {
   const nameEl = document.getElementById('profileName')
   if (nameEl) {
     nameEl.innerHTML = username + (isCreator
-      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle">👑 Разработчик</span>'
+      ? ' <span title="Создатель сайта" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle"><i data-lucide="crown" class="e-ic"></i> Разработчик</span>'
       : '')
   }
   const emailEl = document.getElementById('profileEmail')
@@ -229,7 +229,7 @@ window.showProfile = async function() {
     if (block) {
       const { data: duels } = await getDuelHistory(st.currentUser.id)
       if (duels && duels.length > 0)
-        block.innerHTML = '<p class="text-slate-400 text-sm text-center">⚔️ У вас есть история дуэлей — см. ниже</p>'
+        block.innerHTML = '<p class="text-slate-400 text-sm text-center"><i data-lucide="swords" class="e-ic"></i> У вас есть история дуэлей — см. ниже</p>'
     }
     return
   }
@@ -261,7 +261,7 @@ window.showProfile = async function() {
     const { rank: myRank, total: totalUsers, rankings } = await getUserRankData(username)
     if (myRank && rankings) {
       compareHTML = `
-        <h3 class="text-lg font-bold text-slate-200 mb-3">📊 Место в рейтинге</h3>
+        <h3 class="text-lg font-bold text-slate-200 mb-3"><i data-lucide="bar-chart-2" class="e-ic"></i> Место в рейтинге</h3>
         <div class="rounded-xl p-4 mb-4" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">
           <div class="text-center mb-3">
             <div class="text-3xl font-bold text-blue-400">#${myRank}</div>
@@ -270,7 +270,7 @@ window.showProfile = async function() {
           <div class="space-y-2">
             ${rankings.slice(0, 3).map((r, i) => `
               <div class="flex justify-between items-center p-2 rounded-lg${r.name === username ? ' font-bold' : ''}" style="background:${r.name === username ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'}">
-                <span class="text-slate-200">${['🥇','🥈','🥉'][i]} ${escapeHtml(r.name)}</span>
+                <span class="text-slate-200">${['<i data-lucide="medal" class="e-ic" style="color:#fbbf24"></i>','<i data-lucide="medal" class="e-ic" style="color:#cbd5e1"></i>','<i data-lucide="medal" class="e-ic" style="color:#d97706"></i>'][i]} ${escapeHtml(r.name)}</span>
                 <span class="text-blue-400 font-semibold">${r.xp} XP</span>
               </div>`).join('')}
             ${myRank > 3 ? `

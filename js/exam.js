@@ -113,7 +113,7 @@ function renderExamSetup() {
   container.innerHTML = `
     <div class="page-content" style="padding:2.5rem clamp(1rem, 3vw, 2.5rem)">
       <h1 style="font-size:2.4rem;font-weight:800;margin-bottom:0.6rem;text-align:center">
-        🎓 Режим экзамена
+        <i data-lucide="graduation-cap" class="e-ic"></i> Режим экзамена
       </h1>
       <p style="color:var(--text-sub);text-align:center;margin-bottom:2.5rem;font-size:1rem;max-width:560px;margin-left:auto;margin-right:auto">
         Вопросы из всех разделов. Строгий таймер — ответы подаются автоматически при истечении времени.
@@ -126,7 +126,7 @@ function renderExamSetup() {
                    flex-direction:column;gap:0.75rem"
             onmouseenter="this.style.borderColor='rgba(99,102,241,0.7)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(99,102,241,0.15)'"
             onmouseleave="this.style.borderColor='rgba(99,102,241,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-            <div style="font-size:2.5rem;line-height:1">${{ quick: '⚡', standard: '📝', full: '🏆' }[key]}</div>
+            <div style="font-size:2.5rem;line-height:1">${{ quick: '<i data-lucide="zap" class="e-ic"></i>', standard: '<i data-lucide="pencil" class="e-ic"></i>', full: '<i data-lucide="trophy" class="e-ic"></i>' }[key]}</div>
             <div style="font-size:1.35rem;font-weight:700">${f.label}</div>
             <div style="color:var(--text-sub);font-size:0.95rem">${f.count} вопросов · ${f.minutes} минут</div>
           </div>
@@ -222,7 +222,7 @@ function renderExamActive() {
         <div style="display:flex;gap:0.5rem;align-items:center">
           <button onclick="window._exitExamConfirm()"
             style="padding:6px 14px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);cursor:pointer;font-weight:600;
-                   background:rgba(239,68,68,0.1);color:#f87171;font-size:0.85rem">✕ Выйти</button>
+                   background:rgba(239,68,68,0.1);color:#f87171;font-size:0.85rem"><i data-lucide="x" class="e-ic"></i> Выйти</button>
           <button onclick="window._finishExamConfirm()"
             style="padding:6px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
                    background:#3b82f6;color:white;font-size:0.85rem">Завершить</button>
@@ -445,7 +445,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
                     border-radius:14px;pointer-events:none"></div>
 
         <!-- Шапка -->
-        <div style="font-size:2.5rem;margin-bottom:0.5rem">🎓</div>
+        <div style="font-size:2.5rem;margin-bottom:0.5rem"><i data-lucide="graduation-cap" class="e-ic"></i></div>
         <div style="font-size:0.85rem;color:var(--text-sub);letter-spacing:0.15em;
                     text-transform:uppercase;font-weight:600;margin-bottom:0.25rem">
           Сертификат об успешном прохождении
@@ -500,7 +500,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
             <div style="background:var(--bg-card);border-radius:10px;padding:0.75rem 1rem;
               border-left:3px solid ${r.isCorrect ? '#10b981' : '#ef4444'};font-size:0.85rem">
               <div style="color:${r.isCorrect ? '#34d399' : '#f87171'};font-weight:600;margin-bottom:0.25rem">
-                ${r.isCorrect ? '✓' : '✗'} Вопрос ${i + 1}
+                ${r.isCorrect ? '<i data-lucide="check" class="e-ic"></i>' : '<i data-lucide="x" class="e-ic"></i>'} Вопрос ${i + 1}
                 <span style="color:var(--text-sub);font-weight:400;font-size:0.78rem;margin-left:6px">
                   ${SUBJECTS[r.subject] || ''}
                 </span>
@@ -522,7 +522,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
         <button onclick="window.print()"
           style="padding:10px 24px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                  background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-size:0.95rem">
-          🖨️ Распечатать / Скачать PDF
+          <i data-lucide="printer" class="e-ic"></i> Распечатать / Скачать PDF
         </button>
         <button onclick="window.showExamPage()"
           style="padding:10px 24px;border-radius:12px;border:1px solid rgba(100,116,139,0.4);

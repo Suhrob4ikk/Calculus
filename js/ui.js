@@ -177,8 +177,8 @@ export function updateUserUI() {
   const isCreator = st.currentUser.email === 'davlatovsurob@gmail.com'
   const el = document.getElementById('userGreeting')
   if (el) {
-    el.innerHTML = `👤 ${escapeHtml(username)}` + (isCreator
-      ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
+    el.innerHTML = `<i data-lucide="user" class="e-ic"></i> ${escapeHtml(username)}` + (isCreator
+      ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px"><i data-lucide="crown" class="e-ic"></i></span>'
       : '')
   }
   const dhUsername = document.getElementById('dhUsername')
@@ -226,7 +226,7 @@ window.toggleNavMenu = function() {
   const menu = document.getElementById('navMenu')
   const btn  = document.getElementById('menuBtn')
   menu.style.display = _navOpen ? 'block' : 'none'
-  btn.textContent    = _navOpen ? '✕' : '☰'
+  btn.innerHTML    = _navOpen ? '<i data-lucide="x" class="e-ic"></i>' : '<i data-lucide="menu" class="e-ic"></i>'
   btn.style.color    = _navOpen ? '#60a5fa' : ''
 }
 window.closeNavMenu = function() {
@@ -234,7 +234,7 @@ window.closeNavMenu = function() {
   const menu = document.getElementById('navMenu')
   if (menu) menu.style.display = 'none'
   const btn = document.getElementById('menuBtn')
-  if (btn) { btn.textContent = '☰'; btn.style.color = '' }
+  if (btn) { btn.innerHTML = '<i data-lucide="menu" class="e-ic"></i>'; btn.style.color = '' }
 }
 document.addEventListener('click', e => {
   if (_navOpen && !e.target.closest('#navMenu') && !e.target.closest('#menuBtn')) {
@@ -335,12 +335,12 @@ export async function syncXpFromDB(userId) {
 }
 export function getXPLevel(xp) {
   const levels = [
-    { min: 5000, name: 'Эксперт',     icon: '🏆', color: '#f59e0b', nextAt: null  },
-    { min: 2500, name: 'Знаток',      icon: '💡', color: '#3b82f6', nextAt: 5000  },
-    { min: 1000, name: 'Продвинутый', icon: '🔥', color: '#10b981', nextAt: 2500  },
-    { min: 500,  name: 'Практик',     icon: '📚', color: '#8b5cf6', nextAt: 1000  },
-    { min: 200,  name: 'Студент',     icon: '🎓', color: '#06b6d4', nextAt: 500   },
-    { min: 0,    name: 'Новичок',     icon: '⭐', color: '#6b7280', nextAt: 200   },
+    { min: 5000, name: 'Эксперт',     icon: '<i data-lucide="trophy" class="e-ic"></i>', color: '#f59e0b', nextAt: null  },
+    { min: 2500, name: 'Знаток',      icon: '<i data-lucide="lightbulb" class="e-ic"></i>', color: '#3b82f6', nextAt: 5000  },
+    { min: 1000, name: 'Продвинутый', icon: '<i data-lucide="flame" class="e-ic"></i>', color: '#10b981', nextAt: 2500  },
+    { min: 500,  name: 'Практик',     icon: '<i data-lucide="book-open" class="e-ic"></i>', color: '#8b5cf6', nextAt: 1000  },
+    { min: 200,  name: 'Студент',     icon: '<i data-lucide="graduation-cap" class="e-ic"></i>', color: '#06b6d4', nextAt: 500   },
+    { min: 0,    name: 'Новичок',     icon: '<i data-lucide="star" class="e-ic"></i>', color: '#6b7280', nextAt: 200   },
   ]
   return levels.find(l => xp >= l.min)
 }
@@ -507,7 +507,7 @@ export function showContinueTestBanner() {
     font-size:0.9rem;max-width:90vw;
   `
   banner.innerHTML = `
-    <span style="font-size:1.4rem">📝</span>
+    <span style="font-size:1.4rem"><i data-lucide="clipboard-list" class="e-ic"></i></span>
     <span>У вас есть незавершённый тест</span>
     <button onclick="resumeTestFromBanner()" style="
       background:#3b82f6;color:white;border:none;padding:6px 16px;

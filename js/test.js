@@ -36,7 +36,7 @@ export function startTimer() {
       st.testTimer = null   // Bug 6 fix: null out so stale interval can't fire again
       const timerEl = document.getElementById('timerDisplay')
       if (timerEl) {
-        timerEl.textContent = '⏱️ Время вышло!'
+        timerEl.textContent = 'Время вышло!'
         timerEl.className = 'text-lg font-semibold text-red-600 bg-red-100 px-4 py-2 rounded-lg animate-pulse'
       }
       setTimeout(() => window.finishTest(), 1500)
@@ -49,7 +49,7 @@ function updateTimerDisplay() {
   const s = st.timeRemaining % 60
   const el = document.getElementById('timerDisplay')
   if (!el) return
-  el.textContent = `⏱️ ${m}:${s.toString().padStart(2, '0')}`
+  el.textContent = `${m}:${s.toString().padStart(2, '0')}`
   el.className = st.timeRemaining <= 300
     ? 'text-lg font-semibold text-red-600 bg-red-50 px-4 py-2 rounded-lg animate-pulse'
     : st.timeRemaining <= 600
@@ -346,10 +346,10 @@ export function displayQuestion() {
     if (answered) {
       const isCorrect = checkOpenCorrect(userVal, question.open || [])
       if (isCorrect) {
-        openResult = `<div class="open-answer-result open-correct">✓ Правильно!</div>`
+        openResult = `<div class="open-answer-result open-correct"><i data-lucide="check" class="e-ic"></i> Правильно!</div>`
       } else {
         const correctAns = question.open ? question.open[0] : '?'
-        openResult = `<div class="open-answer-result open-wrong">✗ Неправильно. Правильный ответ: <strong>${correctAns}</strong></div>`
+        openResult = `<div class="open-answer-result open-wrong"><i data-lucide="x" class="e-ic"></i> Неправильно. Правильный ответ: <strong>${correctAns}</strong></div>`
       }
     }
     container.innerHTML = questionHeader + `
@@ -664,7 +664,7 @@ window.finishTest = async function () {
           <div class="${r.isCorrect ? 'result-card-correct' : 'result-card-wrong'}">
             <div class="text-sm font-medium mb-1">Вопрос ${i + 1}:</div>
             <div class="text-sm mb-1 math-content">${escapeHtml(r.question)}</div>
-            <div class="text-xs">Ваш: ${escapeHtml(r.userAnswer)}<br>Правильный: ${escapeHtml(r.correctAnswer)}<br>${r.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</div>
+            <div class="text-xs">Ваш: ${escapeHtml(r.userAnswer)}<br>Правильный: ${escapeHtml(r.correctAnswer)}<br>${r.isCorrect ? '<i data-lucide="check" class="e-ic"></i> Правильно' : '<i data-lucide="x" class="e-ic"></i> Неправильно'}</div>
             ${r.explanation ? `<div class="result-explanation math-content"><i data-lucide="lightbulb"></i> ${escapeHtml(r.explanation)}</div>` : ''}
           </div>`).join('')}
       </div>`
@@ -696,7 +696,7 @@ window.shareResult = function (correct, total, percentage) {
   const btn = document.getElementById('shareBtn')
   const orig = btn.textContent
   const onCopied = () => {
-    btn.textContent = '✅ Скопировано!'; btn.style.backgroundColor = '#10b981'
+    btn.innerHTML = '<i data-lucide="check" class="e-ic"></i> Скопировано!'; btn.style.backgroundColor = '#10b981'
     setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = '' }, 2500)
   }
   if (navigator.clipboard?.writeText) {

@@ -94,7 +94,7 @@ window.showDuelModal = function() {
   document.getElementById('duelCodeDisplay').textContent    = '——————'
   document.getElementById('duelCreateStatus').textContent   = 'Нажми кнопку чтобы создать дуэль'
   document.getElementById('duelCreateBtn').disabled         = false
-  document.getElementById('duelCreateBtn').textContent      = '⚔️ Создать дуэль'
+  document.getElementById('duelCreateBtn').innerHTML      = '<i data-lucide="swords" class="e-ic"></i> Создать дуэль'
   const ji = document.getElementById('duelJoinInput')
   if (ji) ji.value = ''
   document.getElementById('duelJoinStatus').textContent     = ''
@@ -155,7 +155,7 @@ window.copyDuelCode = function() {
   const el = document.getElementById('duelCodeDisplay')
   const orig = el.textContent
   navigator.clipboard.writeText(st.duel.code).then(() => {
-    el.textContent = '✓ Скопировано!'
+    el.innerHTML = '<i data-lucide="check" class="e-ic"></i> Скопировано!'
     setTimeout(() => { el.textContent = orig }, 1500)
   }).catch(() => {})
 }
@@ -196,7 +196,7 @@ window.createDuel = async function() {
       if (st.duel.phase !== 'idle') return
       st.duel.joinHandled = true
       st.duel.opponentName = payload.name
-      _duelSetStatus('duelCreateStatus', `✅ ${escapeHtml(st.duel.opponentName)} подключился! Начинаем…`)
+      _duelSetStatus('duelCreateStatus', `<i data-lucide="check-circle-2" class="e-ic"></i> ${escapeHtml(st.duel.opponentName)} подключился! Начинаем…`)
       st.duel.channel.send({
         type: 'broadcast', event: 'start',
         payload: { code: st.duel.code, section: st.duel.section, difficulty: st.duel.diff }
@@ -226,7 +226,7 @@ window.createDuel = async function() {
   if (st.duel.invitedUsername) {
     const isValid = /^[a-zA-Zа-яА-ЯёЁ0-9_][a-zA-Zа-яА-ЯёЁ0-9_]{1,30}$/.test(st.duel.invitedUsername);
     if (!isValid) {
-      _duelSetStatus('duelCreateStatus', '❌ Некорректный ник приглашённого');
+      _duelSetStatus('duelCreateStatus', '<i data-lucide="x-circle" class="e-ic"></i> Некорректный ник приглашённого');
     } else {
       // Path A: Realtime broadcast — reaches Android if app is open and WS connected.
       // Guard with invitesChannelReady: if not yet SUBSCRIBED, send() is a no-op and
@@ -277,7 +277,7 @@ window.joinDuel = async function() {
   if (!st.currentUser) { alert('Войди в аккаунт, чтобы принять участие'); return }
   const input = document.getElementById('duelJoinInput')
   const code  = input.value.trim().toUpperCase()
-  if (code.length < 4) { _duelSetStatus('duelJoinStatus', '❌ Введи код (минимум 4 символа)'); return }
+  if (code.length < 4) { _duelSetStatus('duelJoinStatus', '<i data-lucide="x-circle" class="e-ic"></i> Введи код (минимум 4 символа)'); return }
 
   st.duel.code   = code
   st.duel.role   = 'guest'
@@ -312,7 +312,7 @@ window.joinDuel = async function() {
     .subscribe(status => {
       if (status === 'SUBSCRIBED') {
         st.duel.channel.send({ type: 'broadcast', event: 'join', payload: { name: st.duel.myName } })
-        _duelSetStatus('duelJoinStatus', '✅ Подключился! Ожидаем старта…')
+        _duelSetStatus('duelJoinStatus', '<i data-lucide="check-circle-2" class="e-ic"></i> Подключился! Ожидаем старта…')
         document.getElementById('duelJoinPanel').style.display  = 'none'
         document.getElementById('duelTabsBar').style.display    = 'none'
         document.getElementById('duelLobby').style.display      = ''
@@ -549,11 +549,11 @@ function _showDuelResults() {
   const opponentTimedOut = st.duel.opponentScore === -1
   const opponentScore    = opponentTimedOut ? 0 : st.duel.opponentScore
   let emoji, title
-  if (opponentTimedOut)                         { emoji = '🏆'; title = 'Соперник отключился — ты победил!' }
-  else if (st.duel.myScore > opponentScore) { emoji = '🏆'; title = 'Ты победил!' }
-  else if (st.duel.myScore < opponentScore) { emoji = '💪'; title = 'Соперник победил — реванш?' }
-  else                                          { emoji = '🤝'; title = 'Ничья!' }
-  emojiEl.textContent = emoji
+  if (opponentTimedOut)                         { emoji = '<i data-lucide="trophy" class="e-ic"></i>'; title = 'Соперник отключился — ты победил!' }
+  else if (st.duel.myScore > opponentScore) { emoji = '<i data-lucide="trophy" class="e-ic"></i>'; title = 'Ты победил!' }
+  else if (st.duel.myScore < opponentScore) { emoji = '<i data-lucide="dumbbell" class="e-ic"></i>'; title = 'Соперник победил — реванш?' }
+  else                                          { emoji = '<i data-lucide="handshake" class="e-ic"></i>'; title = 'Ничья!' }
+  emojiEl.innerHTML = emoji
   titleEl.textContent = title
   const _dark = document.documentElement.classList.contains('dark')
   const card = (name, score, highlight, timedOut = false) => `
@@ -603,7 +603,7 @@ window.showDuelPage = function() {
 
   container.innerHTML = `
     <div style="padding:2rem clamp(1rem,3vw,2.5rem);max-width:600px;margin:0 auto">
-      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem">⚔️ Дуэль 1v1</h1>
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem"><i data-lucide="swords" class="e-ic"></i> Дуэль 1v1</h1>
       <p style="color:var(--text-sub);margin-bottom:1.5rem;font-size:0.95rem">
         Соревнуйся с другом в реальном времени. Одинаковые вопросы — кто ответит точнее?
       </p>
@@ -636,7 +636,7 @@ window.showDuelPage = function() {
             <button onclick="window._shareDuelInvite()"
               style="padding:6px 18px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);
                      background:rgba(139,92,246,0.12);color:#c4b5fd;cursor:pointer;font-size:0.9rem;font-weight:600">
-              📤 Пригласить
+              <i data-lucide="send" class="e-ic"></i> Пригласить
             </button>
           </div>
         </div>
@@ -680,7 +680,7 @@ window.showDuelPage = function() {
           style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                  font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
                  box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
-          ⚔️ Создать дуэль
+          <i data-lucide="swords" class="e-ic"></i> Создать дуэль
         </button>
       </div>
 

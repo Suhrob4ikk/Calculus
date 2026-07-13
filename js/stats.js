@@ -49,11 +49,11 @@ window.showStatistics = async function() {
   // Chart.js графики
   const container = document.getElementById('statsChartsContainer')
   container.innerHTML = `
-    <h3 class="text-xl font-bold text-gray-800 mb-3">📈 Динамика результатов</h3>
+    <h3 class="text-xl font-bold text-gray-800 mb-3"><i data-lucide="trending-up" class="e-ic"></i> Динамика результатов</h3>
     <div style="position:relative;height:200px;margin-bottom:1.5rem">
       <canvas id="scoreChart"></canvas>
     </div>
-    <h3 class="text-xl font-bold text-gray-800 mb-3">📊 Средний балл по разделам</h3>
+    <h3 class="text-xl font-bold text-gray-800 mb-3"><i data-lucide="bar-chart-2" class="e-ic"></i> Средний балл по разделам</h3>
     <div style="position:relative;height:180px;margin-bottom:1.5rem">
       <canvas id="sectionChart"></canvas>
     </div>`
@@ -137,7 +137,7 @@ window.showStatistics = async function() {
             style="width:26px;height:26px;border-radius:50%;border:1px solid #e5e7eb;background:transparent;color:#9ca3af;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s"
             onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'"
             onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#9ca3af'"
-            title="Удалить">✕</button>
+            title="Удалить"><i data-lucide="x" class="e-ic"></i></button>
         </div>
       </div>
     </div>`).join('')
@@ -264,8 +264,8 @@ window.showLeaderboard = async function() {
   const profMap  = {}
   profiles.forEach(p => { profMap[p.username] = p })
 
-  const medals    = ['🥇', '🥈', '🥉']
-  const diffLabel = { easy: '🟢 Лёгкий', medium: '🟡 Средний', hard: '🔴 Сложный' }
+  const medals    = ['<i data-lucide="medal" class="e-ic" style="color:#fbbf24"></i>','<i data-lucide="medal" class="e-ic" style="color:#cbd5e1"></i>','<i data-lucide="medal" class="e-ic" style="color:#d97706"></i>']
+  const diffLabel = { easy: '<span class="dlvl-dot" style="background:#22c55e"></span> Лёгкий', medium: '<span class="dlvl-dot" style="background:#eab308"></span> Средний', hard: '<span class="dlvl-dot" style="background:#ef4444"></span> Сложный' }
   const rowBg = [
     'background:linear-gradient(135deg,rgba(234,179,8,0.12),rgba(234,179,8,0.04));border:1px solid rgba(234,179,8,0.25)',
     'background:linear-gradient(135deg,rgba(148,163,184,0.12),rgba(148,163,184,0.04));border:1px solid rgba(148,163,184,0.2)',
@@ -289,7 +289,7 @@ window.showLeaderboard = async function() {
        font-family:'Playfair Display',serif">${SECTION_ICONS[s] || s}</span>`
     ).join(' ')
     const crown    = r.username === 'Suhrob'
-      ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px">👑</span>'
+      ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px"><i data-lucide="crown" class="e-ic"></i></span>'
       : ''
     const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
     return `

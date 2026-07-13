@@ -68,3 +68,26 @@
   if (document.body) init();
   else document.addEventListener('DOMContentLoaded', init);
 })();
+
+// ── Авто-рендер Lucide-иконок при динамической вставке ────
+// Любые новые <i data-lucide> (в innerHTML профиля, дуэли, экзамена и т.д.)
+// превращаются в SVG без ручного вызова createIcons в каждом месте.
+(function () {
+  'use strict';
+  if (!('MutationObserver' in window)) return;
+  let pending = false;
+  function render() { pending = false; if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} } }
+  const obs = new MutationObserver((muts) => {
+    for (const m of muts) {
+      for (const n of m.addedNodes) {
+        if (n.nodeType === 1 && (n.matches?.('[data-lucide]') || n.querySelector?.('[data-lucide]'))) {
+          if (!pending) { pending = true; requestAnimationFrame(render); }
+          return;
+        }
+      }
+    }
+  });
+  function start() { obs.observe(document.body, { childList: true, subtree: true }); }
+  if (document.body) start();
+  else document.addEventListener('DOMContentLoaded', start);
+})();

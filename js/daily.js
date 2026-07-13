@@ -89,7 +89,7 @@ export async function updateDailyChallengeCard() {
   const card      = document.getElementById('dailyChallengeCard')
   if (!btn) return
   if (doneToday) {
-    btn.textContent = `✅ ${score}%`
+    btn.innerHTML = `<i data-lucide="check" class="e-ic"></i> ${score}%`
     btn.style.background = 'linear-gradient(135deg,#10b981,#059669)'
     if (card) card.onclick = window.showDailyLeaderboard
     if (countdown) {
@@ -150,7 +150,7 @@ window.showDailyLeaderboard = async function() {
   const profMap = {}
   profiles.forEach(p => { profMap[p.username] = p })
 
-  const medals = ['🥇','🥈','🥉']
+  const medals = ['<i data-lucide="medal" class="e-ic" style="color:#fbbf24"></i>','<i data-lucide="medal" class="e-ic" style="color:#cbd5e1"></i>','<i data-lucide="medal" class="e-ic" style="color:#d97706"></i>']
   const myName = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0]
   const isDark = document.documentElement.classList.contains('dark')
   const rowBg     = isDark ? 'rgba(30,41,59,0.7)' : 'rgba(241,245,249,0.9)'

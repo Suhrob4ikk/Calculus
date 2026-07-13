@@ -112,7 +112,7 @@ function renderMistakesLoading() {
   if (!container) return
   container.innerHTML = `
     <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem;text-align:center">
-      <div style="font-size:2rem;margin-bottom:1rem">🎯</div>
+      <div style="font-size:2rem;margin-bottom:1rem"><i data-lucide="target" class="e-ic"></i></div>
       <div style="color:var(--text-sub)">Загрузка ошибок…</div>
     </div>
   `
@@ -124,7 +124,7 @@ function renderMistakesNotLoggedIn() {
   if (!container) return
   container.innerHTML = `
     <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem;text-align:center">
-      <div style="font-size:2rem;margin-bottom:1rem">🔐</div>
+      <div style="font-size:2rem;margin-bottom:1rem"><i data-lucide="lock" class="e-ic"></i></div>
       <div style="color:var(--text-sub);margin-bottom:1rem">
         Войдите в аккаунт, чтобы видеть свои ошибки
       </div>
@@ -159,7 +159,7 @@ function renderMistakesList(mistakes) {
   if (mistakes.length === 0) {
     container.innerHTML = `
       <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem;text-align:center">
-        <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
+        <div style="font-size:3rem;margin-bottom:1rem"><i data-lucide="party-popper" class="e-ic"></i></div>
         <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:0.5rem">Ошибок нет!</h2>
         <p style="color:var(--text-sub);margin-bottom:1.5rem">
           Вы ещё не допустили ни одной ошибки, или все они исправлены.
@@ -188,7 +188,7 @@ function renderMistakesList(mistakes) {
       <div style="display:flex;align-items:center;justify-content:space-between;
                   flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
         <div>
-          <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.25rem">🎯 Мои ошибки</h1>
+          <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.25rem"><i data-lucide="target" class="e-ic"></i> Мои ошибки</h1>
           <p style="color:var(--text-sub);font-size:0.9rem">
             Всего: ${totalCount} вопросов из ${Object.keys(bySubject).length} разделов
           </p>

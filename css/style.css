@@ -2465,3 +2465,9 @@ html:not(.dark) .android-subject-card::after { background: linear-gradient(115de
   .android-subject-card::after, .auth-btn-primary::after, .diff-btn::after, .android-daily-btn::after { display: none !important; }
   .option-label.answered-correct, .option-label.answered-wrong { animation: none !important; }
 }
+
+/* ── Инлайн-иконки, заменившие эмодзи (масштабируются по тексту) ── */
+.e-ic { width: 1.05em; height: 1.05em; vertical-align: -0.15em; display: inline-block; flex-shrink: 0; }
+.badge .e-ic { vertical-align: -0.12em; }
+#duelResultsEmoji svg, #duelResultsEmoji .e-ic { width: 52px; height: 52px; }
+.dlvl-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 3px; vertical-align: 0; }

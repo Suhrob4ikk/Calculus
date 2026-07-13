@@ -59,7 +59,7 @@ function renderSearchResults(data) {
           : `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">${escapeHtml(p.username.charAt(0).toUpperCase())}</div>`
         }
         <span class="font-semibold" style="color:var(--text-main)">${escapeHtml(p.username)}</span>
-        ${p.username === 'Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px">👑</span>' : ''}
+        ${p.username === 'Suhrob' ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px"><i data-lucide="crown" class="e-ic"></i></span>' : ''}
       </div>
       <span class="text-blue-500 text-sm">Посмотреть →</span>
     </div>`).join('')
@@ -112,7 +112,7 @@ window.viewProfile = async function(username) {
 
   const isCreator = profile.username === 'Suhrob'
   const creatorBadge = isCreator
-    ? ' <span style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle">👑 Разработчик</span>'
+    ? ' <span style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle"><i data-lucide="crown" class="e-ic"></i> Разработчик</span>'
     : ''
 
   const viewNameEl = document.getElementById('viewProfileName')
@@ -146,11 +146,11 @@ window.viewProfile = async function(username) {
       <div class="profile-stat"><div class="profile-stat-value">${best}%</div><div class="profile-stat-label">Лучший</div></div>
       <div class="profile-stat"><div class="profile-stat-value">${avg}%</div><div class="profile-stat-label">Средний</div></div>
     </div>
-    <h3 class="text-lg font-bold text-gray-800 mb-3">🏅 Достижения</h3>
+    <h3 class="text-lg font-bold text-gray-800 mb-3"><i data-lucide="award" class="e-ic"></i> Достижения</h3>
     <div class="flex flex-wrap gap-2 mb-4">
       ${badges.length ? badges.map(b => `<span class="badge ${b.cls}">${b.icon} ${b.text}</span>`).join('') : '<p class="text-gray-400 text-sm">Нет достижений</p>'}
     </div>
-    <h3 class="text-lg font-bold text-gray-800 mb-3">📋 Последние результаты</h3>
+    <h3 class="text-lg font-bold text-gray-800 mb-3"><i data-lucide="clipboard-list" class="e-ic"></i> Последние результаты</h3>
     <div class="space-y-2">
       ${data.filter(r => r.section !== 'daily').slice(0,5).map(r => {
         const sLabel = {integrals:'Интегралы',derivatives:'Производные',series:'Ряды',limits:'Пределы',ode:'Дифф. уравнения'}
@@ -176,7 +176,7 @@ window.openPhotoPreview = function(url, name) {
       <img src="${url}" style="max-width:90vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 25px 50px rgba(0,0,0,0.5)">
       <div style="text-align:center;color:white;margin-top:12px;font-size:1.1rem;font-weight:600">${name}</div>
     </div>
-    <div style="position:absolute;top:20px;right:20px;color:white;font-size:1.5rem;cursor:pointer">✕</div>
+    <div style="position:absolute;top:20px;right:20px;color:white;font-size:1.5rem;cursor:pointer"><i data-lucide="x" class="e-ic"></i></div>
   `
   document.body.appendChild(overlay)
 }

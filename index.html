@@ -1035,7 +1035,7 @@
       <button class="android-home-avatar" onclick="showProfile()">
         <img id="homeAvatarImg" src="" alt=""
           style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
-        <span id="homeAvatarLetter">👤</span>
+        <span id="homeAvatarLetter"><i data-lucide="user" class="e-ic"></i></span>
       </button>
     </div>
 
@@ -1785,7 +1785,7 @@
               <p id="difficultyLabel" class="text-sm text-gray-600 mt-1"></p>
             </div>
             <div class="flex items-center gap-4">
-              <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">⏱️
+              <div id="timerDisplay" class="text-lg font-semibold text-orange-600 bg-orange-50 px-4 py-2 rounded-lg">
                 25:00</div>
               <div class="text-sm text-gray-600">Вопрос <span id="currentQuestion">1</span> из <span
                   id="totalQuestions">15</span></div>
@@ -1968,7 +1968,7 @@
                 <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Тема оформления</span>
                 <button id="settingsThemeBtn" onclick="toggleTheme()"
                   style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.12);color:#60a5fa">
-                  🌙 Тёмная
+                  <i data-lucide="moon" class="e-ic"></i> Тёмная
                 </button>
               </div>
 
@@ -1978,7 +1978,7 @@
                 <span style="color:var(--text-main,#e2e8f0);font-size:0.88rem;font-weight:500">Звуковые эффекты</span>
                 <button id="settingsSoundBtn" onclick="toggleSound()"
                   style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.12);color:#34d399">
-                  🔊 Включён
+                  <i data-lucide="volume-2" class="e-ic"></i> Включён
                 </button>
               </div>
 
@@ -2015,7 +2015,7 @@
           <!-- Справка по pts -->
           <div id="ptsInfoBox"
             style="display:none;margin-bottom:1rem;padding:0.85rem 1rem;border-radius:0.75rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);font-size:0.83rem;color:var(--text-main)">
-            <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa">📐 Как считаются баллы (pts)?</p>
+            <p style="font-weight:600;margin-bottom:0.4rem;color:#60a5fa"><i data-lucide="ruler" class="e-ic"></i> Как считаются баллы (pts)?</p>
             <p style="color:var(--text-muted);line-height:1.5">
               <b style="color:var(--text-main)">pts = правильные ответы × множитель сложности</b><br>
               <span style="color:#10b981">●</span> Лёгкий ×1 &nbsp;·&nbsp; <span style="color:#f59e0b">●</span> Средний
@@ -2238,7 +2238,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
         <h2 class="modal-title" style="font-size:1.2rem;font-weight:700;color:#f1f5f9">Лидеры сегодня</h2>
         <button onclick="document.getElementById('dailyLeaderboardModal').style.display='none'" style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
-        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
+        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem"><i data-lucide="x" class="e-ic"></i></button>
       </div>
       <div id="dailyLeaderboardList"></div>
     </div>
@@ -2259,7 +2259,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
         <h2 class="modal-title" style="font-size:1.25rem;font-weight:700;color:#f1f5f9">1v1 Дуэль</h2>
         <button onclick="closeDuelModal()" style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.3);
-        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem">✕</button>
+        color:#fca5a5;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem"><i data-lucide="x" class="e-ic"></i></button>
       </div>
       <!-- Tabs -->
       <div id="duelTabsBar" class="duel-tabs-bar"
@@ -2366,7 +2366,7 @@
     <div class="duel-panel modal-inner-panel" style="background:#1e293b;border:1px solid rgba(139,92,246,0.35);border-radius:1.5rem;
     padding:2rem;width:100%;max-width:420px;text-align:center;
     box-shadow:0 25px 60px rgba(0,0,0,0.55)">
-      <div id="duelResultsEmoji" style="font-size:3rem;margin-bottom:0.5rem;line-height:1">🏆</div>
+      <div id="duelResultsEmoji" style="font-size:3rem;margin-bottom:0.5rem;line-height:1"><i data-lucide="trophy" class="e-ic"></i></div>
       <h2 id="duelResultsTitle" class="modal-title" style="font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:1.5rem"></h2>
       <div id="duelResultsScores" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem"></div>
       <!-- Баннер входящего запроса реванша -->
