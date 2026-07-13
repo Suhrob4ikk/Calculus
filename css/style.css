@@ -2561,3 +2561,83 @@ html:not(.dark) .bg-white {
 
 /* ── Пружинистое появление страниц (переходы вкладок) ── */
 .page-enter { animation-timing-function: cubic-bezier(.2,.85,.25,1) !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ОРБИТАЛЬНАЯ ГЛАВНАЯ — 7 разделов как светящиеся орбы по кругу
+   (в стиле dailyintegral). Узкие экраны → сетка (fallback).
+   ═══════════════════════════════════════════════════════════════ */
+.subjects-orbit {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 560px;
+  margin: 4px auto 8px;
+}
+.orbit-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.orbit-lines polygon { fill: none; stroke: var(--c2, #6366f1); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .28; stroke-dasharray: 3 5; }
+.orbit-lines line { stroke: #6366f1; stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .18; stroke-dasharray: 2 6; }
+
+.orbit-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  text-align: center; z-index: 1; width: 210px; pointer-events: none;
+}
+.orbit-center-sub { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); font-style: italic; }
+.orbit-center-title {
+  font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 800; line-height: 1.05; margin: 3px 0 6px;
+  background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.orbit-center-hint { font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
+
+.orbit-orb {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  background: none; border: none; cursor: pointer; z-index: 2; width: 128px; padding: 0;
+  font-family: inherit;
+}
+.orb-circle {
+  width: clamp(72px, 12vw, 92px); height: clamp(72px, 12vw, 92px); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--c1) 30%, transparent), color-mix(in srgb, var(--c2) 14%, var(--bg-card)) 72%);
+  border: 1.5px solid color-mix(in srgb, var(--c2) 45%, transparent);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--c1) 7%, transparent),
+              0 12px 34px -10px color-mix(in srgb, var(--c2) 45%, transparent);
+  transition: transform .32s var(--ease), box-shadow .32s var(--ease), border-color .32s var(--ease);
+}
+.orb-circle .subject-emoji {
+  font-size: 1.85rem; line-height: 1; font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, var(--c1), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.orbit-orb .subject-name { font-size: .84rem; font-weight: 600; color: var(--text-main); text-align: center; line-height: 1.15; }
+.orbit-orb:hover { z-index: 3; }
+.orbit-orb:hover .orb-circle {
+  transform: scale(1.12);
+  border-color: var(--c2);
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--c1) 13%, transparent),
+              0 18px 44px -8px color-mix(in srgb, var(--c2) 65%, transparent);
+}
+.orbit-orb:active .orb-circle { transform: scale(1.04); }
+
+/* Акценты по разделам */
+.os-1 { --c1: #38bdf8; --c2: #0284c7; }
+.os-2 { --c1: #a78bfa; --c2: #7c3aed; }
+.os-3 { --c1: #34d399; --c2: #059669; }
+.os-4 { --c1: #fbbf24; --c2: #d97706; }
+.os-5 { --c1: #f472b6; --c2: #db2777; }
+.os-6 { --c1: #60a5fa; --c2: #2563eb; }
+.os-7 { --c1: #2dd4bf; --c2: #0d9488; }
+
+/* ── Узкие экраны: орбиталь → аккуратная сетка ── */
+@media (max-width: 680px) {
+  .subjects-orbit { height: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 4px; max-width: 460px; }
+  .orbit-lines, .orbit-center { display: none; }
+  .orbit-orb {
+    position: static !important; transform: none !important; left: auto !important; top: auto !important;
+    width: auto; flex-direction: column; gap: 8px;
+    background: linear-gradient(160deg, var(--bg-card), color-mix(in srgb, var(--c2) 8%, var(--bg-card)));
+    border: 1px solid color-mix(in srgb, var(--c2) 22%, transparent);
+    border-radius: 18px; padding: 16px 8px;
+  }
+  .orbit-orb:active { transform: scale(.97) !important; }
+  .orb-circle { width: 56px; height: 56px; box-shadow: none; }
+  .orb-circle .subject-emoji { font-size: 1.4rem; }
+}

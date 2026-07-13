@@ -1080,42 +1080,50 @@
     <!-- Section heading -->
     <div class="android-section-label">Выбери раздел</div>
 
-    <!-- Compact 2-column subject grid -->
-    <div class="android-subjects-grid">
-      <button class="android-subject-card" onclick="showSection('limits')">
-        <span class="subject-emoji">lim</span>
+    <!-- Orbital subject constellation (fallback to grid on narrow screens) -->
+    <div class="subjects-orbit">
+      <svg class="orbit-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <polygon points="50,10 81.3,25.1 89,58.9 67.4,86 32.6,86 11,58.9 18.7,25.1"/>
+        <line x1="50" y1="50" x2="50" y2="10"/>
+        <line x1="50" y1="50" x2="81.3" y2="25.1"/>
+        <line x1="50" y1="50" x2="89" y2="58.9"/>
+        <line x1="50" y1="50" x2="67.4" y2="86"/>
+        <line x1="50" y1="50" x2="32.6" y2="86"/>
+        <line x1="50" y1="50" x2="11" y2="58.9"/>
+        <line x1="50" y1="50" x2="18.7" y2="25.1"/>
+      </svg>
+      <div class="orbit-center">
+        <div class="orbit-center-sub">Высшая математика</div>
+        <div class="orbit-center-title">Разделы</div>
+        <div class="orbit-center-hint">выбери орбиту</div>
+      </div>
+      <button class="orbit-orb os-1" style="left:50%;top:10%" onclick="showSection('limits')">
+        <span class="orb-circle"><span class="subject-emoji">lim</span></span>
         <span class="subject-name">Пределы</span>
-        <span class="subject-hint">Начать →</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('derivatives')">
-        <span class="subject-emoji">f'(x)</span>
+      <button class="orbit-orb os-2" style="left:81.3%;top:25.1%" onclick="showSection('derivatives')">
+        <span class="orb-circle"><span class="subject-emoji">f'(x)</span></span>
         <span class="subject-name">Производные</span>
-        <span class="subject-hint">Начать →</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('integrals')">
-        <span class="subject-emoji">∫</span>
+      <button class="orbit-orb os-3" style="left:89%;top:58.9%" onclick="showSection('integrals')">
+        <span class="orb-circle"><span class="subject-emoji">∫</span></span>
         <span class="subject-name">Интегралы</span>
-        <span class="subject-hint">Начать →</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('series')">
-        <span class="subject-emoji">∑</span>
+      <button class="orbit-orb os-4" style="left:67.4%;top:86%" onclick="showSection('series')">
+        <span class="orb-circle"><span class="subject-emoji">∑</span></span>
         <span class="subject-name">Ряды</span>
-        <span class="subject-hint">Начать →</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('ode')">
-        <span class="subject-emoji">y'</span>
-        <span class="subject-name">Дифф. уравнения</span>
-        <span class="subject-hint">Начать →</span>
+      <button class="orbit-orb os-5" style="left:32.6%;top:86%" onclick="showSection('ode')">
+        <span class="orb-circle"><span class="subject-emoji">y'</span></span>
+        <span class="subject-name">Дифф. ур.</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('probability')">
-        <span class="subject-emoji">P</span>
+      <button class="orbit-orb os-6" style="left:11%;top:58.9%" onclick="showSection('probability')">
+        <span class="orb-circle"><span class="subject-emoji">P</span></span>
         <span class="subject-name">Вероятность</span>
-        <span class="subject-hint">Начать →</span>
       </button>
-      <button class="android-subject-card" onclick="showSection('linalg')">
-        <span class="subject-emoji">Ax</span>
-        <span class="subject-name">Линейная алгебра</span>
-        <span class="subject-hint">Начать →</span>
+      <button class="orbit-orb os-7" style="left:18.7%;top:25.1%" onclick="showSection('linalg')">
+        <span class="orb-circle"><span class="subject-emoji">Ax</span></span>
+        <span class="subject-name">Лин. алгебра</span>
       </button>
     </div>
 

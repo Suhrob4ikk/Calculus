@@ -111,7 +111,7 @@ function renderExamSetup() {
   const container = document.getElementById('examPage')
   if (!container) return
   container.innerHTML = `
-    <div class="page-content" style="padding:2.5rem clamp(1rem, 3vw, 2.5rem)">
+    <div class="page-content" style="padding:2.5rem clamp(1rem, 3vw, 2.5rem);max-width:920px;margin:0 auto">
       <h1 style="font-size:2.4rem;font-weight:800;margin-bottom:0.6rem;text-align:center">
         <i data-lucide="graduation-cap" class="e-ic"></i> Режим экзамена
       </h1>
