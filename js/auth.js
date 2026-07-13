@@ -4,12 +4,14 @@ import { supabase, signUp, signIn, signOut, resetPassword, updatePassword, getEm
 
 // ── Авторизация ───────────────────────────────────────────
 window.showAuthTab = function(tab) {
-  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login')
-  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register')
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login')
-  document.getElementById('tabRegister').classList.toggle('active', tab !== 'login')
-  document.getElementById('tabLogin').classList.toggle('font-bold', tab === 'login')
-  document.getElementById('tabRegister').classList.toggle('font-bold', tab === 'register')
+  window.transitionHelper?.(() => {
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login')
+    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register')
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login')
+    document.getElementById('tabRegister').classList.toggle('active', tab !== 'login')
+    document.getElementById('tabLogin').classList.toggle('font-bold', tab === 'login')
+    document.getElementById('tabRegister').classList.toggle('font-bold', tab === 'register')
+  })
 }
 
 window.handleLogin = async function() {

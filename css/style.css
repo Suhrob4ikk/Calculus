@@ -2382,20 +2382,6 @@ button:active, .diff-btn:active, .auth-btn-primary:active,
 button, .diff-btn, .test-type-btn, .nav-menu-item, #bottomNav button, .dh-nav-btn {
   transition: transform .12s var(--ease), background .2s, color .2s, box-shadow .2s, border-color .2s;
 }
-
-/* ── Иконки-акценты вместо эмодзи ── */
-.explanation-title [data-lucide], .explanation-title svg { width: 16px; height: 16px; vertical-align: -3px; }
-.result-explanation svg { width: 13px; height: 13px; vertical-align: -2px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .page-enter { animation: none !important; }
-  .fx-ripple { display: none !important; }
-}
-
-/* ── Размеры Lucide-иконок, заменивших эмодзи ── */
-.android-daily-icon svg { width: 24px; height: 24px; }
-.test-type-btn svg { width: 15px; height: 15px; vertical-align: -2px; }
-
 /* ═══════════════════════════════════════════════════════════════
    СИГНАТУРНЫЕ ЭФФЕКТЫ (2026-07) — орбы, shimmer, отклик на ответ.
    Вдохновлено «живым» ощущением dailyintegral.com.
@@ -2482,6 +2468,26 @@ html:not(.dark) .android-subject-card::after { background: linear-gradient(115de
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) { z-index: 9999; }
 ::view-transition-old(root) { z-index: 1; }
+
+/* -- View Transitions: page navigation (fade + scale) -- */
+::view-transition-old(vt-page) {
+  animation: vt-out 240ms cubic-bezier(.4,0,1,1) both;
+}
+::view-transition-new(vt-page) {
+  animation: vt-in  300ms cubic-bezier(0,0,.2,1) both;
+}
+@keyframes vt-out {
+  from { opacity: 1; transform: scale(1)    translateY(0);    }
+  to   { opacity: 0; transform: scale(.975) translateY(-8px); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: scale(.975) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(vt-page),
+  ::view-transition-new(vt-page) { animation: none !important; }
+}
 
 /* ── Домашняя шапка: убираем плоскую синюю плашку ── */
 .android-home-header {

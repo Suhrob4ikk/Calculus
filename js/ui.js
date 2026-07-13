@@ -39,39 +39,42 @@ window.toggleTheme = function(ev) {
 }
 
 // ── Навигация между страницами ────────────────────────────
+export function transitionHelper(callback) {
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  if (document.startViewTransition && !reduce) {
+    // Именованный переход 'vt-page' не мешает clipPath смены темы на 'root'
+    document.body.style.viewTransitionName = 'vt-page'
+    const vt = document.startViewTransition(() => {
+      callback()
+    })
+    vt.finished.finally(() => {
+      document.body.style.viewTransitionName = ''
+    })
+  } else {
+    callback()
+  }
+}
+window.transitionHelper = transitionHelper
+
 export function showPage(pageId) {
   const ls = document.getElementById('loadingScreen')
   if (ls) ls.remove()
 
-  document.querySelectorAll('[id$="Page"],[id$="Section"]').forEach(el => {
-    el.classList.add('hidden')
-    el.style.display = 'none'
-  })
-  const target = document.getElementById(pageId)
-  if (target) {
-    target.classList.remove('hidden')
-    target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
-    // Анимация входа — у каждой вкладки свой «живой» эффект.
-    // reflow (offsetWidth) сбрасывает animation, чтобы она перезапускалась при каждом переходе.
-    const FX = {
-      homePage: 'fx-zoom', duelPage: 'fx-duel', profilePage: 'fx-flip',
-      statisticsPage: 'fx-rise', leaderboardPage: 'fx-rise', mistakesPage: 'fx-shake-in',
-      searchProfilesPage: 'fx-swipe', viewProfilePage: 'fx-swipe',
-      theoryPage: 'fx-swipe', sectionTheoryPage: 'fx-swipe', probabilityTheoryPage: 'fx-swipe',
-      resultsPage: 'fx-pop', examPage: 'fx-zoom', testPage: 'fx-slide',
-      integralsSection: 'fx-slide', derivativesSection: 'fx-slide', limitsSection: 'fx-slide',
-      seriesSection: 'fx-slide', odeSection: 'fx-slide', probabilitySection: 'fx-slide',
-      linalgSection: 'fx-slide',
-    }
-    const variant = FX[pageId] || 'fx-fade'
-    target.classList.remove('page-enter', ...Object.values(FX), 'fx-fade')
-    void target.offsetWidth
-    target.classList.add('page-enter', variant)
-    try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
-  }
+  const apply = () => {
 
-  const noNavPages = ['authPage', 'updatePasswordPage', 'testPage', 'examPage']
-  const showNav = !noNavPages.includes(pageId)
+    document.querySelectorAll('[id$="Page"],[id$="Section"]').forEach(el => {
+      el.classList.add('hidden')
+      el.style.display = 'none'
+    })
+    const target = document.getElementById(pageId)
+    if (target) {
+      target.classList.remove('hidden')
+      target.style.display = (pageId === 'authPage' || pageId === 'updatePasswordPage') ? 'flex' : 'block'
+      try { sessionStorage.setItem('lastPage', pageId) } catch(e) {}
+    }
+
+    const noNavPages = ['authPage', 'updatePasswordPage', 'testPage', 'examPage', 'resultsPage']
+    const showNav = !noNavPages.includes(pageId)
   const bottomNav  = document.getElementById('bottomNav')
   const menuBtn    = document.getElementById('menuBtn')
   const desktopNav = document.getElementById('desktopNav')
@@ -144,51 +147,43 @@ export function showPage(pageId) {
   const dhActive = dhMap[pageId]
   if (dhActive) document.getElementById(dhActive)?.classList.add('dh-active')
 
-  // Страницы с фокусом на контенте — боковая панель скрыта
-  const noSidebarPages = [
-    'authPage', 'updatePasswordPage',
-    'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
-    'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage',
-    'duelPage', 'examPage', 'mistakesPage',
-    'statisticsPage', 'profilePage', 'leaderboardPage',
-    'searchProfilesPage', 'viewProfilePage',
-  ]
-  // Сайдбар показываем независимо от showNav (examPage: нет нижней навигации, но сайдбар есть)
-  const showSidebar = !noSidebarPages.includes(pageId) && window.innerWidth >= 900
-  document.body.classList.toggle('no-sidebar', !showSidebar)
+    // Страницы с фокусом на контенте — боковая панель скрыта (чтобы не было случайных кликов)
+    const noSidebarPages = [
+      'authPage', 'updatePasswordPage',
+      'testPage', 'examPage', 'resultsPage',
+      'probabilityTheoryPage', 'sectionTheoryPage', 'theoryPage'
+    ]
+    const showSidebar = !noSidebarPages.includes(pageId) && window.innerWidth >= 900
+    document.body.classList.toggle('no-sidebar', !showSidebar)
 
-  // Боковая панель: видимость + активная кнопка
-  const desktopSidebar = document.getElementById('desktopSidebar')
-  if (desktopSidebar) {
-    desktopSidebar.style.display = showSidebar ? 'flex' : 'none'
-  }
-  // Bottom nav is for mobile only — hide it when the sidebar is visible
-  if (bottomNav) bottomNav.style.display = (showNav && !showSidebar) ? 'flex' : 'none'
+    const desktopSidebar = document.getElementById('desktopSidebar')
+    if (desktopSidebar) {
+      desktopSidebar.style.display = showSidebar ? 'flex' : 'none'
+    }
+    if (bottomNav) bottomNav.style.display = (showNav && !showSidebar) ? 'flex' : 'none'
 
-  const sbMap = {
-    homePage:           'sbHome',
-    integralsSection:   'sbHome',
-    derivativesSection: 'sbHome',
-    seriesSection:      'sbHome',
-    limitsSection:      'sbHome',
-    odeSection:         'sbHome',
-    linalgSection:      'sbHome',
-    theoryPage:         'sbHome',
-    sectionTheoryPage:  'sbHome',
-    testPage:           'sbHome',
-    resultsPage:        'sbHome',
-    statisticsPage:     'sbStats',
-    leaderboardPage:    'sbLeader',
-    searchProfilesPage: 'sbPeople',
-    viewProfilePage:    st.viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
-    examPage:           'sbExam',
-    mistakesPage:       'sbMistakes',
-    duelPage:           'sbDuel',
+    const sbMap = {
+      homePage:           'sbHome',
+      integralsSection:   'sbHome',
+      derivativesSection: 'sbHome',
+      seriesSection:      'sbHome',
+      limitsSection:      'sbHome',
+      odeSection:         'sbHome',
+      probabilitySection: 'sbHome',
+      linalgSection:      'sbHome',
+      statisticsPage:     'sbStats',
+      leaderboardPage:    'sbLeader',
+      searchProfilesPage: 'sbPeople',
+      viewProfilePage:    st.viewProfileFrom === 'leaderboardPage' ? 'sbLeader' : 'sbPeople',
+      mistakesPage:       'sbMistakes',
+      duelPage:           'sbDuel',
+    }
+    document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
+    const sbActive = sbMap[pageId]
+    if (sbActive) document.getElementById(sbActive)?.classList.add('sb-active')
   }
-  document.querySelectorAll('#desktopSidebar .sb-item').forEach(b => b.classList.remove('sb-active'))
-  const sbActive = sbMap[pageId]
-  if (sbActive) document.getElementById(sbActive)?.classList.add('sb-active')
+
+  transitionHelper(apply)
 }
 
 export function updateUserUI() {
@@ -222,12 +217,8 @@ window.addEventListener('resize', () => {
   const noNavPages = ['authPage', 'updatePasswordPage']
   const noSidebarPages = [
     'authPage', 'updatePasswordPage',
-    'integralsSection', 'derivativesSection', 'seriesSection', 'limitsSection',
-    'odeSection', 'probabilitySection', 'linalgSection', 'probabilityTheoryPage',
-    'sectionTheoryPage', 'testPage', 'resultsPage', 'theoryPage',
-    'duelPage', 'examPage', 'mistakesPage',
-    'statisticsPage', 'profilePage', 'leaderboardPage',
-    'searchProfilesPage', 'viewProfilePage',
+    'testPage', 'examPage', 'resultsPage',
+    'probabilityTheoryPage', 'sectionTheoryPage', 'theoryPage'
   ]
   const isNavPage  = lastPage && !noNavPages.includes(lastPage)
   const w = window.innerWidth

@@ -113,12 +113,14 @@ window.closeDuelModal = function() {
 }
 
 window.showDuelTab = function(tab) {
-  document.getElementById('duelCreatePanel').style.display  = tab === 'create' ? '' : 'none'
-  document.getElementById('duelJoinPanel').style.display    = tab === 'join'   ? '' : 'none'
-  document.getElementById('duelTabCreate').style.background = tab === 'create' ? 'rgba(139,92,246,0.8)' : 'transparent'
-  document.getElementById('duelTabCreate').style.color      = tab === 'create' ? 'white' : '#94a3b8'
-  document.getElementById('duelTabJoin').style.background   = tab === 'join'   ? 'rgba(139,92,246,0.8)' : 'transparent'
-  document.getElementById('duelTabJoin').style.color        = tab === 'join'   ? 'white' : '#94a3b8'
+  window.transitionHelper?.(() => {
+    document.getElementById('duelCreatePanel').style.display  = tab === 'create' ? '' : 'none'
+    document.getElementById('duelJoinPanel').style.display    = tab === 'join'   ? '' : 'none'
+    document.getElementById('duelTabCreate').style.background = tab === 'create' ? 'rgba(139,92,246,0.8)' : 'transparent'
+    document.getElementById('duelTabCreate').style.color      = tab === 'create' ? 'white' : '#94a3b8'
+    document.getElementById('duelTabJoin').style.background   = tab === 'join'   ? 'rgba(139,92,246,0.8)' : 'transparent'
+    document.getElementById('duelTabJoin').style.color        = tab === 'join'   ? 'white' : '#94a3b8'
+  })
 }
 
 window.setDuelSection = function(sect) { st.duel.section = sect; _refreshDuelPickers() }
