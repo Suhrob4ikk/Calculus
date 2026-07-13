@@ -59,7 +59,7 @@ window.handleRegister = async function() {
   btn.textContent = 'Зарегистрироваться'; btn.disabled = false
   if (error) { errEl.textContent = error.message; return }
   errEl.style.color = '#10b981'
-  errEl.textContent = '✅ Проверьте почту для подтверждения!'
+  errEl.innerHTML = '<i data-lucide="check-circle" class="e-ic"></i> Проверьте почту для подтверждения!'
 }
 
 window.handleLogout = async function() {
@@ -87,7 +87,7 @@ async function handleForgotPassword() {
   const { error } = await resetPassword(email)
   btn.textContent = 'Отправить'; btn.disabled = false
   if (error) { errEl.textContent = 'Ошибка: ' + error.message }
-  else { errEl.style.color = '#10b981'; errEl.textContent = '✅ Письмо отправлено! Проверьте почту.' }
+  else { errEl.style.color = '#10b981'; errEl.innerHTML = '<i data-lucide="check-circle" class="e-ic"></i> Письмо отправлено! Проверьте почту.' }
 }
 async function handleUpdatePassword() {
   const password = document.getElementById('newPassword').value
@@ -110,7 +110,7 @@ async function handleUpdatePassword() {
   if (error) { errEl.textContent = 'Ошибка: ' + error.message }
   else {
     errEl.style.color = '#10b981'
-    errEl.textContent = '✅ Пароль успешно изменён!'
+    errEl.innerHTML = '<i data-lucide="check-circle" class="e-ic"></i> Пароль успешно изменён!'
     setTimeout(() => { showPage('homePage'); updateUserUI() }, 1500)
   }
 }
@@ -118,8 +118,8 @@ window.togglePasswordVisibility = function(inputId, eyeId) {
   const input = document.getElementById(inputId)
   const eye   = document.getElementById(eyeId)
   if (!input) return
-  if (input.type === 'password') { input.type = 'text'; if (eye) eye.textContent = '🙈' }
-  else { input.type = 'password'; if (eye) eye.textContent = '👁' }
+  if (input.type === 'password') { input.type = 'text'; if (eye) eye.innerHTML = '<i data-lucide="eye-off" class="e-ic"></i>' }
+  else { input.type = 'password'; if (eye) eye.innerHTML = '<i data-lucide="eye" class="e-ic"></i>' }
 }
 
 // Экспортируем для HTML-вызовов
@@ -169,7 +169,7 @@ async function _blockNewLogin() {
   const errEl = document.getElementById('loginError')
   if (errEl) {
     errEl.style.color = '#f59e0b'
-    errEl.textContent = '⚠️ Вы вышли: обнаружена активная сессия на другом устройстве.'
+    errEl.innerHTML = '<i data-lucide="alert-triangle" class="e-ic"></i> Вы вышли: обнаружена активная сессия на другом устройстве.'
   }
   supabase.auth.signOut()
 }

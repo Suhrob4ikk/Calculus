@@ -88,7 +88,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
       st.kickedOut = false
       setTimeout(() => {
         const errEl = document.getElementById('loginError')
-        if (errEl) errEl.textContent = '⚠️ Аккаунт уже используется на другом устройстве.'
+        if (errEl) errEl.innerHTML = '<i data-lucide="alert-triangle" class="e-ic"></i> Аккаунт уже используется на другом устройстве.'
       }, 50)
     }
   }
@@ -111,7 +111,7 @@ function initInvitesChannel() {
     })
     .on('broadcast', { event: 'invite_decline' }, ({ payload }) => {
       if (payload.code === st.duel.code && st.duel.role === 'host') {
-        window._duelSetStatus('duelCreateStatus', '❌ ' + escapeHtml(payload.declinedBy) + ' отказался от дуэли')
+        window._duelSetStatus('duelCreateStatus', '<i data-lucide="x-circle" class="e-ic"></i> ' + escapeHtml(payload.declinedBy) + ' отказался от дуэли')
         setTimeout(function() {
           if (document.getElementById('duelCreateStatus')?.textContent?.includes('отказался')) {
             window._duelSetStatus('duelCreateStatus', 'Нажми кнопку чтобы создать дуэль')
@@ -121,7 +121,7 @@ function initInvitesChannel() {
     })
     .on('broadcast', { event: 'invite_accepted' }, ({ payload }) => {
       if (payload.code === st.duel.code && st.duel.role === 'host') {
-        window._duelSetStatus('duelCreateStatus', '✅ ' + escapeHtml(payload.acceptedBy) + ' принял приглашение! Ожидаем входа…')
+        window._duelSetStatus('duelCreateStatus', '<i data-lucide="check-circle" class="e-ic"></i> ' + escapeHtml(payload.acceptedBy) + ' принял приглашение! Ожидаем входа…')
       }
     })
     .subscribe(function(status) {

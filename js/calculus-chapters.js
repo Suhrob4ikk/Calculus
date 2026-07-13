@@ -17,7 +17,7 @@ html:`
   <div class="def"><b>Первообразная</b>
     <p>Функция \\(F(x)\\) называется первообразной функции \\(f(x)\\) на интервале \\(I\\), если \\(F'(x)=f(x)\\) для всех \\(x \\in I\\).</p>
   </div>
-  <div class="note"><p>📌 Если \\(F(x)\\) — первообразная \\(f(x)\\), то \\(F(x)+C\\) тоже первообразная для любой константы \\(C\\).</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Если \\(F(x)\\) — первообразная \\(f(x)\\), то \\(F(x)+C\\) тоже первообразная для любой константы \\(C\\).</p></div>
   <div class="ex"><b>Пример</b>
     <p>\\(F(x)=x^3\\) — первообразная \\(f(x)=3x^2\\), так как \\((x^3)'=3x^2\\).</p>
     <p>Все первообразные: \\(x^3+C\\).</p>
@@ -68,7 +68,7 @@ html:`
   <h2>Суть метода</h2>
   <p>Если подынтегральное выражение содержит сложную функцию, вводят новую переменную \\(t = \\varphi(x)\\), тогда \\(dt = \\varphi'(x)\\,dx\\).</p>
   <div class="fml">\\[\\int f(\\varphi(x))\\cdot\\varphi'(x)\\,dx = \\int f(t)\\,dt\\]</div>
-  <div class="note"><p>📌 После интегрирования нужно вернуться к переменной \\(x\\): подставить \\(t = \\varphi(x)\\).</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> После интегрирования нужно вернуться к переменной \\(x\\): подставить \\(t = \\varphi(x)\\).</p></div>
 </div>
 
 <div class="tb">
@@ -122,7 +122,7 @@ html:`
     <tr><td>4</td><td>Тригонометрические</td><td>\\(\\sin x,\\; \\cos x\\)</td></tr>
     <tr><td>5 (низший)</td><td>Экспоненциальные</td><td>\\(e^x,\\; a^x\\)</td></tr>
   </table>
-  <div class="note"><p>📌 То, что в таблице выше — берём как \\(u\\); то, что ниже — берём как \\(dv\\).</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> То, что в таблице выше — берём как \\(u\\); то, что ниже — берём как \\(dv\\).</p></div>
 </div>
 
 <div class="tb">
@@ -307,7 +307,7 @@ html:`
   </div>
   <div class="fml">\\[f'(x_0) = \\lim_{\\Delta x\\to 0}\\frac{f(x_0+\\Delta x)-f(x_0)}{\\Delta x}\\]</div>
   <p>Обозначения: \\(f'(x),\\; \\dfrac{dy}{dx},\\; \\dot y,\\; Df(x)\\).</p>
-  <div class="note"><p>📌 Функция дифференцируема в точке \\(x_0\\), если этот предел существует и конечен.</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Функция дифференцируема в точке \\(x_0\\), если этот предел существует и конечен.</p></div>
 </div>
 
 <div class="tb">
@@ -326,7 +326,7 @@ html:`
 
 <div class="tb">
   <h2>Связь дифференцируемости и непрерывности</h2>
-  <div class="note"><p>📌 Если \\(f\\) дифференцируема в точке \\(x_0\\), то она непрерывна в этой точке. Обратное неверно!</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Если \\(f\\) дифференцируема в точке \\(x_0\\), то она непрерывна в этой точке. Обратное неверно!</p></div>
   <div class="ex"><b>Контрпример</b>
     <p>\\(f(x)=|x|\\) непрерывна в \\(x=0\\), но не дифференцируема (левая и правая производные: \\(-1\\) и \\(+1\\)).</p>
   </div>
@@ -471,7 +471,7 @@ html:`
     <tr><td>\\(f'(x_0)=0\\) — смена \\(+\\to-\\)</td><td>\\(x_0\\) — точка максимума</td></tr>
     <tr><td>\\(f'(x_0)=0\\) — смена \\(-\\to+\\)</td><td>\\(x_0\\) — точка минимума</td></tr>
   </table>
-  <div class="note"><p>📌 Достаточный признак: если \\(f'(x_0)=0\\) и \\(f''(x_0)&lt;0\\) — максимум; \\(f''(x_0)&gt;0\\) — минимум.</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Достаточный признак: если \\(f'(x_0)=0\\) и \\(f''(x_0)&lt;0\\) — максимум; \\(f''(x_0)&gt;0\\) — минимум.</p></div>
 </div>
 
 <div class="tb">
@@ -559,7 +559,7 @@ html:`
 <div class="tb">
   <h2>Необходимый признак расходимости</h2>
   <div class="fml">\\[\\text{Если ряд }\\sum a_n\\text{ сходится, то }\\lim_{n\\to\\infty}a_n = 0\\]</div>
-  <div class="note"><p>📌 Обратное неверно! \\(\\lim a_n=0\\) не гарантирует сходимость (пример: гармонический ряд).</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Обратное неверно! \\(\\lim a_n=0\\) не гарантирует сходимость (пример: гармонический ряд).</p></div>
 </div>
 
 <div class="tb">
@@ -580,7 +580,7 @@ intro:'Прямой и предельный признаки сравнения 
 html:`
 <div class="tb">
   <h2>Признаки сравнения</h2>
-  <div class="note"><p>📌 Признаки применяются к рядам с <strong>неотрицательными</strong> членами.</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Признаки применяются к рядам с <strong>неотрицательными</strong> членами.</p></div>
   <div class="def"><b>Прямой признак сравнения</b>
     <p>Пусть \\(0 \\leq a_n \\leq b_n\\) для всех \\(n\\).</p>
     <p>• Если \\(\\sum b_n\\) сходится, то \\(\\sum a_n\\) сходится.</p>
@@ -667,7 +667,7 @@ html:`
   <div class="def"><b>Условно сходящийся ряд</b>
     <p>Ряд сходится, но \\(\\sum |a_n|\\) расходится.</p>
   </div>
-  <div class="note"><p>📌 Абсолютная сходимость ⟹ сходимость. Обратное неверно.</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Абсолютная сходимость ⟹ сходимость. Обратное неверно.</p></div>
   <p>Знакочередующийся гармонический ряд — условно сходящийся (\\(\\sum 1/n\\) расходится).</p>
 </div>
 `},
@@ -782,7 +782,7 @@ html:`
   <div class="fml">\\[\\lim(a_n\\pm b_n)=\\lim a_n \\pm\\lim b_n\\]</div>
   <div class="fml">\\[\\lim(a_n\\cdot b_n)=\\lim a_n\\cdot\\lim b_n\\]</div>
   <div class="fml">\\[\\lim\\frac{a_n}{b_n}=\\frac{\\lim a_n}{\\lim b_n}\\quad(\\lim b_n\\neq 0)\\]</div>
-  <div class="note"><p>📌 <strong>Теорема о сжатой переменной (squeeze):</strong> если \\(a_n\\leq c_n\\leq b_n\\) и \\(\\lim a_n=\\lim b_n=A\\), то \\(\\lim c_n=A\\).</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> <strong>Теорема о сжатой переменной (squeeze):</strong> если \\(a_n\\leq c_n\\leq b_n\\) и \\(\\lim a_n=\\lim b_n=A\\), то \\(\\lim c_n=A\\).</p></div>
 </div>
 
 <div class="tb">
@@ -814,7 +814,7 @@ html:`
   <h2>Односторонние пределы</h2>
   <div class="fml">\\[\\lim_{x\\to a^-}f(x) = A^-\\quad\\text{— левый предел}\\]</div>
   <div class="fml">\\[\\lim_{x\\to a^+}f(x) = A^+\\quad\\text{— правый предел}\\]</div>
-  <div class="note"><p>📌 \\(\\lim_{x\\to a}f(x)=A \\iff A^-=A^+=A\\)</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> \\(\\lim_{x\\to a}f(x)=A \\iff A^-=A^+=A\\)</p></div>
   <div class="ex"><b>Пример</b>
     <p>\\(f(x)=\\dfrac{|x|}{x}\\): \\(A^-=\-1\\), \\(A^+=1\\). Предел в \\(x=0\\) не существует.</p>
   </div>
@@ -910,7 +910,7 @@ html:`
     <tr><td>\\(\\sinh x\\)</td><td>\\(x\\)</td></tr>
     <tr><td>\\(\\tanh x\\)</td><td>\\(x\\)</td></tr>
   </table>
-  <div class="note"><p>📌 При замене в дроби заменяем только в числителе и знаменателе по отдельности, не в сумме!</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> При замене в дроби заменяем только в числителе и знаменателе по отдельности, не в сумме!</p></div>
 </div>
 
 <div class="tb">
@@ -935,7 +935,7 @@ html:`
     <p>Если \\(\\lim_{x\\to a}f(x)=\\lim_{x\\to a}g(x)=0\\) (или \\(\\infty\\)), и предел \\(\\lim_{x\\to a}\\dfrac{f'(x)}{g'(x)}\\) существует, то:</p>
   </div>
   <div class="fml">\\[\\lim_{x\\to a}\\frac{f(x)}{g(x)} = \\lim_{x\\to a}\\frac{f'(x)}{g'(x)}\\]</div>
-  <div class="note"><p>📌 Применяется только для неопределённостей \\(\\dfrac{0}{0}\\) и \\(\\dfrac{\\infty}{\\infty}\\). Другие нужно свести к ним.</p></div>
+  <div class="note"><p><i data-lucide="pin" class="e-ic"></i> Применяется только для неопределённостей \\(\\dfrac{0}{0}\\) и \\(\\dfrac{\\infty}{\\infty}\\). Другие нужно свести к ним.</p></div>
 </div>
 
 <div class="tb">

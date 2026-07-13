@@ -416,11 +416,11 @@ async function finishExam(autoSubmit) {
   if (pct === 100) setTimeout(launchConfetti, 400)
   playSound(pct >= 75 ? 'perfect' : 'finish')
 
-  renderCertificate(username, correct, total, pct, grade, autoSubmit)
+  renderCertificate(username, correct, total, pct, grade, autoSubmit, results)
 }
 
 // ── Рендер сертификата ────────────────────────────────────
-function renderCertificate(username, correct, total, pct, grade, autoSubmit) {
+function renderCertificate(username, correct, total, pct, grade, autoSubmit, results) {
   const container = document.getElementById('examPage')
   if (!container) return
 

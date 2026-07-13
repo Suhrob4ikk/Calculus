@@ -2692,3 +2692,33 @@ html:not(.dark) .sb-item.sb-active {
 @media (max-width: 680px) {
   .orbit-orb { pointer-events: auto; }   /* в сетке кликабельна вся карточка */
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   УВЕЛИЧЕННАЯ ОРБИТАЛЬ + ЗАМЕТНЫЙ СВЕТЛЫЙ ФОН (2026-07)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Орбиталь крупнее — меньше пустого места на больших экранах */
+@media (min-width: 900px) {
+  .subjects-orbit { max-width: 820px; height: 660px; margin: 12px auto 20px; }
+  .orb-circle { width: clamp(92px, 8vw, 116px); height: clamp(92px, 8vw, 116px); }
+  .orb-circle .subject-emoji { font-size: 2.2rem; }
+  .orbit-orb .subject-name { font-size: .95rem; }
+  .orbit-center-title { font-size: 3rem; }
+  .orbit-center-sub, .orbit-center-hint { font-size: .74rem; }
+}
+@media (min-width: 1300px) {
+  .subjects-orbit { max-width: 920px; height: 720px; }
+  .orb-circle { width: 124px; height: 124px; }
+}
+
+/* Светлая тема — фон ещё заметнее (сетка + свечения) */
+html:not(.dark) body::before {
+  background-image:
+    linear-gradient(rgba(99,102,241,.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,.09) 1px, transparent 1px) !important;
+  background-size: 42px 42px !important;
+  -webkit-mask-image: radial-gradient(ellipse 95% 80% at 50% 34%, #000 55%, transparent 92%) !important;
+  mask-image: radial-gradient(ellipse 95% 80% at 50% 34%, #000 55%, transparent 92%) !important;
+}
+html:not(.dark) body::after { opacity: .8 !important; }
+html:not(.dark) .fx-orb { opacity: .58; filter: blur(56px); }
