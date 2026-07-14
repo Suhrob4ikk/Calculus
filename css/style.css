@@ -2029,7 +2029,7 @@ html:not(.dark) .duel-score-card-normal {
   font-size: 16px;
   font-weight: 700;
   color: #1E293B;
-  padding: 20px 16px 10px;
+  padding: 10px 16px 2px;
   font-family: 'Inter', sans-serif;
 }
 .dark .android-section-label { color: #E2E8F0; }
@@ -2502,8 +2502,12 @@ html:not(.dark) .android-subject-card::after { background: linear-gradient(115de
 /* ── Домашняя шапка: убираем плоскую синюю плашку ── */
 .android-home-header {
   background: transparent !important;
-  padding: 26px 22px 14px !important;
+  padding: 14px 22px 8px !important;
+  justify-content: flex-start !important;   /* имя и аватар вместе слева, не по разным углам */
+  gap: 14px;
 }
+.android-home-header .android-home-avatar { order: -1; }      /* аватар слева от имени */
+.android-home-header-left { flex: 0 1 auto !important; }
 .android-greeting { color: var(--text-main) !important; letter-spacing: -0.015em; font-size: 22px !important; }
 .android-streak-badge, .android-home-footer { color: var(--text-muted) !important; }
 .android-home-avatar {
@@ -2585,9 +2589,9 @@ html:not(.dark) .bg-white {
 .subjects-orbit {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 560px;
-  margin: 4px auto 8px;
+  max-width: 560px;
+  height: 500px;
+  margin: 2px auto 6px;
 }
 .orbit-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .orbit-lines polygon { fill: none; stroke: var(--c2, #6366f1); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .28; stroke-dasharray: 3 5; }
@@ -2713,16 +2717,16 @@ html:not(.dark) .sb-item.sb-active {
 
 /* Орбиталь крупнее — меньше пустого места на больших экранах */
 @media (min-width: 900px) {
-  .subjects-orbit { max-width: 820px; height: 660px; margin: 12px auto 20px; }
-  .orb-circle { width: clamp(92px, 8vw, 116px); height: clamp(92px, 8vw, 116px); }
+  .subjects-orbit { max-width: 760px; height: 560px; margin: 4px auto 10px; }
+  .orb-circle { width: clamp(84px, 7vw, 104px); height: clamp(84px, 7vw, 104px); }
   .orb-circle .subject-emoji { font-size: 2.2rem; }
   .orbit-orb .subject-name { font-size: .95rem; }
   .orbit-center-title { font-size: 3rem; }
   .orbit-center-sub, .orbit-center-hint { font-size: .74rem; }
 }
 @media (min-width: 1300px) {
-  .subjects-orbit { max-width: 920px; height: 720px; }
-  .orb-circle { width: 124px; height: 124px; }
+  .subjects-orbit { max-width: 840px; height: 600px; }
+  .orb-circle { width: 112px; height: 112px; }
 }
 
 /* Светлая тема — фон ещё заметнее (сетка + свечения) */
@@ -3248,13 +3252,13 @@ html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
 /* — Десктоп: дуэль в 2 колонки — ТОЛЬКО когда реально есть место после
    сайдбара (иначе арена наезжала/обрезалась при промежуточной ширине). — */
 @media (min-width: 1240px) {
-  #duelPage .duel-container { max-width: 900px !important; }
+  #duelPage .duel-container { max-width: 1080px !important; }
   #duelCreatePanel {
     display: grid; grid-template-columns: 1.05fr 0.95fr;
-    gap: 1.4rem; align-items: stretch;
+    gap: 2rem; align-items: stretch;
   }
-  .duel-arena-panel { margin-bottom: 0; }
-  #duelCreatePanel .duel-arena { max-width: 340px; height: 330px; }
+  .duel-arena-panel { margin-bottom: 0; padding: 1.8rem 1.6rem; }
+  #duelCreatePanel .duel-arena { max-width: 420px; height: 380px; }
   .duel-create-side { display: flex; flex-direction: column; justify-content: center; }
   .duel-create-side .duel-code-block { margin-bottom: 1rem; }
 }
