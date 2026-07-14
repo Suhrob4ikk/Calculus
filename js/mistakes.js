@@ -193,10 +193,10 @@ function renderMistakesList(mistakes) {
             Всего: ${totalCount} вопросов из ${Object.keys(bySubject).length} разделов
           </p>
         </div>
-        <button onclick="window._startMistakePractice()"
-          style="padding:10px 20px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+        <button onclick="window._startMistakePractice()" class="mistake-repeat-btn"
+          style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
                  background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-size:0.9rem">
-          Повторить всё
+          <i data-lucide="repeat"></i> Повторить всё
         </button>
       </div>
 
@@ -216,10 +216,10 @@ function renderMistakesList(mistakes) {
                              padding:2px 10px;border-radius:20px;font-size:0.78rem;font-weight:600">
                   ${items.length} ошибок
                 </span>
-                <button onclick="window._startMistakePractice('${subj}')"
-                  style="padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;
+                <button onclick="window._startMistakePractice('${subj}')" class="mistake-repeat-btn"
+                  style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;
                          background:#6366f1;color:white;font-size:0.78rem">
-                  Повторить
+                  <i data-lucide="repeat-2"></i> Повторить
                 </button>
               </div>
             </div>
@@ -231,17 +231,14 @@ function renderMistakesList(mistakes) {
                   ? JSON.parse(m.question_data) : (m.question_data || {})
                 const qText = qData.question || '—'
                 const diffLabel = { easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный' }[m.difficulty] || m.difficulty
-                const diffColor = { easy: '#10b981', medium: '#f59e0b', hard: '#ef4444' }[m.difficulty] || '#94a3b8'
+                const diffCls = { easy: 'diff-pill-easy', medium: 'diff-pill-medium', hard: 'diff-pill-hard' }[m.difficulty] || 'diff-pill-medium'
                 return `
-                  <div style="padding:0.6rem 0;border-bottom:${i < items.slice(0, 5).length - 1 ? '1px solid rgba(100,116,139,0.1)' : 'none'}">
-                    <div style="display:flex;gap:6px;align-items:flex-start">
-                      <span style="background:${diffColor}22;color:${diffColor};border:1px solid ${diffColor}44;
-                                   padding:1px 7px;border-radius:10px;font-size:0.72rem;font-weight:600;
-                                   flex-shrink:0;margin-top:2px">
-                        ${diffLabel}
-                      </span>
-                      <span style="font-size:0.85rem;color:var(--text-main);line-height:1.4">
-                        ${escapeHtml(qText.slice(0, 100))}${qText.length > 100 ? '…' : ''}
+                  <div class="mistake-question-row" style="padding:0.6rem 0;border-bottom:${i < items.slice(0, 5).length - 1 ? '1px solid rgba(100,116,139,0.1)' : 'none'}">
+                    <div style="display:flex;gap:8px;align-items:flex-start">
+                      <span class="diff-pill ${diffCls}" style="margin-top:2px">${diffLabel}</span>
+                      <span class="mistake-question-text" style="font-size:0.85rem;color:var(--text-main);line-height:1.4"
+                            onclick="this.classList.toggle('expanded')" title="Нажми, чтобы раскрыть">
+                        ${escapeHtml(qText)}
                       </span>
                     </div>
                   </div>

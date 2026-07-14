@@ -73,19 +73,32 @@ window.showStatistics = async function() {
       datasets: [{
         label: 'Результат (%)',
         data: recent.map(r => r.score),
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,0.12)',
-        tension: 0.35,
+        borderColor: '#8b5cf6',
+        backgroundColor: (ctx) => {
+          const { chart } = ctx
+          const { ctx: c, chartArea } = chart
+          if (!chartArea) return 'rgba(139,92,246,0.12)'
+          const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+          g.addColorStop(0, 'rgba(139,92,246,0.30)')
+          g.addColorStop(1, 'rgba(139,92,246,0)')
+          return g
+        },
+        tension: 0.4,
+        borderWidth: 3,
         fill: true,
         pointBackgroundColor: recent.map(r => r.score >= 70 ? '#10b981' : r.score >= 50 ? '#f59e0b' : '#ef4444'),
-        pointRadius: 5,
+        pointBorderColor: 'rgba(255,255,255,0.85)',
+        pointBorderWidth: 1.5,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        // Только горизонтальные линии по Y (0/50/100), вертикальных нет
+        y: { min: 0, max: 100, ticks: { stepSize: 50, callback: v => v + '%', font: { size: 11 } }, grid: { color: 'rgba(120,120,140,0.12)', drawTicks: false } },
         x: { ticks: { font: { size: 10 } }, grid: { display: false } }
       }
     }
@@ -264,7 +277,9 @@ window.showLeaderboard = async function() {
   const profMap  = {}
   profiles.forEach(p => { profMap[p.username] = p })
 
-  const medals    = ['<i data-lucide="medal" class="e-ic" style="color:#fbbf24"></i>','<i data-lucide="medal" class="e-ic" style="color:#cbd5e1"></i>','<i data-lucide="medal" class="e-ic" style="color:#d97706"></i>']
+  const myName = st.currentUser
+    ? (st.currentUser.user_metadata?.username || st.currentUser.email?.split('@')[0] || null)
+    : null
   const diffLabel = { easy: '<span class="dlvl-dot" style="background:#22c55e"></span> Лёгкий', medium: '<span class="dlvl-dot" style="background:#eab308"></span> Средний', hard: '<span class="dlvl-dot" style="background:#ef4444"></span> Сложный' }
   const rowBg = [
     'background:linear-gradient(135deg,rgba(234,179,8,0.12),rgba(234,179,8,0.04));border:1px solid rgba(234,179,8,0.25)',
@@ -292,9 +307,15 @@ window.showLeaderboard = async function() {
       ? ' <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:10px"><i data-lucide="crown" class="e-ic"></i></span>'
       : ''
     const rowStyle = i < 3 ? rowBg[i] : 'background:var(--bg-card);border:1px solid var(--border)'
+    const isMe = myName && r.username === myName
+    // Пьедестал: топ-3 крупнее (padding), остальные компактнее
+    const rowPad = i < 3 ? '1.05rem 1rem' : '0.75rem 0.875rem'
+    const rankHtml = i < 3
+      ? `<span class="lb-rank lb-rank-${i + 1}">${i + 1}</span>`
+      : `<span class="lb-rank-num">${i + 1}</span>`
     return `
-    <div data-username="${escapeHtml(r.username)}" onclick="viewProfile(this.dataset.username)" style="${rowStyle};border-radius:0.875rem;padding:0.75rem 0.875rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.625rem;cursor:pointer">
-      <span style="font-size:1.5rem;width:1.75rem;text-align:center;flex-shrink:0">${medals[i] || `<span style="font-size:0.85rem;color:var(--text-muted)">${i+1}</span>`}</span>
+    <div class="${isMe ? 'lb-me' : ''}" data-username="${escapeHtml(r.username)}" onclick="viewProfile(this.dataset.username)" style="${rowStyle};border-radius:0.875rem;padding:${rowPad};margin-bottom:0.5rem;display:flex;align-items:center;gap:0.625rem;cursor:pointer">
+      ${rankHtml}
       ${avatarHtml}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;flex-wrap:wrap">

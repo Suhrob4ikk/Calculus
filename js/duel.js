@@ -637,7 +637,7 @@ window.showDuelPage = function() {
   if (!container) return
 
   container.innerHTML = `
-    <div style="padding:2rem clamp(1rem,3vw,2.5rem);max-width:600px;margin:0 auto">
+    <div class="duel-container" style="padding:1.75rem clamp(1rem,3vw,2rem);max-width:600px;margin:1.25rem auto">
       <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem"><i data-lucide="swords" class="e-ic"></i> Дуэль 1v1</h1>
       <p style="color:var(--text-sub);margin-bottom:1.5rem;font-size:0.95rem">
         Соревнуйся с другом в реальном времени. Одинаковые вопросы — кто ответит точнее?
@@ -704,17 +704,14 @@ window.showDuelPage = function() {
         <div id="duelCreateStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">
           Нажми кнопку чтобы создать дуэль
         </div>
-        <input id="inviteUsernameInput" type="text" placeholder="Имя пользователя (опционально)"
-          style="width:100%;padding:8px 12px;border-radius:10px;
-                 border:1.5px solid rgba(139,92,246,0.3);
-                 background:rgba(15,23,42,0.5);color:var(--text-main);font-size:0.9rem;
+        <input id="inviteUsernameInput" class="duel-input" type="text" placeholder="Имя пользователя (опционально)"
+          style="width:100%;padding:9px 12px;border-radius:10px;font-size:0.9rem;
                  outline:none;margin-bottom:8px;box-sizing:border-box"
           onblur="validateInviteUsername()">
         <p id="inviteError" style="color:#f87171;font-size:0.75rem;margin-top:4px;display:none"></p>
-        <button onclick="createDuel()" id="duelCreateBtn"
+        <button onclick="createDuel()" id="duelCreateBtn" class="btn-start-duel"
           style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
-                 font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
-                 box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+                 font-size:1rem;color:white;transition:all 0.2s">
           <i data-lucide="swords" class="e-ic"></i> Создать дуэль
         </button>
       </div>
@@ -722,17 +719,15 @@ window.showDuelPage = function() {
       <!-- Вкладка «Войти» -->
       <div id="duelJoinPanel" style="display:none">
         <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
-        <input id="duelJoinInput" type="text" maxlength="6" placeholder="ABCD12"
-          style="width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(139,92,246,0.4);
-                 background:rgba(15,23,42,0.5);color:var(--text-main);font-size:1.5rem;font-family:monospace;
+        <input id="duelJoinInput" class="duel-input" type="text" maxlength="6" placeholder="ABCD12"
+          style="width:100%;padding:12px 16px;border-radius:12px;font-size:1.5rem;font-family:monospace;
                  letter-spacing:0.15em;text-align:center;text-transform:uppercase;
                  margin-bottom:1rem;outline:none;box-sizing:border-box"
           oninput="this.value=this.value.toUpperCase()">
         <div id="duelJoinStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem"></div>
-        <button onclick="joinDuel()"
+        <button onclick="joinDuel()" class="btn-start-duel"
           style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
-                 font-size:1rem;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;
-                 box-shadow:0 4px 15px rgba(109,40,217,0.3);transition:all 0.2s">
+                 font-size:1rem;color:white;transition:all 0.2s">
           Подключиться
         </button>
       </div>

@@ -2728,3 +2728,285 @@ html:not(.dark) body::before {
 }
 html:not(.dark) body::after { opacity: .8 !important; }
 html:not(.dark) .fx-orb { opacity: .58; filter: blur(56px); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ТЗ-МОДЕРНИЗАЦИЯ 2026-07 — глубина стекла, контраст, геймификация.
+   Кросс-тематично: токены отдельно для .dark и html:not(.dark).
+   Ничего из существующего не удаляется — только надстройка.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Кросс-тематические токены (стекло/инпут/свечение) ── */
+html:not(.dark) {
+  --glass-bg:  rgba(255, 255, 255, 0.55);
+  --glass-brd: rgba(255, 255, 255, 0.72);
+  --glass-shd: 0 10px 34px rgba(31, 38, 135, 0.10);
+  --input-bg2: rgba(255, 255, 255, 0.92);
+  --input-brd: rgba(15, 23, 42, 0.12);
+  --accent-glow: rgba(139, 92, 246, 0.20);
+}
+.dark {
+  --glass-bg:  rgba(9, 22, 38, 0.62);
+  --glass-brd: rgba(120, 184, 216, 0.14);
+  --glass-shd: 0 12px 38px rgba(0, 0, 0, 0.5);
+  --input-bg2: rgba(10, 24, 40, 0.72);
+  --input-brd: rgba(120, 184, 216, 0.20);
+  --accent-glow: rgba(168, 85, 247, 0.42);
+}
+
+/* ── 2. ДУЭЛЬ-АРЕНА ────────────────────────────────────────── */
+/* Контейнер: приподнимаем над авророй стеклом */
+.duel-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--glass-shd);
+  border-radius: 24px;
+}
+.dark .duel-container {
+  box-shadow: var(--glass-shd), 0 0 60px -30px rgba(168, 85, 247, 0.55);
+}
+
+/* Поля ввода: контрастная подложка + неоновый фокус */
+.duel-input {
+  background: var(--input-bg2) !important;
+  border: 1px solid var(--input-brd) !important;
+  color: var(--text-main) !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.duel-input::placeholder { color: var(--text-muted); opacity: 1; }
+.duel-input:focus {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 14px var(--accent-glow);
+  outline: none;
+}
+html:not(.dark) .duel-input:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+/* Кнопки «Создать дуэль» / «Подключиться»: пульсирующее свечение */
+.btn-start-duel {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef) !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.5) !important;
+  animation: pulseGlow 2.4s ease-in-out infinite alternate;
+}
+@keyframes pulseGlow {
+  0%   { box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+  100% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.85); }
+}
+.btn-start-duel:hover { filter: brightness(1.07); transform: translateY(-2px); }
+html:not(.dark) .btn-start-duel {
+  animation: none;
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.32) !important;
+}
+
+/* Пикеры раздела/уровня: перекрашиваем в фиолет дуэли (было cyan) */
+.duel-container .duel-pick-btn {
+  border-color: rgba(139, 92, 246, 0.22);
+  color: var(--text-muted);
+}
+.duel-container .duel-pick-btn:hover {
+  background: rgba(139, 92, 246, 0.10);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #c4b5fd;
+}
+.duel-container .duel-pick-btn.active {
+  background: rgba(139, 92, 246, 0.18);
+  border-color: rgba(139, 92, 246, 0.6);
+  color: #c4b5fd;
+}
+html:not(.dark) .duel-container .duel-pick-btn.active {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: #8b5cf6;
+  color: #6d28d9;
+}
+html:not(.dark) .duel-container .duel-pick-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+  color: #6d28d9;
+}
+
+/* ── 3. РЕЖИМ ЭКЗАМЕНА — цветовое кодирование + пружина ──────── */
+.exam-mode-card {
+  --em-c1: #6366f1;
+  --em-c2: #818cf8;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid color-mix(in srgb, var(--em-c1) 30%, transparent);
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.exam-mode-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--em-c1), var(--em-c2));
+  opacity: 0.85;
+}
+.exam-mode-card:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--em-c1) 70%, transparent);
+  box-shadow: 0 16px 34px -12px color-mix(in srgb, var(--em-c1) 55%, transparent);
+}
+.exam-mode-card .exam-mode-ico {
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--em-c1);
+}
+.exam-mode-card .exam-mode-ico svg { width: 1em; height: 1em; }
+.exam-mode-card .exam-mode-name { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+.exam-mode-card .exam-mode-meta { color: var(--text-sub); font-size: 0.95rem; }
+/* Быстрый — зелёный (скорость) */
+.exam-mode-quick    { --em-c1: #10b981; --em-c2: #34d399; }
+/* Стандартный — синий (классика) */
+.exam-mode-standard { --em-c1: #3b82f6; --em-c2: #60a5fa; }
+/* Полный — королевский фиолет/золото (сложность) */
+.exam-mode-full     { --em-c1: #a855f7; --em-c2: #d946ef; }
+
+/* ── 4. СТАТИСТИКА / ПРОФИЛЬ — стекло + прогресс-бары ────────── */
+/* Основные дашборды переводим на стекло поверх авроры */
+#statisticsPage .bg-white,
+#profilePage    .bg-white {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-brd) !important;
+  box-shadow: var(--glass-shd) !important;
+}
+.dark #statisticsPage .bg-white,
+.dark #profilePage    .bg-white {
+  background: var(--glass-bg) !important;
+}
+/* Прогресс-бары: выше и полностью скруглённые */
+.progress-bar {
+  height: 10px !important;
+  border-radius: 99px !important;
+}
+.progress-fill {
+  border-radius: 99px !important;
+  background: linear-gradient(90deg, #8b5cf6, #38bdf8) !important;
+}
+/* stat-card — чуть больше глубины на стекле */
+html:not(.dark) .stat-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(224,242,254,0.55));
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 6px 20px rgba(56,189,248,0.10);
+}
+
+/* ── 5. РЕЙТИНГ — пьедестал / крупные цифры / подсветка себя ── */
+.lb-rank {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 1.85rem;
+  line-height: 1;
+  width: 1.9rem;
+  text-align: center;
+  flex-shrink: 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lb-rank-1 { background-image: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.lb-rank-2 { background-image: linear-gradient(135deg, #e5e7eb, #9ca3af); }
+.lb-rank-3 { background-image: linear-gradient(135deg, #d97706, #92400e); }
+.lb-rank-num {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 1.9rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+/* Строка текущего игрока — светящаяся обводка */
+.lb-me {
+  border: 1px solid #8b5cf6 !important;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.35), 0 0 18px -4px rgba(139,92,246,0.55) !important;
+}
+
+/* ── 6. ОШИБКИ — обрезка текста / пилюли / иконка ───────────── */
+.mistake-question-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.mistake-question-text.expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+.mistake-question-row:hover .mistake-question-text { color: var(--text-main); }
+/* Залитые пилюли сложности (высокий контраст) */
+.diff-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.diff-pill-easy   { background: #d1fae5; color: #065f46; }
+.diff-pill-medium { background: #fef3c7; color: #92400e; }
+.diff-pill-hard   { background: #fee2e2; color: #991b1b; }
+.dark .diff-pill-easy   { background: rgba(16,185,129,0.22);  color: #6ee7b7; }
+.dark .diff-pill-medium { background: rgba(245,158,11,0.22); color: #fcd34d; }
+.dark .diff-pill-hard   { background: rgba(239,68,68,0.22);   color: #fca5a5; }
+/* Иконка внутри кнопок «Повторить» */
+.mistake-repeat-btn svg,
+.mistake-repeat-btn .e-ic { width: 0.95em; height: 0.95em; vertical-align: -0.15em; }
+
+/* ── 7. САЙДБАР — полупрозрачное стекло + подпрыг иконки ─────── */
+#desktopSidebar {
+  background: color-mix(in srgb, var(--bg-main) 78%, transparent) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+html:not(.dark) #desktopSidebar {
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+.sb-item:hover svg { transform: translateY(-2px) scale(1.06); }
+/* Ярче активный маркер в светлой теме */
+html:not(.dark) .sb-item.sb-active {
+  color: #6d28d9 !important;
+  background: linear-gradient(90deg, rgba(139,92,246,0.18), transparent 85%) !important;
+}
+html:not(.dark) .sb-item.sb-active::before {
+  background: linear-gradient(180deg, #8b5cf6, #6366f1);
+  box-shadow: 0 0 12px -1px #8b5cf6;
+}
+
+/* ── 8. ЕЖЕДНЕВКА — shimmer-блик при наведении ──────────────── */
+.android-daily-card { position: relative; overflow: hidden; }
+.android-daily-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-22deg);
+  transition: left 0.75s var(--ease);
+  pointer-events: none;
+  z-index: 3;
+}
+.android-daily-card:hover::after { left: 160%; }
+
+/* ── Доступность: гасим новые анимации при reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .btn-start-duel { animation: none !important; }
+  .android-daily-card::after { display: none !important; }
+}

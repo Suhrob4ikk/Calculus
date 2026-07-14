@@ -120,15 +120,10 @@ function renderExamSetup() {
       </p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:2rem">
         ${Object.entries(FORMATS).map(([key, f]) => `
-          <div onclick="window._startExam('${key}')"
-            style="background:var(--bg-card);border:1px solid rgba(99,102,241,0.3);border-radius:20px;
-                   padding:2rem 1.75rem;cursor:pointer;transition:all 0.2s;display:flex;
-                   flex-direction:column;gap:0.75rem"
-            onmouseenter="this.style.borderColor='rgba(99,102,241,0.7)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(99,102,241,0.15)'"
-            onmouseleave="this.style.borderColor='rgba(99,102,241,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-            <div style="font-size:2.5rem;line-height:1">${{ quick: '<i data-lucide="zap" class="e-ic"></i>', standard: '<i data-lucide="pencil" class="e-ic"></i>', full: '<i data-lucide="trophy" class="e-ic"></i>' }[key]}</div>
-            <div style="font-size:1.35rem;font-weight:700">${f.label}</div>
-            <div style="color:var(--text-sub);font-size:0.95rem">${f.count} вопросов · ${f.minutes} минут</div>
+          <div onclick="window._startExam('${key}')" class="exam-mode-card exam-mode-${key}">
+            <div class="exam-mode-ico">${{ quick: '<i data-lucide="zap"></i>', standard: '<i data-lucide="pencil"></i>', full: '<i data-lucide="trophy"></i>' }[key]}</div>
+            <div class="exam-mode-name">${f.label}</div>
+            <div class="exam-mode-meta">${f.count} вопросов · ${f.minutes} минут</div>
           </div>
         `).join('')}
       </div>
