@@ -3208,3 +3208,64 @@ html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
   .orbit-glyphs, .orbit-center::before { display: none; }
   .subjects-orbit .orbit-orb .orb-circle { animation: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ИТЕРАЦИЯ 7 (2026-07) — правки по фидбеку: карты-режимы, «Назад»,
+   десктоп-раскладка дуэли, крупнее Ошибки, красочнее светлый фон.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* — Подзаголовок карты-режима переносим ПОД заголовок (был вплотную справа) — */
+.duel-mode-card > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.duel-mode-card .dmc-t { display: block; }
+.duel-mode-card .dmc-s { display: block; margin-top: 3px; }
+
+/* — Кнопка «Назад»: заметная стеклянная, с запасом снизу под нижнюю навигацию — */
+.duel-back-btn {
+  margin-top: 1.4rem; width: 100%; padding: 0.9rem; border-radius: 14px;
+  border: 1px solid var(--glass-brd); background: var(--glass-bg);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: var(--text-main); cursor: pointer; font-size: 0.95rem; font-weight: 600;
+  font-family: inherit; transition: border-color 0.18s, transform 0.15s;
+}
+.duel-back-btn:hover { border-color: #a855f7; transform: translateY(-1px); }
+/* На мобильном #duelPage не имеет класса page-content → добавляем нижний отступ вручную */
+@media (max-width: 640px) {
+  #duelPage .duel-container { padding-bottom: 88px !important; }
+}
+
+/* — Десктоп: дуэль в 2 колонки (арена | код+имя+кнопка), меньше пустоты — */
+@media (min-width: 900px) {
+  #duelPage .duel-container { max-width: 940px !important; }
+  #duelCreatePanel {
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    gap: 1.4rem; align-items: stretch;
+  }
+  .duel-arena-panel { margin-bottom: 0; }
+  #duelCreatePanel .duel-arena { max-width: 360px; height: 340px; }
+  .duel-create-side { display: flex; flex-direction: column; justify-content: center; }
+  .duel-create-side .duel-code-block { margin-bottom: 1rem; }
+}
+
+/* — Ошибки: крупнее на десктопе (было «слишком мелко») — */
+@media (min-width: 860px) {
+  .mistakes-shell { max-width: 1180px; }
+  .mistakes-shell .mistake-subj-title { font-size: 1.2rem !important; }
+  .mistakes-shell .mistake-question-text { font-size: 1rem !important; line-height: 1.55 !important; }
+  .mistakes-shell .diff-pill { font-size: 0.78rem !important; padding: 3px 12px !important; }
+  .mistakes-grid > div > div:last-child { padding: 0.9rem 1.4rem !important; }
+}
+
+/* — Светлая тема: фон заметно красочнее (было «пусто») — */
+html:not(.dark) body {
+  background: linear-gradient(160deg, #e6edfb 0%, #efe8fb 50%, #fde8f2 100%) !important;
+}
+html:not(.dark) body::after {
+  opacity: 1 !important;
+  background:
+    radial-gradient(44% 48% at 13% 15%, rgba(56,189,248,.42), transparent 60%),
+    radial-gradient(42% 46% at 87% 11%, rgba(168,85,247,.40), transparent 60%),
+    radial-gradient(52% 52% at 80% 87%, rgba(99,102,241,.38), transparent 62%),
+    radial-gradient(46% 46% at 20% 85%, rgba(244,114,182,.32), transparent 62%),
+    radial-gradient(42% 42% at 50% 48%, rgba(129,140,248,.16), transparent 72%) !important;
+}
+html:not(.dark) .fx-orb { opacity: .72 !important; filter: blur(46px) !important; }

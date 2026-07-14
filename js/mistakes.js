@@ -211,7 +211,7 @@ function renderMistakesList(mistakes) {
             <!-- Заголовок раздела -->
             <div style="padding:0.9rem 1.25rem;display:flex;align-items:center;
                         justify-content:space-between;border-bottom:1px solid rgba(100,116,139,0.15)">
-              <div style="font-weight:700;font-size:1rem">${label}</div>
+              <div class="mistake-subj-title" style="font-weight:700;font-size:1rem">${label}</div>
               <div style="display:flex;gap:8px;align-items:center">
                 <span style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);
                              padding:2px 10px;border-radius:20px;font-size:0.78rem;font-weight:600">

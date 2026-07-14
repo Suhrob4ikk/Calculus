@@ -693,6 +693,7 @@ window.showDuelPage = function() {
           </div>
         </div>
 
+        <div class="duel-create-side">
         <!-- Код вызова -->
         <div class="duel-code-block">
           <div class="duel-code-left">
@@ -722,6 +723,7 @@ window.showDuelPage = function() {
                  font-size:1.05rem;color:white;transition:all 0.2s">
           <i data-lucide="swords" class="e-ic"></i> Начать Дуэль
         </button>
+        </div>
       </div>
 
       <!-- Панель «Войти» -->
@@ -752,9 +754,7 @@ window.showDuelPage = function() {
           style="display:none;font-size:3rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem"></div>
       </div>
 
-      <button onclick="showHome()" style="margin-top:1.5rem;width:100%;padding:0.9rem;border-radius:14px;
-        border:1px solid rgba(100,116,139,0.4);background:transparent;color:var(--text-sub);
-        cursor:pointer;font-size:0.95rem">← Назад</button>
+      <button onclick="showHome()" class="duel-back-btn">← Назад к разделам</button>
     </div>
   `
 
