@@ -2413,7 +2413,7 @@
                background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:0.95rem">
           Реванш
         </button>
-        <button onclick="document.getElementById('duelResultsModal').style.display='none'" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
+        <button onclick="window._leaveDuel ? window._leaveDuel() : (document.getElementById('duelResultsModal').style.display='none')" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(100,116,139,0.4);
                background:transparent;color:#94a3b8;cursor:pointer;font-weight:600;font-size:0.95rem">
           На главную
         </button>

@@ -3366,3 +3366,36 @@ html:not(.dark) body::after {
 .home-ach-chip.badge-silver { border-color: rgba(148,163,184,0.45); }
 .home-ach-chip.badge-green  { border-color: rgba(16,185,129,0.42); color: #059669; background: rgba(16,185,129,0.10); }
 .dark .home-ach-chip.badge-green  { color: #6ee7b7; background: rgba(16,185,129,0.14); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ИТЕРАЦИЯ 11 — ПРОИЗВОДИТЕЛЬНОСТЬ (сайт «подтормаживал»)
+   Главная причина лагов — большие размытые слои, которые
+   перерисовывались КАЖДЫЙ КАДР (аврора + орбы + глифы + пульс).
+   Делаем их статичными (остаются цветными, но без per-frame стоимости)
+   и убираем дорогой backdrop-filter на мобильных.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. Останавливаем постоянные фоновые анимации (визуал сохраняется) */
+body::after            { animation: none !important; }
+.fx-orb                { animation: none !important; will-change: auto !important; }
+.orbit-glyph           { animation: none !important; }
+.orbit-center::before  { animation: none !important; }
+
+/* 2. Backdrop-filter (размытие подложки) очень дорог на мобильных GPU —
+      отключаем там, оставляя полупрозрачный фон. На десктопе остаётся. */
+@media (max-width: 820px) {
+  .hss-card, .home-ach-chip, .duel-mode-card, .duel-arena-panel,
+  .android-daily-card, .duel-back-btn, .duel-container,
+  .glass-panel, .glass-strong, #themeToggle,
+  .prob-back-btn, .modal-inner-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Тени орбов/размытие на мобильных полегче */
+  .fx-orb { filter: blur(40px) !important; }
+}
+
+/* 3. Переходы страниц чуть короче — меньше ощущение «залипания» */
+.page-enter { animation-duration: .28s !important; }
+::view-transition-old(vt-page) { animation-duration: 160ms !important; }
+::view-transition-new(vt-page) { animation-duration: 200ms !important; }

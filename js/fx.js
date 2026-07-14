@@ -49,12 +49,11 @@
     const wrap = document.createElement('div');
     wrap.className = 'fx-orbs';
     wrap.setAttribute('aria-hidden', 'true');
+    // Меньше орбов = меньше тяжёлых размытых слоёв (оптимизация).
     const orbs = [
-      { x: '12%', y: '20%', s: 360, d: 0 },
-      { x: '84%', y: '14%', s: 300, d: -7 },
-      { x: '72%', y: '82%', s: 400, d: -13 },
-      { x: '22%', y: '76%', s: 260, d: -4 },
-      { x: '50%', y: '44%', s: 300, d: -10 },
+      { x: '14%', y: '18%', s: 360, d: 0 },
+      { x: '84%', y: '14%', s: 320, d: -7 },
+      { x: '72%', y: '84%', s: 400, d: -13 },
     ];
     orbs.forEach((o, i) => {
       const el = document.createElement('span');

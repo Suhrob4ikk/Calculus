@@ -10,10 +10,49 @@ function _resetDuelState() {
   st.duel.joinHandled = false
   st.duel.startHandled = false
   st.duel.invitedUsername = null
+  st.duel.opponentLeft = false
   if (st.duel.countdownInterval) {
     clearInterval(st.duel.countdownInterval)
     st.duel.countdownInterval = null
   }
+}
+
+// ── Соперник покинул дуэль (нажал «Выйти») ──
+// Раньше при выходе соперника мы висели в ожидании (счёта или ответа на реванш).
+function _onOpponentLeft(name) {
+  if (st.duel.opponentLeft) return
+  st.duel.opponentLeft = true
+  if (name && !st.duel.opponentName) st.duel.opponentName = name
+  if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
+  const rematchBtn    = document.getElementById('rematchBtn')
+  const rematchBanner = document.getElementById('rematchRequestBanner')
+  if (rematchBanner) rematchBanner.style.display = 'none'
+  st.duel.isRematchRequester = false
+
+  if (st.duel.resultsShown) {
+    // Экран результатов (возможно, мы ждали ответа на реванш) — реванш невозможен.
+    if (rematchBtn) { rematchBtn.textContent = 'Соперник вышел'; rematchBtn.disabled = true }
+    return
+  }
+  if (st.duel.myScore !== null) {
+    // Мы уже финишировали и ждали счёт — засчитываем форфейт (победа).
+    st.duel.opponentScore = -1
+    _showDuelResults()
+  }
+  // Иначе (ещё идёт игра / лобби) — при финише таймаут покажет победу.
+}
+st.duel.onOpponentLeft = _onOpponentLeft
+
+// Единый выход из дуэли: уведомляем соперника, затем отписываемся и уходим домой.
+window._leaveDuel = function () {
+  try { st.duel.channel?.send({ type: 'broadcast', event: 'leave', payload: { name: st.duel.myName } }) } catch (e) {}
+  const ch = st.duel.channel
+  st.duel.channel = null
+  if (ch) setTimeout(() => { try { ch.unsubscribe() } catch (e) {} }, 250)
+  const rm = document.getElementById('duelResultsModal')
+  if (rm) rm.style.display = 'none'
+  _resetDuelState()
+  showHome()
 }
 
 function generateDuelCode() {
@@ -232,6 +271,7 @@ window.createDuel = async function () {
     })
     .on('broadcast', { event: 'rematch_accept' }, () => { _onRematchAccepted() })
     .on('broadcast', { event: 'rematch_start' }, ({ payload }) => { _onRematchStart(payload) })
+    .on('broadcast', { event: 'leave' }, ({ payload }) => { _onOpponentLeft(payload?.name) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = 'Соперник отказался'; btn.disabled = true }
@@ -331,6 +371,7 @@ window.joinDuel = async function () {
     })
     .on('broadcast', { event: 'rematch_accept' }, () => { _onRematchAccepted() })
     .on('broadcast', { event: 'rematch_start' }, ({ payload }) => { _onRematchStart(payload) })
+    .on('broadcast', { event: 'leave' }, ({ payload }) => { _onOpponentLeft(payload?.name) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = 'Соперник отказался'; btn.disabled = true }
@@ -426,6 +467,7 @@ function _beginDuelTest() {
   st.duel.myScore = null
   st.duel.opponentScore = null
   st.duel.resultsShown = false   // D3: новый раунд — можно снова показать результаты
+  st.duel.opponentLeft = false
   const timePerQ = st.duel.section === 'ode'
     ? (st.duel.diff === 'easy' ? 60 : st.duel.diff === 'hard' ? 120 : 90)
     : (st.duel.diff === 'easy' ? 30 : st.duel.diff === 'hard' ? 90 : 60)
@@ -802,8 +844,13 @@ window.showDuelPage = function () {
 // Алиас: showDuelModal → showDuelPage (сохраняем обратную совместимость)
 window.showDuelModal = window.showDuelPage
 
-// closeDuelModal теперь возвращает на главную
+// closeDuelModal теперь возвращает на главную (уведомив соперника о выходе)
 window.closeDuelModal = function () {
-  if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
+  if (st.duel.channel) {
+    try { st.duel.channel.send({ type: 'broadcast', event: 'leave', payload: { name: st.duel.myName } }) } catch (e) {}
+    const ch = st.duel.channel
+    st.duel.channel = null
+    setTimeout(() => { try { ch.unsubscribe() } catch (e) {} }, 250)
+  }
   showHome()
 }

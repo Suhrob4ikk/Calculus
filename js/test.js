@@ -470,7 +470,13 @@ window.exitTest = async function () {
     stopTimer()
     if (st.currentSection === 'duel') {
       if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
-      if (st.duel.channel) { st.duel.channel.unsubscribe(); st.duel.channel = null }
+      if (st.duel.channel) {
+        // Сообщаем сопернику, что мы вышли, ДО отписки — иначе он ждёт нас вечно.
+        try { st.duel.channel.send({ type: 'broadcast', event: 'leave', payload: { name: st.duel.myName } }) } catch (e) {}
+        const _ch = st.duel.channel
+        st.duel.channel = null
+        setTimeout(() => { try { _ch.unsubscribe() } catch (e) {} }, 250)
+      }
       st.duel.myScore = null; st.duel.opponentScore = null
     }
     window.showHome()
