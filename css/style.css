@@ -3082,18 +3082,19 @@ html:not(.dark) body::after {
   display: flex; flex-direction: column; align-items: center; gap: 5px;
   width: 74px; padding: 0; background: none; border: none; cursor: pointer; z-index: 3; font-family: inherit;
 }
-/* Кликабельны только круг и подпись — прозрачные прямоугольники не крадут клик у соседей */
-.duel-orb { pointer-events: none; }
-.duel-orb .orb-circle, .duel-orb .subject-name { pointer-events: auto; cursor: pointer; }
+/* Орбы дуэли НЕ перекрываются (74×74) — вся кнопка кликабельна (крупная цель) */
+.duel-orb { cursor: pointer; }
 .duel-orb .orb-circle { width: 46px; height: 46px; box-shadow: none; }
 .duel-orb .orb-circle .subject-emoji { font-size: 1rem; }
 .duel-orb .subject-name { font-size: 0.62rem; font-weight: 600; color: var(--text-muted); line-height: 1.1; text-align: center; }
 .duel-orb:hover .orb-circle { transform: scale(1.1); border-color: var(--c2); }
 .duel-orb.active .orb-circle {
-  transform: scale(1.14); border-color: var(--c2);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--c1) 15%, transparent),
-              0 10px 28px -8px color-mix(in srgb, var(--c2) 60%, transparent);
+  transform: scale(1.18);
+  border-color: var(--c2); border-width: 2.5px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c1) 32%, transparent),
+              0 0 22px -2px color-mix(in srgb, var(--c2) 75%, transparent);
 }
+.duel-orb.active .subject-name { color: var(--text-main); font-weight: 700; }
 .duel-orb.active .subject-name { color: var(--text-main); }
 
 /* Пилюли уровня — зелёный/жёлтый/красный */
@@ -3195,11 +3196,7 @@ html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
   0%   { transform: translateY(0) rotate(0deg); }
   100% { transform: translateY(-14px) rotate(6deg); }
 }
-/* Нежный вечный дрейф самих орбов главной */
-.subjects-orbit .orbit-orb .orb-circle { animation: orbBob 6s ease-in-out infinite alternate; }
-.subjects-orbit .orbit-orb:nth-child(odd) .orb-circle { animation-duration: 7.5s; }
-@keyframes orbBob { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
-.subjects-orbit .orbit-orb:hover .orb-circle { animation-play-state: paused; }
+/* (дрейф орбов главной убран — «двигались при нажатии», мешали клику) */
 
 @media (prefers-reduced-motion: reduce) {
   .orbit-center::before, .orbit-glyph, .subjects-orbit .orbit-orb .orb-circle { animation: none !important; }

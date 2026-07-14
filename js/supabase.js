@@ -36,7 +36,13 @@ export async function getEmailByUsername(username) {
     const res = await withTimeout(
       fetch(`${SUPABASE_URL}/functions/v1/find-email`, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        // Pre-login call: no user JWT yet, so send the anon key as Bearer to pass
+        // the Edge Function gateway's verify_jwt check (was 401 → "Пользователь не найден").
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':        SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+        },
         body:    JSON.stringify({ username }),
       })
     )
