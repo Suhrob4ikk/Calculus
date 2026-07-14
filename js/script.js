@@ -55,6 +55,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
           if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Войти' }
           showPage('homePage')
           updateUserUI()
+          window.renderHomeStats?.()
           syncXpFromDB(st.currentUser.id)
           syncStreakWithDB(st.currentUser.id)
           loadSidebarAvatar()
@@ -220,6 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (ji) ji.value = code
         } else {
           showPage('homePage')
+          window.renderHomeStats?.()
           if (localStorage.getItem('testState')) showContinueTestBanner()
         }
       } else {

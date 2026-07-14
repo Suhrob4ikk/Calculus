@@ -2503,11 +2503,17 @@ html:not(.dark) .android-subject-card::after { background: linear-gradient(115de
 .android-home-header {
   background: transparent !important;
   padding: 14px 22px 8px !important;
-  justify-content: flex-start !important;   /* имя и аватар вместе слева, не по разным углам */
-  gap: 14px;
+  justify-content: flex-end !important;   /* имя + фото вместе, справа */
+  gap: 12px;
 }
-.android-home-header .android-home-avatar { order: -1; }      /* аватар слева от имени */
-.android-home-header-left { flex: 0 1 auto !important; }
+.android-home-header-left { flex: 0 1 auto !important; text-align: right; }
+
+/* Экзамен: сохраняем боковые поля даже в no-sidebar (иначе контент прилипал
+   к левому краю на ширинах уже max-width). */
+body.no-sidebar #examPage .exam-shell {
+  padding-left: clamp(1.5rem, 4vw, 4rem) !important;
+  padding-right: clamp(1.5rem, 4vw, 4rem) !important;
+}
 .android-greeting { color: var(--text-main) !important; letter-spacing: -0.015em; font-size: 22px !important; }
 .android-streak-badge, .android-home-footer { color: var(--text-muted) !important; }
 .android-home-avatar {

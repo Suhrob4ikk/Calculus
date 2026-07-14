@@ -203,7 +203,7 @@ function renderExamActive() {
   const diffColor = { easy: '#10b981', medium: '#f59e0b', hard: '#ef4444' }[q.difficulty] || '#94a3b8'
 
   container.innerHTML = `
-    <div class="page-content" style="max-width:1080px;margin:0 auto;padding:1.5rem clamp(1.25rem, 3vw, 2.5rem)">
+    <div class="page-content exam-shell" style="max-width:1400px;margin:0 auto;padding:1.5rem clamp(1.5rem, 4vw, 4rem)">
       <!-- Шапка экзамена -->
       <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;
                   flex-wrap:wrap;margin-bottom:1rem">
@@ -423,7 +423,7 @@ function renderCertificate(username, correct, total, pct, grade, autoSubmit, res
   const fmtLabel = FORMATS[examSt.format]?.label || ''
 
   container.innerHTML = `
-    <div class="page-content" style="max-width:1080px;margin:0 auto;padding:2rem clamp(1.25rem, 3vw, 2.5rem)">
+    <div class="page-content exam-shell" style="max-width:1400px;margin:0 auto;padding:2rem clamp(1.5rem, 4vw, 4rem)">
       ${autoSubmit ? `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.4);
         border-radius:12px;padding:0.75rem 1.25rem;margin-bottom:1.5rem;text-align:center;
         color:#fca5a5;font-weight:600">⏱️ Время вышло — ответы поданы автоматически</div>` : ''}
