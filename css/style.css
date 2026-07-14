@@ -2379,6 +2379,16 @@ button:active, .diff-btn:active, .auth-btn-primary:active,
 #bottomNav button:active, .dh-nav-btn:active {
   transform: scale(.955) !important;
 }
+/* ВАЖНО: у абсолютно-позиционированных орбов transform держит центрирование
+   (translate(-50%,-50%)). Глобальный button:active scale стирал его → орб
+   прыгал вниз-вправо из-под курсора, mouseup промахивался, раздел не
+   открывался с первого раза. Сохраняем позиционирующий transform на :active. */
+/* Только в орбитальной раскладке (в сетке-фолбэке ≤680 орбы статичны) */
+@media (min-width: 681px) {
+  .subjects-orbit .orbit-orb:active { transform: translate(-50%, -50%) !important; }
+}
+.duel-arena .duel-orb:active { transform: translate(-50%, -50%) !important; }
+.duel-arena-center:active { transform: translate(-50%, -50%) scale(1.06) !important; }
 button, .diff-btn, .test-type-btn, .nav-menu-item, #bottomNav button, .dh-nav-btn {
   transition: transform .12s var(--ease), background .2s, color .2s, box-shadow .2s, border-color .2s;
 }
@@ -2652,11 +2662,9 @@ html:not(.dark) .bg-white {
    ФИКСЫ ОРБОВ + СВЕТЛЫЙ ФОН + ЕЖЕДНЕВКА/САЙДБАР (2026-07)
    ═══════════════════════════════════════════════════════════════ */
 
-/* Клик только по кругу и подписи — прозрачные части кнопки не крадут клик
-   у соседних орбов (перекрытие прямоугольников) и не дают «квадрат». */
-.orbit-orb { pointer-events: none; }
-.orbit-orb .orb-circle,
-.orbit-orb .subject-name { pointer-events: auto; cursor: pointer; }
+/* Вся кнопка орба кликабельна (орбы не перекрываются — проверено 0 overlap).
+   Ripple на орбах отключён отдельно (fx.js), «квадрат» не появляется. */
+.orbit-orb { pointer-events: auto; cursor: pointer; }
 
 /* ── Светлая тема: насыщенный фон (сетка + ярче аврора/орбы) ── */
 html:not(.dark) body::before {
@@ -3166,7 +3174,7 @@ html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
   gap: 1rem;
   align-items: start;
 }
-@media (min-width: 860px) {
+@media (min-width: 1100px) {
   .mistakes-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .mistakes-grid > div { margin-bottom: 0 !important; }
@@ -3230,15 +3238,23 @@ html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
   #duelPage .duel-container { padding-bottom: 88px !important; }
 }
 
-/* — Десктоп: дуэль в 2 колонки (арена | код+имя+кнопка), меньше пустоты — */
+/* #duelPage не имеет класса page-content → сам сдвигаем контент из-под
+   боковой панели (она показывается при ≥900px и когда не no-sidebar).
+   Без этого при промежуточной ширине левая карта уезжала под сайдбар. */
 @media (min-width: 900px) {
-  #duelPage .duel-container { max-width: 940px !important; }
+  body:not(.no-sidebar) #duelPage { padding-left: 240px; box-sizing: border-box; }
+}
+
+/* — Десктоп: дуэль в 2 колонки — ТОЛЬКО когда реально есть место после
+   сайдбара (иначе арена наезжала/обрезалась при промежуточной ширине). — */
+@media (min-width: 1240px) {
+  #duelPage .duel-container { max-width: 900px !important; }
   #duelCreatePanel {
     display: grid; grid-template-columns: 1.05fr 0.95fr;
     gap: 1.4rem; align-items: stretch;
   }
   .duel-arena-panel { margin-bottom: 0; }
-  #duelCreatePanel .duel-arena { max-width: 360px; height: 340px; }
+  #duelCreatePanel .duel-arena { max-width: 340px; height: 330px; }
   .duel-create-side { display: flex; flex-direction: column; justify-content: center; }
   .duel-create-side .duel-code-block { margin-bottom: 1rem; }
 }
