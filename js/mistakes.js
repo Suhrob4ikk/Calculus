@@ -184,7 +184,7 @@ function renderMistakesList(mistakes) {
   const totalCount = mistakes.length
 
   container.innerHTML = `
-    <div class="page-content" style="max-width:700px;margin:0 auto;padding:2rem 1rem">
+    <div class="page-content mistakes-shell" style="margin:0 auto;padding:2rem clamp(1rem,3vw,1.5rem)">
       <div style="display:flex;align-items:center;justify-content:space-between;
                   flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
         <div>
@@ -200,13 +200,14 @@ function renderMistakesList(mistakes) {
         </button>
       </div>
 
+      <div class="mistakes-grid">
       ${Object.entries(bySubject).map(([subj, items]) => {
         const label = SUBJECT_LABELS[subj] || subj
         const diffCounts = {}
         items.forEach(m => { diffCounts[m.difficulty] = (diffCounts[m.difficulty] || 0) + 1 })
         return `
           <div style="background:var(--bg-card);border-radius:16px;border:1px solid rgba(100,116,139,0.2);
-                      margin-bottom:1rem;overflow:hidden">
+                      overflow:hidden">
             <!-- Заголовок раздела -->
             <div style="padding:0.9rem 1.25rem;display:flex;align-items:center;
                         justify-content:space-between;border-bottom:1px solid rgba(100,116,139,0.15)">
@@ -253,6 +254,7 @@ function renderMistakesList(mistakes) {
           </div>
         `
       }).join('')}
+      </div>
 
       <button onclick="showHome()" style="width:100%;padding:0.8rem;border-radius:12px;
         border:1px solid rgba(100,116,139,0.4);background:transparent;color:var(--text-sub);

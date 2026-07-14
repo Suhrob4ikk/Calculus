@@ -2754,18 +2754,8 @@ html:not(.dark) {
 }
 
 /* ── 2. ДУЭЛЬ-АРЕНА ────────────────────────────────────────── */
-/* Контейнер: приподнимаем над авророй стеклом */
-.duel-container {
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid var(--glass-brd);
-  box-shadow: var(--glass-shd);
-  border-radius: 24px;
-}
-.dark .duel-container {
-  box-shadow: var(--glass-shd), 0 0 60px -30px rgba(168, 85, 247, 0.55);
-}
+/* Внешняя обёртка дуэли — прозрачная (над авророй), стекло у внутренних панелей */
+.duel-container { background: transparent; }
 
 /* Поля ввода: контрастная подложка + неоновый фокус */
 .duel-input {
@@ -2801,30 +2791,7 @@ html:not(.dark) .btn-start-duel {
   box-shadow: 0 6px 18px rgba(139, 92, 246, 0.32) !important;
 }
 
-/* Пикеры раздела/уровня: перекрашиваем в фиолет дуэли (было cyan) */
-.duel-container .duel-pick-btn {
-  border-color: rgba(139, 92, 246, 0.22);
-  color: var(--text-muted);
-}
-.duel-container .duel-pick-btn:hover {
-  background: rgba(139, 92, 246, 0.10);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #c4b5fd;
-}
-.duel-container .duel-pick-btn.active {
-  background: rgba(139, 92, 246, 0.18);
-  border-color: rgba(139, 92, 246, 0.6);
-  color: #c4b5fd;
-}
-html:not(.dark) .duel-container .duel-pick-btn.active {
-  background: rgba(139, 92, 246, 0.14);
-  border-color: #8b5cf6;
-  color: #6d28d9;
-}
-html:not(.dark) .duel-container .duel-pick-btn:hover {
-  background: rgba(139, 92, 246, 0.08);
-  color: #6d28d9;
-}
+/* (пикеры дуэли теперь орбы/пилюли — стилизованы в блоке ИТЕРАЦИЯ 6) */
 
 /* ── 3. РЕЖИМ ЭКЗАМЕНА — цветовое кодирование + пружина ──────── */
 .exam-mode-card {
@@ -3009,4 +2976,235 @@ html:not(.dark) .sb-item.sb-active::before {
 @media (prefers-reduced-motion: reduce) {
   .btn-start-duel { animation: none !important; }
   .android-daily-card::after { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ИТЕРАЦИЯ 6 (2026-07) — Дуэль-Арена, живой фон светлой темы,
+   плотная страница ошибок, оживление главной.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── A. СВЕТЛАЯ ТЕМА: фон больше не «пустой» на внутренних страницах ── */
+/* Сетку тянем на всю высоту (мягкое затухание к краям), а не только у шапки */
+html:not(.dark) body::before {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%) !important;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%) !important;
+  background-size: 44px 44px !important;
+}
+html:not(.dark) body::after { opacity: .95 !important; }
+html:not(.dark) .fx-orb { opacity: .6; filter: blur(52px); }
+/* Более насыщенная аврора именно в светлой (перекрывает базовую .38) */
+html:not(.dark) body::after {
+  background:
+    radial-gradient(40% 44% at 16% 18%, rgba(56,189,248,.30), transparent 62%),
+    radial-gradient(38% 42% at 84% 14%, rgba(168,85,247,.26), transparent 62%),
+    radial-gradient(48% 48% at 74% 88%, rgba(99,102,241,.26), transparent 64%),
+    radial-gradient(40% 40% at 26% 82%, rgba(244,114,182,.18), transparent 64%) !important;
+}
+
+/* ── B. ДУЭЛЬ-АРЕНА 1v1 ──────────────────────────────────────── */
+.duel-hero-title {
+  font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 0.35rem;
+  background: linear-gradient(135deg, #a855f7, #d946ef 60%, #f472b6);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.duel-hero-sub { text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem; line-height: 1.5; }
+
+/* Две карты-режима (Создать вызов / Принять вызов) */
+.duel-modes { display: flex; gap: 12px; margin-bottom: 1.4rem; }
+.duel-mode-card {
+  flex: 1; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: 16px; cursor: pointer;
+  border: 1px solid var(--glass-brd); background: var(--glass-bg);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  text-align: left; font-family: inherit;
+  transition: transform 0.2s var(--ease), border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.duel-mode-card:hover { transform: translateY(-2px); }
+.duel-mode-card .dmc-ico {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(139, 92, 246, 0.15); color: #c4b5fd;
+  transition: background 0.2s, color 0.2s;
+}
+.duel-mode-card .dmc-ico svg { width: 22px; height: 22px; }
+.duel-mode-card .dmc-t { font-weight: 700; font-size: 0.95rem; color: var(--text-main); line-height: 1.2; }
+.duel-mode-card .dmc-s { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.duel-mode-card.active {
+  border-color: #a855f7;
+  background: linear-gradient(135deg, rgba(139,92,246,0.18), rgba(217,70,239,0.10));
+  box-shadow: 0 0 0 1px rgba(168,85,247,0.35), 0 12px 28px -14px rgba(168,85,247,0.65);
+}
+.duel-mode-card.active .dmc-ico { background: linear-gradient(135deg, #8b5cf6, #d946ef); color: #fff; }
+
+/* Стеклянная подложка настроек — приподнята над авророй */
+.duel-arena-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--glass-shd);
+  border-radius: 20px;
+  padding: 1.4rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.duel-field-label {
+  text-align: center; font-size: 0.8rem; font-weight: 600;
+  color: var(--text-muted); letter-spacing: 0.03em; margin-bottom: 0.4rem;
+}
+
+/* Кольцо дисциплин */
+.duel-arena {
+  position: relative; width: 100%; max-width: 380px; height: 300px; margin: 0.25rem auto 0.5rem;
+}
+.duel-arena .orbit-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.duel-arena .orbit-lines polygon { fill: none; stroke: #a855f7; stroke-width: 1; vector-effect: non-scaling-stroke; opacity: 0.22; stroke-dasharray: 3 5; }
+.duel-arena .orbit-lines line { stroke: #a855f7; stroke-width: 1; vector-effect: non-scaling-stroke; opacity: 0.14; stroke-dasharray: 2 6; }
+
+.duel-arena-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 82px; height: 82px; border-radius: 50%; z-index: 2; cursor: pointer; font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  border: 1.5px solid rgba(139, 92, 246, 0.4);
+  background: radial-gradient(circle at 34% 28%, rgba(139,92,246,0.30), rgba(139,92,246,0.06) 72%);
+  color: #c4b5fd;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, border-color 0.25s;
+}
+.duel-arena-center .dac-title { font-size: 0.95rem; font-weight: 800; line-height: 1; }
+.duel-arena-center .dac-sub { font-size: 0.58rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.09em; }
+.duel-arena-center:hover,
+.duel-arena-center.active {
+  transform: translate(-50%, -50%) scale(1.07);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 8px rgba(168,85,247,0.10), 0 0 30px -6px rgba(168,85,247,0.75);
+}
+
+.duel-orb {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  width: 74px; padding: 0; background: none; border: none; cursor: pointer; z-index: 3; font-family: inherit;
+}
+/* Кликабельны только круг и подпись — прозрачные прямоугольники не крадут клик у соседей */
+.duel-orb { pointer-events: none; }
+.duel-orb .orb-circle, .duel-orb .subject-name { pointer-events: auto; cursor: pointer; }
+.duel-orb .orb-circle { width: 46px; height: 46px; box-shadow: none; }
+.duel-orb .orb-circle .subject-emoji { font-size: 1rem; }
+.duel-orb .subject-name { font-size: 0.62rem; font-weight: 600; color: var(--text-muted); line-height: 1.1; text-align: center; }
+.duel-orb:hover .orb-circle { transform: scale(1.1); border-color: var(--c2); }
+.duel-orb.active .orb-circle {
+  transform: scale(1.14); border-color: var(--c2);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--c1) 15%, transparent),
+              0 10px 28px -8px color-mix(in srgb, var(--c2) 60%, transparent);
+}
+.duel-orb.active .subject-name { color: var(--text-main); }
+
+/* Пилюли уровня — зелёный/жёлтый/красный */
+.duel-diffs { display: flex; gap: 8px; }
+.duel-diff {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.86rem;
+  border: 1.5px solid var(--border); background: transparent; color: var(--text-muted);
+  cursor: pointer; font-family: inherit; transition: all 0.18s;
+}
+.duel-diff::before { content: ''; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.duel-diff.diff-easy::before   { background: #10b981; }
+.duel-diff.diff-medium::before { background: #eab308; }
+.duel-diff.diff-hard::before   { background: #ef4444; }
+.duel-diff.diff-easy.active   { background: rgba(16,185,129,0.14);  border-color: #10b981; color: #10b981; }
+.duel-diff.diff-medium.active { background: rgba(234,179,8,0.14);  border-color: #eab308; color: #b45309; }
+.duel-diff.diff-hard.active   { background: rgba(239,68,68,0.14);   border-color: #ef4444; color: #ef4444; }
+.dark .duel-diff.diff-medium.active { color: #eab308; }
+
+/* Блок кода вызова */
+.duel-code-block {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0.9rem 1.1rem; border-radius: 16px; margin-bottom: 1rem;
+  background: color-mix(in srgb, #8b5cf6 8%, var(--glass-bg));
+  border: 1px solid rgba(139, 92, 246, 0.28);
+}
+.duel-code-left .duel-code-cap { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px; }
+.duel-code-block #duelCodeDisplay {
+  font-family: monospace; font-size: 1.9rem; font-weight: 800; letter-spacing: 0.14em;
+  background: linear-gradient(135deg, #a855f7, #d946ef);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  cursor: pointer; border: none; padding: 0; display: inline-block;
+}
+.duel-copy-btn {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  border: 1px solid rgba(139,92,246,0.35); background: rgba(139,92,246,0.10); color: #c4b5fd;
+  font-family: inherit; transition: background 0.18s;
+}
+.duel-copy-btn:hover { background: rgba(139,92,246,0.2); }
+html:not(.dark) .duel-copy-btn { color: #7c3aed; }
+
+/* Огненный ореол вокруг «Начать Дуэль» */
+.btn-start-duel.duel-fire { position: relative; z-index: 1; overflow: visible; }
+.btn-start-duel.duel-fire::before {
+  content: ''; position: absolute; inset: -4px; border-radius: 16px; z-index: -1;
+  background: linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6, #d946ef);
+  background-size: 300% 300%; filter: blur(9px); opacity: 0.55;
+  animation: duelFireHue 5s linear infinite;
+}
+@keyframes duelFireHue { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+html:not(.dark) .btn-start-duel.duel-fire::before { opacity: 0.4; }
+
+@media (max-width: 480px) {
+  .duel-arena { max-width: 320px; height: 270px; }
+  .duel-orb { width: 62px; }
+  .duel-orb .orb-circle { width: 40px; height: 40px; }
+  .duel-modes { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-start-duel.duel-fire::before { animation: none !important; }
+}
+
+/* ── C. ОШИБКИ — плотнее, без пустых полей на десктопе ──────── */
+.mistakes-shell { max-width: 1040px; }
+.mistakes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+@media (min-width: 860px) {
+  .mistakes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.mistakes-grid > div { margin-bottom: 0 !important; }
+
+/* ── D. ГЛАВНАЯ — оживление: свечение центра + плавающие символы ── */
+.orbit-center { z-index: 1; }
+.orbit-center::before {
+  content: ''; position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%);
+  width: 190px; height: 190px; border-radius: 50%; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, #6366f1 26%, transparent), transparent 70%);
+  filter: blur(20px);
+  animation: orbitCorePulse 4.5s ease-in-out infinite alternate;
+}
+@keyframes orbitCorePulse {
+  0%   { opacity: 0.55; transform: translate(-50%, -50%) scale(0.94); }
+  100% { opacity: 0.9;  transform: translate(-50%, -50%) scale(1.08); }
+}
+/* Плавающие математические символы на фоне орбиты */
+.orbit-glyphs { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.orbit-glyph {
+  position: absolute; font-family: 'Playfair Display', serif; font-style: italic;
+  color: color-mix(in srgb, var(--text-muted) 45%, transparent);
+  opacity: 0.28; user-select: none;
+  animation: glyphFloat 9s ease-in-out infinite alternate;
+}
+@keyframes glyphFloat {
+  0%   { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-14px) rotate(6deg); }
+}
+/* Нежный вечный дрейф самих орбов главной */
+.subjects-orbit .orbit-orb .orb-circle { animation: orbBob 6s ease-in-out infinite alternate; }
+.subjects-orbit .orbit-orb:nth-child(odd) .orb-circle { animation-duration: 7.5s; }
+@keyframes orbBob { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+.subjects-orbit .orbit-orb:hover .orb-circle { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-center::before, .orbit-glyph, .subjects-orbit .orbit-orb .orb-circle { animation: none !important; }
+}
+@media (max-width: 680px) {
+  .orbit-glyphs, .orbit-center::before { display: none; }
+  .subjects-orbit .orbit-orb .orb-circle { animation: none; }
 }

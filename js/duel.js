@@ -114,12 +114,10 @@ window.closeDuelModal = function() {
 
 window.showDuelTab = function(tab) {
   window.transitionHelper?.(() => {
-    document.getElementById('duelCreatePanel').style.display  = tab === 'create' ? '' : 'none'
-    document.getElementById('duelJoinPanel').style.display    = tab === 'join'   ? '' : 'none'
-    document.getElementById('duelTabCreate').style.background = tab === 'create' ? 'rgba(139,92,246,0.8)' : 'transparent'
-    document.getElementById('duelTabCreate').style.color      = tab === 'create' ? 'white' : '#94a3b8'
-    document.getElementById('duelTabJoin').style.background   = tab === 'join'   ? 'rgba(139,92,246,0.8)' : 'transparent'
-    document.getElementById('duelTabJoin').style.color        = tab === 'join'   ? 'white' : '#94a3b8'
+    document.getElementById('duelCreatePanel').style.display = tab === 'create' ? '' : 'none'
+    document.getElementById('duelJoinPanel').style.display   = tab === 'join'   ? '' : 'none'
+    document.getElementById('duelTabCreate')?.classList.toggle('active', tab === 'create')
+    document.getElementById('duelTabJoin')?.classList.toggle('active', tab === 'join')
   })
 }
 
@@ -637,98 +635,108 @@ window.showDuelPage = function() {
   if (!container) return
 
   container.innerHTML = `
-    <div class="duel-container" style="padding:1.75rem clamp(1rem,3vw,2rem);max-width:600px;margin:1.25rem auto">
-      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem"><i data-lucide="swords" class="e-ic"></i> Дуэль 1v1</h1>
-      <p style="color:var(--text-sub);margin-bottom:1.5rem;font-size:0.95rem">
-        Соревнуйся с другом в реальном времени. Одинаковые вопросы — кто ответит точнее?
+    <div class="duel-container" style="padding:1.5rem clamp(1rem,3vw,1.75rem);max-width:560px;margin:1rem auto">
+      <h1 class="duel-hero-title"><i data-lucide="swords" class="e-ic"></i> Дуэль-Арена 1v1</h1>
+      <p class="duel-hero-sub">
+        Сразись с другом или найди достойного соперника.<br>
+        Одинаковые вопросы — кто ответит быстрее и точнее?
       </p>
 
-      <!-- Вкладки -->
-      <div id="duelTabsBar" style="display:flex;gap:6px;background:rgba(15,23,42,0.5);border-radius:10px;padding:4px;margin-bottom:1.2rem">
-        <button id="duelTabCreate" onclick="showDuelTab('create')"
-          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:rgba(139,92,246,0.8);color:white">
-          Создать
+      <!-- Режимы: Создать / Принять вызов -->
+      <div id="duelTabsBar" class="duel-modes">
+        <button id="duelTabCreate" class="duel-mode-card active" onclick="showDuelTab('create')">
+          <span class="dmc-ico"><i data-lucide="crown"></i></span>
+          <span><span class="dmc-t">Создать вызов</span><span class="dmc-s">Стань создателем и брось вызов</span></span>
         </button>
-        <button id="duelTabJoin" onclick="showDuelTab('join')"
-          style="flex:1;padding:8px;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:#94a3b8">
-          Войти
+        <button id="duelTabJoin" class="duel-mode-card" onclick="showDuelTab('join')">
+          <span class="dmc-ico"><i data-lucide="swords"></i></span>
+          <span><span class="dmc-t">Принять вызов</span><span class="dmc-s">Введи код и прими бой</span></span>
         </button>
       </div>
 
-      <!-- Вкладка «Создать» -->
+      <!-- Панель «Создать» -->
       <div id="duelCreatePanel">
-        <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">
-          Поделись кодом с другом — он введёт его во вкладке «Войти».
-        </p>
-        <div style="text-align:center;margin-bottom:1rem">
-          <div id="duelCodeDisplay"
-            style="font-family:monospace;font-size:2.2rem;font-weight:700;letter-spacing:0.2em;
-                   color:#c4b5fd;background:rgba(15,23,42,0.6);border:2px dashed rgba(139,92,246,0.5);
-                   border-radius:14px;padding:1rem 1.5rem;display:inline-block;cursor:pointer"
-            onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</div>
-          <p style="color:var(--text-sub);font-size:0.75rem;margin-top:6px">нажми чтобы скопировать</p>
-          <div id="duelShareBtnWrap" style="margin-top:0.5rem;display:none">
-            <button onclick="window._shareDuelInvite()"
-              style="padding:6px 18px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);
-                     background:rgba(139,92,246,0.12);color:#c4b5fd;cursor:pointer;font-size:0.9rem;font-weight:600">
-              <i data-lucide="send" class="e-ic"></i> Пригласить
+        <div class="duel-arena-panel">
+          <div class="duel-field-label">Выбери дисциплину</div>
+          <div class="duel-arena" id="duelSectPicker">
+            <svg class="orbit-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <polygon points="50,10 81.3,25.1 89,58.9 67.4,86 32.6,86 11,58.9 18.7,25.1"/>
+              <line x1="50" y1="50" x2="50" y2="10"/><line x1="50" y1="50" x2="81.3" y2="25.1"/>
+              <line x1="50" y1="50" x2="89" y2="58.9"/><line x1="50" y1="50" x2="67.4" y2="86"/>
+              <line x1="50" y1="50" x2="32.6" y2="86"/><line x1="50" y1="50" x2="11" y2="58.9"/>
+              <line x1="50" y1="50" x2="18.7" y2="25.1"/>
+            </svg>
+            <button class="duel-pick-btn duel-arena-center" data-sect="mixed" onclick="setDuelSection('mixed')" title="Все разделы">
+              <span class="dac-title">Все</span><span class="dac-sub">разделы</span>
             </button>
+            <button class="duel-pick-btn duel-orb os-1" data-sect="limits"      style="left:50%;top:10%"   onclick="setDuelSection('limits')">
+              <span class="orb-circle"><span class="subject-emoji">lim</span></span><span class="subject-name">Пределы</span></button>
+            <button class="duel-pick-btn duel-orb os-2" data-sect="derivatives" style="left:81.3%;top:25.1%" onclick="setDuelSection('derivatives')">
+              <span class="orb-circle"><span class="subject-emoji">f'(x)</span></span><span class="subject-name">Производные</span></button>
+            <button class="duel-pick-btn duel-orb os-3" data-sect="integrals"   style="left:89%;top:58.9%"  onclick="setDuelSection('integrals')">
+              <span class="orb-circle"><span class="subject-emoji">∫</span></span><span class="subject-name">Интегралы</span></button>
+            <button class="duel-pick-btn duel-orb os-4" data-sect="series"       style="left:67.4%;top:86%"  onclick="setDuelSection('series')">
+              <span class="orb-circle"><span class="subject-emoji">∑</span></span><span class="subject-name">Ряды</span></button>
+            <button class="duel-pick-btn duel-orb os-5" data-sect="ode"          style="left:32.6%;top:86%"  onclick="setDuelSection('ode')">
+              <span class="orb-circle"><span class="subject-emoji">y'</span></span><span class="subject-name">Дифф. ур.</span></button>
+            <button class="duel-pick-btn duel-orb os-6" data-sect="probability"  style="left:11%;top:58.9%"  onclick="setDuelSection('probability')">
+              <span class="orb-circle"><span class="subject-emoji">P</span></span><span class="subject-name">Вероятность</span></button>
+            <button class="duel-pick-btn duel-orb os-7" data-sect="linalg"       style="left:18.7%;top:25.1%" onclick="setDuelSection('linalg')">
+              <span class="orb-circle"><span class="subject-emoji">Ax</span></span><span class="subject-name">Лин. алгебра</span></button>
+          </div>
+
+          <div class="duel-field-label" style="margin-top:0.35rem">Уровень сложности</div>
+          <div class="duel-diffs" id="duelDiffPicker">
+            <button class="duel-pick-btn duel-diff diff-easy"   data-diff="easy"   onclick="setDuelDiff('easy')">Лёгкий</button>
+            <button class="duel-pick-btn duel-diff diff-medium active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
+            <button class="duel-pick-btn duel-diff diff-hard"   data-diff="hard"   onclick="setDuelDiff('hard')">Сложный</button>
           </div>
         </div>
 
-        <!-- Раздел -->
-        <div style="margin-bottom:10px">
-          <div style="color:var(--text-sub);font-size:0.78rem;margin-bottom:5px">Раздел</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px" id="duelSectPicker">
-            <button class="duel-pick-btn active" data-sect="mixed"       onclick="setDuelSection('mixed')">Все</button>
-            <button class="duel-pick-btn" data-sect="integrals"          onclick="setDuelSection('integrals')">∫ Интегралы</button>
-            <button class="duel-pick-btn" data-sect="derivatives"        onclick="setDuelSection('derivatives')">f' Производные</button>
-            <button class="duel-pick-btn" data-sect="series"             onclick="setDuelSection('series')">∑ Ряды</button>
-            <button class="duel-pick-btn" data-sect="limits"             onclick="setDuelSection('limits')">lim Пределы</button>
-            <button class="duel-pick-btn" data-sect="ode"                onclick="setDuelSection('ode')">y' Дифф. уравнения</button>
-            <button class="duel-pick-btn" data-sect="probability"        onclick="setDuelSection('probability')">P Вероятность</button>
-            <button class="duel-pick-btn" data-sect="linalg"             onclick="setDuelSection('linalg')">Ax Линейная алгебра</button>
+        <!-- Код вызова -->
+        <div class="duel-code-block">
+          <div class="duel-code-left">
+            <div class="duel-code-cap">Код вызова</div>
+            <span id="duelCodeDisplay" onclick="copyDuelCode()" title="Нажми чтобы скопировать">——————</span>
           </div>
+          <button class="duel-copy-btn" onclick="copyDuelCode()"><i data-lucide="copy"></i> Скопировать</button>
+        </div>
+        <div id="duelShareBtnWrap" style="margin:-0.4rem 0 0.8rem;display:none">
+          <button onclick="window._shareDuelInvite()"
+            style="width:100%;padding:8px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);
+                   background:rgba(139,92,246,0.12);color:#c4b5fd;cursor:pointer;font-size:0.88rem;font-weight:600">
+            <i data-lucide="send" class="e-ic"></i> Пригласить друга
+          </button>
         </div>
 
-        <!-- Уровень -->
-        <div style="margin-bottom:14px">
-          <div style="color:var(--text-sub);font-size:0.78rem;margin-bottom:5px">Уровень</div>
-          <div style="display:flex;gap:5px" id="duelDiffPicker">
-            <button class="duel-pick-btn" data-diff="easy"   onclick="setDuelDiff('easy')">Лёгкий</button>
-            <button class="duel-pick-btn active" data-diff="medium" onclick="setDuelDiff('medium')">Средний</button>
-            <button class="duel-pick-btn" data-diff="hard"   onclick="setDuelDiff('hard')">Сложный</button>
-          </div>
-        </div>
-
-        <div id="duelCreateStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">
+        <div id="duelCreateStatus" style="text-align:center;color:var(--text-sub);font-size:0.88rem;margin-bottom:0.75rem">
           Нажми кнопку чтобы создать дуэль
         </div>
-        <input id="inviteUsernameInput" class="duel-input" type="text" placeholder="Имя пользователя (опционально)"
-          style="width:100%;padding:9px 12px;border-radius:10px;font-size:0.9rem;
+        <input id="inviteUsernameInput" class="duel-input" type="text" placeholder="Имя противника (опционально)"
+          style="width:100%;padding:11px 14px;border-radius:12px;font-size:0.92rem;
                  outline:none;margin-bottom:8px;box-sizing:border-box"
           onblur="validateInviteUsername()">
         <p id="inviteError" style="color:#f87171;font-size:0.75rem;margin-top:4px;display:none"></p>
-        <button onclick="createDuel()" id="duelCreateBtn" class="btn-start-duel"
-          style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
-                 font-size:1rem;color:white;transition:all 0.2s">
-          <i data-lucide="swords" class="e-ic"></i> Создать дуэль
+        <button onclick="createDuel()" id="duelCreateBtn" class="btn-start-duel duel-fire"
+          style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-weight:800;
+                 font-size:1.05rem;color:white;transition:all 0.2s">
+          <i data-lucide="swords" class="e-ic"></i> Начать Дуэль
         </button>
       </div>
 
-      <!-- Вкладка «Войти» -->
-      <div id="duelJoinPanel" style="display:none">
-        <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem">Введи код дуэли от друга.</p>
+      <!-- Панель «Войти» -->
+      <div id="duelJoinPanel" class="duel-arena-panel" style="display:none">
+        <p style="color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem;text-align:center">Введи код дуэли от друга.</p>
         <input id="duelJoinInput" class="duel-input" type="text" maxlength="6" placeholder="ABCD12"
           style="width:100%;padding:12px 16px;border-radius:12px;font-size:1.5rem;font-family:monospace;
                  letter-spacing:0.15em;text-align:center;text-transform:uppercase;
                  margin-bottom:1rem;outline:none;box-sizing:border-box"
           oninput="this.value=this.value.toUpperCase()">
         <div id="duelJoinStatus" style="text-align:center;color:var(--text-sub);font-size:0.9rem;margin-bottom:1rem"></div>
-        <button onclick="joinDuel()" class="btn-start-duel"
-          style="width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
-                 font-size:1rem;color:white;transition:all 0.2s">
-          Подключиться
+        <button onclick="joinDuel()" class="btn-start-duel duel-fire"
+          style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-weight:800;
+                 font-size:1.05rem;color:white;transition:all 0.2s">
+          <i data-lucide="swords" class="e-ic"></i> Принять бой
         </button>
       </div>
 
