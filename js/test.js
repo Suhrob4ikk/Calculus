@@ -126,32 +126,32 @@ export function startTest(section, difficulty, pool, countSelectId, sectionEl) {
   st.timeRemaining = totalMinutes * 60
   st.timerInitialTime = st.timeRemaining
   let questions = pool.flat().filter(q => q && q.question && q.options && q.options.length === 4 && q.options.every(o => o != null))
-// Generate simple numeric open answers when in open mode
-if (st.testMode === 'open') {
-  questions = questions.map(q => {
-    const correctIdx = q.correct !== undefined ? q.correct : q.answerIndex
-    const correctOption = q.options && correctIdx !== undefined ? q.options[correctIdx] : null
-    if (correctOption && /^-?\d+(\.\d+)?$/.test(correctOption.trim())) {
-      q.open = [correctOption.trim()]
-    }
-    return q
-  })
-}
-if (st.testMode === 'open') {
-  questions = questions.filter(q => {
-    if (!q.open || q.open.length === 0) return false
-    // Оставляем только печатаемые ответы — без кириллицы (словесных ответов) и не слишком длинные
-    const typeable = q.open.filter(a => !/[а-яёА-ЯЁ]/.test(String(a)) && String(a).trim().length <= 22)
-    if (typeable.length === 0) return false
-    q.open = typeable   // обновляем — только то, что можно набрать
-    return true
-  })
-  if (questions.length === 0) {
-    alert('Нет вопросов с открытым ответом для этого раздела/уровня. Попробуйте другой.')
-    return
+  // Generate simple numeric open answers when in open mode
+  if (st.testMode === 'open') {
+    questions = questions.map(q => {
+      const correctIdx = q.correct !== undefined ? q.correct : q.answerIndex
+      const correctOption = q.options && correctIdx !== undefined ? q.options[correctIdx] : null
+      if (correctOption && /^-?\d+(\.\d+)?$/.test(correctOption.trim())) {
+        q.open = [correctOption.trim()]
+      }
+      return q
+    })
   }
-}
-if (questions.length === 0) {
+  if (st.testMode === 'open') {
+    questions = questions.filter(q => {
+      if (!q.open || q.open.length === 0) return false
+      // Оставляем только печатаемые ответы — без кириллицы (словесных ответов) и не слишком длинные
+      const typeable = q.open.filter(a => !/[а-яёА-ЯЁ]/.test(String(a)) && String(a).trim().length <= 22)
+      if (typeable.length === 0) return false
+      q.open = typeable   // обновляем — только то, что можно набрать
+      return true
+    })
+    if (questions.length === 0) {
+      alert('Нет вопросов с открытым ответом для этого раздела/уровня. Попробуйте другой.')
+      return
+    }
+  }
+  if (questions.length === 0) {
     alert('Вопросы для этого раздела не найдены. Попробуйте другой уровень сложности.')
     return
   }
@@ -415,7 +415,7 @@ export function displayQuestion() {
   const acEl = document.getElementById('answeredCount')
   const atEl = document.getElementById('answeredTotal')
   if (acEl) { acEl.textContent = answeredNum; acEl.style.color = answeredNum === st.currentTest.length ? '#10b981' : '' }
-  if (atEl)   atEl.textContent = st.currentTest.length
+  if (atEl) atEl.textContent = st.currentTest.length
   document.getElementById('prevBtn').disabled = st.currentQuestionIndex === 0
   const isLast = st.currentQuestionIndex === st.currentTest.length - 1
   document.getElementById('nextBtn').style.display = isLast ? 'none' : 'inline-block'
@@ -487,11 +487,11 @@ async function _saveDailyAndExit(correct, percentage) {
     const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
     try {
       const result = await submitTestResult({
-        answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
-        section:    'daily',
+        answers: buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+        section: 'daily',
         difficulty: 'medium',
         username,
-        dailyDate:  getDailyDate()
+        dailyDate: getDailyDate()
       })
       if (result?.xpGained) {
         const newXP = addXP(result.xpGained)
@@ -534,130 +534,130 @@ window.finishTest = async function () {
 
   try {
 
-  let correct = 0
-  const results = st.currentTest.map((q, i) => {
-    let ok
-    if (st.testMode === 'open') {
-      ok = st.userAnswers[i] !== null && checkOpenCorrect(st.userAnswers[i], q.open || [])
-    } else {
-      ok = st.userAnswers[i] === q.correct
-    }
-    if (ok) correct++
-    const userAnswer = st.userAnswers[i] != null
-      ? (st.testMode === 'open' ? st.userAnswers[i] : q.options[st.userAnswers[i]])
-      : 'Не отвечено'
-    const correctAnswer = st.testMode === 'open'
-      ? (q.open ? q.open[0] : q.options[q.correct])
-      : q.options[q.correct]
-    return { question: q.question, userAnswer, correctAnswer, isCorrect: ok, explanation: q.explanation }
-  })
-  const percentage = Math.round(correct / st.currentTest.length * 100)
-
-  // ── Дуэль ──────────────────────────────────────────────
-  if (st.currentSection === 'duel') {
-    // Set phase to finished so no late event can restart the test
-    if (st.duel.phase !== undefined) st.duel.phase = 'finished'
-    st.duel.myScore = percentage
-    st.duel.broadcastScore?.(percentage)
-    // Fire-and-forget — do NOT await, otherwise the UI freezes for the network round-trip
-    if (st.currentUser) {
-      // Fire-and-forget — server validates answers and writes to DB
-      submitTestResult({
-        answers:        buildAnswers(st.currentTest, st.userAnswers, st.testMode),
-        section:        'duel:' + st.duel.code,
-        difficulty:     st.duel.diff,
-        username:       st.duel.myName,
-        duelSection:    st.duel.section,
-        duelDifficulty: st.duel.diff
-      }).catch(e => console.warn('Duel submitTestResult failed:', e))
-    }
-    const xpGained = correct * (XP_TABLE[st.duel.diff] || 20)
-    const newXP = addXP(xpGained)
-    setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
-    clearTestState()
-    showPage('resultsPage')
-    playSound(percentage === 100 ? 'perfect' : 'finish')
-    const scoreDisplay = document.getElementById('scoreDisplay')
-    scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
-    scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
-    document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
-    document.getElementById('detailedResults').innerHTML =
-      `<p style="color:#94a3b8;text-align:center;padding:1rem">Ожидаем результата соперника…</p>`
-    // Cancel any existing opponent timeout before setting a new one
-    if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
-    const _duelWaitMs = Math.max((st.timeRemaining + 30) * 1000, 15000)
-    st.duel.opponentTimeout = setTimeout(() => {
-      if (st.duel.opponentScore === null) {
-        st.duel.opponentScore = -1
-        st.duel.showResults?.()
+    let correct = 0
+    const results = st.currentTest.map((q, i) => {
+      let ok
+      if (st.testMode === 'open') {
+        ok = st.userAnswers[i] !== null && checkOpenCorrect(st.userAnswers[i], q.open || [])
+      } else {
+        ok = st.userAnswers[i] === q.correct
       }
-    }, _duelWaitMs)
-    st.finishInProgress = false   // Bug 5 fix: reset only after all sync work
-    st.duel.checkComplete?.()
-    return
-  }
-
-  // ── Обычный тест — сразу показываем результаты, сохраняем в фоне ──
-  if (st.currentSection === 'daily') {
-    const uid = st.currentUser?.id || 'guest'
-    localStorage.setItem(`dailyChallengeDate_${uid}`, getDailyDate())
-    localStorage.setItem(`dailyChallengeScore_${uid}`, percentage)
-  }
-  if (!st.isStudyMode) {
-    const ptsPerQ = XP_TABLE[st.currentDifficulty] || 10
-    let xpGained = correct * ptsPerQ
-    if (percentage === 100) xpGained += 25
-    if (st.currentSection === 'daily') xpGained += 50
-    const newXP = addXP(xpGained)
-    setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
-  }
-
-  st.finishInProgress = false
-  if (!st.isStudyMode) clearTestState()
-
-  // Сохраняем ошибки в фоне (только для обычных тестов, не экзамен)
-  if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
-    st.saveMistakesFromResults?.(
-      results, st.currentTest, st.currentSection, st.currentDifficulty, st.currentUser.id
-    )
-  }
-
-  // Сохраняем в фоне — НЕ блокируем UI (таймаут 5 сек)
-  // Exam section is handled separately by exam.js and skipped here.
-  if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
-    const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
-    const savePromise = submitTestResult({
-      answers:    buildAnswers(st.currentTest, st.userAnswers, st.testMode),
-      section:    st.currentSection,
-      difficulty: st.currentDifficulty,
-      username,
-      ...(st.currentSection === 'daily' ? { dailyDate: getDailyDate() } : {}),
+      if (ok) correct++
+      const userAnswer = st.userAnswers[i] != null
+        ? (st.testMode === 'open' ? st.userAnswers[i] : q.options[st.userAnswers[i]])
+        : 'Не отвечено'
+      const correctAnswer = st.testMode === 'open'
+        ? (q.open ? q.open[0] : q.options[q.correct])
+        : q.options[q.correct]
+      return { question: q.question, userAnswer, correctAnswer, isCorrect: ok, explanation: q.explanation }
     })
-    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
-    Promise.race([savePromise, timeout]).catch(e => console.warn('submitTestResult:', e))
-  }
-  st.isStudyMode = false
-  // testMode is NOT reset here so restartTest preserves the mode
-  showPage('resultsPage')
-  if (percentage === 100) { setTimeout(launchConfetti, 400); playSound('perfect') }
-  else playSound('finish')
+    const percentage = Math.round(correct / st.currentTest.length * 100)
 
-  // Defer DOM population to the next event-loop tick so the browser can paint
-  // the page transition before doing heavy innerHTML + MathJax work.
-  // This eliminates the "Сохраняем..." freeze: the results page appears
-  // immediately and content fills in a frame later.
-  setTimeout(() => {
-    const scoreDisplay = document.getElementById('scoreDisplay')
-    scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
-    scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
+    // ── Дуэль ──────────────────────────────────────────────
+    if (st.currentSection === 'duel') {
+      // Set phase to finished so no late event can restart the test
+      if (st.duel.phase !== undefined) st.duel.phase = 'finished'
+      st.duel.myScore = percentage
+      st.duel.broadcastScore?.(percentage)
+      // Fire-and-forget — do NOT await, otherwise the UI freezes for the network round-trip
+      if (st.currentUser) {
+        // Fire-and-forget — server validates answers and writes to DB
+        submitTestResult({
+          answers: buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+          section: 'duel:' + st.duel.code,
+          difficulty: st.duel.diff,
+          username: st.duel.myName,
+          duelSection: st.duel.section,
+          duelDifficulty: st.duel.diff
+        }).catch(e => console.warn('Duel submitTestResult failed:', e))
+      }
+      const xpGained = correct * (XP_TABLE[st.duel.diff] || 20)
+      const newXP = addXP(xpGained)
+      setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
+      clearTestState()
+      showPage('resultsPage')
+      playSound(percentage === 100 ? 'perfect' : 'finish')
+      const scoreDisplay = document.getElementById('scoreDisplay')
+      scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
+      scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
+      document.getElementById('scoreText').textContent = `Дуэль завершена — результат ${percentage}%`
+      document.getElementById('detailedResults').innerHTML =
+        `<p style="color:#94a3b8;text-align:center;padding:1rem">Ожидаем результата соперника…</p>`
+      // Cancel any existing opponent timeout before setting a new one
+      if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
+      const _duelWaitMs = Math.max((st.timeRemaining + 30) * 1000, 15000)
+      st.duel.opponentTimeout = setTimeout(() => {
+        if (st.duel.opponentScore === null) {
+          st.duel.opponentScore = -1
+          st.duel.showResults?.()
+        }
+      }, _duelWaitMs)
+      st.finishInProgress = false   // Bug 5 fix: reset only after all sync work
+      st.duel.checkComplete?.()
+      return
+    }
 
-    const username = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0] || 'Студент'
-    const comments = { 100: 'Феноменально! Все баллы!', 90: 'Отлично!', 70: 'Хорошо! Можно ещё лучше.', 50: 'Неплохо, но есть над чем поработать.', 0: 'Не отчаивайся, попробуй ещё раз!' }
-    const comment = Object.entries(comments).reverse().find(([k]) => percentage >= +k)?.[1] || comments[0]
-    document.getElementById('scoreText').textContent = `${username}, ${comment}`
+    // ── Обычный тест — сразу показываем результаты, сохраняем в фоне ──
+    if (st.currentSection === 'daily') {
+      const uid = st.currentUser?.id || 'guest'
+      localStorage.setItem(`dailyChallengeDate_${uid}`, getDailyDate())
+      localStorage.setItem(`dailyChallengeScore_${uid}`, percentage)
+    }
+    if (!st.isStudyMode) {
+      const ptsPerQ = XP_TABLE[st.currentDifficulty] || 10
+      let xpGained = correct * ptsPerQ
+      if (percentage === 100) xpGained += 25
+      if (st.currentSection === 'daily') xpGained += 50
+      const newXP = addXP(xpGained)
+      setTimeout(() => { showXPToast(xpGained, newXP) }, 700)
+    }
 
-    const detailedResults = document.getElementById('detailedResults')
-    detailedResults.innerHTML = `
+    st.finishInProgress = false
+    if (!st.isStudyMode) clearTestState()
+
+    // Сохраняем ошибки в фоне (только для обычных тестов, не экзамен)
+    if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
+      st.saveMistakesFromResults?.(
+        results, st.currentTest, st.currentSection, st.currentDifficulty, st.currentUser.id
+      )
+    }
+
+    // Сохраняем в фоне — НЕ блокируем UI (таймаут 5 сек)
+    // Exam section is handled separately by exam.js and skipped here.
+    if (st.currentUser && !st.isStudyMode && st.currentSection !== 'exam') {
+      const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
+      const savePromise = submitTestResult({
+        answers: buildAnswers(st.currentTest, st.userAnswers, st.testMode),
+        section: st.currentSection,
+        difficulty: st.currentDifficulty,
+        username,
+        ...(st.currentSection === 'daily' ? { dailyDate: getDailyDate() } : {}),
+      })
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+      Promise.race([savePromise, timeout]).catch(e => console.warn('submitTestResult:', e))
+    }
+    st.isStudyMode = false
+    // testMode is NOT reset here so restartTest preserves the mode
+    showPage('resultsPage')
+    if (percentage === 100) { setTimeout(launchConfetti, 400); playSound('perfect') }
+    else playSound('finish')
+
+    // Defer DOM population to the next event-loop tick so the browser can paint
+    // the page transition before doing heavy innerHTML + MathJax work.
+    // This eliminates the "Сохраняем..." freeze: the results page appears
+    // immediately and content fills in a frame later.
+    setTimeout(() => {
+      const scoreDisplay = document.getElementById('scoreDisplay')
+      scoreDisplay.textContent = `${correct}/${st.currentTest.length}`
+      scoreDisplay.className = percentage >= 70 ? 'text-6xl font-bold mb-4 text-green-600' : 'text-6xl font-bold mb-4 text-red-600'
+
+      const username = st.currentUser?.user_metadata?.username || st.currentUser?.email?.split('@')[0] || 'Студент'
+      const comments = { 100: 'Феноменально! Все баллы!', 90: 'Отлично!', 70: 'Хорошо! Можно ещё лучше.', 50: 'Неплохо, но есть над чем поработать.', 0: 'Не отчаивайся, попробуй ещё раз!' }
+      const comment = Object.entries(comments).reverse().find(([k]) => percentage >= +k)?.[1] || comments[0]
+      document.getElementById('scoreText').textContent = `${username}, ${comment}`
+
+      const detailedResults = document.getElementById('detailedResults')
+      detailedResults.innerHTML = `
       <h3 class="text-lg font-semibold mb-4" style="color:var(--text-main)">Детальные результаты:</h3>
       <div class="max-h-64 overflow-y-auto space-y-2">
         ${results.map((r, i) => `
@@ -669,17 +669,17 @@ window.finishTest = async function () {
           </div>`).join('')}
       </div>`
 
-    const shareBtn = document.getElementById('shareBtn')
-    if (shareBtn) shareBtn.onclick = () => window.shareResult(correct, st.currentTest.length, percentage)
-    if (window.lucide) window.lucide.createIcons()
-    if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
-    // Обновляем карточку ежедневного вызова если нужно
-    window.updateDailyChallengeCard?.()
-  }, 0)
+      const shareBtn = document.getElementById('shareBtn')
+      if (shareBtn) shareBtn.onclick = () => window.shareResult(correct, st.currentTest.length, percentage)
+      if (window.lucide) window.lucide.createIcons()
+      if (window.MathJax) MathJax.typesetPromise([detailedResults]).catch(console.error)
+      // Обновляем карточку ежедневного вызова если нужно
+      window.updateDailyChallengeCard?.()
+    }, 0)
 
   } catch (err) {
     console.error('[finishTest] Unexpected error, showing results anyway:', err)
-    try { showPage('resultsPage') } catch (_) {}
+    try { showPage('resultsPage') } catch (_) { }
   } finally {
     st.finishInProgress = false
     const fb = document.getElementById('finishBtn')
@@ -694,12 +694,22 @@ window.shareResult = function (correct, total, percentage) {
   const emoji = percentage === 100 ? '🏆' : percentage >= 90 ? '🌟' : percentage >= 70 ? '✅' : percentage >= 50 ? '📚' : '💪'
   const text = `${emoji} Результат теста!\n\n📖 ${section} (${diff})\n📊 ${correct}/${total} — ${percentage}%\n\n🔗 https://mathcore-app.vercel.app`
   const btn = document.getElementById('shareBtn')
-  const orig = btn.textContent
+  const orig = btn?.textContent
   const onCopied = () => {
-    btn.innerHTML = '<i data-lucide="check" class="e-ic"></i> Скопировано!'; btn.style.backgroundColor = '#10b981'
+    if (!btn) return
+    btn.innerHTML = '<i data-lucide="check" class="e-ic"></i> Скопировано!'
+    btn.style.backgroundColor = '#10b981'
     setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = '' }, 2500)
   }
-  if (navigator.clipboard?.writeText) {
+
+  // Prefer native share dialog when available (mobile/modern browsers), fallback to clipboard copy
+  if (navigator.share) {
+    navigator.share({ title: 'MathCore — Результат теста', text, url: 'https://mathcore-app.vercel.app' })
+      .catch(() => {
+        if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied))
+        else fallbackCopy(text, onCopied)
+      })
+  } else if (navigator.clipboard?.writeText) {
     navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied))
   } else {
     fallbackCopy(text, onCopied)
