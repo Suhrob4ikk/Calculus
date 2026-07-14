@@ -86,10 +86,16 @@ export function showPage(pageId) {
 
   // Подсветка активной вкладки — нижняя навигация
   const bnMap = {
-    profilePage:    'bnProfile',
-    homePage:       'bnHome',
-    statisticsPage: 'bnStats',
-    leaderboardPage:'bnLeader',
+    homePage:        'bnHome',
+    duelPage:        'bnDuel',
+    examPage:        'bnExam',
+    leaderboardPage: 'bnLeader',
+    // Разделы внутри «Ещё» подсвечивают кнопку «Ещё»
+    profilePage:        'bnMore',
+    statisticsPage:     'bnMore',
+    mistakesPage:       'bnMore',
+    searchProfilesPage: 'bnMore',
+    viewProfilePage:    'bnMore',
   }
   document.querySelectorAll('#bottomNav button').forEach(b => b.classList.remove('bn-active'))
   const active = bnMap[pageId]

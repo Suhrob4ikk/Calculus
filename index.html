@@ -427,8 +427,10 @@
     /* header-avatar moved to sidebar */
 
     /* ── Светлая тема ──────────────────────────────────── */
+    /* Насыщенная цветная база на КОРНЕ (виден и при overscroll на мобильном);
+       body прозрачный → аврора и орбы всегда поверх. */
     html:not(.dark) {
-      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #ede9fe 100%) !important;
+      background: linear-gradient(160deg, #cfe0fb 0%, #e0d5fb 48%, #fcd3ea 100%) !important;
     }
 
     html:not(.dark) .math-symbol {
@@ -1039,6 +1041,9 @@
       </button>
     </div>
 
+    <!-- Дашборд: уровень/XP · серия · рейтинг · сегодня (реальные данные) -->
+    <div id="homeStatStrip" class="home-stat-strip"></div>
+
     <!-- Daily Challenge -->
     <div id="dailyChallengeCard" class="android-daily-card" onclick="startDailyChallenge()">
       <div class="android-daily-body">
@@ -1134,6 +1139,9 @@
         <span class="subject-name">Лин. алгебра</span>
       </button>
     </div>
+
+    <!-- Достижения (реальные, из результатов) -->
+    <div id="homeAchievements" class="home-achievements"></div>
 
     <!-- PWA / APK (web-only, tertiary) -->
     <div class="android-home-footer">
@@ -2157,14 +2165,14 @@
 
   <!-- ── НИЖНЯЯ НАВИГАЦИЯ (только мобильные) ── -->
   <nav id="bottomNav">
-    <button onclick="showProfile()" id="bnProfile">
-      <i data-lucide="user"></i><span>Профиль</span>
-    </button>
     <button onclick="showHome()" id="bnHome">
       <i data-lucide="home"></i><span>Главная</span>
     </button>
-    <button onclick="showStatistics()" id="bnStats">
-      <i data-lucide="bar-chart-2"></i><span>Стат.</span>
+    <button onclick="showDuelPage()" id="bnDuel">
+      <i data-lucide="swords"></i><span>Дуэль</span>
+    </button>
+    <button onclick="showExamPage()" id="bnExam">
+      <i data-lucide="graduation-cap"></i><span>Экзамен</span>
     </button>
     <button onclick="showLeaderboard()" id="bnLeader">
       <i data-lucide="trophy"></i><span>Рейтинг</span>
@@ -2185,11 +2193,11 @@
     <div style="width:40px;height:4px;background:rgba(148,163,184,0.25);
                 border-radius:2px;margin:0 auto 1.25rem"></div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;text-align:center">
-      <button class="more-sheet-btn" onclick="showDuelPage();closeMoreSheet()">
-        <i data-lucide="swords"></i><span>Дуэль</span>
+      <button class="more-sheet-btn" onclick="showProfile();closeMoreSheet()">
+        <i data-lucide="user"></i><span>Профиль</span>
       </button>
-      <button class="more-sheet-btn" onclick="showExamPage();closeMoreSheet()">
-        <i data-lucide="graduation-cap"></i><span>Экзамен</span>
+      <button class="more-sheet-btn" onclick="showStatistics();closeMoreSheet()">
+        <i data-lucide="bar-chart-2"></i><span>Статистика</span>
       </button>
       <button class="more-sheet-btn" onclick="showSearchProfiles();closeMoreSheet()">
         <i data-lucide="users"></i><span>Люди</span>

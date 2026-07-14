@@ -3269,3 +3269,77 @@ html:not(.dark) body::after {
     radial-gradient(42% 42% at 50% 48%, rgba(129,140,248,.16), transparent 72%) !important;
 }
 html:not(.dark) .fx-orb { opacity: .72 !important; filter: blur(46px) !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ИТЕРАЦИЯ 8 (2026-07) — таб-бар, живой светлый фон (слой-фикс),
+   дашборд главной (реальные данные).
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Светлая тема: цвет на КОРНЕ (html), чтобы не было белого при
+   overscroll на мобильном («свайп вниз показывал пустоту»), а body
+   прозрачный → аврора и орбы всегда видны поверх цветной базы. ── */
+html:not(.dark) {
+  background: linear-gradient(160deg, #d7e4fb 0%, #e6dbfb 48%, #fdd9ec 100%) !important;
+}
+html:not(.dark) body {
+  background: transparent !important;
+}
+html:not(.dark) .fx-orb { opacity: .82 !important; filter: blur(42px) !important; }
+/* центр вьюпорта тоже подкрашен — не только углы */
+html:not(.dark) body::after {
+  background:
+    radial-gradient(46% 50% at 12% 14%, rgba(56,189,248,.46), transparent 60%),
+    radial-gradient(44% 48% at 88% 10%, rgba(168,85,247,.44), transparent 60%),
+    radial-gradient(54% 54% at 82% 88%, rgba(99,102,241,.42), transparent 62%),
+    radial-gradient(48% 48% at 18% 86%, rgba(244,114,182,.36), transparent 62%),
+    radial-gradient(52% 52% at 50% 46%, rgba(129,140,248,.22), transparent 68%) !important;
+}
+
+/* ── Дашборд главной ── */
+.home-stat-strip {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 4px 16px 0;
+}
+.hss-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--glass-shd);
+  border-radius: 18px;
+  padding: 14px 16px;
+}
+.hss-level-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.hss-lvl-ico { display: flex; }
+.hss-lvl-ico svg { width: 26px; height: 26px; }
+.hss-lvl-name { font-weight: 800; font-size: 1.05rem; line-height: 1; }
+.hss-lvl-xp { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+.hss-progress { height: 9px; border-radius: 99px; background: rgba(120,120,140,0.18); overflow: hidden; }
+.hss-progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s var(--ease); }
+.hss-mini { display: flex; align-items: center; gap: 11px; }
+.hss-mini-ico { display: flex; flex-shrink: 0; }
+.hss-mini-ico svg { width: 24px; height: 24px; }
+.hss-mini-val { font-weight: 800; font-size: 1.35rem; line-height: 1; color: var(--text-main); }
+.hss-mini-lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; }
+@media (max-width: 680px) {
+  .home-stat-strip { grid-template-columns: repeat(2, 1fr); }
+  .hss-level { grid-column: 1 / -1; }
+}
+
+/* ── Достижения на главной ── */
+.home-achievements:not(:empty) { margin: 18px 16px 0; }
+.home-ach-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+.home-ach-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-ach-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 99px; font-size: 0.8rem; font-weight: 600;
+  border: 1px solid var(--glass-brd); background: var(--glass-bg); color: var(--text-main);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.home-ach-chip svg { width: 16px; height: 16px; }
+.home-ach-chip.badge-gold   { border-color: rgba(245,158,11,0.45); color: #b45309; background: rgba(245,158,11,0.12); }
+.dark .home-ach-chip.badge-gold   { color: #fcd34d; background: rgba(245,158,11,0.15); }
+.home-ach-chip.badge-silver { border-color: rgba(148,163,184,0.45); }
+.home-ach-chip.badge-green  { border-color: rgba(16,185,129,0.42); color: #059669; background: rgba(16,185,129,0.10); }
+.dark .home-ach-chip.badge-green  { color: #6ee7b7; background: rgba(16,185,129,0.14); }

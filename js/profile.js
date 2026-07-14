@@ -53,6 +53,73 @@ window.showHome = function() {
   showPage('homePage')
   renderStreakBadge()
   window.updateDailyChallengeCard?.()
+  window.renderHomeStats?.()
+}
+
+// ── Дашборд главной: уровень/XP · серия · рейтинг · сегодня (вариант А) ──
+window.renderHomeStats = async function() {
+  const strip = document.getElementById('homeStatStrip')
+  const ach   = document.getElementById('homeAchievements')
+  if (!strip) return
+  if (!st.currentUser) { strip.innerHTML = ''; if (ach) ach.innerHTML = ''; return }
+
+  const username = st.currentUser.user_metadata?.username || st.currentUser.email.split('@')[0]
+  const xp  = getXP()
+  const lvl = getXPLevel(xp)
+  const progress = lvl.nextAt != null
+    ? Math.min(100, Math.max(2, Math.round((xp - lvl.min) / (lvl.nextAt - lvl.min) * 100)))
+    : 100
+  const streak = parseInt(localStorage.getItem('streak') || '0', 10)
+
+  // Синхронная часть — уровень и серия видны сразу, остальное дозагружаем
+  strip.innerHTML = `
+    <div class="hss-card hss-level">
+      <div class="hss-level-top">
+        <span class="hss-lvl-ico" style="color:${lvl.color}">${lvl.icon}</span>
+        <div>
+          <div class="hss-lvl-name" style="color:${lvl.color}">${lvl.name}</div>
+          <div class="hss-lvl-xp">${xp} XP${lvl.nextAt != null ? ` · до ${lvl.nextAt}` : ' · макс.'}</div>
+        </div>
+      </div>
+      <div class="hss-progress"><div class="hss-progress-fill" style="width:${progress}%;background:linear-gradient(90deg,${lvl.color},color-mix(in srgb,${lvl.color} 55%,#fff))"></div></div>
+    </div>
+    <div class="hss-card hss-mini">
+      <span class="hss-mini-ico" style="color:#f97316"><i data-lucide="flame"></i></span>
+      <div><div class="hss-mini-val">${streak}</div><div class="hss-mini-lbl">дней серия</div></div>
+    </div>
+    <div class="hss-card hss-mini" id="hssRank">
+      <span class="hss-mini-ico" style="color:#fbbf24"><i data-lucide="trophy"></i></span>
+      <div><div class="hss-mini-val">—</div><div class="hss-mini-lbl">место</div></div>
+    </div>
+    <div class="hss-card hss-mini" id="hssToday">
+      <span class="hss-mini-ico" style="color:#8b5cf6"><i data-lucide="check-circle-2"></i></span>
+      <div><div class="hss-mini-val">—</div><div class="hss-mini-lbl">сегодня</div></div>
+    </div>`
+
+  try {
+    const [resResult, rankData] = await Promise.all([
+      getUserResults(st.currentUser.id),
+      getUserRankData(username).catch(() => null),
+    ])
+    const results = (resResult?.data || [])
+    const todayStr = new Date().toDateString()
+    const todayCount = results.filter(r => new Date(r.created_at).toDateString() === todayStr).length
+    const tEl = document.querySelector('#hssToday .hss-mini-val')
+    if (tEl) tEl.textContent = todayCount
+    if (rankData?.rank) {
+      const rEl = document.querySelector('#hssRank .hss-mini-val')
+      if (rEl) rEl.textContent = '#' + rankData.rank
+    }
+    if (ach) {
+      const sections = ['integrals', 'derivatives', 'series', 'limits', 'ode', 'probability', 'linalg']
+      const { badges } = computeBadges(results.filter(r => !r.section?.startsWith('duel')), sections)
+      ach.innerHTML = badges.length
+        ? `<div class="home-ach-title">Достижения</div><div class="home-ach-row">${
+            badges.map(b => `<span class="home-ach-chip ${b.cls}">${b.icon} ${b.text}</span>`).join('')
+          }</div>`
+        : ''
+    }
+  } catch (_) { /* сеть недоступна — оставляем прочерки */ }
 }
 
 window.showSection = function(section) {
