@@ -24,6 +24,7 @@ function _onOpponentLeft(name) {
   st.duel.opponentLeft = true
   if (name && !st.duel.opponentName) st.duel.opponentName = name
   if (st.duel.opponentTimeout) { clearTimeout(st.duel.opponentTimeout); st.duel.opponentTimeout = null }
+  _clearRematchTimeout()
   const rematchBtn    = document.getElementById('rematchBtn')
   const rematchBanner = document.getElementById('rematchRequestBanner')
   if (rematchBanner) rematchBanner.style.display = 'none'
@@ -273,6 +274,7 @@ window.createDuel = async function () {
     .on('broadcast', { event: 'rematch_start' }, ({ payload }) => { _onRematchStart(payload) })
     .on('broadcast', { event: 'leave' }, ({ payload }) => { _onOpponentLeft(payload?.name) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
+      _clearRematchTimeout()
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = 'Соперник отказался'; btn.disabled = true }
     })
@@ -373,6 +375,7 @@ window.joinDuel = async function () {
     .on('broadcast', { event: 'rematch_start' }, ({ payload }) => { _onRematchStart(payload) })
     .on('broadcast', { event: 'leave' }, ({ payload }) => { _onOpponentLeft(payload?.name) })
     .on('broadcast', { event: 'rematch_decline' }, () => {
+      _clearRematchTimeout()
       const btn = document.getElementById('rematchBtn')
       if (btn) { btn.textContent = 'Соперник отказался'; btn.disabled = true }
     })
@@ -423,6 +426,7 @@ window.joinDuelByCode = function (code) {
 function _beginDuelCountdown() {
   // Re-entry guard: only start countdown from idle phase
   if (st.duel.phase !== 'idle') return
+  _clearRematchTimeout()
   st.duel.phase = 'countdown'
   if (st.duel.lobbyTimeout) { clearTimeout(st.duel.lobbyTimeout); st.duel.lobbyTimeout = null }
   if (st.duel.countdownInterval) { clearInterval(st.duel.countdownInterval); st.duel.countdownInterval = null }
@@ -506,11 +510,34 @@ function _checkDuelComplete() {
 st.duel.checkComplete = _checkDuelComplete
 
 // ── Реванш ──
+// Будим соединение и шлём запрос дважды (на телефоне после возврата в приложение
+// первый broadcast мог не уйти). Плюс фолбэк-таймаут, чтобы кнопка не «залипала».
+function _sendRematchRequest() {
+  try { supabase.realtime?.connect?.() } catch (e) {}
+  const send = () => { try { st.duel.channel?.send({ type: 'broadcast', event: 'rematch_request', payload: { name: st.duel.myName } }) } catch (e) {} }
+  send()
+  setTimeout(send, 600)
+}
+
+function _clearRematchTimeout() {
+  if (st.duel.rematchTimeout) { clearTimeout(st.duel.rematchTimeout); st.duel.rematchTimeout = null }
+}
+
 window.requestRematch = function () {
   st.duel.isRematchRequester = true
   const btn = document.getElementById('rematchBtn')
   if (btn) { btn.textContent = 'Ожидаем ответа…'; btn.disabled = true }
-  st.duel.channel?.send({ type: 'broadcast', event: 'rematch_request', payload: { name: st.duel.myName } })
+  _sendRematchRequest()
+  // Если за 15с нет ответа (соперник в фоне/связь провисла) — разблокируем кнопку,
+  // чтобы можно было нажать ещё раз, а не ждать вечно.
+  _clearRematchTimeout()
+  st.duel.rematchTimeout = setTimeout(() => {
+    if (st.duel.isRematchRequester && !st.duel.opponentLeft) {
+      st.duel.isRematchRequester = false
+      const b = document.getElementById('rematchBtn')
+      if (b) { b.textContent = 'Реванш'; b.disabled = false }
+    }
+  }, 15000)
 }
 
 // Если оба нажали реванш одновременно — разрешаем конфликт по алфавитному порядку имён.
@@ -854,3 +881,21 @@ window.closeDuelModal = function () {
   }
   showHome()
 }
+// ── Переподключение канала дуэли при возврате в приложение ──
+// Мобильные браузеры «усыпляют» WebSocket в фоне (экран погас / свернули).
+// При возврате соединение/подписка могли отвалиться → реванш и счёт не доходили
+// (частый баг «рематч телефон↔ПК»). Будим сокет и при необходимости пере-подписываемся.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return
+  const d = st.duel
+  if (!d || !d.channel || !d.code) return
+  // Только когда мы действительно в дуэли (игра / отсчёт) или на экране результатов
+  if (d.phase !== 'active' && d.phase !== 'countdown' && !d.resultsShown) return
+  try {
+    supabase.realtime?.connect?.()
+    const state = d.channel.state
+    if (state && state !== 'joined' && state !== 'joining') {
+      d.channel.subscribe()
+    }
+  } catch (e) { /* best-effort */ }
+})
