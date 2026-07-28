@@ -55,7 +55,9 @@ async function _doSaveMistakesFromResults(results, questions, section, difficult
     const r = results[i]
     const q = questions[i]
     if (!q) continue
-    const hash = hashQuestion(r.question || q.question || '')
+    // При работе над ошибками используем родной хеш из БД (несём его в q._mistakeHash),
+    // иначе пересчитанный хеш мог не совпасть со строкой в user_mistakes.
+    const hash = q._mistakeHash || hashQuestion(r.question || q.question || '')
     if (!r.isCorrect) {
       wrongItems.push({
         hash,
@@ -297,6 +299,9 @@ window._startMistakePractice = async function(subject) {
       open:     qData.open     || null,
       subject:  m.subject,
       difficulty: m.difficulty,
+      // Несём РОДНОЙ хеш из БД — чтобы отметка «исправлено» точно попала в эту
+      // строку, не пересчитывая хеш (пересчёт мог не совпасть с сохранённым).
+      _mistakeHash: m.question_hash,
     }
   })
 
