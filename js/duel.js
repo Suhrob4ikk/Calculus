@@ -283,12 +283,14 @@ window.createDuel = async function () {
       st.duel.joinHandled = true
       st.duel.opponentName = payload.name
       _duelSetStatus('duelCreateStatus', `<i data-lucide="check-circle-2" class="e-ic"></i> ${escapeHtml(st.duel.opponentName)} подключился! Начинаем…`)
-      st.duel.channel.send({
-        type: 'broadcast', event: 'start',
-        // D4: адресуем старт принятому гостю по имени — если на код успели войти
-        // двое, «лишний» гость увидит, что старт не для него, и не начнёт игру.
-        payload: { code: st.duel.code, section: st.duel.section, difficulty: st.duel.diff, guestName: payload.name }
-      })
+      // D4: адресуем старт принятому гостю по имени. Шлём НЕСКОЛЬКО раз — один
+      // broadcast мог потеряться в сети, из-за чего хост начинал, а гость нет
+      // (дубликаты у гостя безвредны: его phase-guard их игнорирует).
+      const _startPayload = { code: st.duel.code, section: st.duel.section, difficulty: st.duel.diff, guestName: payload.name }
+      const _sendStart = () => { try { st.duel.channel?.send({ type: 'broadcast', event: 'start', payload: _startPayload }) } catch (e) {} }
+      _sendStart()
+      setTimeout(_sendStart, 700)
+      setTimeout(_sendStart, 1800)
       if (st.duel.startHandled) return
       st.duel.startHandled = true
       _beginDuelCountdown()

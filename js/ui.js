@@ -297,6 +297,21 @@ export function playSound(type) {
   } catch (e) { /* audio not supported */ }
 }
 
+// Браузер блокирует звук до первого жеста пользователя (autoplay-политика).
+// Разблокируем AudioContext на первом клике/тапе/клавише — тогда уведомления
+// (приглашение в дуэль, реванш) звучат, даже если пришли без свежего клика.
+function _unlockAudio() {
+  try { const ctx = _getAudioCtx(); if (ctx.state === 'suspended') ctx.resume() } catch (e) {}
+  window.removeEventListener('pointerdown', _unlockAudio)
+  window.removeEventListener('keydown', _unlockAudio)
+  window.removeEventListener('touchstart', _unlockAudio)
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('pointerdown', _unlockAudio, { once: false })
+  window.addEventListener('keydown', _unlockAudio, { once: false })
+  window.addEventListener('touchstart', _unlockAudio, { once: false })
+}
+
 window.toggleSound = function() {
   const on = localStorage.getItem('soundEnabled') !== 'false'
   localStorage.setItem('soundEnabled', on ? 'false' : 'true')

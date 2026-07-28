@@ -10,7 +10,7 @@
 // Если хотя бы один URL вернёт ошибку — вся установка SW падала (v6 баг).
 // Теперь SHELL содержит только same-origin файлы; CDN кэшируется лениво.
 
-const CACHE = 'mathcore-v8'
+const CACHE = 'mathcore-v9'
 
 // Только same-origin статика — install гарантированно успешен
 const SHELL = [
