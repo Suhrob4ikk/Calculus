@@ -290,6 +290,9 @@ export function playSound(type) {
       ;[523, 659, 784, 1047].forEach((f, i) => note(f, i * 0.14, 0.32, 0.28))
     } else if (type === 'finish') {
       note(440, 0, 0.25); note(554, 0.12, 0.28)
+    } else if (type === 'invite') {
+      // Приглашение в дуэль — яркий восходящий «дзинь-дзинь», привлекает внимание
+      note(784, 0, 0.18, 0.32); note(1047, 0.14, 0.28, 0.32); note(1319, 0.3, 0.4, 0.3)
     }
   } catch (e) { /* audio not supported */ }
 }

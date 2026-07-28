@@ -157,11 +157,23 @@ function randomMessage() {
   return messages[Math.floor(Math.random() * messages.length)]
 }
 
+// ── CORS ────────────────────────────────────────────────────────────────────
+// Веб-клиент вызывает send-push из браузера (duel_invite) → нужен CORS + ответ
+// на preflight OPTIONS, иначе запрос блокируется («No Access-Control-Allow-Origin»).
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
+}
+const json = (obj: unknown, status = 200) =>
+  new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json', ...CORS } })
+
 // ── Handler ───────────────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST' && req.method !== 'GET') {
-    return new Response('Method Not Allowed', { status: 405 })
+    return new Response('Method Not Allowed', { status: 405, headers: CORS })
   }
 
   const supabase = createClient(
@@ -181,25 +193,19 @@ Deno.serve(async (req) => {
       // service-role client can verify any Supabase JWT without a separate anon key
       const authHeader = req.headers.get('Authorization') ?? ''
       if (!authHeader.startsWith('Bearer ')) {
-        return new Response(
-          JSON.stringify({ error: 'Authorization required' }),
-          { status: 401 }
-        )
+        return json({ error: 'Authorization required' }, 401)
       }
       const { data: { user: callerUser }, error: authErr } = await supabase.auth.getUser(
         authHeader.slice(7)
       )
       if (authErr || !callerUser) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+        return json({ error: 'Unauthorized' }, 401)
       }
 
       const { targetUserId, code, from, section = '', difficulty = '' } = body
 
       if (!targetUserId || !code || !from) {
-        return new Response(
-          JSON.stringify({ error: 'targetUserId, code and from are required' }),
-          { status: 400 }
-        )
+        return json({ error: 'targetUserId, code and from are required' }, 400)
       }
 
       // ── Step 2: Verify `from` matches the caller's own username ──────────
@@ -210,14 +216,11 @@ Deno.serve(async (req) => {
         .eq('id', callerUser.id)
         .single()
       if (!callerProfile || callerProfile.username !== from) {
-        return new Response(
-          JSON.stringify({ error: 'Forbidden: from must match your username' }),
-          { status: 403 }
-        )
+        return json({ error: 'Forbidden: from must match your username' }, 403)
       }
 
       if (!FCM_SA_JSON) {
-        return new Response(JSON.stringify({ error: 'FCM_SERVICE_ACCOUNT_JSON not set' }), { status: 500 })
+        return json({ error: 'FCM_SERVICE_ACCOUNT_JSON not set' }, 500)
       }
 
       // Look up the target user's Android FCM token
@@ -231,7 +234,7 @@ Deno.serve(async (req) => {
       const fcmToken: string | undefined = rows?.[0]?.fcm_token
       if (!fcmToken) {
         // No Android token — user may be on web only, that's fine
-        return new Response(JSON.stringify({ sent: 0, reason: 'no_android_token' }))
+        return json({ sent: 0, reason: 'no_android_token' })
       }
 
       const sa: ServiceAccount = JSON.parse(FCM_SA_JSON)
@@ -246,10 +249,7 @@ Deno.serve(async (req) => {
         { type: 'duel_invite', deep_link: deepLink }
       )
 
-      return new Response(
-        JSON.stringify({ sent: result.ok ? 1 : 0, stale: result.stale }),
-        { headers: { 'Content-Type': 'application/json' } }
-      )
+      return json({ sent: result.ok ? 1 : 0, stale: result.stale })
     }
   }
 
