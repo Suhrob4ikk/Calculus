@@ -255,6 +255,21 @@ window.selectAnswer = function (answerIndex) {
   // Re-render in the answered state: locks options, reveals correct/wrong and
   // shows the explanation panel if this question has one.
   displayQuestion()
+  _maybeAutoFinishTest()
+}
+
+// Когда отвечены ВСЕ вопросы — завершаем тест автоматически (кнопку оставляем
+// для тех, кто не хочет отвечать на всё). Небольшая пауза, чтобы пользователь
+// увидел свой последний ответ и объяснение.
+function _maybeAutoFinishTest() {
+  if (st.finishInProgress) return
+  const total = st.currentTest?.length || 0
+  if (total === 0) return
+  const answered = st.userAnswers.filter(a => a !== null && a !== undefined).length
+  if (answered < total) return
+  setTimeout(() => {
+    if (!st.finishInProgress && st.currentTest?.length) window.finishTest()
+  }, 1000)
 }
 
 // ── Панель объяснения ─────────────────────────────────────
@@ -293,6 +308,7 @@ window.submitOpenAnswer = function () {
   st.userAnswers[st.currentQuestionIndex] = val
   playSound(isCorrect ? 'correct' : 'wrong')
   displayQuestion()
+  _maybeAutoFinishTest()
 }
 
 window.setDerivativesTestMode = function (mode) {
@@ -749,5 +765,9 @@ document.addEventListener('keydown', e => {
     }
   }
   if (e.key === 'ArrowLeft') window.previousQuestion()
+  // Стрелка вправо — к следующему вопросу (не завершаем на последнем).
+  if (e.key === 'ArrowRight') {
+    if (st.currentQuestionIndex < st.currentTest.length - 1) window.nextQuestion()
+  }
   if (e.key === 'Escape') window.exitTest()
 })
