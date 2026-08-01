@@ -774,8 +774,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sqrt{x+1} + C\\)",
       "\\(\\frac{1}{2}(x+1)^{2} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $u=x+1$: $x=u-1$, интеграл $=\\int(u-1)\\sqrt u\\,du=\\frac25u^{5/2}-\\frac23u^{3/2}$." },
   {
     question: "Вычислите \\(\\int \\frac{x}{x^2 + 4x + 5}  dx\\)",
     options: [
@@ -784,8 +783,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x^2 + 4x + 5} + C\\)",
       "\\(\\frac{1}{2}\\ln|x^2 + 4x + 5| - 2\\arctan(x+2) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Выделяем производную знаменателя и дополняем до квадрата: $\\frac12\\ln|x^2+4x+5|-2\\arctan(x+2)$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 + 2x}  dx\\)",
     options: [
@@ -794,8 +792,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x} - \\frac{1}{x+2} + C\\)",
       "\\(\\arctan(x+1) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "$\\frac1{x(x+2)}=\\frac12\\left(\\frac1x-\\frac1{x+2}\\right)$, интегрируем: $\\frac12\\ln\\left|\\frac{x}{x+2}\\right|$." },
   {
     question: "Вычислите \\(\\int \\frac{3x + 2}{(x-1)(x+3)}  dx\\)",
     options: [
@@ -804,8 +801,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arctan(x-1) + \\arctan(x+3) + C\\)",
       "\\(\\frac{5}{4}\\ln|x-1| + \\frac{7}{4}\\ln|x+3| + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Разложение на простые дроби: $\\frac{3x+2}{(x-1)(x+3)}=\\frac{5/4}{x-1}+\\frac{7/4}{x+3}$." },
   {
     question: "Вычислите \\(\\int \\frac{x^2}{x^2 - 1}  dx\\)",
     options: [
@@ -814,8 +810,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\ln|\\frac{x-1}{x+1}| + C\\)",
       "\\(x + \\arctan(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac{x^2}{x^2-1}=1+\\frac{1}{x^2-1}$; второе слагаемое даёт $\\frac12\\ln\\left|\\frac{x-1}{x+1}\\right|$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2(x+1)}  dx\\)",
     options: [
@@ -824,8 +819,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\frac{x+1}{x}| + C\\)",
       "\\(-\\frac{1}{x} + \\ln\\left|\\frac{x+1}{x}\\right| + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Разложение $\\frac1{x^2(x+1)}=-\\frac1{x^2}+\\frac1x-\\frac1{x+1}$ на простые дроби." },
   {
     question: "Вычислите \\(\\int \\frac{x^3}{x^2 + 1}  dx\\)",
     options: [
@@ -834,8 +828,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}x^2 + \\ln|x^2 + 1| + C\\)",
       "\\(x - \\arctan(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac{x^3}{x^2+1}=x-\\frac{x}{x^2+1}$; интегрируем: $\\frac12x^2-\\frac12\\ln(x^2+1)$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x(x^2 + 1)}  dx\\)",
     options: [
@@ -844,8 +837,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\frac{x}{\\sqrt{x^2 + 1}}| + C\\)",
       "\\(\\frac{1}{2}\\ln|\\frac{x^2}{x^2 + 1}| + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "$\\frac1{x(x^2+1)}=\\frac1x-\\frac{x}{x^2+1}$; интегрируем: $\\ln|x|-\\frac12\\ln(x^2+1)$." },
   {
     question: "Вычислите \\(\\int \\frac{2x + 3}{x^2 + 4x + 13}  dx\\)",
     options: [
@@ -854,8 +846,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arctan(\\frac{x+2}{3}) + C\\)",
       "\\(\\frac{1}{x^2 + 4x + 13} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Выделяем производную знаменателя $(2x+4)$ и остаток; после дополнения квадрата — логарифм и арктангенс." },
   {
     question: "Вычислите \\(\\int \\frac{x}{(x+1)^3}  dx\\)",
     options: [
@@ -864,8 +855,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{x+1} + \\frac{1}{2(x+1)^2} + C\\)",
       "\\(-\\frac{1}{2(x+1)^2} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $u=x+1$: $\\int\\frac{u-1}{u^3}du=-\\frac1u+\\frac1{2u^2}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{\\sqrt{x}(1 + x)}  dx\\)",
     options: [
@@ -874,8 +864,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\ln|1 + x| + C\\)",
       "\\(\\frac{2}{\\sqrt{x}} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\sqrt x$: $\\int\\frac{2\\,dt}{1+t^2}=2\\arctan(\\sqrt x)$." },
   {
     question: "Вычислите \\(\\int \\frac{e^x}{1 + e^{2x}}  dx\\)",
     options: [
@@ -884,8 +873,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\arctan(e^x) + C\\)",
       "\\(\\frac{e^x}{1 + e^{2x}} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=e^x$: $\\int\\frac{dt}{1+t^2}=\\arctan(e^x)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(x)}{1 + \\cos^2(x)}  dx\\)",
     options: [
@@ -894,8 +882,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{2}\\ln|1 + \\cos^2(x)| + C\\)",
       "\\(-\\arctan(\\cos(x)) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $t=\\cos x$: $\\int\\frac{-dt}{1+t^2}=-\\arctan(\\cos x)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(x)}{\\sqrt{4 - \\sin^2(x)}}  dx\\)",
     options: [
@@ -904,8 +891,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arcsin(\\frac{\\sin(x)}{2}) + C\\)",
       "\\(\\arccos(\\frac{\\sin(x)}{2}) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=\\sin x$: $\\int\\frac{dt}{\\sqrt{4-t^2}}=\\arcsin(t/2)$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\sqrt[3]{x + 2}  dx\\)",
     options: [
@@ -914,8 +900,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{3}{7}(x+2)^{7/3} - \\frac{3}{2}(x+2)^{4/3} + C\\)",
       "\\(\\frac{1}{2}(x+2)^{2} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $u=x+2$: $\\int(u-2)u^{1/3}du=\\frac37u^{7/3}-\\frac32u^{4/3}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\ln^2(x)}{x}  dx\\)",
     options: [
@@ -924,8 +909,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{3}\\ln^3(x) + C\\)",
       "\\(\\frac{1}{x}\\ln^2(x) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=\\ln x$: $\\int t^2\\,dt=\\frac13t^3$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{1 - \\ln^2(x)}}  dx\\)",
     options: [
@@ -934,8 +918,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arcsin(\\ln(x)) + C\\)",
       "\\(\\frac{1}{\\sqrt{1 - \\ln^2(x)}} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=\\ln x$: $\\int\\frac{dt}{\\sqrt{1-t^2}}=\\arcsin(\\ln x)$." },
   {
     question: "Вычислите \\(\\int \\frac{x}{\\sqrt{4 - x^4}}  dx\\)",
     options: [
@@ -944,8 +927,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{4}\\arcsin(x^2) + C\\)",
       "\\(\\frac{1}{2}\\arcsin(\\frac{x^2}{2}) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $u=x^2$: $\\int\\frac{du/2}{\\sqrt{4-u^2}}=\\frac12\\arcsin(u/2)$." },
   {
     question: "Вычислите \\(\\int \\frac{e^{2x}}{\\sqrt{1 - e^{4x}}}  dx\\)",
     options: [
@@ -954,8 +936,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\arcsin(e^{2x}) + C\\)",
       "\\(\\ln|e^{2x} + \\sqrt{1 - e^{4x}}| + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $u=e^{2x}$: $\\int\\frac{du/2}{\\sqrt{1-u^2}}=\\frac12\\arcsin(e^{2x})$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(2x)}{\\sqrt{1 - \\cos^2(x)}}  dx\\)",
     options: [
@@ -964,8 +945,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\sin(x)| + C\\)",
       "\\(-2\\cos(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\sqrt{1-\\cos^2x}=|\\sin x|$; при $\\sin x>0$: $\\int\\frac{2\\sin x\\cos x}{\\sin x}dx=2\\int\\cos x\\,dx=2\\sin x$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2\\sqrt{x^2 - 9}}  dx\\)",
     options: [
@@ -974,8 +954,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{\\sqrt{x^2 - 9}}{x} + C\\)",
       "\\(\\frac{1}{x}\\sqrt{x^2 - 9} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Тригонометрическая подстановка $x=3\\sec\\theta$ даёт $\\frac{\\sqrt{x^2-9}}{9x}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sqrt{x}}{1 + x}  dx\\)",
     options: [
@@ -984,8 +963,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|1 + x| + C\\)",
       "\\(\\frac{2}{3}x^{3/2} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=\\sqrt x$: $\\int\\frac{2t^2}{1+t^2}dt=2\\int\\left(1-\\frac1{1+t^2}\\right)dt=2t-2\\arctan t$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 + 6x + 10}  dx\\)",
     options: [
@@ -994,8 +972,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{(x+3)^2 + 1} + C\\)",
       "\\(\\arctan(x + 3) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Дополняем квадрат: $x^2+6x+10=(x+3)^2+1$, значит $\\arctan(x+3)$." },
   {
     question: "Вычислите \\(\\int \\frac{2x - 1}{x^2 - 6x + 13}  dx\\)",
     options: [
@@ -1004,8 +981,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x^2 - 6x + 13} + C\\)",
       "\\(\\ln|x^2 - 6x + 13| + \\frac{5}{2}\\arctan\\left(\\frac{x-3}{2}\\right) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Выделяем производную знаменателя $(2x-6)$ и остаток $5$; после дополнения квадрата — логарифм плюс арктангенс." },
   {
     question: "Вычислите \\(\\int x^3\\cdot\\sqrt{x^2 + 1}  dx\\)",
     options: [
@@ -1014,8 +990,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{4}(x^2 + 1)^{2} + C\\)",
       "\\(\\frac{2}{3}x(x^2 + 1)^{3/2} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $u=x^2+1$: $x^2=u-1$, $\\int(u-1)\\sqrt u\\cdot\\frac{du}2=\\frac15u^{5/2}-\\frac13u^{3/2}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos^3(x)}{\\sin^2(x)}  dx\\)",
     options: [
@@ -1024,8 +999,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\cos(x) + \\frac{1}{3}\\cos^3(x) + C\\)",
       "\\(\\ln|\\sin(x)| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\cos^3x=\\cos x(1-\\sin^2x)$; подстановка $t=\\sin x$ даёт после деления $-\\frac1t-t$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\ln(x)\\sqrt{\\ln^2(x) - 1}}  dx\\)",
     options: [
@@ -1034,8 +1008,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{\\sqrt{\\ln^2(x) - 1}} + C\\)",
       "\\(\\arccos(\\frac{1}{|\\ln(x)|}) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Табличная форма: $\\int\\frac{dx}{x\\ln x\\sqrt{\\ln^2x-1}}=\\operatorname{arcsec}|\\ln x|$ (подстановка $t=\\ln x$)." },
   {
     question: "Вычислите \\(\\int \\frac{x^2}{(x+1)^5}  dx\\)",
     options: [
@@ -1044,8 +1017,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{x^3}{3(x+1)^5} + C\\)",
       "\\(-\\frac{1}{3(x+1)^3} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $u=x+1$: $\\int\\frac{(u-1)^2}{u^5}du=\\int(u^{-3}-2u^{-4}+u^{-5})du$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{e^x + e^{-x}}  dx\\)",
     options: [
@@ -1054,8 +1026,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|e^x + e^{-x}| + C\\)",
       "\\(\\frac{e^x}{e^{2x} + 1} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "$\\frac1{e^x+e^{-x}}=\\frac{e^x}{e^{2x}+1}$; подстановка $t=e^x$ даёт $\\arctan(e^x)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(2x)}{1 + \\cos^4(x)}  dx\\)",
     options: [
@@ -1064,8 +1035,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\sin^2(x) + C\\)",
       "\\(-\\arctan(\\cos^2(x)) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $t=\\cos^2x$ даёт $-\\arctan(\\cos^2x)$." },
   {
     question: "Вычислите \\(\\int x\\cdot(2x + 1)^{7}  dx\\)",
     options: [
@@ -1074,8 +1044,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{16}(2x+1)^8 + C\\)",
       "\\(\\frac{1}{2}x^2(2x+1)^7 + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $u=2x+1$, $x=(u-1)/2$: $\\int\\frac{u-1}2\\cdot u^7\\cdot\\frac{du}2=\\frac14\\int(u^8-u^7)du$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sqrt{1 + \\sqrt{x}}}{\\sqrt{x}}  dx\\)",
     options: [
@@ -1084,8 +1053,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{4}{3}(1 + \\sqrt{x})^{3/2} + C\\)",
       "\\(\\sqrt{x}\\sqrt{1 + \\sqrt{x}} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=1+\\sqrt x$, $dx/\\sqrt x=2\\,dt$: $\\int2\\sqrt t\\,dt=\\frac43t^{3/2}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{4x^2 - 9}}  dx\\)",
     options: [
@@ -1094,8 +1062,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|2x + \\sqrt{4x^2 - 9}| + C\\)",
       "\\(\\frac{1}{3}\\operatorname{arcsec}(\\frac{2|x|}{3}) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Тригонометрическая подстановка $2x=3\\sec\\theta$ даёт $\\frac13\\operatorname{arcsec}\\left(\\frac{2|x|}3\\right)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\arctan(x)}{1 + x^2}  dx\\)",
     options: [
@@ -1104,8 +1071,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{1 + x^2}\\arctan(x) + C\\)",
       "\\(\\ln|1 + x^2| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\arctan x$: $\\int t\\,dt=\\frac12t^2$." },
   {
     question: "Вычислите \\(\\int \\frac{x + 2}{\\sqrt{x^2 + 4x + 5}}  dx\\)",
     options: [
@@ -1114,8 +1080,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^2 + 4x + 5| + C\\)",
       "\\(\\arctan(x+2) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Числитель — половина производной подкоренного выражения: $\\int\\frac{(x^2+4x+5)'/2}{\\sqrt{\\ldots}}dx=\\sqrt{x^2+4x+5}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(x)}{\\sin^3(x) + \\sin(x)}  dx\\)",
     options: [
@@ -1124,8 +1089,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{2\\sin^2(x)} + C\\)",
       "\\(\\arctan(\\sin(x)) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=\\sin x$: $\\int\\frac{dt}{t(t^2+1)}=\\ln|t|-\\frac12\\ln(t^2+1)=\\ln\\dfrac{|\\sin x|}{\\sqrt{1+\\sin^2x}}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{(x+1)\\sqrt{x^2 + 2x}}  dx\\)",
     options: [
@@ -1134,8 +1098,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x + 1 + \\sqrt{x^2 + 2x}| + C\\)",
       "\\(\\arctan(\\sqrt{x^2 + 2x}) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Дополняем квадрат $x^2+2x=(x+1)^2-1$ — тригонометрическая подстановка даёт $\\operatorname{arcsec}|x+1|$." },
   {
     question: "Вычислите \\(\\int x^2\\cdot\\ln(x)  dx\\)",
     options: [
@@ -1144,8 +1107,7 @@ export const mediumIntegralsQuestions = [
       "\\(x\\ln(x) - x + C\\)",
       "\\(\\frac{1}{x} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "По частям: $u=\\ln x,\\,dv=x^2dx$: $\\frac{x^3}3\\ln x-\\int\\frac{x^2}3dx=\\frac{x^3}3\\ln x-\\frac{x^3}9$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 - 6x + 8}  dx\\)",
     options: [
@@ -1154,8 +1116,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x-4} - \\frac{1}{x-2} + C\\)",
       "\\(\\arctan(x-3) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac1{(x-4)(x-2)}=\\frac12\\left(\\frac1{x-4}-\\frac1{x-2}\\right)$, интегрируем: $\\frac12\\ln\\left|\\frac{x-4}{x-2}\\right|$." },
   {
     question: "Вычислите \\(\\int \\frac{e^{3x}}{e^x + 1}  dx\\)",
     options: [
@@ -1164,8 +1125,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{e^{2x}}{2} + \\ln|e^x + 1| + C\\)",
       "\\(\\frac{1}{2}e^{2x} - e^x + \\ln|e^x + 1| + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "$\\frac{e^{3x}}{e^x+1}$: подстановка $t=e^x$, $\\frac{t^2}{t+1}=t-1+\\frac1{t+1}$, даёт $\\frac12e^{2x}-e^x+\\ln(e^x+1)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sqrt{1 + x^2}}{x^2}  dx\\)",
     options: [
@@ -1174,8 +1134,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{\\sqrt{1 + x^2}}{x} + \\arcsinh(x) + C\\)",
       "\\(\\ln|x + \\sqrt{1 + x^2}| + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "По частям: $-\\frac{\\sqrt{1+x^2}}x+\\ln|x+\\sqrt{1+x^2}|$ (проверяется дифференцированием)." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{x^6 - 4}}  dx\\)",
     options: [
@@ -1184,8 +1143,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{6}\\operatorname{arcsec}(\\frac{x^3}{2}) + C\\)",
       "\\(\\ln|x^3 + \\sqrt{x^6 - 4}| + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Тригонометрическая подстановка $x^3=2\\sec\\theta$ даёт $\\frac16\\operatorname{arcsec}(x^3/2)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(x) + \\cos(x)}{\\sin(x) - \\cos(x)}  dx\\)",
     options: [
@@ -1194,8 +1152,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\ln|\\sin(x) + \\cos(x)| + C\\)",
       "\\(-\\ln|\\sin(x) - \\cos(x)| + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Числитель — производная знаменателя: $\\int\\frac{(\\sin x-\\cos x)'}{\\sin x-\\cos x}dx=\\ln|\\sin x-\\cos x|$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\arctan(x)  dx\\)",
     options: [
@@ -1204,8 +1161,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}x^2\\arctan(x) - \\frac{1}{2}x + \\frac{1}{2}\\arctan(x) + C\\)",
       "\\(\\arctan(x) + \\frac{1}{1 + x^2} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "По частям: $u=\\arctan x,\\,dv=x\\,dx$: $\\frac12x^2\\arctan x-\\frac12\\int\\frac{x^2}{1+x^2}dx=\\frac12x^2\\arctan x-\\frac12x+\\frac12\\arctan x$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{(x^2 + 1)^2}  dx\\)",
     options: [
@@ -1214,8 +1170,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{x}{(x^2 + 1)^2} + C\\)",
       "\\(\\frac{1}{2}\\ln|1 + x^2| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Рекуррентная формула для $\\int\\frac{dx}{(x^2+1)^2}$: $\\frac12\\arctan x+\\frac{x}{2(x^2+1)}$." },
   {
     question: "Вычислите \\(\\int \\frac{x^2 + 1}{x^4 + 1}  dx\\)",
     options: [
@@ -1224,18 +1179,16 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{\\sqrt{2}}\\arctan(\\frac{x^2 - 1}{x\\sqrt{2}}) + C\\)",
       "\\(\\frac{x}{x^4 + 1} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Разложение $x^4+1=(x^2+\\sqrt2x+1)(x^2-\\sqrt2x+1)$; после деления на $x^2$ получаем $\\frac1{\\sqrt2}\\arctan\\dfrac{x^2-1}{x\\sqrt2}$." },
   {
-    question: "Вычислите \\(\\int \\frac{1}{\\sqrt{x}(1 + x^{3/2})}  dx\\)",
+    question: "Вычислите \\(\\int \\frac{\\sqrt{x}}{1 + x^{3/2}}  dx\\)",
     options: [
       "\\(\\ln|1 + x^{3/2}| + C\\)",
       "\\(\\frac{2}{3}\\ln|1 + x^{3/2}| + C\\)",
       "\\(\\frac{1}{1 + x^{3/2}} + C\\)",
       "\\(\\frac{2}{\\sqrt{x}} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=1+x^{3/2}$, $dt=\\frac32\\sqrt x\\,dx$: $\\int\\frac{2/3\\,dt}{t}=\\frac23\\ln(1+x^{3/2})$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(2x)}{\\sin^2(x)\\cos^2(x)}  dx\\)",
     options: [
@@ -1244,8 +1197,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{\\sin(x)\\cos(x)} + C\\)",
       "\\(-(\\tan(x) + \\cot(x)) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "$\\cos(2x)=\\cos^2x-\\sin^2x$, деление даёт $\\csc^2x-\\sec^2x$; интегрируем: $-\\cot x-\\tan x$." },
   {
     question: "Вычислите \\(\\int \\frac{x^5}{x^2 + 1}  dx\\)",
     options: [
@@ -1254,18 +1206,16 @@ export const mediumIntegralsQuestions = [
       "\\(x^3 - x + \\arctan(x) + C\\)",
       "\\(\\frac{1}{6}x^6\\ln|x^2 + 1| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac{x^5}{x^2+1}=x^3-x+\\frac{x}{x^2+1}$; интегрируем: $\\frac14x^4-\\frac12x^2+\\frac12\\ln(x^2+1)$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{1 - x^3}}  dx\\)",
     options: [
       "\\(\\arcsin(x^{3/2}) + C\\)",
       "\\(\\frac{1}{\\sqrt{1 - x^3}} + C\\)",
-      "\\(-\\frac{1}{3}\\ln|\\frac{1 + \\sqrt{1 - x^3}}{x^{3/2}}| + C\\)",
+      "\\(-\\frac{2}{3}\\ln|\\frac{1 + \\sqrt{1 - x^3}}{x^{3/2}}| + C\\)",
       "\\(-\\frac{2}{3}\\sqrt{1 - x^3} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=\\sqrt{1-x^3}$ приводит к $-\\frac23\\ln\\left|\\dfrac{1+\\sqrt{1-x^3}}{x^{3/2}}\\right|$ (проверено дифференцированием)." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(2x)}{\\sqrt{1 - \\sin^4(x)}}  dx\\)",
     options: [
@@ -1274,8 +1224,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|1 - \\sin^4(x)| + C\\)",
       "\\(\\frac{1}{2}\\sin^2(x) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=\\sin^2x$, $dt=\\sin(2x)dx$: $\\int\\frac{dt}{\\sqrt{1-t^2}}=\\arcsin(\\sin^2x)$." },
   {
     question: "Вычислите \\(\\int \\frac{x^2}{\\sqrt{9 - x^6}}  dx\\)",
     options: [
@@ -1284,8 +1233,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{x^3}{3}\\arcsin(\\frac{x^3}{3}) + C\\)",
       "\\(\\frac{1}{3}\\arcsin(\\frac{x^3}{3}) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $u=x^3$: $\\int\\frac{du/3}{\\sqrt{9-u^2}}=\\frac13\\arcsin(u/3)$." },
   {
     question: "Вычислите \\(\\int \\sin^2(x)  dx\\)",
     options: [
@@ -1294,8 +1242,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{\\cos(2x)}{2} + C\\)",
       "\\(\\sin(x)\\cos(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Формула понижения степени: $\\sin^2x=\\frac{1-\\cos2x}2$; интегрируем: $\\frac x2-\\frac{\\sin2x}4$." },
   {
     question: "Вычислите \\(\\int \\tan(x)  dx\\)",
     options: [
@@ -1304,8 +1251,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sec^2(x) + C\\)",
       "\\(-\\cot(x) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "$\\tan x=\\dfrac{\\sin x}{\\cos x}$; подстановка $t=\\cos x$ даёт $-\\ln|\\cos x|$." },
   {
     question: "Вычислите \\(\\int x e^{x^2}  dx\\)",
     options: [
@@ -1314,8 +1260,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}e^{x^2} + C\\)",
       "\\(\\frac{e^{x^2}}{x} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=x^2$: $\\int\\frac12e^t\\,dt=\\frac12e^{x^2}$." },
   {
     question: "Вычислите \\(\\int \\sin(x)\\cos^2(x)  dx\\)",
     options: [
@@ -1324,8 +1269,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{\\sin^3(x)}{3} + C\\)",
       "\\(-\\frac{\\sin(2x)}{4} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=\\cos x$, $dt=-\\sin x\\,dx$: $-\\int t^2\\,dt=-\\frac13t^3$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 - 4}  dx\\)",
     options: [
@@ -1334,8 +1278,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\ln|x^2 - 4| + C\\)",
       "\\(\\arctan\\left(\\frac{x}{2}\\right) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac1{(x-2)(x+2)}=\\frac14\\left(\\frac1{x-2}-\\frac1{x+2}\\right)$, интегрируем: $\\frac14\\ln\\left|\\frac{x-2}{x+2}\\right|$." },
   {
     question: "Вычислите \\(\\int \\frac{\\ln(x)}{x}  dx\\)",
     options: [
@@ -1344,8 +1287,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{\\ln^2(x)}{2} + C\\)",
       "\\(\\frac{1}{x}\\ln(x) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=\\ln x$: $\\int t\\,dt=\\frac{t^2}2$." },
   {
     question: "Вычислите \\(\\int x e^{2x}  dx\\)",
     options: [
@@ -1354,8 +1296,7 @@ export const mediumIntegralsQuestions = [
       "\\(x e^{2x} - e^{2x} + C\\)",
       "\\(\\frac{1}{2}e^{2x}(x + 1) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "По частям: $u=x,\\,dv=e^{2x}dx$: $\\frac12xe^{2x}-\\frac14e^{2x}=\\frac14e^{2x}(2x-1)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(x)}{2 + \\sin(x)}  dx\\)",
     options: [
@@ -1364,8 +1305,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|2 + \\sin(x)| + C\\)",
       "\\(\\frac{\\sin(x)}{2 + \\sin(x)} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Числитель — производная знаменателя: $\\int\\frac{(2+\\sin x)'}{2+\\sin x}dx=\\ln(2+\\sin x)$." },
   {
     question: "Вычислите \\(\\int \\frac{x}{x + 1}  dx\\)",
     options: [
@@ -1374,8 +1314,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{x^2}{2(x+1)} + C\\)",
       "\\(x + \\ln|x + 1| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac{x}{x+1}=1-\\frac1{x+1}$; интегрируем: $x-\\ln|x+1|$." },
   {
     question: "Вычислите \\(\\int e^x \\sin(x)  dx\\)",
     options: [
@@ -1384,8 +1323,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{e^x}{2}(\\sin(x) - \\cos(x)) + C\\)",
       "\\(e^x(\\sin(x) - \\cos(x)) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Двукратное интегрирование по частям (табличный результат): $\\frac{e^x}2(\\sin x-\\cos x)$." },
   {
     question: "Вычислите \\(\\int \\frac{x^2}{x^3 + 1}  dx\\)",
     options: [
@@ -1394,8 +1332,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^3 + 1| + C\\)",
       "\\(\\frac{1}{3}\\ln|x^3 + 1| + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $t=x^3+1$, $dt=3x^2dx$: $\\int\\frac{dt/3}{t}=\\frac13\\ln|x^3+1|$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 + 9}  dx\\)",
     options: [
@@ -1404,8 +1341,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arctan\\left(\\frac{x}{3}\\right) + C\\)",
       "\\(\\frac{1}{9}\\arctan\\left(\\frac{x}{3}\\right) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Табличная форма $\\int\\frac{dx}{x^2+a^2}=\\frac1a\\arctan\\frac xa$ при $a=3$." },
   {
     question: "Вычислите \\(\\int \\frac{2x}{x^2 + 1}  dx\\)",
     options: [
@@ -1414,8 +1350,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^2 + 1| + C\\)",
       "\\(\\arctan(x) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Числитель — производная знаменателя: $\\int\\frac{(x^2+1)'}{x^2+1}dx=\\ln(x^2+1)$." },
   {
     question: "Вычислите \\(\\int x\\cdot e^{x^2}  dx\\)",
     options: [
@@ -1424,8 +1359,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}e^{x^2} + C\\)",
       "\\(\\frac{1}{x}e^{x^2} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=x^2$: $\\int\\frac12e^t\\,dt=\\frac12e^{x^2}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{1 + x^2}  dx\\)",
     options: [
@@ -1434,8 +1368,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arcsin(x) + C\\)",
       "\\(\\arctan(x) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Табличный интеграл: $\\int\\frac{dx}{1+x^2}=\\arctan x$." },
   {
     question: "Вычислите \\(\\int \\sin(2x)  dx\\)",
     options: [
@@ -1444,8 +1377,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\cos(2x) + C\\)",
       "\\(2\\cos(2x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\int\\sin(2x)\\,dx=-\\frac12\\cos(2x)$ (внутренняя производная $2$ учтена делением)." },
   {
     question: "Вычислите \\(\\int \\frac{x}{\\sqrt{1 - x^2}}  dx\\)",
     options: [
@@ -1454,8 +1386,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2\\sqrt{1 - x^2}} + C\\)",
       "\\(\\arcsin(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=1-x^2$, $dt=-2x\\,dx$: $-\\frac12\\int t^{-1/2}dt=-\\sqrt{1-x^2}$." },
   {
     question: "Вычислите \\(\\int \\ln(x)  dx\\)",
     options: [
@@ -1464,8 +1395,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln(x) + C\\)",
       "\\(x\\ln(x) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "По частям: $u=\\ln x,\\,dv=dx$: $x\\ln x-\\int dx=x\\ln x-x$." },
   {
     question: "Вычислите \\(\\int \\cos(3x)  dx\\)",
     options: [
@@ -1474,8 +1404,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sin(3x) + C\\)",
       "\\(-\\frac{1}{3}\\sin(3x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\int\\cos(3x)dx=\\frac13\\sin(3x)$ (внутренняя производная $3$ учтена делением)." },
   {
     question: "Вычислите \\(\\int \\frac{e^x}{e^x + 1}  dx\\)",
     options: [
@@ -1484,8 +1413,7 @@ export const mediumIntegralsQuestions = [
       "\\(e^x\\ln|e^x + 1| + C\\)",
       "\\(\\arctan(e^x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=e^x+1$: $\\int\\frac{dt}t=\\ln(e^x+1)$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\cos(x^2)  dx\\)",
     options: [
@@ -1494,8 +1422,7 @@ export const mediumIntegralsQuestions = [
       "\\(2x\\sin(x^2) + C\\)",
       "\\(\\cos(x^2) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $t=x^2$: $\\int\\frac12\\cos t\\,dt=\\frac12\\sin(x^2)$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\ln(x)}  dx\\)",
     options: [
@@ -1504,8 +1431,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln(x) + C\\)",
       "\\(\\frac{1}{x\\ln(x)} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\ln x$: $\\int\\frac{dt}t=\\ln|\\ln x|$." },
   {
     question: "Вычислите \\(\\int \\cot(x)  dx\\)",
     options: [
@@ -1514,8 +1440,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\cos(x)| + C\\)",
       "\\(-\\csc^2(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\cot x=\\dfrac{\\cos x}{\\sin x}$; подстановка $t=\\sin x$ даёт $\\ln|\\sin x|$." },
   {
     question: "Вычислите \\(\\int \\frac{2x + 1}{x^2 + x}  dx\\)",
     options: [
@@ -1524,8 +1449,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^2 + x| + C\\)",
       "\\(\\arctan(x^2 + x) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Числитель — производная знаменателя: $\\int\\frac{(x^2+x)'}{x^2+x}dx=\\ln|x^2+x|$." },
   {
     question: "Вычислите \\(\\int e^{3x}  dx\\)",
     options: [
@@ -1534,8 +1458,7 @@ export const mediumIntegralsQuestions = [
       "\\(e^{3x} + C\\)",
       "\\(\\frac{1}{x}e^{3x} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\int e^{3x}dx=\\frac13e^{3x}$ (внутренняя производная $3$ учтена делением)." },
   {
     question: "Вычислите \\(\\int \\frac{1}{\\sqrt{1 - x^2}}  dx\\)",
     options: [
@@ -1544,8 +1467,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\sqrt{1 - x^2}| + C\\)",
       "\\(\\arctan(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Табличный интеграл: $\\int\\frac{dx}{\\sqrt{1-x^2}}=\\arcsin x$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\sqrt{x^2 + 1}  dx\\)",
     options: [
@@ -1554,8 +1476,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\sqrt{x^2 + 1} + C\\)",
       "\\(\\frac{2}{3}(x^2 + 1)^{3/2} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=x^2+1$: $\\int\\frac12\\sqrt t\\,dt=\\frac13t^{3/2}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(x)}{\\sin(x)}  dx\\)",
     options: [
@@ -1564,8 +1485,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\tan(x) + C\\)",
       "\\(\\cot(x) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "$\\dfrac{\\cos x}{\\sin x}$; подстановка $t=\\sin x$ даёт $\\ln|\\sin x|$." },
   {
     question: "Вычислите \\(\\int (x^2 + 2)^2  dx\\)",
     options: [
@@ -1574,8 +1494,7 @@ export const mediumIntegralsQuestions = [
       "\\(x^4 + 4x^2 + 4 + C\\)",
       "\\(\\frac{x^3}{3} + 2x^2 + 4x + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Раскрываем скобки: $(x^2+2)^2=x^4+4x^2+4$; интегрируем почленно: $\\frac{x^5}5+\\frac{4x^3}3+4x$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 + 4}  dx\\)",
     options: [
@@ -1584,8 +1503,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^2 + 4| + C\\)",
       "\\(\\frac{1}{2}\\arctan(\\frac{x}{2}) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Табличная форма $\\int\\frac{dx}{x^2+a^2}=\\frac1a\\arctan\\frac xa$ при $a=2$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\ln(x)  dx\\)",
     options: [
@@ -1594,8 +1512,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x} + C\\)",
       "\\(\\frac{x^2}{2}\\ln(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "По частям: $u=\\ln x,\\,dv=x\\,dx$: $\\frac{x^2}2\\ln x-\\int\\frac x2dx=\\frac{x^2}2\\ln x-\\frac{x^2}4$." },
   {
     question: "Вычислите \\(\\int \\sin(x)\\cdot\\cos(x)  dx\\)",
     options: [
@@ -1604,8 +1521,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\cos^2(x) + C\\)",
       "\\(-\\frac{1}{2}\\cos^2(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\sin x$: $\\int t\\,dt=\\frac{t^2}2$." },
   {
     question: "Вычислите \\(\\int \\frac{e^{\\sqrt{x}}}{\\sqrt{x}}  dx\\)",
     options: [
@@ -1614,8 +1530,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sqrt{x}e^{\\sqrt{x}} + C\\)",
       "\\(2e^{\\sqrt{x}} + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $t=\\sqrt x$, $dx=2t\\,dt$: $\\int\\frac{e^t}{t}\\cdot2t\\,dt=2\\int e^t\\,dt=2e^{\\sqrt x}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\sqrt{\\ln(x)}}  dx\\)",
     options: [
@@ -1624,8 +1539,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2\\sqrt{\\ln(x)}} + C\\)",
       "\\(\\ln|\\sqrt{\\ln(x)}| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\ln x$: $\\int t^{-1/2}dt=2\\sqrt t=2\\sqrt{\\ln x}$." },
   {
     question: "Вычислите \\(\\int \\frac{x}{x^2 + 9}  dx\\)",
     options: [
@@ -1634,8 +1548,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x^2 + 9} + C\\)",
       "\\(\\arctan(\\frac{x}{3}) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Числитель пропорционален производной знаменателя: $\\int\\frac{x}{x^2+9}dx=\\frac12\\ln(x^2+9)$." },
   {
     question: "Вычислите \\(\\int \\sec(x)\\cdot\\tan(x)  dx\\)",
     options: [
@@ -1644,8 +1557,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sec(x) + C\\)",
       "\\(\\ln|\\sec(x) + \\tan(x)| + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Табличный интеграл: $\\int\\sec x\\tan x\\,dx=\\sec x$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{\\sqrt{4 - x^2}}  dx\\)",
     options: [
@@ -1654,8 +1566,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\sqrt{4 - x^2}| + C\\)",
       "\\(\\arccos(\\frac{x}{2}) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Табличная форма $\\int\\frac{dx}{\\sqrt{a^2-x^2}}=\\arcsin\\frac xa$ при $a=2$." },
   {
     question: "Вычислите \\(\\int x\\cdot e^{-x}  dx\\)",
     options: [
@@ -1664,8 +1575,7 @@ export const mediumIntegralsQuestions = [
       "\\(-e^{-x} + C\\)",
       "\\(e^{-x} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "По частям: $u=x,\\,dv=e^{-x}dx$: $-xe^{-x}-e^{-x}=-e^{-x}(x+1)$." },
   {
     question: "Вычислите \\(\\int \\frac{\\sin(x)}{\\cos^2(x)}  dx\\)",
     options: [
@@ -1674,8 +1584,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\tan(x) + C\\)",
       "\\(\\ln|\\cos(x)| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\cos x$: $-\\int t^{-2}dt=\\frac1t=\\frac1{\\cos x}$." },
   {
     question: "Вычислите \\(\\int (2x + 3)^4  dx\\)",
     options: [
@@ -1684,8 +1593,7 @@ export const mediumIntegralsQuestions = [
       "\\((2x + 3)^5 + C\\)",
       "\\(\\frac{1}{5}(2x + 3)^5 + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $u=2x+3$: $\\int u^4\\cdot\\frac{du}2=\\frac1{10}u^5$." },
   {
     question: "Вычислите \\(\\int \\frac{e^x - e^{-x}}{e^x + e^{-x}}  dx\\)",
     options: [
@@ -1694,8 +1602,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{e^x + e^{-x}} + C\\)",
       "\\(e^x - e^{-x} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Числитель — производная знаменателя: $\\int\\frac{(e^x+e^{-x})'}{e^x+e^{-x}}dx=\\ln(e^x+e^{-x})$." },
   {
     question: "Вычислите \\(\\int x\\cdot\\sin(x)  dx\\)",
     options: [
@@ -1704,8 +1611,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\cos(x) + C\\)",
       "\\(-x\\cdot\\cos(x) + \\sin(x) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "По частям: $u=x,\\,dv=\\sin x\\,dx$: $-x\\cos x+\\int\\cos x\\,dx=-x\\cos x+\\sin x$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x^2 - 1}  dx\\)",
     options: [
@@ -1714,8 +1620,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x-1} - \\frac{1}{x+1} + C\\)",
       "\\(\\arctan(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\frac1{(x-1)(x+1)}=\\frac12\\left(\\frac1{x-1}-\\frac1{x+1}\\right)$, интегрируем: $\\frac12\\ln\\left|\\frac{x-1}{x+1}\\right|$." },
   {
     question: "Вычислите \\(\\int \\sqrt{1 + x}  dx\\)",
     options: [
@@ -1724,8 +1629,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2\\sqrt{1 + x}} + C\\)",
       "\\(\\frac{3}{2}(1 + x)^{3/2} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=1+x$: $\\int\\sqrt t\\,dt=\\frac23t^{3/2}$." },
   {
     question: "Вычислите \\(\\int \\frac{\\cos(x)}{1 + \\sin(x)}  dx\\)",
     options: [
@@ -1734,8 +1638,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\ln|1 + \\sin(x)| + C\\)",
       "\\(\\arctan(\\sin(x)) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Числитель — производная знаменателя: $\\int\\frac{(1+\\sin x)'}{1+\\sin x}dx=\\ln(1+\\sin x)$." },
   {
     question: "Вычислите \\(\\int x^2\\cdot e^{x^3}  dx\\)",
     options: [
@@ -1744,8 +1647,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{3}e^{x^3} + C\\)",
       "\\(\\frac{1}{x}e^{x^3} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Подстановка $t=x^3$, $dt=3x^2dx$: $\\int\\frac13e^t\\,dt=\\frac13e^{x^3}$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{x\\ln^2(x)}  dx\\)",
     options: [
@@ -1754,8 +1656,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|\\ln(x)| + C\\)",
       "\\(-\\frac{1}{2\\ln^2(x)} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\ln x$: $\\int t^{-2}dt=-\\frac1t=-\\frac1{\\ln x}$." },
   {
     question: "Вычислите \\(\\int \\tan^2(x)  dx\\)",
     options: [
@@ -1764,8 +1665,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\sec^2(x) + C\\)",
       "\\(\\ln|\\cos(x)| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\tan^2x=\\sec^2x-1$; интегрируем: $\\tan x-x$." },
   {
     question: "Вычислите \\(\\int \\frac{x + 1}{x^2 + 2x}  dx\\)",
     options: [
@@ -1774,8 +1674,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{x^2 + 2x} + C\\)",
       "\\(\\arctan(x^2 + 2x) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Числитель — половина производной знаменателя: $\\int\\frac{(x^2+2x)'/2}{x^2+2x}dx=\\frac12\\ln|x^2+2x|$." },
   {
     question: "Вычислите \\(\\int e^{2x}\\cdot\\sin(x)  dx\\)",
     options: [
@@ -1784,8 +1683,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{e^{2x}}{2}\\sin(x) + C\\)",
       "\\(e^{2x}(\\sin(x) - \\cos(x)) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Двукратное интегрирование по частям (табличный результат для $e^{ax}\\sin bx$): $\\dfrac{e^{2x}}5(2\\sin x-\\cos x)$." },
   {
     question: "Вычислите \\(\\int \\frac{1}{\\sqrt{x}(1 + \\sqrt{x})}  dx\\)",
     options: [
@@ -1794,8 +1692,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{1 + \\sqrt{x}} + C\\)",
       "\\(\\sqrt{x}\\ln|1 + \\sqrt{x}| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\sqrt x$: $\\int\\frac{2\\,dt}{1+t}=2\\ln(1+\\sqrt x)$." },
   {
     question: "Вычислите интеграл \\(\\int x \\cdot e^{2x}  dx\\)",
     options: [
@@ -1804,8 +1701,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}x e^{2x} - \\frac{1}{4}e^{2x} + C\\)",
       "\\(x e^{2x} + e^{2x} + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "По частям: $u=x,\\,dv=e^{2x}dx$: $\\frac12xe^{2x}-\\frac14e^{2x}$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{x}{x^2 + 4x + 5}  dx\\)",
     options: [
@@ -1814,8 +1710,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x^2 + 4x + 5| - \\arctan(x+2) + C\\)",
       "\\(\\frac{1}{2}\\ln|x^2 + 4x + 5| - 2\\arctan(x+2) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Выделяем производную знаменателя и дополняем до квадрата: $\\frac12\\ln(x^2+4x+5)-2\\arctan(x+2)$." },
   {
     question: "Вычислите интеграл \\(\\int \\sin^3(x) \\cos^2(x)  dx\\)",
     options: [
@@ -1824,8 +1719,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{5}\\cos^5(x) + \\frac{1}{3}\\cos^3(x) + C\\)",
       "\\(\\frac{1}{5}\\sin^5(x) - \\frac{1}{3}\\sin^3(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "$\\sin^3x=\\sin x(1-\\cos^2x)$; подстановка $t=\\cos x$ даёт $-\\frac13t^3+\\frac15t^5$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{2x + 3}{x^2 + 2x + 2}  dx\\)",
     options: [
@@ -1834,8 +1728,7 @@ export const mediumIntegralsQuestions = [
       "\\(2\\ln|x^2 + 2x + 2| + \\arctan(x+1) + C\\)",
       "\\(\\ln|x^2 + 2x + 2| - \\arctan(x+1) + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Выделяем производную знаменателя $(2x+2)$ и остаток $1$; после дополнения квадрата — логарифм плюс арктангенс." },
   {
     question: "Вычислите интеграл \\(\\int x \\cdot \\ln(2x)  dx\\)",
     options: [
@@ -1844,8 +1737,7 @@ export const mediumIntegralsQuestions = [
       "\\(x^2 \\ln(2x) - \\frac{1}{2}x^2 + C\\)",
       "\\(x^2 \\ln(2x) + x^2 + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "По частям: $u=\\ln(2x),\\,dv=x\\,dx$: $\\frac12x^2\\ln(2x)-\\int\\frac x2dx=\\frac12x^2\\ln(2x)-\\frac14x^2$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{dx}{x^2 \\sqrt{4 - x^2}}\\)",
     options: [
@@ -1854,8 +1746,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{\\sqrt{4 - x^2}}{2x} + C\\)",
       "\\(-\\frac{\\sqrt{4 - x^2}}{4x} + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Тригонометрическая подстановка $x=2\\sin\\theta$ даёт $-\\dfrac{\\sqrt{4-x^2}}{4x}$." },
   {
     question: "Вычислите интеграл \\(\\int e^x \\sin(2x)  dx\\)",
     options: [
@@ -1864,8 +1755,7 @@ export const mediumIntegralsQuestions = [
       "\\(e^x(\\sin(2x) - 2\\cos(2x)) + C\\)",
       "\\(\\frac{e^x}{5}(2\\sin(2x) - \\cos(2x)) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Двукратное интегрирование по частям: $\\dfrac{e^x}5(\\sin2x-2\\cos2x)$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{x^2 + 1}{x^3 - x}  dx\\)",
     options: [
@@ -1874,8 +1764,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|x| - \\ln|x-1| - \\ln|x+1| + C\\)",
       "\\(\\frac{1}{2}\\ln|x| - \\ln|x-1| - \\ln|x+1| + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Разложение на простые дроби: $\\frac{x^2+1}{x(x-1)(x+1)}=-\\frac1x+\\frac1{x-1}+\\frac1{x+1}$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{\\cos(x)}{\\sin^2(x) + 4\\sin(x) + 4}  dx\\)",
     options: [
@@ -1884,8 +1773,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{\\sin(x) + 2} + C\\)",
       "\\(\\ln|\\sin(x) + 2| + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "$\\sin^2x+4\\sin x+4=(\\sin x+2)^2$; подстановка $t=\\sin x$ даёт $-\\dfrac1{\\sin x+2}$." },
   {
     question: "Вычислите интеграл \\(\\int \\sqrt{x} \\cdot \\ln(x)  dx\\)",
     options: [
@@ -1894,8 +1782,7 @@ export const mediumIntegralsQuestions = [
       "\\(x^{3/2}\\ln(x) - \\frac{2}{3}x^{3/2} + C\\)",
       "\\(\\frac{1}{2}x^{3/2}\\ln(x) - \\frac{1}{3}x^{3/2} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "По частям: $u=\\ln x,\\,dv=\\sqrt x\\,dx$: $\\frac23x^{3/2}\\ln x-\\int\\frac23x^{1/2}dx=\\frac23x^{3/2}\\ln x-\\frac49x^{3/2}$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{dx}{x^2 + 6x + 13}\\)",
     options: [
@@ -1904,8 +1791,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\arctan\\left(\\frac{x+3}{4}\\right) + C\\)",
       "\\(\\frac{1}{2}\\arctan\\left(\\frac{x+3}{2}\\right) + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Дополняем квадрат: $x^2+6x+13=(x+3)^2+4$, даёт $\\frac12\\arctan\\dfrac{x+3}2$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{x^3}{\\sqrt{9 - x^2}}  dx\\)",
     options: [
@@ -1914,8 +1800,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\frac{1}{3}(9 - x^2)^{3/2} + 9\\sqrt{9 - x^2} + C\\)",
       "\\(\\frac{1}{3}(9 - x^2)^{3/2} + 9\\sqrt{9 - x^2} + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=9-x^2$: $\\int\\frac{(9-t)}{2\\sqrt t}dt$ приводит к $\\frac13(9-x^2)^{3/2}-9\\sqrt{9-x^2}$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{\\sin(2x)}{1 + \\cos^2(x)}  dx\\)",
     options: [
@@ -1924,8 +1809,7 @@ export const mediumIntegralsQuestions = [
       "\\(-2\\ln|1 + \\cos^2(x)| + C\\)",
       "\\(2\\ln|1 + \\cos^2(x)| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\cos^2x$: $\\int\\frac{-dt}{1+t}=-\\ln(1+\\cos^2x)$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{dx}{x\\sqrt{x^2 - 9}}\\)",
     options: [
@@ -1934,8 +1818,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{3} \\operatorname{arcsec}\\left(\\frac{|x|}{3}\\right) + C\\)",
       "\\(\\arccos\\left(\\frac{3}{|x|}\\right) + C\\)",
     ],
-    correct: 2,
-  },
+    correct: 2, explanation: "Тригонометрическая подстановка $x=3\\sec\\theta$ даёт $\\frac13\\operatorname{arcsec}\\dfrac{|x|}3$." },
   {
     question: "Вычислите интеграл \\(\\int x^2 \\cdot \\cos(x)  dx\\)",
     options: [
@@ -1944,18 +1827,16 @@ export const mediumIntegralsQuestions = [
       "\\(x^2 \\sin(x) + 2x \\cos(x) + 2 \\sin(x) + C\\)",
       "\\(x^2 \\sin(x) - 2x \\cos(x) - 2 \\sin(x) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Двукратное интегрирование по частям: $x^2\\sin x+2x\\cos x-2\\sin x$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{x^2 + 2x + 3}{(x+1)^3}  dx\\)",
     options: [
       "\\(\\ln|x+1| - \\frac{1}{x+1} - \\frac{1}{(x+1)^2} + C\\)",
-      "\\(\\ln|x+1| - \\frac{2}{x+1} - \\frac{2}{(x+1)^2} + C\\)",
+      "\\(\\ln|x+1| - \\frac{1}{(x+1)^2} + C\\)",
       "\\(\\ln|x+1| + \\frac{2}{x+1} + \\frac{2}{(x+1)^2} + C\\)",
       "\\(\\ln|x+1| + \\frac{1}{x+1} + \\frac{1}{(x+1)^2} + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Подстановка $u=x+1$: числитель $=u^2+2$, значит $\\int\\left(\\frac1u+\\frac2{u^3}\\right)du=\\ln|u|-\\frac1{u^2}$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{dx}{\\sqrt{4x^2 + 12x + 10}}\\)",
     options: [
@@ -1964,8 +1845,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\ln|2x + 3 + \\sqrt{4x^2 + 12x + 10}| + C\\)",
       "\\(\\ln|x + \\frac{3}{2} + \\sqrt{x^2 + 3x + \\frac{5}{2}}| + C\\)",
     ],
-    correct: 1,
-  },
+    correct: 1, explanation: "Дополняем квадрат под корнем: $4x^2+12x+10=(2x+3)^2+1$, даёт $\\frac12\\ln|2x+3+\\sqrt{4x^2+12x+10}|$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{e^{2x}}{e^x + 1}  dx\\)",
     options: [
@@ -1974,8 +1854,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}e^{2x} - \\ln|e^x + 1| + C\\)",
       "\\(\\frac{1}{2}e^{2x} + \\ln|e^x + 1| + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=e^x+1$: $\\int\\left(1-\\frac1t\\right)dt=e^x-\\ln(e^x+1)$." },
   {
     question: "Вычислите интеграл \\(\\int \\frac{\\arctan(x)}{1 + x^2}  dx\\)",
     options: [
@@ -1984,8 +1863,7 @@ export const mediumIntegralsQuestions = [
       "\\(\\frac{1}{2}\\ln|1 + x^2| \\arctan(x) + C\\)",
       "\\(\\frac{1}{2}(\\arctan(x))^2 + C\\)",
     ],
-    correct: 3,
-  },
+    correct: 3, explanation: "Подстановка $t=\\arctan x$: $\\int t\\,dt=\\frac12t^2$." },
   {
     question: "Вычислите интеграл \\(\\int \\sin(\\sqrt{x})  dx\\)",
     options: [
@@ -1994,8 +1872,7 @@ export const mediumIntegralsQuestions = [
       "\\(-\\sqrt{x}\\cos(\\sqrt{x}) + \\sin(\\sqrt{x}) + C\\)",
       "\\(\\sqrt{x}\\cos(\\sqrt{x}) - \\sin(\\sqrt{x}) + C\\)",
     ],
-    correct: 0,
-  },
+    correct: 0, explanation: "Подстановка $t=\\sqrt x$, $x=t^2$, $dx=2t\\,dt$: $\\int2t\\sin t\\,dt=2(-t\\cos t+\\sin t)$ (по частям)." },
 ];
 
 // ── Интегралы (Сложный уровень) ──────────────────────────
