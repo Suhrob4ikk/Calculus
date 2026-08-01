@@ -345,8 +345,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x\\sin(x) + x^2\\cos(x)\\)",
             "\\(\\cos(x)\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Произведение: $(x^2)'\\sin x+x^2(\\sin x)'=2x\\sin x+x^2\\cos x$." },
     {
         question: "f(x) = \\(e^x \\cdot \\ln(x)\\). Найдите f'(x)",
         options: [
@@ -355,8 +354,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\ln(x)\\)",
             "\\(\\frac{e^x}{x} + e^x\\ln(x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение: $(e^x)'\\ln x+e^x(\\ln x)'=e^x\\ln x+\\dfrac{e^x}{x}$." },
     {
         question: "f(x) = \\((x^3 + 2x)^4\\). Найдите f'(x)",
         options: [
@@ -365,8 +363,7 @@ export const mediumDerivativesQuestions = [
             "\\(4(x^3 + 2x)^3(3x^2 + 2)\\)",
             "\\((3x^2 + 2)^4\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Цепное правило: $4(x^3+2x)^3\\cdot(3x^2+2)'=4(x^3+2x)^3(3x^2+2)$." },
     {
         question: "f(x) = \\(\\sqrt{x^2 + 1}\\). Найдите f'(x)",
         options: [
@@ -375,8 +372,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{x}{\\sqrt{x^2 + 1}}\\)",
             "\\(\\sqrt{2x}\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Цепное правило: $\\dfrac{1}{2\\sqrt{x^2+1}}\\cdot2x=\\dfrac{x}{\\sqrt{x^2+1}}$." },
     {
         question: "f(x) = \\(\\sin(2x) \\cdot \\cos(3x)\\). Найдите f'(x)",
         options: [
@@ -385,8 +381,7 @@ export const mediumDerivativesQuestions = [
             "\\(5\\cos(5x)\\)",
             "\\(2\\cos(2x)\\cos(3x) - 3\\sin(2x)\\sin(3x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение и цепное правило: $2\\cos(2x)\\cos(3x)-3\\sin(2x)\\sin(3x)$." },
     {
         question: "f(x) = \\(\\ln(x^2 + 4)\\). Найдите f'(x)",
         options: [
@@ -395,8 +390,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2}{x}\\)",
             "\\(\\frac{2x}{x^2 + 4}\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Цепное правило: $\\dfrac{(x^2+4)'}{x^2+4}=\\dfrac{2x}{x^2+4}$." },
     {
         question: "f(x) = \\(e^{2x} \\cdot \\sin(x)\\). Найдите f'(x)",
         options: [
@@ -405,8 +399,7 @@ export const mediumDerivativesQuestions = [
             "\\(2e^{2x}\\sin(x)\\)",
             "\\(e^{2x}(2\\sin(x) + \\cos(x))\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение: $2e^{2x}\\sin x+e^{2x}\\cos x=e^{2x}(2\\sin x+\\cos x)$." },
     {
         question: "f(x) = \\(\\frac{2x + 1}{x - 3}\\). Найдите f'(x)",
         options: [
@@ -415,8 +408,7 @@ export const mediumDerivativesQuestions = [
             "\\(-\\frac{7}{(x - 3)^2}\\)",
             "\\(\\frac{1}{(x-3)^2}\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Частное: $\\dfrac{2(x-3)-(2x+1)}{(x-3)^2}=\\dfrac{-7}{(x-3)^2}$." },
     {
         question: "f(x) = \\(x \\cdot \\arctan(x)\\). Найдите f'(x)",
         options: [
@@ -425,8 +417,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{x}{1 + x^2}\\)",
             "\\(\\arctan(x) + \\frac{1}{1 + x^2}\\)",
         ],
-        correct: 1,
-    },
+        correct: 1, explanation: "Произведение: $\\arctan x+\\dfrac{x}{1+x^2}$." },
     {
         question: "f(x) = \\(\\cos^2(x)\\). Найдите f'(x)",
         options: [
@@ -435,8 +426,7 @@ export const mediumDerivativesQuestions = [
             "\\(2\\cos(x)\\)",
             "\\(-2\\cos(x)\\sin(x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Цепное правило: $2\\cos x\\cdot(-\\sin x)=-2\\sin x\\cos x$." },
     {
         question: "f(x) = \\(\\sqrt{x} \\cdot \\ln(x)\\). Найдите f'(x)",
         options: [
@@ -445,8 +435,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{\\ln(x)}{2\\sqrt{x}} + \\frac{1}{x}\\)",
             "\\(\\frac{\\ln(x)}{2\\sqrt{x}}\\)",
         ],
-        correct: 1,
-    },
+        correct: 1, explanation: "Произведение: $\\dfrac{\\ln x}{2\\sqrt x}+\\sqrt{x}\\cdot\\dfrac1x=\\dfrac{\\ln x}{2\\sqrt x}+\\dfrac{1}{\\sqrt x}$." },
     {
         question: "f(x) = \\(e^{x^2}\\). Найдите f'(x)",
         options: [
@@ -455,8 +444,7 @@ export const mediumDerivativesQuestions = [
             "\\(x^2 \\cdot e^{x^2}\\)",
             "\\(2x \\cdot e^{x^2}\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Цепное правило: $e^{x^2}\\cdot2x=2xe^{x^2}$." },
     {
         question: "f(x) = \\(\\frac{\\sin(x)}{x}\\). Найдите f'(x)",
         options: [
@@ -465,8 +453,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{\\cos(x) - \\sin(x)}{x^2}\\)",
             "\\(x\\cos(x) - \\sin(x)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Частное: $\\dfrac{x\\cos x-\\sin x}{x^2}$." },
     {
         question: "f(x) = \\((x^2 + 1)^5\\). Найдите f'(x)",
         options: [
@@ -475,8 +462,7 @@ export const mediumDerivativesQuestions = [
             "\\(10x^2(x^2 + 1)^4\\)",
             "\\(5x(x^2 + 1)^4\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $5(x^2+1)^4\\cdot2x=10x(x^2+1)^4$." },
     {
         question: "f(x) = \\(\\tan(3x)\\). Найдите f'(x)",
         options: [
@@ -485,8 +471,7 @@ export const mediumDerivativesQuestions = [
             "\\(3\\sec^2(x)\\)",
             "\\(3\\sec^2(3x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Цепное правило: $\\sec^2(3x)\\cdot3=3\\sec^2(3x)$." },
     {
         question: "f(x) = \\(x \\cdot e^{-x}\\). Найдите f'(x)",
         options: [
@@ -495,8 +480,7 @@ export const mediumDerivativesQuestions = [
             "\\(-x e^{-x}\\)",
             "\\(e^{-x}(1 - x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение: $e^{-x}-xe^{-x}=e^{-x}(1-x)$." },
     {
         question: "f(x) = \\(\\ln(\\cos(x))\\). Найдите f'(x)",
         options: [
@@ -505,8 +489,7 @@ export const mediumDerivativesQuestions = [
             "\\(-\\frac{1}{\\sin(x)}\\)",
             "\\(-\\tan(x)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Цепное правило: $\\dfrac{-\\sin x}{\\cos x}=-\\tan x$." },
     {
         question: "f(x) = \\((\\sin(x) + \\cos(x))^2\\). Найдите f'(x)",
         options: [
@@ -515,8 +498,7 @@ export const mediumDerivativesQuestions = [
             "\\(2(\\cos^2(x)-\\sin^2(x))\\)",
             "\\(4\\sin(x)\\cos(x)\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Цепное правило: $2(\\sin x+\\cos x)(\\cos x-\\sin x)=2(\\cos^2x-\\sin^2x)$." },
     {
         question: "f(x) = \\(\\frac{x^2}{x + 1}\\). Найдите f'(x)",
         options: [
@@ -525,8 +507,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{x^2 + 2x}{(x+1)^2}\\)",
             "\\(\\frac{x(2x + 1)}{(x+1)^2}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Частное: $\\dfrac{2x(x+1)-x^2}{(x+1)^2}$." },
     {
         question: "f(x) = \\(\\arcsin(2x)\\). Найдите f'(x)",
         options: [
@@ -535,8 +516,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2}{\\sqrt{1 - x^2}}\\)",
             "\\(\\frac{1}{\\sqrt{1 - 2x^2}}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\dfrac{1}{\\sqrt{1-4x^2}}\\cdot2=\\dfrac{2}{\\sqrt{1-4x^2}}$." },
     {
         question: "f(x) = \\(e^{\\sin(x)}\\). Найдите f'(x)",
         options: [
@@ -545,8 +525,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\cos(x) \\cdot e^{\\cos(x)}\\)",
             "\\(\\sin(x) \\cdot e^{\\sin(x)}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\cos x\\cdot e^{\\sin x}$." },
     {
         question: "f(x) = \\(\\frac{x^3 - 1}{x^2 + 1}\\). Найдите f'(x)",
         options: [
@@ -555,8 +534,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{x^4+3x^2+2x}{(x^2+1)^2}\\)",
             "\\(\\frac{3x^2}{x^2+1}\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Частное: $\\dfrac{3x^2(x^2+1)-(x^3-1)\\cdot2x}{(x^2+1)^2}=\\dfrac{x^4+3x^2+2x}{(x^2+1)^2}$." },
     {
         question: "f(x) = \\(\\sqrt{\\sin(x)}\\). Найдите f'(x)",
         options: [
@@ -565,8 +543,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{1}{2\\sqrt{\\sin(x)}}\\)",
             "\\(\\sqrt{\\cos(x)}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\dfrac{\\cos x}{2\\sqrt{\\sin x}}$." },
     {
         question: "f(x) = \\(x \\cdot 2^x\\). Найдите f'(x)",
         options: [
@@ -575,8 +552,7 @@ export const mediumDerivativesQuestions = [
             "\\(x \\cdot 2^x\\)",
             "\\(2^x \\cdot \\ln(2)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Произведение (учитываем $(2^x)'=2^x\\ln2$): $2^x+x\\cdot2^x\\ln2$." },
     {
         question: "f(x) = \\(\\cos(\\ln(x))\\). Найдите f'(x)",
         options: [
@@ -585,8 +561,7 @@ export const mediumDerivativesQuestions = [
             "\\(-\\frac{\\sin(\\ln(x))}{x}\\)",
             "\\(\\frac{\\sin(\\ln(x))}{x}\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Цепное правило: $-\\sin(\\ln x)\\cdot\\dfrac1x=-\\dfrac{\\sin(\\ln x)}{x}$." },
     {
         question: "f(x) = \\(\\sqrt{1 + x^2}\\). Найдите f'(x)",
         options: [
@@ -595,8 +570,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\sqrt{1+x^2}\\)",
             "\\(x\\sqrt{1+x^2}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\dfrac{x}{\\sqrt{1+x^2}}$." },
     {
         question: "f(x) = \\(\\sin(x) \\cdot \\cos(2x)\\). Найдите f'(x)",
         options: [
@@ -605,8 +579,7 @@ export const mediumDerivativesQuestions = [
             "\\(-2\\sin(x)\\sin(2x)\\)",
             "\\(\\cos(3x)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Произведение и цепное правило: $\\cos x\\cos2x-2\\sin x\\sin2x$." },
     {
         question: "f(x) = \\(\\ln(x^2 + x)\\). Найдите f'(x)",
         options: [
@@ -615,8 +588,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2x}{x^2 + x}\\)",
             "\\(\\frac{2x + 1}{x}\\)",
         ],
-        correct: 1,
-    },
+        correct: 1, explanation: "Цепное правило: $\\dfrac{2x+1}{x^2+x}$." },
     {
         question: "f(x) = \\(e^{-x^2}\\). Найдите f'(x)",
         options: [
@@ -625,8 +597,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x \\cdot e^{-x^2}\\)",
             "\\(-2x \\cdot e^{-2x}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $e^{-x^2}\\cdot(-2x)=-2xe^{-x^2}$." },
     {
         question:
             "f(x) = \\(\\left(x + \\frac{1}{x}\\right)^2\\). Найдите f'(x)",
@@ -636,8 +607,7 @@ export const mediumDerivativesQuestions = [
             "\\(2\\left(1 - \\frac{1}{x^2}\\right)\\)",
             "\\(4x - \\frac{2}{x^3}\\)",
         ],
-        correct: 1,
-    },
+        correct: 1, explanation: "Цепное правило: $2\\Big(x+\\dfrac1x\\Big)\\Big(1-\\dfrac1{x^2}\\Big)=2\\Big(x-\\dfrac1{x^3}\\Big)$." },
     {
         question: "f(x) = \\(\\arctan(\\sqrt{x})\\). Найдите f'(x)",
         options: [
@@ -646,8 +616,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{1}{2\\sqrt{x}}\\)",
             "\\(\\frac{\\sqrt{x}}{1 + x}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\dfrac{1}{1+x}\\cdot\\dfrac{1}{2\\sqrt x}=\\dfrac{1}{2\\sqrt x(1+x)}$." },
     {
         question:
             "f(x) = \\(x \\cdot \\sin\\left(\\frac{1}{x}\\right)\\). Найдите f'(x)",
@@ -657,8 +626,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\sin\\left(\\frac{1}{x}\\right) - \\frac{\\cos\\left(\\frac{1}{x}\\right)}{x}\\)",
             "\\(\\sin\\left(\\frac{1}{x}\\right) - \\cos\\left(\\frac{1}{x}\\right)\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Произведение и цепное правило: $\\sin\\dfrac1x+x\\cos\\dfrac1x\\cdot\\Big(-\\dfrac1{x^2}\\Big)=\\sin\\dfrac1x-\\dfrac{\\cos(1/x)}{x}$." },
     {
         question: "f(x) = \\(\\frac{e^x - e^{-x}}{2}\\). Найдите f'(x)",
         options: [
@@ -667,8 +635,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{e^x - e^{-x}}{2}\\)",
             "\\(\\frac{e^{2x} + 1}{2}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Производная гиперболического синуса: $\\dfrac{e^x+e^{-x}}{2}$." },
     {
         question: "f(x) = \\(\\ln|\\sec(x)|\\). Найдите f'(x)",
         options: [
@@ -677,8 +644,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{1}{\\sec(x)}\\)",
             "\\(\\cos(x)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "$\\ln|\\sec x|=-\\ln|\\cos x|$, производная: $\\tan x$." },
     {
         question: "f(x) = \\(x^2 \\cdot e^{3x}\\). Найдите f'(x)",
         options: [
@@ -687,8 +653,7 @@ export const mediumDerivativesQuestions = [
             "\\(3x^2 e^{3x}\\)",
             "\\(e^{3x}(2x + 3x^2)\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение: $2xe^{3x}+3x^2e^{3x}=e^{3x}(2x+3x^2)$." },
     {
         question: "f(x) = \\(\\sin(x^2)\\). Найдите f'(x)",
         options: [
@@ -697,8 +662,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x\\sin(x^2)\\)",
             "\\(x\\cos(x^2)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\cos(x^2)\\cdot2x=2x\\cos(x^2)$." },
     {
         question: "f(x) = \\((2x - 1)^3\\). Найдите f'(x)",
         options: [
@@ -707,8 +671,7 @@ export const mediumDerivativesQuestions = [
             "\\(2(2x - 1)^2\\)",
             "\\(6x(2x - 1)^2\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $3(2x-1)^2\\cdot2=6(2x-1)^2$." },
     {
         question: "f(x) = \\(\\frac{x}{\\sqrt{1 - x^2}}\\). Найдите f'(x)",
         options: [
@@ -717,8 +680,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{1}{\\sqrt{1-x^2}}\\)",
             "\\(\\frac{1}{(1 - x^2)^{3/2}}\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Частное: $\\dfrac{\\sqrt{1-x^2}-x\\cdot\\frac{-x}{\\sqrt{1-x^2}}}{1-x^2}=\\dfrac{1}{(1-x^2)^{3/2}}$." },
     {
         question: "f(x) = \\(e^{2x} \\cdot \\cos(3x)\\). Найдите f'(x)",
         options: [
@@ -727,8 +689,7 @@ export const mediumDerivativesQuestions = [
             "\\(2e^{2x}\\cos(3x)\\)",
             "\\(e^{2x}(2\\cos(3x) - 3\\sin(3x))\\)",
         ],
-        correct: 3,
-    },
+        correct: 3, explanation: "Произведение: $2e^{2x}\\cos3x-3e^{2x}\\sin3x=e^{2x}(2\\cos3x-3\\sin3x)$." },
     {
         question:
             "f(x) = \\(\\ln\\left(\\frac{x+1}{x-1}\\right)\\). Найдите f'(x)",
@@ -738,8 +699,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2}{1-x^2}\\)",
             "\\(\\frac{x-1 - x-1}{x^2-1}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Разность логарифмов: $\\dfrac{1}{x+1}-\\dfrac{1}{x-1}=\\dfrac{-2}{x^2-1}$." },
     {
         question: "f(x) = \\(x \\cdot \\arcsin(x)\\). Найдите f'(x)",
         options: [
@@ -748,8 +708,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\arcsin(x) + \\frac{1}{\\sqrt{1-x^2}}\\)",
             "\\(\\frac{x}{\\sqrt{1-x^2}}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Произведение: $\\arcsin x+\\dfrac{x}{\\sqrt{1-x^2}}$." },
     {
         question: "f(x) = \\((\\sin(x) + x)^2\\). Найдите f'(x)",
         options: [
@@ -758,8 +717,7 @@ export const mediumDerivativesQuestions = [
             "\\(2(\\sin(x)+x)(\\cos(x)+1)\\)",
             "\\(2\\sin(x)\\cos(x) + 2x\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Цепное правило: $2(\\sin x+x)(\\cos x+1)$." },
     {
         question: "f(x) = \\(e^{\\ln(x^2)}\\). Найдите f'(x)",
         options: [
@@ -768,8 +726,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x e^{\\ln(x^2)}\\)",
             "\\(x^2\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "$e^{\\ln(x^2)}=x^2$ (при $x\\neq0$), производная: $2x$." },
     {
         question: "f(x) = \\(\\sqrt{x^2 + 4x}\\). Найдите f'(x)",
         options: [
@@ -778,8 +735,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2x+4}{\\sqrt{x^2+4x}}\\)",
             "\\(\\sqrt{2x+4}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\dfrac{2x+4}{2\\sqrt{x^2+4x}}=\\dfrac{x+2}{\\sqrt{x^2+4x}}$." },
     {
         question: "f(x) = \\(\\cos(2x) \\cdot \\sin(3x)\\). Найдите f'(x)",
         options: [
@@ -788,8 +744,7 @@ export const mediumDerivativesQuestions = [
             "\\(-2\\sin(2x) + 3\\cos(3x)\\)",
             "\\(\\cos(5x)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Произведение и цепное правило: $-2\\sin2x\\sin3x+3\\cos2x\\cos3x$." },
     {
         question: "f(x) = \\(\\frac{x^2 + 1}{x}\\). Найдите f'(x)",
         options: [
@@ -798,8 +753,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{2x}{x}\\)",
             "\\(\\frac{2x \\cdot x - (x^2+1)}{x^2}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "$\\dfrac{x^2+1}{x}=x+\\dfrac1x$, производная: $1-\\dfrac{1}{x^2}$." },
     {
         question: "f(x) = \\(\\tan(x^2)\\). Найдите f'(x)",
         options: [
@@ -808,8 +762,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x \\cdot \\tan(x^2)\\)",
             "\\(x \\cdot \\sec^2(x^2)\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\sec^2(x^2)\\cdot2x=2x\\sec^2(x^2)$." },
     {
         question:
             "f(x) = \\(e^{x} \\cdot \\sin(x) \\cdot \\cos(x)\\). Найдите f'(x)",
@@ -819,8 +772,7 @@ export const mediumDerivativesQuestions = [
             "\\(e^x(\\sin(x)\\cos(x))\\)",
             "\\(2e^x\\cos(2x))\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Произведение: $e^x\\sin x\\cos x+e^x(\\cos^2x-\\sin^2x)$." },
     {
         question: "f(x) = \\(\\ln(x + \\sqrt{x^2+1})\\). Найдите f'(x)",
         options: [
@@ -829,8 +781,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\frac{x}{\\sqrt{x^2+1}}\\)",
             "\\(\\sqrt{x^2+1}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "По цепному правилу: $\\dfrac{1+\\frac{x}{\\sqrt{x^2+1}}}{x+\\sqrt{x^2+1}}=\\dfrac{\\sqrt{x^2+1}+x}{\\sqrt{x^2+1}\\,(x+\\sqrt{x^2+1})}=\\dfrac{1}{\\sqrt{x^2+1}}$." },
     {
         question: "f(x) = \\(\\frac{1 - \\cos(2x)}{2}\\). Найдите f'(x)",
         options: [
@@ -839,8 +790,7 @@ export const mediumDerivativesQuestions = [
             "\\(\\cos(2x)\\)",
             "\\(2\\sin(2x)\\)",
         ],
-        correct: 1,
-    },
+        correct: 1, explanation: "$\\dfrac{1-\\cos2x}{2}=\\sin^2x$, производная: $2\\sin x\\cos x=\\sin2x$." },
     {
         question: "f(x) = \\(x^2 \\cdot \\ln(2x)\\). Найдите f'(x)",
         options: [
@@ -849,8 +799,7 @@ export const mediumDerivativesQuestions = [
             "\\(2x\\ln(2x) + x\\)",
             "\\(x + x\\ln(2x)\\)",
         ],
-        correct: 2,
-    },
+        correct: 2, explanation: "Произведение: $2x\\ln(2x)+x^2\\cdot\\dfrac1x=2x\\ln(2x)+x$." },
     {
         question:
             "f(x) = \\(\\sin\\left(\\frac{1}{x}\\right)\\). Найдите f'(x)",
@@ -860,8 +809,7 @@ export const mediumDerivativesQuestions = [
             "\\(-\\cos\\left(\\frac{1}{x}\\right)\\)",
             "\\(\\frac{\\cos\\left(\\frac{1}{x}\\right)}{x^2}\\)",
         ],
-        correct: 0,
-    },
+        correct: 0, explanation: "Цепное правило: $\\cos\\dfrac1x\\cdot\\Big(-\\dfrac1{x^2}\\Big)=-\\dfrac{\\cos(1/x)}{x^2}$." },
     {
         question: "f(x) = \\((e^x + e^{-x})^2\\). Найдите f'(x)",
         options: [
@@ -870,23 +818,22 @@ export const mediumDerivativesQuestions = [
             "\\(4(e^{2x} - e^{-2x})\\)",
             "\\(2(e^{2x} - e^{-2x})\\)",
         ],
-        correct: 3,
-    },
-    { question: "Найдите производную $f(x) = \\ln(\\sin x)$", options: ["$\\cot x$","$\\frac{1}{\\sin x}$","$\\cos x \\cdot \\ln(\\sin x)$","$\\frac{\\cos x}{\\sin^2 x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = e^{\\sin x}$", options: ["$\\cos x \\cdot e^{\\sin x}$","$e^{\\cos x}$","$\\sin x \\cdot e^{\\sin x}$","$e^{\\sin x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\arctan(x^2)$", options: ["$\\frac{2x}{1+x^4}$","$\\frac{1}{1+x^4}$","$\\frac{2x}{1+x^2}$","$\\frac{x^2}{1+x^4}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\ln^3(x)$", options: ["$\\frac{3\\ln^2 x}{x}$","$3\\ln^2 x$","$\\frac{\\ln^3 x}{x}$","$\\frac{3}{x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x^x$ (при $x>0$)", options: ["$x^x(1+\\ln x)$","$x \\cdot x^{x-1}$","$x^x \\ln x$","$x^{x-1}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\sin(x^2)$", options: ["$2x\\cos(x^2)$","$\\cos(x^2)$","$2x\\sin(x^2)$","$\\cos(2x)$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\sqrt{1+x^2}$", options: ["$\\frac{x}{\\sqrt{1+x^2}}$","$\\frac{1}{\\sqrt{1+x^2}}$","$\\frac{x}{1+x^2}$","$\\frac{2x}{\\sqrt{1+x^2}}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\frac{\\ln x}{x}$", options: ["$\\frac{1-\\ln x}{x^2}$","$\\frac{1}{x^2}$","$\\frac{\\ln x - 1}{x^2}$","$\\frac{1}{x}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x^2 \\sin x$", options: ["$2x\\sin x + x^2\\cos x$","$2x\\cos x$","$x^2\\cos x$","$2x\\sin x$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\arcsin(\\sqrt{x})$", options: ["$\\frac{1}{2\\sqrt{x(1-x)}}$","$\\frac{1}{\\sqrt{1-x}}$","$\\frac{1}{2\\sqrt{x}}$","$\\frac{\\sqrt{x}}{\\sqrt{1-x}}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\ln(x+\\sqrt{x^2+1})$", options: ["$\\frac{1}{\\sqrt{x^2+1}}$","$\\frac{1}{x+\\sqrt{x^2+1}}$","$\\frac{x}{\\sqrt{x^2+1}}$","$\\ln(x^2+1)$"], correct: 0 },
-    { question: "Найдите производную $f(x) = x \\cdot \\arctan x$", options: ["$\\arctan x + \\frac{x}{1+x^2}$","$\\frac{x}{1+x^2}$","$\\arctan x$","$\\frac{1}{1+x^2}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = e^x(x^2 - 2x + 2)$", options: ["$x^2 e^x$","$e^x(x^2-2x+2)$","$(2x-2)e^x$","$e^x(x^2+2)$"], correct: 0 },
-    { question: "Найдите производную $f(x) = (1+x^2)\\arctan x$", options: ["$2x\\arctan x + 1$","$\\frac{1+x^2}{1+x^2}$","$2x\\arctan x$","$\\arctan x + \\frac{1+x^2}{1+x^2}$"], correct: 0 },
-    { question: "Найдите производную $f(x) = \\ln|\\cos x|$", options: ["$-\\tan x$","$\\tan x$","$\\frac{1}{\\cos x}$","$-\\frac{\\sin x}{\\cos^2 x}$"], correct: 0 },
+        correct: 3, explanation: "Цепное правило: $2(e^x+e^{-x})(e^x-e^{-x})=2(e^{2x}-e^{-2x})$." },
+    { question: "Найдите производную $f(x) = \\ln(\\sin x)$", options: ["$\\cot x$","$\\frac{1}{\\sin x}$","$\\cos x \\cdot \\ln(\\sin x)$","$\\frac{\\cos x}{\\sin^2 x}$"], correct: 0 , explanation: "Цепное правило: $\\dfrac{\\cos x}{\\sin x}=\\cot x$." },
+    { question: "Найдите производную $f(x) = e^{\\sin x}$", options: ["$\\cos x \\cdot e^{\\sin x}$","$e^{\\cos x}$","$\\sin x \\cdot e^{\\sin x}$","$e^{\\sin x}$"], correct: 0 , explanation: "Цепное правило: $\\cos x\\cdot e^{\\sin x}$." },
+    { question: "Найдите производную $f(x) = \\arctan(x^2)$", options: ["$\\frac{2x}{1+x^4}$","$\\frac{1}{1+x^4}$","$\\frac{2x}{1+x^2}$","$\\frac{x^2}{1+x^4}$"], correct: 0 , explanation: "Цепное правило: $\\dfrac{1}{1+x^4}\\cdot2x=\\dfrac{2x}{1+x^4}$." },
+    { question: "Найдите производную $f(x) = \\ln^3(x)$", options: ["$\\frac{3\\ln^2 x}{x}$","$3\\ln^2 x$","$\\frac{\\ln^3 x}{x}$","$\\frac{3}{x}$"], correct: 0 , explanation: "Цепное правило: $3\\ln^2x\\cdot\\dfrac1x=\\dfrac{3\\ln^2x}{x}$." },
+    { question: "Найдите производную $f(x) = x^x$ (при $x>0$)", options: ["$x^x(1+\\ln x)$","$x \\cdot x^{x-1}$","$x^x \\ln x$","$x^{x-1}$"], correct: 0 , explanation: "Логарифмическое дифференцирование: $\\ln f=x\\ln x\\Rightarrow \\dfrac{f'}{f}=\\ln x+1\\Rightarrow f'=x^x(1+\\ln x)$." },
+    { question: "Найдите производную $f(x) = \\sin(x^2)$", options: ["$2x\\cos(x^2)$","$\\cos(x^2)$","$2x\\sin(x^2)$","$\\cos(2x)$"], correct: 0 , explanation: "Цепное правило: $2x\\cos(x^2)$." },
+    { question: "Найдите производную $f(x) = \\sqrt{1+x^2}$", options: ["$\\frac{x}{\\sqrt{1+x^2}}$","$\\frac{1}{\\sqrt{1+x^2}}$","$\\frac{x}{1+x^2}$","$\\frac{2x}{\\sqrt{1+x^2}}$"], correct: 0 , explanation: "Цепное правило: $\\dfrac{x}{\\sqrt{1+x^2}}$." },
+    { question: "Найдите производную $f(x) = \\frac{\\ln x}{x}$", options: ["$\\frac{1-\\ln x}{x^2}$","$\\frac{1}{x^2}$","$\\frac{\\ln x - 1}{x^2}$","$\\frac{1}{x}$"], correct: 0 , explanation: "Частное: $\\dfrac{\\frac1x\\cdot x-\\ln x}{x^2}=\\dfrac{1-\\ln x}{x^2}$." },
+    { question: "Найдите производную $f(x) = x^2 \\sin x$", options: ["$2x\\sin x + x^2\\cos x$","$2x\\cos x$","$x^2\\cos x$","$2x\\sin x$"], correct: 0 , explanation: "Произведение: $2x\\sin x+x^2\\cos x$." },
+    { question: "Найдите производную $f(x) = \\arcsin(\\sqrt{x})$", options: ["$\\frac{1}{2\\sqrt{x(1-x)}}$","$\\frac{1}{\\sqrt{1-x}}$","$\\frac{1}{2\\sqrt{x}}$","$\\frac{\\sqrt{x}}{\\sqrt{1-x}}$"], correct: 0 , explanation: "Цепное правило: $\\dfrac{1}{\\sqrt{1-x}}\\cdot\\dfrac{1}{2\\sqrt x}=\\dfrac{1}{2\\sqrt{x(1-x)}}$." },
+    { question: "Найдите производную $f(x) = \\ln(x+\\sqrt{x^2+1})$", options: ["$\\frac{1}{\\sqrt{x^2+1}}$","$\\frac{1}{x+\\sqrt{x^2+1}}$","$\\frac{x}{\\sqrt{x^2+1}}$","$\\ln(x^2+1)$"], correct: 0 , explanation: "Как и для $\\ln(x+\\sqrt{x^2+1})$: после упрощения производная равна $\\dfrac{1}{\\sqrt{x^2+1}}$." },
+    { question: "Найдите производную $f(x) = x \\cdot \\arctan x$", options: ["$\\arctan x + \\frac{x}{1+x^2}$","$\\frac{x}{1+x^2}$","$\\arctan x$","$\\frac{1}{1+x^2}$"], correct: 0 , explanation: "Произведение: $\\arctan x+\\dfrac{x}{1+x^2}$." },
+    { question: "Найдите производную $f(x) = e^x(x^2 - 2x + 2)$", options: ["$x^2 e^x$","$e^x(x^2-2x+2)$","$(2x-2)e^x$","$e^x(x^2+2)$"], correct: 0 , explanation: "Произведение: $e^x(x^2-2x+2)+e^x(2x-2)=e^x\\cdot x^2$." },
+    { question: "Найдите производную $f(x) = (1+x^2)\\arctan x$", options: ["$2x\\arctan x + 1$","$\\frac{1+x^2}{1+x^2}$","$2x\\arctan x$","$\\arctan x + \\frac{1+x^2}{1+x^2}$"], correct: 0 , explanation: "Произведение: $2x\\arctan x+(1+x^2)\\cdot\\dfrac{1}{1+x^2}=2x\\arctan x+1$." },
+    { question: "Найдите производную $f(x) = \\ln|\\cos x|$", options: ["$-\\tan x$","$\\tan x$","$\\frac{1}{\\cos x}$","$-\\frac{\\sin x}{\\cos^2 x}$"], correct: 0 , explanation: "Цепное правило: $\\dfrac{-\\sin x}{\\cos x}=-\\tan x$." },
 ];
 
 // Сложные вопросы
