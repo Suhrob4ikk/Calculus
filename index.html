@@ -785,8 +785,20 @@
     }
 
     @media (max-width: 640px) {
+      /* !important обязателен: несколько динамически рендерящихся страниц
+         (экзамен, ошибки и т.д.) задают inline style="padding:..." на своём
+         .page-content — без !important это правило проигрывало inline-стилю,
+         верх контента (заголовок/счётчик вопроса) уезжал под фиксированную
+         панель «← Назад» и был не виден. */
       body.has-back-bar .page-content {
-        padding-top: 44px;
+        padding-top: 44px !important;
+      }
+
+      /* Дуэль: .duel-container не имеет класса .page-content (у него свой
+         сдвиг под сайдбар на десктопе — page-content задвоил бы его),
+         поэтому верхний отступ под панель «← Назад» задаём отдельно. */
+      body.has-back-bar #duelPage .duel-container {
+        padding-top: 44px !important;
       }
 
       /* Скрываем встроенные кнопки «назад» — их заменяет #mobileBackBar */
