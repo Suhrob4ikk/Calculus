@@ -130,6 +130,23 @@ window.showLoginFromForgot  = showLoginFromForgot
 window.handleForgotPassword = handleForgotPassword
 window.handleUpdatePassword = handleUpdatePassword
 
+// Enter — подтверждение входа/регистрации/сброса пароля
+document.addEventListener('DOMContentLoaded', () => {
+  const onEnter = (ids, submit) => {
+    ids.forEach(id => {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); submit() }
+      })
+    })
+  }
+  onEnter(['loginEmail', 'loginPassword'], () => window.handleLogin())
+  onEnter(['regUsername', 'regEmail', 'regPassword'], () => window.handleRegister())
+  onEnter(['forgotEmail'], () => window.handleForgotPassword())
+  onEnter(['newPassword', 'confirmPassword'], () => window.handleUpdatePassword())
+})
+
 // Индикатор надёжности пароля
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('newPassword')

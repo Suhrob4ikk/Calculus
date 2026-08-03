@@ -2088,10 +2088,15 @@ html:not(.dark) .duel-score-card-normal {
 }
 
 /* ── PROFILE AVATAR ── */
+/* Буква-заглушка (нет фото) должна быть видна в обеих темах — сплошной
+   градиент с белым текстом, а не полупрозрачная заливка (та была почти
+   невидима в светлой теме поверх светлого фона). */
 .profile-avatar {
-  background: rgba(255, 255, 255, 0.2) !important;
-  background-image: none !important;
-  box-shadow: none !important;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8) !important;
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.35) !important;
+}
+.profile-avatar img {
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
 }
 
 /* ── ANSWER OPTIONS ── */
@@ -3399,3 +3404,16 @@ body::after            { animation: none !important; }
 .page-enter { animation-duration: .28s !important; }
 ::view-transition-old(vt-page) { animation-duration: 160ms !important; }
 ::view-transition-new(vt-page) { animation-duration: 200ms !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ИТЕРАЦИЯ 12 (2026-08) — мелкие правки: контраст аватара,
+   скрытие «← На главную» на широких экранах (там уже есть сайдбар),
+   Enter для входа/регистрации (JS, не CSS)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* На больших экранах сайдбар (js/ui.js: showSidebar) уже даёт навигацию
+   на главную — кнопки «← На главную» и т.п. дублируют её и убираются.
+   body.no-sidebar отсутствует именно тогда, когда сайдбар показан. */
+@media (min-width: 900px) {
+  body:not(.no-sidebar) .page-back-btn { display: none !important; }
+}
